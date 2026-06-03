@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Motion</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
+  .runner { display: flex; align-items: center; gap: var(--s-md); }
+  .dot-box { width: 16px; height: 16px; border-radius: 4px; background: var(--accent-fill); }
+  .dot-box.run { animation: shift 1.6s var(--ease) infinite alternate; }
+  @keyframes shift { from { transform: translateX(0) } to { transform: translateX(120px) } }
+  .pulse-demo { width: 12px; height: 12px; border-radius: 50%; background: var(--urgent-fill); }
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Motion</p>
+  <h1 class="t-headline-lg">motion.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Three durations, one easing. Motion exists to <b class="anchor">communicate state change</b>, not to delight. Everything collapses to 0ms when <code>prefers-reduced-motion: reduce</code>.</p>
+
+  <h2>Tokens</h2>
+  <table class="table">
+    <thead><tr><th>Token</th><th>Value</th><th>Use for</th></tr></thead>
+    <tbody>
+      <tr><td><code>--dur-instant</code></td><td>80ms</td><td>Hover, focus, active state.</td></tr>
+      <tr><td><code>--dur-fast</code></td><td>160ms</td><td>Default. Theme switch, toggle, fade-in.</td></tr>
+      <tr><td><code>--dur-max</code></td><td>300ms</td><td>Modal entry, sidebar slide. <b>Ceiling.</b></td></tr>
+      <tr><td><code>--ease</code></td><td><code>cubic-bezier(.2,.7,.3,1)</code></td><td>Single curve. Decisive in, soft out.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Patterns</h2>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">01 · State change (160ms)</h3>
+  <p class="meta">Hover, focus, theme toggle. Use the default <code>--dur-fast</code>.</p>
+  <div class="demo">
+    <button class="btn btn--primary">Hover me</button>
+  </div>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">02 · Continuous translation</h3>
+  <p class="meta">For loading bars, scrubbers. Linear easing OK here; default ease for everything else.</p>
+  <div class="demo runner">
+    <div class="dot-box run"></div>
+    <div class="meta">animation: shift 1.6s var(--ease) infinite alternate</div>
+  </div>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">03 · Attention pulse (urgent only)</h3>
+  <p class="meta">Reserved for blocking errors. Slow (1.6s), low contrast, suppressed under reduced-motion. Apply <code>.pulse</code>.</p>
+  <div class="demo">
+    <span class="badge badge--urgent pulse"><span class="dot dot--urgent"></span>Build failed</span>
+  </div>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">04 · Skeleton shimmer</h3>
+  <p class="meta">For wait states &gt; 1s. Subtle horizontal sweep at 1.4s. See <a href="states.html">states.html</a>.</p>
+  <div class="demo stack stack--sm" style="max-width:320px">
+    <div class="skeleton skeleton--title"></div>
+    <div class="skeleton skeleton--text"></div>
+    <div class="skeleton skeleton--text" style="width:80%"></div>
+  </div>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">05 · Modal entry</h3>
+  <p class="meta">Slide-up 8px + fade, 160ms. Already wired into <code>.modal</code>; see <a href="overlay.html">overlay.html</a>.</p>
+
+  <h2>Rules</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+    <li><b class="anchor">300ms is the ceiling.</b> Anything longer feels broken.</li>
+    <li><b class="anchor">One easing.</b> Don't invent <code>cubic-bezier</code>s. Use <code>--ease</code>.</li>
+    <li><b class="anchor">No parallax, auto-play, or looping decoration.</b></li>
+    <li><b class="anchor">Honor reduced-motion.</b> Already wired — just don't undo it.</li>
+    <li><b class="anchor">Animate state, not arrival.</b> Don't animate things appearing on page load.</li>
+  </ol>
+
+  <pre class="code-block"><span class="tok-comment">/* Default state-change transition */</span>
+transition: <span class="tok-fn">background</span> <span class="tok-keyword">var</span>(--dur-fast) <span class="tok-keyword">var</span>(--ease);
+
+<span class="tok-comment">/* Reduced-motion is automatic via the CSS:
+   :root { --dur-instant: 0ms; --dur-fast: 0ms; --dur-max: 0ms; }
+   …so transition: ... var(--dur-fast) ... becomes 0ms. */</span></pre>
+</main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "name": "@cameronsjo/artificer",
+  "version": "0.12.0",
+  "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
+  "license": "Apache-2.0",
+  "author": "Cameron Sjo <csjo00@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cameronsjo/artificer.git"
+  },
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "style": "./src/artificer.css",
+  "exports": {
+    "./artificer.css": "./src/artificer.css",
+    "./whimsy.css": "./src/artificer-whimsy.css",
+    "./editorial.css": "./src/artificer-editorial.css",
+    "./print.css": "./src/print.css",
+    "./theme.js": "./src/artificer-theme.js",
+    "./focus.js": "./src/artificer-focus.js",
+    "./tabs.js": "./src/artificer-tabs.js",
+    "./icons.js": "./src/artificer-icons.js",
+    "./whimsy.js": "./src/artificer-whimsy.js",
+    "./tokens.json": "./src/tokens.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:themes": "node themes/build.mjs",
+    "build:livespec": "node scripts/build-livespec.mjs",
+    "check:livespec": "node scripts/build-livespec.mjs --check",
+    "check:contrast": "node scripts/check-syntax-contrast.mjs",
+    "lint:palette": "node scripts/lint-css-palette.mjs",
+    "check:version": "node scripts/sync-version.mjs --check",
+    "sync:version": "node scripts/sync-version.mjs",
+    "sri": "node scripts/gen-sri.mjs",
+    "test": "node --test scripts/*.test.mjs"
+  }
+}

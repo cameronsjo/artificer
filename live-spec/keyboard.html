@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Keyboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  .bc { font-family: var(--font-sans); font-size: var(--t-label-xs-size); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 62ch; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  .note { font-family: var(--font-mono); font-size: var(--t-label-md-size); color: var(--fg-secondary); line-height: 1.6; max-width: 64ch; margin-top: var(--s-md); }
+  /* Keep multi-key combos on one line with even spacing */
+  .combo { white-space: nowrap; }
+  .combo kbd + kbd { margin-left: var(--s-xs); }
+  .table td .then { color: var(--fg-disabled); font-family: var(--font-mono); font-size: var(--t-label-xs-size); margin: 0 var(--s-xs); }
+  .table td.dim { color: var(--fg-disabled); }
+</style>
+</head>
+<body>
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Keyboard</div>
+  <h1>Keyboard<span class="amp">.</span></h1>
+  <p class="lede">Artificer is <b class="anchor">keyboard-first</b>: every command reachable <b class="anchor">without the mouse</b>, the <b class="anchor">same gesture</b> meaning the same thing everywhere. This is the <b class="anchor">canonical keymap</b> — the muscle memory the whole system shares.</p>
+
+  <section>
+    <h2><span class="num">01</span> The canonical keymap</h2>
+    <p class="note">Every Artificer UI adopts these. <b class="anchor">⌘ K opens the command palette</b> — never rebind it to a command; the palette is how you reach commands. On macOS the modifier is ⌘; see <a href="#mods">platform modifiers</a> for Linux/Windows.</p>
+    <table class="table">
+      <thead>
+        <tr><th>Action</th><th>Keys</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Open command palette</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>K</kbd></td>
+          <td>Type to filter commands and files. The single entry point to everything. Editor / IDE targets also accept <span class="combo"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd></span> for VS Code muscle memory.</td>
+        </tr>
+        <tr>
+          <td>Search / filter in view</td>
+          <td class="combo"><kbd>/</kbd></td>
+          <td>Focuses the in-view search or filter field. <kbd>Esc</kbd> clears and blurs.</td>
+        </tr>
+        <tr>
+          <td>Confirm / submit</td>
+          <td class="combo"><kbd>↵</kbd></td>
+          <td>From any single-line input.</td>
+        </tr>
+        <tr>
+          <td>Submit multi-line</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>↵</kbd></td>
+          <td>Multi-line forms and commit messages — see form rule 7.</td>
+        </tr>
+        <tr>
+          <td>Cancel / close / dismiss</td>
+          <td class="combo"><kbd>Esc</kbd></td>
+          <td>Closes the modal, palette, or popover and returns focus to the trigger.</td>
+        </tr>
+        <tr>
+          <td>Toggle theme</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>L</kbd></td>
+          <td>Dark ⇄ cream.</td>
+        </tr>
+        <tr>
+          <td>Navigate a list / palette</td>
+          <td class="combo"><kbd>↑</kbd><kbd>↓</kbd><span class="then">then</span><kbd>↵</kbd></td>
+          <td>Arrow keys move, Enter activates. Never mouse-only.</td>
+        </tr>
+        <tr>
+          <td>Switch tab / pane</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>1</kbd><span class="then">…</span><kbd>⌘</kbd><kbd>9</kbd></td>
+          <td>Where numbered tabs or panes exist.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">Display combos with inline <code>&lt;kbd&gt;</code> — one element per key, no bespoke styling. The <code>kbd</code> / <code>.kbd</code> rule in <code>artificer.css</code> already themes them.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Cross-app convention</h2>
+    <p class="note">The same intent earns the <b class="anchor">same gesture</b> across Cameron's themed apps, so muscle memory carries between them. This table is the <b class="anchor">standard</b> — the actual keybind configs live in dotfiles (chezmoi), not here. Where an app's model can't honor a gesture (terminal emulators have no command palette; multiplexers route through a prefix), the divergence is documented, not papered over.</p>
+    <table class="table">
+      <thead>
+        <tr><th>Gesture</th><th>Claude&nbsp;Code</th><th>VS&nbsp;Code</th><th>Ghostty</th><th>tmux</th><th>lazygit&nbsp;/&nbsp;gh-dash</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Command / search palette</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>K</kbd></td>
+          <td class="combo"><kbd>⌘</kbd><kbd>K</kbd></td>
+          <td class="dim">—</td>
+          <td class="combo">prefix <span class="then">+</span><kbd>:</kbd></td>
+          <td class="combo"><kbd>:</kbd> <span class="then">cmd</span> · <kbd>/</kbd> <span class="then">filter</span></td>
+        </tr>
+        <tr>
+          <td>Dismiss / cancel</td>
+          <td class="combo"><kbd>Esc</kbd></td>
+          <td class="combo"><kbd>Esc</kbd></td>
+          <td class="combo"><kbd>Esc</kbd></td>
+          <td class="combo"><kbd>Esc</kbd></td>
+          <td class="combo"><kbd>Esc</kbd></td>
+        </tr>
+        <tr>
+          <td>Confirm</td>
+          <td class="combo"><kbd>↵</kbd></td>
+          <td class="combo"><kbd>↵</kbd></td>
+          <td class="combo"><kbd>↵</kbd></td>
+          <td class="combo"><kbd>↵</kbd></td>
+          <td class="combo"><kbd>↵</kbd></td>
+        </tr>
+        <tr>
+          <td>Pane / tab nav</td>
+          <td class="dim">—</td>
+          <td class="combo"><kbd>⌘</kbd><kbd>1</kbd><span class="then">…</span></td>
+          <td class="combo"><kbd>⌘</kbd><kbd>⌥</kbd><span class="then">arrows</span></td>
+          <td class="combo">prefix <span class="then">+</span><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td>
+          <td class="combo"><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note"><b class="anchor">Prefix-layer apps</b> (tmux, prefix <kbd>Ctrl</kbd>+<kbd>Space</kbd>) and pure terminal emulators (Ghostty) can't host a global ⌘ K palette — that's a property of the app, not a violation. The convention only binds where the app can honor it; everything else is recorded so the gap is visible.</p>
+  </section>
+
+  <section id="mods">
+    <h2><span class="num">03</span> Platform modifiers</h2>
+    <p class="note">The keymap is written for macOS. On Linux and Windows, swap the modifier — the <b class="anchor">gesture stays identical</b>, only the key changes.</p>
+    <table class="table">
+      <thead>
+        <tr><th>Symbol</th><th>macOS</th><th>Linux / Windows</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="combo"><kbd>⌘</kbd></td><td>Command</td><td>Ctrl</td></tr>
+        <tr><td class="combo"><kbd>⌥</kbd></td><td>Option</td><td>Alt</td></tr>
+        <tr><td class="combo"><kbd>⇧</kbd></td><td>Shift</td><td>Shift</td></tr>
+        <tr><td class="combo"><kbd>⌃</kbd></td><td>Control</td><td>Ctrl</td></tr>
+        <tr><td class="combo"><kbd>↵</kbd></td><td>Return</td><td>Enter</td></tr>
+        <tr><td class="combo"><kbd>⌫</kbd></td><td>Delete</td><td>Backspace</td></tr>
+      </tbody>
+    </table>
+    <p class="note">So <span class="combo"><kbd>⌘</kbd><kbd>K</kbd></span> on macOS is <span class="combo"><kbd>Ctrl</kbd><kbd>K</kbd></span> elsewhere. Render the macOS glyphs in docs; map at the binding layer per platform.</p>
+  </section>
+</main>
+</body>
+</html>

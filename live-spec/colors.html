@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Colors</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); }
+  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
+
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+
+  .grid { display: grid; gap: var(--s-md); }
+  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.c4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 720px) { .grid.c3, .grid.c4 { grid-template-columns: 1fr 1fr; } }
+
+  .sw {
+    background: var(--bg-raised); border-radius: var(--radius-md); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .sw .chip { height: 110px; position: relative; }
+  .sw .chip b { position: absolute; top: 10px; left: 12px; font-family: var(--font-mono); font-weight: 700; font-size: 13px; mix-blend-mode: normal; }
+  .sw .meta { padding: var(--s-sm) var(--s-md) var(--s-md); display: flex; flex-direction: column; gap: 2px; }
+  .sw .name { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--fg); }
+  .sw .hex { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
+  .sw .role { font-family: var(--font-sans); font-size: 11px; color: var(--fg-secondary); line-height: 1.4; margin-top: 2px; }
+
+  .rule { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); margin-bottom: var(--s-sm); }
+  .rule b { color: var(--fg); }
+  .rule .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-xs); }
+  .rule p { margin: 0; max-width: 68ch; }
+
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-md); }
+  .demo-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); }
+
+  .squint-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  .squint { padding: var(--s-lg); border-radius: var(--radius-md); min-height: 140px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; }
+  .squint.active { border-left: 2px solid var(--accent); }
+  .squint.inactive { opacity: 0.55; background: var(--bg-inactive); filter: saturate(0.6); }
+
+  .onbg { padding: 10px 14px; border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+  <span class="dot"></span><span data-theme-label>Dark</span>
+</button>
+
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Colors</div>
+  <h1>colors<span class="amp">.</span></h1>
+  <p class="lede">Ghostty dark grey as the foundation. Jazz-Age-Deco accents on top. <span class="anchor">Color reserved for meaning</span> — if it doesn't signal <em>act here</em>, <em>look here</em>, or <em>this is wrong</em>, it isn't allowed.</p>
+
+  <section>
+    <h2><span class="num">01</span> Surfaces</h2>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Four tonal layers. <span class="anchor">No pure black</span>. Depth comes from this scale, not from shadows.</p>
+    <div class="grid c4">
+      <div class="sw"><div class="chip" style="background:#292c33"><b style="color:#fff">AA</b></div><div class="meta"><span class="name">--bg</span><span class="hex">#292C33</span><span class="role">Base surface · Ghostty default</span></div></div>
+      <div class="sw"><div class="chip" style="background:#313540"><b style="color:#fff">AA</b></div><div class="meta"><span class="name">--bg-raised</span><span class="hex">#313540</span><span class="role">Cards, sidebar, panels</span></div></div>
+      <div class="sw"><div class="chip" style="background:#3c4150"><b style="color:#fff">AA</b></div><div class="meta"><span class="name">--bg-overlay</span><span class="hex">#3C4150</span><span class="role">Modals, command palette</span></div></div>
+      <div class="sw"><div class="chip" style="background:#1d1f21"><b style="color:#fff">AA</b></div><div class="meta"><span class="name">--bg-inactive</span><span class="hex">#1D1F21</span><span class="role">Unfocused panes, dimmed</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Foreground</h2>
+    <div class="grid c3">
+      <div class="sw"><div class="chip" style="background:#ffffff"><b style="color:#292c33">AA</b></div><div class="meta"><span class="name">--fg</span><span class="hex">#FFFFFF · 13.98 AAA</span><span class="role">Primary text</span></div></div>
+      <div class="sw"><div class="chip" style="background:#c5c8c6"><b style="color:#292c33">AA</b></div><div class="meta"><span class="name">--fg-secondary</span><span class="hex">#C5C8C6 · 8.29 AAA</span><span class="role">Metadata, timestamps</span></div></div>
+      <div class="sw"><div class="chip" style="background:#666666"><b style="color:#fff">AA</b></div><div class="meta"><span class="name">--fg-disabled</span><span class="hex">#666666</span><span class="role">Inactive, placeholder</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> Semantic accents</h2>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Each has a <span class="anchor">text-safe</span> value (AAA on base bg) and a <span class="anchor">fill</span> value (saturated, used as button/badge background with contrasting on-color text).</p>
+    <div class="grid c3">
+      <div class="sw">
+        <div class="chip" style="background:#e0b558"><b style="color:#0d1b2a">ACT</b></div>
+        <div class="meta">
+          <span class="name">--accent · gold</span>
+          <span class="hex">text #E0B558 · 7.27 AAA</span>
+          <span class="hex">fill #C4932A</span>
+          <span class="role">Interactive. Links, buttons, focus rings. The only color that means "you can act on this."</span>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#e5afb7"><b style="color:#0d1b2a">LOOK</b></div>
+        <div class="meta">
+          <span class="name">--attention · rose</span>
+          <span class="hex">text #E5AFB7 · 7.42 AAA</span>
+          <span class="hex">fill #C4808A</span>
+          <span class="role">"Look when you can." Non-urgent notifications, items needing review.</span>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#e8836f"><b style="color:#0d1b2a">STOP</b></div>
+        <div class="meta">
+          <span class="name">--urgent · vermillion</span>
+          <span class="hex">text #E8836F · 5.26 AA</span>
+          <span class="hex">fill #C4392A · ivory @ AAA</span>
+          <span class="role">Blocking. Errors, destructive confirmations. Use sparingly.</span>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#b7bd73"><b style="color:#0d1b2a">DONE</b></div>
+        <div class="meta">
+          <span class="name">--success · olive</span>
+          <span class="hex">#B7BD73</span>
+          <span class="role">Completed. Flash briefly, fade to baseline.</span>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#9fb6c4"><b style="color:#0d1b2a">META</b></div>
+        <div class="meta">
+          <span class="name">--steel</span>
+          <span class="hex">#9FB6C4 · 6.63 AA</span>
+          <span class="role">Rivets, denim. Honest middle tone for chrome and secondary UI.</span>
+        </div>
+      </div>
+      <div class="sw">
+        <div class="chip" style="background:#3d1f7a"><b style="color:#f5ead0">BRAND</b></div>
+        <div class="meta">
+          <span class="name">--brand-purple</span>
+          <span class="hex">fill #3D1F7A · ivory 10.48 AAA</span>
+          <span class="hex">text #C9B5E8 · 7.49 AAA</span>
+          <span class="role">Personal signature. Wordmarks, masthead rules, brand surfaces — not semantic.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> The rules that keep triage working</h2>
+    <div class="rule"><div class="label">Rule 01</div><p><b>Max 2 semantic colors visible at once.</b> If gold + rose + vermillion all appear together, visual priority collapses and the brain checks out. Purple is brand, not semantic — it doesn't count against the cap.</p></div>
+    <div class="rule"><div class="label">Rule 02</div><p><b>Greyscale is the default state.</b> Color is reserved for meaning. Decorative color is banned. If you can't name what a color means on a page, delete it.</p></div>
+    <div class="rule"><div class="label">Rule 03</div><p><b>No pure black.</b> <code>#1D1F21</code> is the darkest value in the system. <code>#000</code> reads as a hole on Ghostty grey — it's visual noise.</p></div>
+    <div class="rule"><div class="label">Rule 04</div><p><b>Color meaning is consistent across screens.</b> Gold always means interactive. Rose always means attention. Vermillion always means error. No exceptions for aesthetics.</p></div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> Squint test</h2>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Squint at these two panes. The active one must be <span class="anchor">instantly obvious</span> from peripheral vision. If you have to compare to tell, contrast is too low.</p>
+    <div class="squint-pair">
+      <div class="squint active">
+        <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent)">Active pane</span>
+        <span style="font-family:var(--font-mono);font-weight:700;font-size:16px">agents/writer.md</span>
+        <span class="meta" style="font-family:var(--font-mono);font-size:13px">Full brightness · accent border · 100% saturation.</span>
+      </div>
+      <div class="squint inactive">
+        <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-secondary)">Inactive pane</span>
+        <span style="font-family:var(--font-mono);font-weight:700;font-size:16px;color:var(--fg-secondary)">agents/editor.md</span>
+        <span style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary)">55% opacity · desaturated · darker ground.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> On-color combos</h2>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Filled buttons and badges need the right foreground. Here's what passes.</p>
+    <div class="demo">
+      <div class="demo-label">Dark mode · fills</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <span class="onbg" style="background:#c4932a;color:#0d1b2a">Gold fill · navy text · 6.26</span>
+        <span class="onbg" style="background:#c4392a;color:#f5ead0">Vermillion fill · ivory · 4.43</span>
+        <span class="onbg" style="background:#c4808a;color:#0d1b2a">Rose fill · navy · 4.99</span>
+        <span class="onbg" style="background:#3d1f7a;color:#f5ead0">Royal purple · ivory · 10.48</span>
+        <span class="onbg" style="background:#b7bd73;color:#0d1b2a">Olive · navy · 8.97</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Layout</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-md); margin-top: var(--s-sm); }
+  .demo > * + * { margin-top: 0; }
+  .demo .box { background: var(--bg-inactive); border: 1px dashed var(--border); padding: var(--s-md); font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); border-radius: var(--radius-sm); text-align: center; }
+  pre.code-block { margin-top: var(--s-sm); font-size: 12.5px; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Layout</p>
+  <h1 class="t-headline-lg">layout primitives.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Five composable utilities. <b class="anchor">Stack</b> for vertical rhythm, <b class="anchor">cluster</b> for horizontal flow, <b class="anchor">grid-auto</b> for responsive cards, <b class="anchor">container</b> for max-widths, <b class="anchor">page-shell</b> for sticky-header layouts.</p>
+
+  <h2>.stack — vertical rhythm</h2>
+  <p class="meta">Direct children get even vertical gaps. Override <code>--gap</code> or use <code>.stack--{xs|sm|md|lg|xl|2xl}</code>.</p>
+  <div class="demo"><div class="stack stack--sm"><div class="box">child 1</div><div class="box">child 2</div><div class="box">child 3</div></div></div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"stack stack--sm"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;div&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span>
+  <span class="tok-keyword">&lt;div&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span>
+<span class="tok-keyword">&lt;/div&gt;</span></pre>
+
+  <h2>.cluster — horizontal flow that wraps</h2>
+  <p class="meta">For toolbars, chip rows, button groups. Wraps gracefully on small screens.</p>
+  <div class="demo"><div class="cluster"><span class="badge badge--ghost">tag-1</span><span class="badge badge--ghost">tag-2</span><span class="badge badge--ghost">tag-3</span><span class="badge badge--ghost">tag-4</span></div></div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"cluster"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span></pre>
+  <p class="meta" style="margin-top:var(--s-sm)">Modifiers: <code>.cluster--between</code> (justify-content: space-between), <code>.cluster--end</code>, <code>.cluster--sm</code>, <code>.cluster--lg</code>.</p>
+
+  <h2>.grid-auto — responsive equal columns</h2>
+  <p class="meta">Set <code>--min</code> to control the breakpoint (default 240px). Cards collapse to single column when no two fit.</p>
+  <div class="demo"><div class="grid-auto" style="--min:160px"><div class="box">A</div><div class="box">B</div><div class="box">C</div><div class="box">D</div></div></div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"grid-auto"</span> style=<span class="tok-string">"--min: 240px"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span></pre>
+  <p class="meta" style="margin-top:var(--s-sm)">Or fixed: <code>.grid-2</code>, <code>.grid-3</code> (collapse to 1-col below 640px).</p>
+
+  <h2>.container — max-width wrappers</h2>
+  <table class="table" style="margin-top:var(--s-md)">
+    <thead><tr><th>Class</th><th>max-width</th><th>Use for</th></tr></thead>
+    <tbody>
+      <tr><td><code>.container--sm</code></td><td>560px</td><td>Login forms, dialogs as pages, single-column reading.</td></tr>
+      <tr><td><code>.container--md</code></td><td>820px</td><td>Default for docs, settings, content pages.</td></tr>
+      <tr><td><code>.container--lg</code></td><td>1120px</td><td>Dashboards, tables, multi-column layouts.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>.page-shell — sticky masthead</h2>
+  <p class="meta">Two-row grid: header sticks, main scrolls. Header gets <code>z-index: var(--z-overlay)</code> automatically.</p>
+  <pre class="code-block"><span class="tok-keyword">&lt;body</span> class=<span class="tok-string">"page-shell"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;header&gt;</span>…<span class="tok-keyword">&lt;/header&gt;</span>
+  <span class="tok-keyword">&lt;main&gt;</span>…<span class="tok-keyword">&lt;/main&gt;</span>
+<span class="tok-keyword">&lt;/body&gt;</span></pre>
+
+  <h2>Composition recipe</h2>
+  <p class="meta">Most pages: <code>page-shell &gt; container--md &gt; stack</code>. That's it. Resist nesting deeper without a reason.</p>
+</main>
+</body>
+</html>

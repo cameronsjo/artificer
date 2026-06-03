@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · App Shell</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<script src="artificer-icons.js" defer></script>
+<style>
+  /* Page chrome only — .app-shell / .full-bleed / .bleed-grid / .media-fit are canonical. */
+  body { margin: 0; font-family: var(--font-mono); }
+  .demo-h { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em;
+            text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-xl) 0 var(--s-sm);
+            padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); max-width: 66ch; }
+  .card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
+  /* full-bleed demo strip — a horizontal scroll-snap filmstrip reaching the pane edge */
+  .strip { display: flex; gap: var(--s-md); overflow-x: auto; scroll-snap-type: x mandatory;
+           padding: var(--s-md) var(--s-lg); background: var(--bg-inactive); }
+  .strip > * { scroll-snap-align: start; flex: 0 0 240px; height: 96px; border-radius: var(--radius-md);
+               background: var(--bg-raised); border: 1px solid var(--border); display: grid; place-items: center;
+               color: var(--fg-secondary); }
+  /* a deliberately wide child — the overflow stress test */
+  pre.wide { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+             padding: var(--s-md); overflow-x: auto; color: var(--fg-secondary); font-size: 12.5px; margin: 0; }
+  .inspector-pane { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-md); }
+  .note { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); }
+</style>
+</head>
+<body>
+<a href="#content" class="skip-link">Skip to content</a>
+
+<div class="app-shell">
+  <header class="appbar">
+    <button class="btn btn--ghost btn--icon appbar__menu-btn" id="menu-btn"
+            aria-label="Open navigation" aria-expanded="false" aria-controls="drawer"><i data-icon="menu"></i></button>
+    <a class="appbar__brand wordmark" href="#">artificer</a>
+    <div class="appbar__spacer"></div>
+    <div class="appbar__actions">
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+    </div>
+  </header>
+
+  <nav class="sidenav" aria-label="Sections">
+    <div class="sidenav__group">Workspace</div>
+    <a href="#" aria-current="page"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+    <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
+    <a href="#"><i data-icon="activity"></i><span class="label">Metrics</span></a>
+    <div class="sidenav__group">Account</div>
+    <a href="#"><i data-icon="settings"></i><span class="label">Settings</span></a>
+    <a href="#"><i data-icon="log-out"></i><span class="label">Sign out</span></a>
+  </nav>
+
+  <main class="app-shell__content" id="content">
+    <h1 class="t-headline-lg">app shell.</h1>
+    <p class="meta">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width.</p>
+
+    <div class="card">
+      <h2 class="demo-h" style="margin-top:0">Normal content</h2>
+      <p class="meta">Direct children of <code>.app-shell__content</code> sit in the content column with a gutter on each side — the page body.</p>
+    </div>
+
+    <h2 class="demo-h">Full-bleed — reaches the pane edge</h2>
+    <p class="meta">A <code>.full-bleed</code> child breaks the content gutter to span the whole pane (no <code>100vw</code>, no negative margins — the same grid-bleed mechanism as the document <code>.measure-grid</code>). A scroll-snap filmstrip is the canonical use:</p>
+    <div class="full-bleed strip" aria-label="Filmstrip">
+      <div>01</div><div>02</div><div>03</div><div>04</div><div>05</div><div>06</div>
+    </div>
+
+    <h2 class="demo-h">Overflow stress test</h2>
+    <p class="meta">A <code>&lt;pre&gt;</code> with one very long unbroken line. With <code>minmax(0,1fr)</code> the content track shrinks to the viewport and the pre scrolls <em>within itself</em>; the <b class="anchor">page never scrolls sideways</b>. (Under bare <code>1fr</code> this exact element blew agentic-harnesses to ~2000px.)</p>
+    <pre class="wide">$ kubectl get pods --all-namespaces -o wide --field-selector=status.phase=Running --sort-by=.metadata.creationTimestamp | grep -E 'ingress|gateway|mesh' | awk '{print $1, $2, $7}' | column -t   # one long line</pre>
+
+    <h2 class="demo-h">Media fit — diagrams shrink, not scroll</h2>
+    <p class="meta">A fixed-size SVG inside <code>.media-fit</code> caps at its container instead of forcing sideways scroll.</p>
+    <div class="media-fit">
+      <svg width="900" height="120" viewBox="0 0 900 120" role="img" aria-label="Wide diagram that scales down">
+        <rect x="2" y="2" width="896" height="116" rx="8" fill="none" stroke="var(--border)"/>
+        <text x="450" y="66" text-anchor="middle" fill="var(--fg-secondary)" font-family="var(--font-mono)" font-size="14">900px SVG → scales to fit</text>
+      </svg>
+    </div>
+
+    <h2 class="demo-h">Inspector split — reveals a third pane ≥ 1200px</h2>
+    <p class="meta"><code>.split-pane--inspector</code> stacks below 800, is master/detail 800–1200, and reveals the inspector pane at <code>--bp-wide</code>. All tracks <code>minmax(0,1fr)</code> — overflow-safe.</p>
+    <div class="split-pane--inspector">
+      <div class="inspector-pane">List</div>
+      <div class="inspector-pane">Detail</div>
+      <div class="inspector-pane">Inspector <span class="note">(≥1200px)</span></div>
+    </div>
+    <div style="height:var(--s-2xl)"></div>
+  </main>
+</div>
+
+<!-- Off-canvas drawer — the mobile nav (canonical .nav-drawer is position:fixed). -->
+<div class="nav-scrim" id="scrim"></div>
+<aside class="nav-drawer" id="drawer" aria-label="Sections" aria-hidden="true" inert>
+  <nav class="sidenav">
+    <div class="sidenav__group">Workspace</div>
+    <a href="#"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+    <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
+    <a href="#"><i data-icon="activity"></i><span class="label">Metrics</span></a>
+    <div class="sidenav__group">Account</div>
+    <a href="#"><i data-icon="settings"></i><span class="label">Settings</span></a>
+    <a href="#"><i data-icon="log-out"></i><span class="label">Sign out</span></a>
+  </nav>
+</aside>
+
+<script src="artificer-focus.js" defer></script>
+<script>
+  // Drawer toggle — [data-nav-open] on <body> drives the canonical scrim/drawer
+  // transitions; focus is trapped while open and the panel is inert when closed.
+  (function () {
+    var btn = document.getElementById('menu-btn');
+    var scrim = document.getElementById('scrim');
+    var drawer = document.getElementById('drawer');
+    var release = null;
+    function setOpen(on) {
+      document.body.toggleAttribute('data-nav-open', on);
+      btn.setAttribute('aria-expanded', String(on));
+      drawer.toggleAttribute('inert', !on);
+      drawer.setAttribute('aria-hidden', String(!on));
+      if (on && window.ArtificerFocus) {
+        release = ArtificerFocus.trap(drawer, { onEscape: function () { setOpen(false); } });
+      } else if (release) { release(); release = null; btn.focus(); }
+    }
+    btn.addEventListener('click', function () { setOpen(!document.body.hasAttribute('data-nav-open')); });
+    scrim.addEventListener('click', function () { setOpen(false); });
+  })();
+</script>
+</body>
+</html>

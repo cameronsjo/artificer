@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Typography</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); }
+  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 40px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-sans); font-size: 17px; line-height: 1.6; color: var(--fg-secondary); max-width: 62ch; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 22px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .sub { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--fg-secondary); letter-spacing: 0; text-transform: none; }
+  .section-intro { font-family: var(--font-sans); font-size: 14px; color: var(--fg-secondary); line-height: 1.6; max-width: 62ch; margin: 0 0 var(--s-md); }
+
+  /* ── Typeface cards ── */
+  .face {
+    background: var(--bg-raised);
+    border-radius: var(--radius-md);
+    border-left: 2px solid var(--accent);
+    padding: var(--s-lg) var(--s-xl);
+    margin-bottom: var(--s-md);
+  }
+  .face__header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--s-sm); margin-bottom: var(--s-md); }
+  .face__name { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; }
+  .face__role { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); }
+  .face__sample { font-size: 44px; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: var(--s-md); color: var(--fg); }
+  .face__pangram { font-family: var(--font-sans); font-size: 16px; line-height: 1.55; color: var(--fg-secondary); max-width: 60ch; margin: 0 0 var(--s-md); }
+  .face__weights { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s-md); }
+  .face__weight { display: flex; flex-direction: column; gap: 4px; }
+  .face__weight .label { font-family: var(--font-sans); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-disabled); }
+  .face__weight .specimen { font-size: 20px; line-height: 1.25; color: var(--fg); }
+  .face__numerals { font-size: 22px; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .face__numerals.prop { font-variant-numeric: normal; }
+
+  /* Specific face font-family bindings */
+  .face--quattro .face__sample,
+  .face--quattro .face__weight .specimen,
+  .face--quattro .face__numerals { font-family: 'iA Writer Quattro', 'Iowan Old Style', serif; }
+  .face--quattro-s .face__sample,
+  .face--quattro-s .face__weight .specimen,
+  .face--quattro-s .face__numerals { font-family: 'iA Writer Quattro S', 'iA Writer Quattro', 'Iowan Old Style', serif; }
+  .face--quattro-v .face__sample,
+  .face--quattro-v .face__weight .specimen,
+  .face--quattro-v .face__numerals { font-family: 'iA Writer Quattro V', 'iA Writer Quattro', 'Iowan Old Style', serif; }
+  .face--jetbrains .face__sample,
+  .face--jetbrains .face__weight .specimen,
+  .face--jetbrains .face__numerals { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* ── Surface decision card ── */
+  .surface-pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  .surface-pick .surf { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .surface-pick .surf__kind { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+  .surface-pick .surf__name { font-family: var(--font-mono); font-weight: 700; font-size: 22px; margin-bottom: var(--s-sm); color: var(--fg); }
+  .surface-pick .surf__sample { padding: var(--s-md); background: var(--bg); border-radius: var(--radius-sm); margin-bottom: var(--s-sm); }
+  .surface-pick .surf__sample.tool { font-family: var(--font-mono); font-size: 14px; line-height: 1.55; color: var(--fg); }
+  .surface-pick .surf__sample.tool .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--fg-secondary); letter-spacing: 0.04em; }
+  .surface-pick .surf__sample.tool .val { color: var(--accent); }
+  .surface-pick .surf__sample.doc { font-family: var(--font-sans); font-size: 15px; line-height: 1.6; color: var(--fg); }
+  .surface-pick .surf__rule { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); line-height: 1.55; }
+  @media (max-width:760px) { .surface-pick { grid-template-columns: 1fr; } }
+
+  /* ── Scale ── */
+  .spec { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display: grid; grid-template-columns: 240px 1fr; gap: var(--s-lg); align-items: center; margin-bottom: var(--s-sm); }
+  .spec .meta { font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); line-height: 1.55; }
+  .spec .meta b { color: var(--fg); display: block; font-family: var(--font-sans); font-weight: 700; font-size: 13px; }
+  .spec .meta .stack { display: block; color: var(--fg-secondary); margin-top: 4px; }
+  .spec .meta .vars { color: var(--accent); display: block; margin-top: 6px; font-size: 11px; }
+  @media (max-width:640px) { .spec { grid-template-columns: 1fr; } }
+
+  /* ── Anchor demo ── */
+  .anchor-demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); }
+  .anchor-demo p { margin: 0 0 var(--s-md); font-family: var(--font-sans); font-size: 15px; line-height: 1.6; max-width: 62ch; }
+  .anchor-demo p:last-child { margin-bottom: 0; }
+  .anchor-demo .label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+
+  /* ── Scan test ── */
+  .scan-test { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  .scan-test .col { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .scan-test .label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: var(--s-md); font-weight: 500; }
+  .scan-test .bad .label { color: var(--urgent); }
+  .scan-test .good .label { color: var(--success); }
+  .scan-test p { font-family: var(--font-sans); font-size: 14px; line-height: 1.6; margin: 0; }
+  @media (max-width:640px) { .scan-test { grid-template-columns: 1fr; } }
+
+  /* ── Rules block ── */
+  .rules { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .rules ul { margin: 0; padding-left: 18px; }
+  .rules li { margin-bottom: 8px; font-family: var(--font-sans); font-size: 14px; line-height: 1.6; }
+  .rules li::marker { color: var(--accent); }
+
+  /* ── Numerals comparison ── */
+  .nums-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  .nums-col { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .nums-col .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+  .nums-col .sub { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .nums-col table { width: 100%; border-collapse: collapse; }
+  .nums-col td { padding: 6px 0; font-size: 17px; color: var(--fg); border-bottom: 1px solid var(--border); }
+  .nums-col td:last-child { text-align: right; color: var(--accent); }
+  .nums-col.prop td:last-child { font-family: 'iA Writer Quattro', 'Iowan Old Style', serif; font-variant-numeric: normal; }
+  .nums-col.tab td:last-child { font-family: 'iA Writer Quattro S', 'iA Writer Quattro', 'Iowan Old Style', serif; font-variant-numeric: tabular-nums; }
+  @media (max-width:640px) { .nums-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+  <span class="dot"></span><span data-theme-label>Dark</span>
+</button>
+
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Typography</div>
+  <h1>typography<span class="amp">.</span></h1>
+  <p class="lede">Two families, two surfaces. <span class="anchor" style="font-family:var(--font-mono)">JetBrains Mono</span> for tools — terminals, dashboards, configuration. <span class="anchor">iA Writer Quattro</span> for documents — READMEs, design specs, prose. Pick by <span class="anchor">surface kind</span> before you pick by element.</p>
+
+  <section>
+    <h2><span class="num">01</span> The first decision <span class="sub">— is this a tool or a document?</span></h2>
+    <p class="section-intro">Body face is set by surface kind, not by element. If the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro. If it's mostly chrome around data, it's a tool — set body in JetBrains. Mixing within a project is normal.</p>
+    <div class="surface-pick">
+      <div class="surf">
+        <div class="surf__kind">Tool surface</div>
+        <div class="surf__name">JetBrains Mono</div>
+        <div class="surf__sample tool">
+          <div><span class="label">build/main</span> · <span class="val">v0.6.1</span> · 12 commits ahead</div>
+          <div><span class="label">deploy</span>: <span class="val">artificer-prod-eu-west-1</span></div>
+          <div><span class="label">last sync</span>: 14:02:38 UTC</div>
+        </div>
+        <p class="surf__rule">Dashboards, terminals, settings panels, command palettes, data tables, IDE chrome. Labels and microcopy still stay in Quattro for readability — that's the only proportional intrusion.</p>
+      </div>
+      <div class="surf">
+        <div class="surf__kind">Document surface</div>
+        <div class="surf__name" style="font-family:'iA Writer Quattro', serif; font-size:24px;">iA Writer Quattro</div>
+        <div class="surf__sample doc">
+          The system rests on a two-face rule. Tool surfaces lean on monospace rhythm; document surfaces use Quattro's humanist sans. The two faces share the same x-height and a similar vertical weight, so switching mid-page doesn't break the line.
+        </div>
+        <p class="surf__rule">READMEs, design docs, reports, writeups, marketing-adjacent surfaces. Code blocks, identifiers, file paths, and numerals still render mono — those are typographic tells the reader is trained on.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> The faces</h2>
+    <p class="section-intro">Both self-hosted as WOFF2 in <code>src/assets/fonts/</code>. SIL OFL 1.1 — bundle freely. The CSS chains gracefully: if Quattro S isn't installed, the base Quattro picks up; if Quattro isn't installed, Iowan Old Style and Charter take over before system-ui.</p>
+
+    <div class="face face--jetbrains">
+      <div class="face__header">
+        <div>
+          <div class="face__name">JetBrains Mono</div>
+          <div class="face__role">Tool-surface body · code · identifiers · numerals everywhere</div>
+        </div>
+        <div class="face__role" style="text-align:right">400 · 500 · 700</div>
+      </div>
+      <div class="face__sample" style="font-weight:700">The artisan files commit·8b54393</div>
+      <p class="face__pangram">Designed by Philipp Nurullin and Konstantin Bulenkov at JetBrains for IDE use. Open ligatures, generous x-height, distinct <code>0 O o</code> / <code>1 l I</code> / <code>5 S</code>. The system's universal mono face — used for code in every surface, and as the body face on tool surfaces.</p>
+      <div class="face__weights">
+        <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">Plain prose at 400.</span></div>
+        <div class="face__weight"><span class="label">Medium · 500</span><span class="specimen" style="font-weight:500">Labels and UI 500.</span></div>
+        <div class="face__weight"><span class="label">Bold · 700</span><span class="specimen" style="font-weight:700">Headlines and 700.</span></div>
+        <div class="face__weight"><span class="label">Numerals · tabular</span><span class="specimen face__numerals">1 234 567 890</span></div>
+      </div>
+    </div>
+
+    <div class="face face--quattro">
+      <div class="face__header">
+        <div>
+          <div class="face__name">iA Writer Quattro</div>
+          <div class="face__role">Document-surface body · UI labels on tool surfaces</div>
+        </div>
+        <div class="face__role" style="text-align:right">400 · 400i · 700 · 700i</div>
+      </div>
+      <div class="face__sample" style="font-weight:700">The artist commits the draft, then prints it.</div>
+      <p class="face__pangram">Drawn by Bold Monday for iA Writer. Humanist sans with monospace rhythm baked in — letters share advance widths within ranges so prose feels metric-aware without being literally fixed-width. Lifts off the page on long-form reading the way Inter and Helvetica don't.</p>
+      <div class="face__weights">
+        <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">Calm body prose.</span></div>
+        <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">Emphasis where needed.</span></div>
+        <div class="face__weight"><span class="label">Bold · 700</span><span class="specimen" style="font-weight:700">Anchor words pull.</span></div>
+        <div class="face__weight"><span class="label">Bold Italic · 700i</span><span class="specimen" style="font-weight:700;font-style:italic">For citations.</span></div>
+      </div>
+    </div>
+
+    <div class="face face--quattro-s">
+      <div class="face__header">
+        <div>
+          <div class="face__name">iA Writer Quattro S</div>
+          <div class="face__role">Tabular-numeral variant · dashboard data · finance UI</div>
+        </div>
+        <div class="face__role" style="text-align:right">400 · 400i · 700 · 700i</div>
+      </div>
+      <div class="face__sample" style="font-weight:700">$1,247.83 · 24.6% · 11:42:08</div>
+      <p class="face__pangram">Same outlines as Quattro, with figure widths fixed for clean numeric columns. Use on stacked data, transaction tables, time displays, ratios — anywhere digits should align vertically without eye-jitter. Falls back to base Quattro transparently.</p>
+      <div class="face__weights">
+        <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">$1,234.56 · 78.90</span></div>
+        <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">$1,234.56 · 78.90</span></div>
+        <div class="face__weight"><span class="label">Bold · 700</span><span class="specimen" style="font-weight:700">$1,234.56 · 78.90</span></div>
+        <div class="face__weight"><span class="label">Bold Italic · 700i</span><span class="specimen" style="font-weight:700;font-style:italic">$1,234.56 · 78.90</span></div>
+      </div>
+    </div>
+
+    <div class="face face--quattro-v">
+      <div class="face__header">
+        <div>
+          <div class="face__name">iA Writer Quattro V</div>
+          <div class="face__role">Display variant · marquee · hero · pull-quote</div>
+        </div>
+        <div class="face__role" style="text-align:right">400 only</div>
+      </div>
+      <div class="face__sample" style="font-weight:400;font-size:52px;letter-spacing:-0.02em">Made by hand, shipped by command.</div>
+      <p class="face__pangram">Tighter spacing and more stroke contrast than the base Quattro. Use sparingly: hero headlines, section openers, pull-quotes. Don't reach for it inside body — the contrast that gives it presence at 48px also breaks long-form rhythm. Single weight (400) by design.</p>
+      <div class="face__weights">
+        <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">For when ink matters.</span></div>
+        <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">A whisper, displayed loud.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> The scale</h2>
+    <p class="section-intro">Scale entries pick their face from <code>var(--font-mono)</code> or <code>var(--font-sans)</code>, so wrapping a region in <code>.surface-tool</code> swaps the body face without touching individual rules. Sizes below show the dark-mode rendering at typical desktop.</p>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Headline · lg</b>
+        <span class="stack">JetBrains Mono 700 · 28 / 1.3 / -0.01em</span>
+        <span class="vars">.t-headline-lg</span>
+      </div>
+      <div class="t-headline-lg">Every screen has one H1.</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Headline · md</b>
+        <span class="stack">JetBrains Mono 700 · 22 / 1.35</span>
+        <span class="vars">.t-headline-md</span>
+      </div>
+      <div class="t-headline-md">Section anchors scan first.</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Body · lg</b>
+        <span class="stack">Quattro 400 · 16 / 1.65 · max 62ch</span>
+        <span class="vars">.t-body-lg</span>
+      </div>
+      <div class="t-body-lg">Reserve body-lg for the <span class="anchor">lede paragraph</span> — the thing the scanner lands on before anything else.</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Body · md</b>
+        <span class="stack">Quattro 400 · 14 / 1.6 · max 62ch</span>
+        <span class="vars">.t-body-md</span>
+      </div>
+      <div class="t-body-md">Default body copy. Lines capped at 50–70 characters, left-aligned, never justified. <span class="anchor">Rivers</span> in justified text break ADHD reading.</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Label · md</b>
+        <span class="stack">Quattro 500 · 13 / 1.3</span>
+        <span class="vars">.t-label-md</span>
+      </div>
+      <div class="t-label-md">Sidebar Labels · Tab Titles · Form Fields</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Label · sm</b>
+        <span class="stack">Quattro 400 · 12 / 1.3</span>
+        <span class="vars">.t-label-sm</span>
+      </div>
+      <div class="t-label-sm">Hints, helper text, sub-labels.</div>
+    </div>
+
+    <div class="spec">
+      <div class="meta">
+        <b>Code</b>
+        <span class="stack">JetBrains Mono 400 · 14 · accent-colored</span>
+        <span class="vars">code, .code</span>
+      </div>
+      <div><code>cameron/artificer · main · #dbbb6f</code></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> Numerals <span class="sub">— when to reach for Quattro S</span></h2>
+    <p class="section-intro">Quattro's default figures are proportional — beautiful in running prose, bad in stacked columns. Quattro S keeps the outlines, fixes the widths. Always pair tabular figures with right-aligned numeric columns, and add <code>font-variant-numeric: tabular-nums</code> to the parent.</p>
+    <div class="nums-row">
+      <div class="nums-col prop">
+        <div class="label">Proportional · iA Writer Quattro</div>
+        <div class="sub">Runs cleanly in body text. Notice digits don't line up vertically.</div>
+        <table>
+          <tr><td>Subscription</td><td>1,247.83</td></tr>
+          <tr><td>Compute</td><td>114.10</td></tr>
+          <tr><td>Storage</td><td>34.92</td></tr>
+          <tr><td>Network</td><td>879.55</td></tr>
+          <tr><td><b>Total</b></td><td><b>2,276.40</b></td></tr>
+        </table>
+      </div>
+      <div class="nums-col tab">
+        <div class="label">Tabular · iA Writer Quattro S</div>
+        <div class="sub">Columns align. Compare the <code>1</code>s and <code>3</code>s with the left card.</div>
+        <table>
+          <tr><td>Subscription</td><td>1,247.83</td></tr>
+          <tr><td>Compute</td><td>114.10</td></tr>
+          <tr><td>Storage</td><td>34.92</td></tr>
+          <tr><td>Network</td><td>879.55</td></tr>
+          <tr><td><b>Total</b></td><td><b>2,276.40</b></td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> The scan hierarchy</h2>
+    <p class="section-intro">Five levels of emphasis, in priority order. Use them deliberately — mixing levels within a paragraph is how meaning collapses.</p>
+
+    <div class="anchor-demo">
+      <div class="label">01 · Bold anchors</div>
+      <p>A paragraph with <span class="anchor">anchor words</span> highlighted. A reader scanning <span class="anchor">only the bolded words</span> should still get the sentence. Bold <span class="anchor">3–5 per paragraph</span> — more than 5 and nothing is emphasized.</p>
+    </div>
+
+    <div class="anchor-demo">
+      <div class="label">02 · Code styling</div>
+      <p>Identifiers, paths, and values render as <code>accent-colored mono</code> — the user's eye learns that <code>styled tokens</code> are things they might copy or reference, the same way terminals train that reflex.</p>
+    </div>
+
+    <div class="anchor-demo">
+      <div class="label">03 · Bold + accent = actionable</div>
+      <p>Reserve <a href="#" style="font-weight:700">bold + gold</a> for things the user can actually click or press. Overloading this level makes clickable items invisible.</p>
+    </div>
+
+    <div class="anchor-demo">
+      <div class="label">04 · Regular weight · default</div>
+      <p>Body text lives here. Plain, calm, left-aligned, capped at 50–70 characters per line. Nothing to scan for — the bolded anchors carried the weight.</p>
+    </div>
+
+    <div class="anchor-demo">
+      <div class="label">05 · Secondary color · receded</div>
+      <p style="color:var(--fg-secondary)">Timestamps, byline, metadata, captions. Visually present but clearly demoted — the brain can skip these on first pass and come back on a second read.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> Scan test</h2>
+    <p class="section-intro">Squint. Read only the bolded words. Does each paragraph make sense?</p>
+    <div class="scan-test">
+      <div class="col bad">
+        <div class="label">No anchors</div>
+        <p>The writer agent tailed the editor agent from the kitchen. It waited for the response, then sent the draft upstream for review before the build completed.</p>
+      </div>
+      <div class="col good">
+        <div class="label">Bolded anchors</div>
+        <p>The <span class="anchor">writer agent</span> tailed the <span class="anchor">editor</span> from the kitchen. It <span class="anchor">waited</span> for the response, then sent the <span class="anchor">draft upstream</span> for review before the build completed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">07</span> Paragraph rules</h2>
+    <div class="rules">
+      <ul>
+        <li><span class="anchor">Max 2–4 sentences</span> per paragraph. Longer paragraphs collapse into walls.</li>
+        <li><span class="anchor">Letter-spacing ≥ 0.01em</span>, <span class="anchor">word-spacing ≥ 0.16em</span> (WCAG 1.4.12).</li>
+        <li><span class="anchor">Inverted pyramid.</span> Summary first, supporting detail second. Never bury the lead.</li>
+        <li><span class="anchor">Left-align only.</span> No justified text — rivers disrupt ADHD reading.</li>
+        <li><span class="anchor">Line length 50–70 characters.</span> Shorter than typography-standard 75.</li>
+        <li><span class="anchor">Paragraph spacing ≥ 2× font size.</span> Air between blocks matters more than air inside them.</li>
+        <li><span class="anchor">Headings are informative.</span> Scanning only the headings should convey page structure.</li>
+        <li><span class="anchor">Italics</span> are fine for emphasis or citations in document prose; avoid in dense tool body where rhythm matters most.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">08</span> Font stack fallbacks</h2>
+    <div class="spec">
+      <div class="meta">
+        <b>--font-sans</b>
+        <span class="stack">iA Writer Quattro S · iA Writer Quattro V · iA Writer Quattro · Iowan Old Style · Charter · Source Sans 3 · system-ui</span>
+        <span class="vars">document body, labels, microcopy</span>
+      </div>
+      <div class="t-body-md">Body face on document surfaces. If Quattro S is installed (tabular figures), it preempts the base Quattro everywhere — useful for dashboards that mix prose and stacked data.</div>
+    </div>
+    <div class="spec">
+      <div class="meta">
+        <b>--font-mono</b>
+        <span class="stack">JetBrains Mono · Berkeley Mono · ui-monospace · SF Mono · Menlo · monospace</span>
+        <span class="vars">code, identifiers, numerals; tool-surface body</span>
+      </div>
+      <div class="t-body-md" style="font-family:var(--font-mono)">Always used for code blocks, paths, and numeric IDs. Also the body face when a region is wrapped in <code>.surface-tool</code> — the surface swap is one class, not per-element.</div>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>

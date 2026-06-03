@@ -1,0 +1,45 @@
+name: CI
+
+# Lint + test gate for PRs and pushes to main. Distinct from release-npm.yml
+# (tag-gated publish). Wires the prevention guardrails so the brandPurple class
+# of drift (#59) can't ship again: contrast (#62), palette drift (#61), version
+# sync (#66). The scripts use only Node built-ins (zero deps), so there is no
+# install step. (lint:tokens is intentionally NOT gated yet — it flags
+# pre-existing un-`/* tuned */`-marked padding; needs its own cleanup pass.)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Syntax contrast gate (#62)
+        run: npm run check:contrast
+
+      - name: Palette-drift lint (#61)
+        run: npm run lint:palette
+
+      - name: Version sync check (#66)
+        run: npm run check:version
+
+      - name: live-spec mirror parity (#78)
+        run: npm run check:livespec

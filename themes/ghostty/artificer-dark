@@ -1,0 +1,39 @@
+# Artificer Dark — Ghostty theme
+# Ghostty-rooted spine, Jazz Age accents
+# Drop in: ~/.config/ghostty/themes/artificer-dark
+# Then in config:  theme = artificer-dark
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+background = 292c33
+foreground = e8e6e1
+
+cursor-color = dbbb6f
+cursor-text  = 292c33
+
+selection-background = c4932a
+selection-foreground = 20203e
+
+# ANSI 0–7 (normal)
+# Invariant: positions 4 (normal blue) and 12 (bright blue) must be a
+# brightness pair on the same hue. Markdown renderers emit bright-blue
+# for inline code; sibling hues (e.g. rose + peach) make inline code
+# render a visibly different color than surrounding text.
+palette = 0=292c33
+palette = 1=a04540
+palette = 2=4a8a5e
+palette = 3=dbbb6f
+palette = 4=9fb6c4
+palette = 5=9070d0
+palette = 6=7da6a4
+palette = 7=e8e6e1
+
+# ANSI 8–15 (bright)
+palette = 8=666666
+palette = 9=b85a55
+palette = 10=5fa073
+palette = 11=e3c885
+palette = 12=b8cad4
+palette = 13=b095e0
+palette = 14=9bc1bf
+palette = 15=f5ead0

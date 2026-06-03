@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Spacing &amp; Depth</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 900px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  .scale { display: flex; flex-direction: column; gap: var(--s-sm); }
+  .scale .row { display: grid; grid-template-columns: 100px 80px 1fr; gap: var(--s-md); align-items: center; background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-sm) var(--s-md); }
+  .scale .name { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--accent); }
+  .scale .val { font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); }
+  .scale .bar { height: 14px; background: var(--accent-fill); border-radius: 2px; }
+
+  .radii { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--s-md); }
+  .radii .r { background: var(--bg-raised); padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-md); align-items: flex-start; border-radius: var(--radius-md); }
+  .radii .box { width: 80px; height: 80px; background: var(--accent-fill); }
+  .radii .meta b { font-family: var(--font-mono); font-weight: 700; font-size: 13px; display: block; }
+  .radii .meta span { font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); }
+
+  .depth { background: var(--bg); border-radius: var(--radius-md); padding: 40px; border: 1px solid var(--border); }
+  .layer { padding: 14px 18px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 13px; margin-bottom: 14px; }
+  .l-base { background: var(--bg); border:1px solid var(--border); }
+  .l-raised { background: var(--bg-raised); }
+  .l-overlay { background: var(--bg-overlay); box-shadow: var(--shadow-overlay); }
+  .l-inactive { background: var(--bg-inactive); color: var(--fg-secondary); }
+
+  .caps { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .caps ul { margin: 0; padding-left: 18px; }
+  .caps li { margin-bottom: 6px; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; }
+  .caps li::marker { color: var(--accent); }
+
+  .disclosure { display:grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-md); }
+  .disclosure .d { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display:flex; flex-direction: column; gap: 6px; }
+  .disclosure .n { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: var(--accent); }
+  .disclosure .t { font-family: var(--font-mono); font-weight: 700; font-size: 14px; }
+  .disclosure .x { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.5; }
+  @media (max-width:640px){.disclosure{grid-template-columns:1fr}.radii{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Spacing &amp; Depth</div>
+  <h1>spacing &amp; depth<span class="amp">.</span></h1>
+  <p class="lede">An <span class="anchor">8px base grid</span>, with a 4px half-step. Generous padding — <span class="anchor">content should never feel cramped</span>. If it does, there's too much content.</p>
+
+  <section>
+    <h2><span class="num">01</span> Scale</h2>
+    <div class="scale">
+      <div class="row"><span class="name">--s-xs</span><span class="val">4px</span><span class="bar" style="width:4px"></span></div>
+      <div class="row"><span class="name">--s-sm</span><span class="val">8px</span><span class="bar" style="width:8px"></span></div>
+      <div class="row"><span class="name">--s-md</span><span class="val">16px</span><span class="bar" style="width:16px"></span></div>
+      <div class="row"><span class="name">--s-lg</span><span class="val">24px</span><span class="bar" style="width:24px"></span></div>
+      <div class="row"><span class="name">--s-xl</span><span class="val">32px</span><span class="bar" style="width:32px"></span></div>
+      <div class="row"><span class="name">--s-2xl</span><span class="val">48px</span><span class="bar" style="width:48px"></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Radii</h2>
+    <div class="radii">
+      <div class="r"><div class="box" style="border-radius:4px"></div><div class="meta"><b>--radius-sm · 4px</b><span>Buttons, inputs, badges</span></div></div>
+      <div class="r"><div class="box" style="border-radius:8px"></div><div class="meta"><b>--radius-md · 8px</b><span>Cards, panels</span></div></div>
+      <div class="r"><div class="box" style="border-radius:12px"></div><div class="meta"><b>--radius-lg · 12px</b><span>Overlays only (rare)</span></div></div>
+    </div>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-top:var(--s-md)"><span class="anchor">Never mix</span> rounded and sharp corners in one view. Pick the radius for the surface type and commit.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> Depth — tonal, not shadowed</h2>
+    <div class="depth">
+      <div class="layer l-base">Base · <code>--bg #292C33</code></div>
+      <div class="layer l-raised">Raised · <code>--bg-raised #313540</code></div>
+      <div class="layer l-overlay">Overlay · <code>--bg-overlay #3C4150</code> · <span style="color:var(--fg-secondary)">shadow permitted</span></div>
+      <div class="layer l-inactive">Inactive · <code>--bg-inactive #1D1F21</code></div>
+    </div>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-top:var(--s-md)">Depth through <span class="anchor">tonal layers</span>. Shadows are banned <em>except</em> on overlays (modals, palette, dropdowns), where a subtle <code>0 4px 12px rgba(0,0,0,.35)</code> is permitted.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span> Density caps</h2>
+    <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">AuDHD working memory ceilings. Blow past these and the UI becomes noise.</p>
+    <div class="caps">
+      <ul>
+        <li><span class="anchor">Command palette:</span> 5–7 items visible. Frequent/recent first. Type to filter.</li>
+        <li><span class="anchor">Sidebar items:</span> 8–10 max. Active item pinned to view.</li>
+        <li><span class="anchor">Notification stack:</span> 3 visible. Count badge for overflow.</li>
+        <li><span class="anchor">Dropdown / menu:</span> 7 max before grouping with labeled dividers.</li>
+        <li><span class="anchor">Any list before "Show more":</span> 5 items. Collapsed by default.</li>
+        <li><span class="anchor">Form fields per step:</span> 3–5. Multi-step wizard for anything longer.</li>
+        <li><span class="anchor">Top-level nav:</span> 5–6. Beyond that, add search.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span> Progressive disclosure</h2>
+    <div class="disclosure">
+      <div class="d">
+        <span class="n">LEVEL 01</span>
+        <span class="t">Visible by default</span>
+        <span class="x">Active item, current state, primary action. What the user came here to do.</span>
+      </div>
+      <div class="d">
+        <span class="n">LEVEL 02</span>
+        <span class="t">One keystroke away</span>
+        <span class="x">Related options, recent history, secondary actions. Revealed on demand.</span>
+      </div>
+      <div class="d">
+        <span class="n">LEVEL 03</span>
+        <span class="t">Intentional search</span>
+        <span class="x">Settings, rare features, full logs. Only found by going looking.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span> Motion</h2>
+    <div class="caps">
+      <ul>
+        <li><span class="anchor">--dur-instant · 80ms</span> — micro state changes (hover color).</li>
+        <li><span class="anchor">--dur-fast · 160ms</span> — most transitions. The default.</li>
+        <li><span class="anchor">--dur-max · 300ms</span> — ceiling. If the user notices, it's too slow.</li>
+        <li><span class="anchor">Ease:</span> <code>cubic-bezier(0.2, 0.7, 0.3, 1)</code> — quick out, calm in.</li>
+        <li><span class="anchor">Honor prefers-reduced-motion.</span> Durations collapse to 0. No exceptions.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+</body>
+</html>

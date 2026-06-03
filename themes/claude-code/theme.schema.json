@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claude Code Theme",
+  "description": "Schema for Claude Code custom themes (~/.claude/themes/*.json). Requires Claude Code v2.1.118 or later. Token list reverse-engineered from the 2.1.126 binary; ~35 tokens are officially documented at https://code.claude.com/docs/en/terminal-config#color-token-reference and the rest are internal but reachable via overrides. Unknown tokens and invalid color values are silently ignored at runtime, so a typo cannot break rendering — but this schema flags them so you catch typos in your editor.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this schema for editor autocomplete and validation."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display label shown in /theme. Defaults to the filename slug."
+    },
+    "base": {
+      "type": "string",
+      "default": "dark",
+      "description": "Built-in preset the theme starts from. Tokens not listed in `overrides` fall through to the base preset. Defaults to `dark`.",
+      "enum": [
+        "dark",
+        "light",
+        "dark-daltonized",
+        "light-daltonized",
+        "dark-ansi",
+        "light-ansi"
+      ]
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Map of color token names to color values. Tokens not listed fall through to the base preset.",
+      "additionalProperties": false,
+      "properties": {
+        "claude": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Primary brand accent, used for the spinner and assistant label."
+        },
+        "claudeShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Lighter color paired with `claude` in the spinner's animated gradient."
+        },
+        "claudeBlue_FOR_SYSTEM_SPINNER": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Blue variant of the brand accent used by the system spinner; pairs with `claudeBlueShimmer_FOR_SYSTEM_SPINNER`."
+        },
+        "claudeBlueShimmer_FOR_SYSTEM_SPINNER": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Lighter shimmer paired with `claudeBlue_FOR_SYSTEM_SPINNER`."
+        },
+        "text": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Default foreground text."
+        },
+        "inverseText": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Text drawn on top of a colored background, such as status badges."
+        },
+        "inactive": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Secondary text such as hints, timestamps, and disabled items."
+        },
+        "inactiveShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer variant of `inactive` for animated gradients."
+        },
+        "subtle": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Faint borders and de-emphasized secondary text."
+        },
+        "permission": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Dialog borders, including permission prompts and pickers."
+        },
+        "permissionShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer variant of `permission` for animated gradients."
+        },
+        "remember": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Memory and `CLAUDE.md` indicators."
+        },
+        "suggestion": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Suggestion-tier UI accents (autocomplete prompts, hint banners)."
+        },
+        "background": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. General background fill for surfaces that opt into a color (rare)."
+        },
+        "success": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Success messages and passing checks."
+        },
+        "error": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Error messages and failures."
+        },
+        "warning": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Warnings, caution messages, and the auto mode border."
+        },
+        "warningShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Lighter color paired with `warning` in animated gradients."
+        },
+        "merged": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Merged pull request status."
+        },
+        "promptBorder": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Input box border in the default permission mode."
+        },
+        "promptBorderShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer variant of `promptBorder` for animated gradients."
+        },
+        "planMode": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Plan mode accent and border."
+        },
+        "autoAccept": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Accept-edits mode accent and border."
+        },
+        "bashBorder": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Input box border when entering a `!` shell command."
+        },
+        "ide": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. IDE connection indicator."
+        },
+        "fastMode": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Fast mode indicator."
+        },
+        "fastModeShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer variant of `fastMode` for animated gradients."
+        },
+        "diffAdded": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Background of added lines."
+        },
+        "diffRemoved": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Background of removed lines."
+        },
+        "diffAddedDimmed": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Background of unchanged context near added lines."
+        },
+        "diffRemovedDimmed": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Background of unchanged context near removed lines."
+        },
+        "diffAddedWord": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Word-level highlight within an added line."
+        },
+        "diffRemovedWord": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Word-level highlight within a removed line."
+        },
+        "userMessageBackground": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented (fullscreen mode only). Background behind your messages in the transcript."
+        },
+        "userMessageBackgroundHover": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Hover-state variant of `userMessageBackground`."
+        },
+        "messageActionsBackground": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Background fill behind per-message action affordances."
+        },
+        "selectionBg": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented (fullscreen mode only). Background of text selected with the mouse."
+        },
+        "bashMessageBackgroundColor": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Background fill for shell-command (`!`) messages in fullscreen mode."
+        },
+        "memoryBackgroundColor": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Background fill for memory / `CLAUDE.md` annotations in fullscreen mode."
+        },
+        "rate_limit_fill": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Filled portion of the rate-limit usage bar."
+        },
+        "rate_limit_empty": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Empty portion of the rate-limit usage bar."
+        },
+        "briefLabelYou": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. \"You\" label color in brief / compact transcript mode."
+        },
+        "briefLabelClaude": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. \"Claude\" label color in brief / compact transcript mode."
+        },
+        "professionalBlue": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Anthropic-blue brand accent used in marketing surfaces (login screens, billing UI)."
+        },
+        "chromeYellow": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Yellow accent used in marketing surfaces."
+        },
+        "clawd_body": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Body color for the Clawd mascot easter-egg art."
+        },
+        "clawd_background": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Background color behind the Clawd mascot easter-egg art."
+        },
+        "rainbow_red": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Red stop in the rainbow palette (animated celebration sequences)."
+        },
+        "rainbow_orange": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Orange stop in the rainbow palette."
+        },
+        "rainbow_yellow": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Yellow stop in the rainbow palette."
+        },
+        "rainbow_green": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Green stop in the rainbow palette."
+        },
+        "rainbow_blue": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Blue stop in the rainbow palette."
+        },
+        "rainbow_indigo": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Indigo stop in the rainbow palette."
+        },
+        "rainbow_violet": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Violet stop in the rainbow palette."
+        },
+        "rainbow_red_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_red`."
+        },
+        "rainbow_orange_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_orange`."
+        },
+        "rainbow_yellow_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_yellow`."
+        },
+        "rainbow_green_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_green`."
+        },
+        "rainbow_blue_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_blue`."
+        },
+        "rainbow_indigo_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_indigo`."
+        },
+        "rainbow_violet_shimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer paired with `rainbow_violet`."
+        },
+        "red_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: red`. See https://code.claude.com/docs/en/sub-agents."
+        },
+        "blue_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: blue`."
+        },
+        "green_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: green`."
+        },
+        "yellow_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: yellow`."
+        },
+        "purple_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: purple`."
+        },
+        "orange_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: orange`."
+        },
+        "pink_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: pink`."
+        },
+        "cyan_FOR_SUBAGENTS_ONLY": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Documented. Color drawn for subagents declared with `color: cyan`."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "colorValue": {
+      "type": "string",
+      "description": "A color in one of: `#rrggbb`, `#rgb`, `rgb(r,g,b)`, `ansi256(n)` (n = 0–255), or `ansi:<name>` where <name> is one of the 16 standard ANSI names (red, green, blue, yellow, magenta, cyan, white, black, plus their `Bright` variants).",
+      "oneOf": [
+        {
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "description": "Hex RGB, e.g. `#a89278`."
+        },
+        {
+          "pattern": "^#[0-9a-fA-F]{3}$",
+          "description": "Short hex RGB, e.g. `#a87`."
+        },
+        {
+          "pattern": "^rgb\\(\\s*(0|[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-5])\\s*,\\s*(0|[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-5])\\s*\\)$",
+          "description": "Functional RGB, e.g. `rgb(168, 146, 120)`."
+        },
+        {
+          "pattern": "^ansi256\\((0|[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-5])\\)$",
+          "description": "256-color ANSI palette index, e.g. `ansi256(180)`."
+        },
+        {
+          "pattern": "^ansi:(red|green|blue|yellow|magenta|cyan|white|black)(Bright)?$",
+          "description": "Named ANSI color, e.g. `ansi:cyanBright`."
+        }
+      ]
+    }
+  }
+}

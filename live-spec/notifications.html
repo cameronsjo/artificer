@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Notifications</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 900px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  .note { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.6; max-width: 62ch; margin-top: var(--s-md); }
+
+  .tier { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); display: grid; grid-template-columns: 160px 1fr; gap: var(--s-lg); align-items: start; }
+  .tier .side { display: flex; flex-direction: column; gap: 4px; }
+  .tier .n { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; }
+  .tier.urgent .n { color: var(--urgent); }
+  .tier.attention .n { color: var(--attention); }
+  .tier.info .n { color: var(--accent); }
+  .tier.bg .n { color: var(--fg-secondary); }
+  .tier .t { font-family: var(--font-mono); font-weight: 700; font-size: 15px; }
+  .tier .d { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.55; }
+  .tier .body { display: flex; flex-direction: column; gap: var(--s-sm); }
+
+  .toast { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; border: 1px solid var(--border); }
+  .toast.urgent { border-color: var(--urgent); background: var(--bg); }
+  .toast.attention { border-color: var(--attention); background: var(--bg); }
+  .toast.info { border-color: var(--accent); background: var(--bg); }
+  .toast.bg { background: var(--bg); color: var(--fg-secondary); }
+  .toast .i { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+  .toast.urgent .i { background: var(--urgent-fill); }
+  .toast.attention .i { background: var(--attention-fill); }
+  .toast.info .i { background: var(--accent-fill); }
+  .toast.bg .i { background: var(--border); }
+  .toast b { color: var(--fg); }
+  .toast .act { margin-left: auto; }
+
+  @media (max-width:640px){.tier{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Notifications</div>
+  <h1>notifications<span class="amp">.</span></h1>
+  <p class="lede">Four tiers, sorted by <span class="anchor">action required</span>. If a message doesn't need action, it <span class="anchor">never interrupts</span> — badge it silently instead.</p>
+
+  <section>
+    <h2><span class="num">01</span> The four tiers</h2>
+
+    <div class="tier urgent">
+      <div class="side">
+        <span class="n">TIER 01 · URGENT</span>
+        <span class="t">Blocking</span>
+        <span class="d">Error, failed build, destructive confirmation. Persists until dismissed. Desktop notification permitted.</span>
+      </div>
+      <div class="body">
+        <div class="toast urgent"><span class="i"></span><span><b>Build failed.</b> <code>artificer.css</code> missing close brace at line 214. <a href="#">Jump to line ↗</a></span><button class="btn btn--ghost act">Dismiss</button></div>
+      </div>
+    </div>
+
+    <div class="tier attention">
+      <div class="side">
+        <span class="n">TIER 02 · ATTENTION</span>
+        <span class="t">Look when you can</span>
+        <span class="d">Agent waiting, review needed. Pane ring + sidebar badge. Persists until addressed. No desktop popup.</span>
+      </div>
+      <div class="body">
+        <div class="toast attention"><span class="i"></span><span><b>Editor agent waiting.</b> 2 inline comments on <code>writer.md</code> need a reply.</span><button class="btn btn--ghost act">Open</button></div>
+      </div>
+    </div>
+
+    <div class="tier info">
+      <div class="side">
+        <span class="n">TIER 03 · INFO</span>
+        <span class="t">Task complete</span>
+        <span class="d">Subtle sidebar badge only. Auto-dismiss after 5 seconds. Pause timer on hover.</span>
+      </div>
+      <div class="body">
+        <div class="toast info"><span class="i"></span><span><b>Build shipped.</b> <code>v0.1.3</code> live on staging.</span></div>
+      </div>
+    </div>
+
+    <div class="tier bg">
+      <div class="side">
+        <span class="n">TIER 04 · BACKGROUND</span>
+        <span class="t">No notification</span>
+        <span class="d">Progress, status. Visible only in the status area if actively checked. Never announces itself.</span>
+      </div>
+      <div class="body">
+        <div class="toast bg"><span class="i"></span><span>Syncing <code>agents/</code> · 12 of 48 files.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Stack rules</h2>
+    <div style="background:var(--bg-raised);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:var(--s-lg)">
+      <ul style="margin:0;padding-left:18px;font-family:var(--font-mono);font-size:14px;line-height:1.7">
+        <li><span class="anchor">3 visible max.</span> Overflow → count badge ("+4 more").</li>
+        <li><span class="anchor">Oldest auto-dismiss</span> first (info and background tiers only).</li>
+        <li><span class="anchor">Pause timers on hover/focus.</span> Don't punish the user for reading slowly.</li>
+        <li><span class="anchor">Notification history</span> so missed items are recoverable.</li>
+        <li><span class="anchor">Never role="alert"</span> for non-urgent messages.</li>
+        <li><span class="anchor">One primary action</span> per toast. Secondary is "dismiss."</li>
+      </ul>
+    </div>
+    <p class="note">The guiding rule: if the user wouldn't take an action, don't show a toast. <span class="anchor">Badge it silently</span> and move on.</p>
+  </section>
+</main>
+</body>
+</html>

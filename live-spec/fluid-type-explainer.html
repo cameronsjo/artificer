@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Artificer · fixed vs fluid type</title>
+<link rel="stylesheet" href="artificer.css" />
+<style>
+  body { margin: 0; }
+  main { max-width: 920px; margin: 0 auto; padding: 48px 24px 96px; }
+  .crumb { font-family: var(--font-sans); font-size: var(--t-label-sm-size); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-md); }
+  .lede { color: var(--fg-secondary); max-width: 64ch; }
+
+  /* The control */
+  .control { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); margin: var(--s-xl) 0; }
+  .control__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-md); margin-bottom: var(--s-sm); }
+  .control__label { font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500; }
+  .control__val { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--fg-disabled); margin-top: 6px; }
+
+  /* Side-by-side */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); min-height: 220px; display: flex; flex-direction: column; }
+  .col--fluid { border-color: var(--accent); }
+  .col__tag { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; margin-bottom: var(--s-xs); }
+  .col--fixed .col__tag { color: var(--fg-secondary); }
+  .col--fluid .col__tag { color: var(--accent); }
+  .col__note { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin: 0 0 var(--s-lg); min-height: 2.6em; }
+  .sample { font-family: var(--font-sans); font-weight: 700; color: var(--fg); line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 auto; }
+  .readout { font-family: var(--font-mono); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin-top: var(--s-lg); font-variant-numeric: tabular-nums; }
+  .readout b { color: var(--fg); }
+
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .tradeoff { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  @media (max-width: 720px) { .tradeoff { grid-template-columns: 1fr; } }
+  .td { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .td h3 { font-family: var(--font-mono); font-size: 14px; margin: 0 0 var(--s-sm); }
+  .td ul { margin: 0; padding-left: 1.2em; color: var(--fg-secondary); font-size: var(--t-body-md-size); line-height: 1.7; }
+  .td li b { color: var(--fg); }
+  .ruling { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); margin-top: var(--s-md); }
+  .ruling .k { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  code { font-family: var(--font-mono); font-size: .9em; color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <p class="crumb">Artificer · Decision aid · Fixed vs fluid type</p>
+  <h1 class="t-headline-lg">what "fluid type" means.</h1>
+  <p class="t-body-lg lede">Same headline, two sizing rules. <b class="anchor">Drag the slider</b> to simulate a viewport — phone to wide desktop — and watch what each does. The fixed one never moves; the fluid one breathes with the screen.</p>
+
+  <div class="control">
+    <div class="control__row">
+      <span class="control__label">Simulated viewport width</span>
+      <span class="control__val" id="wval">1280px</span>
+    </div>
+    <input id="vw" type="range" class="slider" min="360" max="1600" step="10" value="1280" aria-label="Simulated viewport width" />
+    <div class="ticks"><span>360 phone</span><span>800 tablet</span><span>1280 laptop</span><span>1600 wide</span></div>
+  </div>
+
+  <div class="cols">
+    <div class="col col--fixed">
+      <div class="col__tag">Fixed scale · today</div>
+      <p class="col__note">One value, every screen. The system's current rule.</p>
+      <p class="sample" id="fixedSample" style="font-size:28px">Quarterly review.</p>
+      <div class="readout">size: <b id="fixedSize">28px</b> · always</div>
+    </div>
+    <div class="col col--fluid">
+      <div class="col__tag">Fluid · proposed (editorial only)</div>
+      <p class="col__note">Scales between a floor and a ceiling with the viewport: <code>clamp(22px, …, 40px)</code>.</p>
+      <p class="sample" id="fluidSample" style="font-size:30px">Quarterly review.</p>
+      <div class="readout">size: <b id="fluidSize">30px</b> · 22px → 40px</div>
+    </div>
+  </div>
+
+  <h2>The tradeoff</h2>
+  <div class="tradeoff">
+    <div class="td">
+      <h3>Fixed (keep)</h3>
+      <ul>
+        <li><b>Predictable.</b> 28px is 28px — in a dense table header, a modal, a phone, a 4K monitor.</li>
+        <li><b>On-identity.</b> Artificer sets hierarchy by <b>weight + color</b>, not size. Size stays constant on purpose.</li>
+        <li><b>Cost:</b> on a very wide screen a hero title can feel a touch small; on a phone it's fine.</li>
+      </ul>
+    </div>
+    <div class="td">
+      <h3>Fluid (the option)</h3>
+      <ul>
+        <li><b>Presence.</b> A title grows on big screens (more impact) and shrinks on phones (less cramped).</li>
+        <li><b>Cost:</b> the exact size becomes a variable — harder to reason about, and it leans on <b>size</b> as hierarchy, which the system deliberately doesn't.</li>
+        <li><b>Cost:</b> on tool chrome / data it adds jitter for no reading benefit.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ruling">
+    <div class="k">Proposed ruling</div>
+    <p style="margin:0;color:var(--fg-secondary)">Keep the <b style="color:var(--fg)">fixed scale for everything operational</b> (tools, data, chrome, the core <code>--t-*</code> tokens). Allow fluid <b style="color:var(--fg)">only on editorial hero titles</b> — long-form reading surfaces (<code>.surface-editorial</code>), where reading, not operating, makes "presence on a big screen" worth the unpredictability. Written as a carve when the editorial surface lands (v0.9.0 PR B).</p>
+  </div>
+</main>
+
+<script>
+  var vw = document.getElementById('vw');
+  var wval = document.getElementById('wval');
+  var fluidSample = document.getElementById('fluidSample');
+  var fluidSize = document.getElementById('fluidSize');
+  var MIN = 22, MAX = 40, WMIN = 360, WMAX = 1600;
+  function update() {
+    var w = +vw.value;
+    wval.textContent = w + 'px';
+    var t = Math.max(0, Math.min(1, (w - WMIN) / (WMAX - WMIN)));
+    var size = Math.round((MIN + (MAX - MIN) * t) * 10) / 10;
+    fluidSample.style.fontSize = size + 'px';
+    fluidSize.textContent = size + 'px';
+  }
+  vw.addEventListener('input', update);
+  update();
+</script>
+</body>
+</html>

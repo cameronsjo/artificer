@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Whimsy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="artificer-whimsy.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<script src="artificer-whimsy.js" defer></script>
+<style>
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  h3 { font-family: var(--font-mono); font-size: 14px; margin: var(--s-lg) 0 var(--s-xs); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-xl) var(--s-lg); margin-top: var(--s-sm); }
+  .demo--center { display: flex; align-items: center; justify-content: center; min-height: 96px; gap: var(--s-md); flex-wrap: wrap; }
+  .hero-mark { font-family: var(--font-mono); font-size: 64px; letter-spacing: -0.02em; line-height: 1; }
+  .wave-mark { font-family: var(--font-mono); font-size: 48px; letter-spacing: 0.01em; line-height: 1.3; }
+  .knob-grid { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-xs) var(--s-lg); align-items: baseline; }
+  .knob-grid code:nth-child(odd) { color: var(--accent); }
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; white-space: pre-wrap; }
+  .try { display: flex; flex-direction: column; gap: var(--s-sm); max-width: 440px; }
+  .try .meta { margin: 0; }
+  .swatch-row { display: flex; gap: var(--s-sm); flex-wrap: wrap; align-items: center; }
+  .pg-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-lg); align-items: end; margin-top: var(--s-lg); }
+  .timerange [aria-pressed="true"] { background: var(--accent-fill); color: var(--on-accent); }
+  /* Demo-only: force the focus ring visible for mouse users (it normally
+     shows for keyboard focus only). Scoped to this page. */
+  .whimsy-focus.is-on::after { opacity: 1 !important; animation: whimsy-spin var(--whimsy-speed) linear infinite; }
+  .field__label .meta { font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Whimsy</p>
+  <h1 class="t-headline-lg whimsy">whimsy.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The one <b class="anchor">sanctioned exception</b> to "no looping decoration" and "no raw color." A flowing sine-wave rainbow — the feeling of an <code>ultrathink</code> shimmer — reserved for <b class="anchor">user-defined fun elements</b> and whimsical operations. It is <b class="anchor">burnished, not neon</b>: the spectrum is generated in oklch at the palette's own chroma, and its hue stops land on Artificer's real brand colors. A rainbow made of the palette, set in motion.</p>
+
+  <div class="demo demo--center">
+    <span class="whimsy whimsy--glow hero-mark">ultrathink</span>
+  </div>
+
+  <h2>The knobs</h2>
+  <p class="meta">Whimsy reads its colors from the live palette and exposes a few custom properties. Override them on any scope to retune locally — no new tokens, no hex.</p>
+  <div class="demo">
+    <div class="knob-grid t-body-md">
+      <code>--whimsy-c</code><span style="color:var(--fg-secondary)">Chroma. Default <code>0.115</code> (palette-muted). Add <code>.whimsy--vivid</code> for <code>0.21</code>.</span>
+      <code>--whimsy-l</code><span style="color:var(--fg-secondary)">Lightness. <code>0.80</code> dark · <code>0.52</code> light (auto, reads on cream).</span>
+      <code>--whimsy-speed</code><span style="color:var(--fg-secondary)">One full hue cycle. Default <code>7s</code> — calm, not frantic.</span>
+      <code>--whimsy-angle</code><span style="color:var(--fg-secondary)">Gradient direction across the glyphs. Default <code>100deg</code>.</span>
+      <code>--whimsy-rise</code><span style="color:var(--fg-secondary)">Sine-bob amplitude for the wave variant. Default <code>0.16em</code>.</span>
+      <code>--whimsy-settle-speed</code><span style="color:var(--fg-secondary)">Glacial-rest cycle. Default <code>150s</code> (~2.5 min) — motion you can't catch.</span>
+      <code>--whimsy-gradient</code><span style="color:var(--fg-secondary)">The whole palette, in one knob. <code>.whimsy--brand</code> overrides it with Artificer's tokens; set your own for anything else.</span>
+    </div>
+    <hr class="whimsy-rule" aria-hidden="true"/>
+    <div class="swatch-row">
+      <span class="whimsy" style="font-family:var(--font-mono);font-size:22px">burnished</span>
+      <span class="meta">vs</span>
+      <span class="whimsy whimsy--vivid" style="font-family:var(--font-mono);font-size:22px">vivid</span>
+    </div>
+  </div>
+
+  <h2>Two palettes</h2>
+  <p class="meta">The default is a burnished <b class="anchor">full spectrum</b> — the "normal RGB" look, kept in-family. <code>.whimsy--brand</code> swaps it for Artificer's <b class="anchor">real semantic tokens</b> (gold → rose → brand-purple → steel → green), reading the live CSS vars so it tracks light/dark for free.</p>
+  <div class="demo demo--center" style="gap:var(--s-2xl)">
+    <span class="whimsy hero-mark" style="font-size:40px">spectrum</span>
+    <span class="whimsy whimsy--brand hero-mark" style="font-size:40px">brand</span>
+  </div>
+  <p class="meta">Both are just values of one variable. Bring your own palette in a single line: <code>style="--whimsy-gradient: linear-gradient(100deg, var(--success), var(--accent), var(--success))"</code></p>
+
+  <h2>Playground</h2>
+  <p class="meta">Everything is a custom property — retune live. (Chroma only bites in spectrum mode; brand mode uses the tokens as-is.)</p>
+  <div class="demo">
+    <div class="demo--center" style="min-height:120px"><span class="hero-mark" id="pg-sample" data-whimsy="wave" style="font-size:52px">ultrathink</span></div>
+    <div class="pg-controls">
+      <div class="field">
+        <span class="field__label">Palette</span>
+        <div class="timerange" role="group" aria-label="Palette">
+          <button type="button" data-pal="spectrum" aria-pressed="true">Spectrum</button>
+          <button type="button" data-pal="brand" aria-pressed="false">Brand</button>
+          <button type="button" data-pal="silver" aria-pressed="false">Silver</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="pg-chroma">Chroma · <span class="meta" id="pg-chroma-val">0.115</span></label>
+        <input class="slider" id="pg-chroma" type="range" min="0.05" max="0.30" step="0.005" value="0.115"/>
+      </div>
+      <div class="field">
+        <label class="field__label" for="pg-speed">Speed · <span class="meta" id="pg-speed-val">7s</span></label>
+        <input class="slider" id="pg-speed" type="range" min="3" max="14" step="0.5" value="7"/>
+      </div>
+    </div>
+    <hr class="whimsy-rule whimsy-rule--sm" aria-hidden="true"/>
+    <div class="pg-controls">
+      <div class="field">
+        <span class="field__label">Effects · toggle each layer</span>
+        <div class="timerange" role="group" aria-label="Effects">
+          <button type="button" data-fx="flow" aria-pressed="true">Flow</button>
+          <button type="button" data-fx="bob"  aria-pressed="true">Bob</button>
+          <button type="button" data-fx="glow" aria-pressed="false">Glow</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label" for="pg-loops">Loops before settle · <span class="meta" id="pg-loops-val">4 loops</span></label>
+        <input class="slider" id="pg-loops" type="range" min="1" max="9" step="1" value="4"/>
+      </div>
+      <div class="field">
+        <span class="field__label">Settle into</span>
+        <div class="timerange" role="group" aria-label="Settle mode">
+          <button type="button" data-settle="static" aria-pressed="true">Static</button>
+          <button type="button" data-settle="glacial" aria-pressed="false">Glacial</button>
+          <button type="button" id="pg-replay">Replay ↻</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Patterns</h2>
+
+  <h3>01 · Flowing wordmark</h3>
+  <p class="meta">The signature. Apply <code>.whimsy</code> to a short word set large + bold. Use for the brand wordmark, a feature name, a hero moment.</p>
+  <div class="demo demo--center">
+    <span class="whimsy hero-mark" style="font-size:44px">Artificer</span>
+  </div>
+
+  <h3>02 · Sine wave (per-character bob)</h3>
+  <p class="meta">Add <code>data-whimsy="wave"</code> — <code>Whimsy.hydrate()</code> splits the text into bobbing characters so the wave travels. Degrades to a flat gradient without JS.</p>
+  <div class="demo demo--center">
+    <span class="wave-mark" data-whimsy="wave">ultracode</span>
+  </div>
+
+  <h3>03 · Rainbow rule</h3>
+  <p class="meta">A sine wave the spectrum flows through. A flourish for section breaks and celebration moments — not a default divider. <code>.whimsy-rule</code> (or <code>--sm</code>).</p>
+  <div class="demo">
+    <hr class="whimsy-rule" aria-hidden="true"/>
+    <hr class="whimsy-rule whimsy-rule--sm" aria-hidden="true" style="margin-bottom:0"/>
+  </div>
+
+  <h3>04 · Trigger word (the "ultrathink" gesture)</h3>
+  <p class="meta">Type <code>ultrathink</code> or <code>ultracode</code> below. <code>Whimsy.watch()</code> ignites the target the moment the word appears, and clears it when it's gone.</p>
+  <div class="demo" data-whimsy-scope>
+    <div class="try">
+      <label class="field__label" for="trigger-in">Prompt</label>
+      <input class="input" id="trigger-in" type="text" placeholder="try typing: ultrathink this problem" autocomplete="off"/>
+      <p class="meta">Mode: <span data-whimsy-target style="font-family:var(--font-mono);font-weight:700">standard</span></p>
+    </div>
+  </div>
+
+  <h3>05 · Celebrate (whimsical operation)</h3>
+  <p class="meta">One-shot whimsy for an operation that just succeeded — then it clears itself. <code>Whimsy.celebrate(el)</code>. A receipt with a little joy, not a parade.</p>
+  <div class="demo demo--center">
+    <button class="btn btn--secondary" id="celebrate-btn">Ship it</button>
+    <span id="celebrate-target" style="font-family:var(--font-mono);font-weight:700;font-size:20px">deploy complete</span>
+  </div>
+
+  <h3>06 · Settle (whimsy that comes to rest)</h3>
+  <p class="meta">Long-lived whimsy shouldn't loop forever. <code>Whimsy.run(el, {loops, settle})</code> flows for N hue-cycles then rests — <code>static</code> (motion off, the gradient freezes on a held slice) or <code>glacial</code> (one hue drift over <code>--whimsy-settle-speed</code> ≈ 2.5 min, bob off). The full playground above is live; this is the one-shot. Per-effect toggles ship too: <code>.whimsy--no-flow</code>, <code>.whimsy--no-bob</code>, and the opt-in <code>.whimsy--glow</code>.</p>
+  <div class="demo demo--center">
+    <span class="hero-mark" id="settle-target" data-whimsy="wave" style="font-size:34px;--whimsy-speed:3s">settling…</span>
+    <button class="btn btn--secondary" id="settle-static">Run → static</button>
+    <button class="btn btn--ghost" id="settle-glacial">Run → glacial</button>
+  </div>
+
+  <h3>07 · Silver — a metal sheen, quiet enough for headers</h3>
+  <p class="meta">The most restrained whimsy in the box. <code>.whimsy--silver</code> drops the rainbow for a near-neutral sheen: <b class="anchor">silver/grey on dark, warm graphite on cream</b>. Text must contrast its surface, so light mode inverts to ink-with-a-bone-undertone — not literal bone-on-bone. It defaults <b class="anchor">slow</b> (16s) so it reads as a sheen, not a sweep; add <code>.whimsy--no-flow</code> for a still metallic fill — <b class="anchor">the recommended header default, zero motion</b>. Try the <b class="anchor">Silver</b> palette in the playground above.</p>
+  <div class="demo">
+    <div class="stack" style="gap:var(--s-lg)">
+      <div style="display:flex;flex-direction:column;gap:var(--s-xs)">
+        <span class="meta">Static fill · no motion · recommended for headers</span>
+        <span class="whimsy whimsy--silver whimsy--no-flow" style="font-family:var(--font-mono);font-weight:700;font-size:18px;letter-spacing:.04em;text-transform:uppercase">Wiring</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--s-xs)">
+        <span class="meta">Slow sheen · 16s drift · one moving header per view, max</span>
+        <span class="whimsy whimsy--silver" style="font-family:var(--font-mono);font-weight:700;font-size:18px;letter-spacing:.04em;text-transform:uppercase">Wiring</span>
+      </div>
+    </div>
+  </div>
+  <p class="meta">A word on making it the header default: a <b class="anchor">static</b> silver fill on every header is fine — it's just a refined text color. But an <b class="anchor">animated</b> sheen on every header breaks doctrine #2 ("whimsy everywhere is wallpaper"). If you want motion, reserve it for one hero header, or trigger the sheen on <code>:hover</code> and leave headers still at rest.</p>
+
+  <h3>08 · Focus ring (the one sanctioned interactive whimsy)</h3>
+  <p class="meta">A burnished ring that <b class="anchor">circles a control</b> on <b class="anchor">hover or focus</b> — delight layered <b class="anchor">over</b> the standard focus outline, never replacing it. The system <code>:focus-visible</code> outline still does the WCAG work; this spins on top. <code>.whimsy-focus</code> on the control. This is the <b class="anchor">only</b> whimsy that touches an interactive element, and only on explicit request (§ Whimsy, doctrine #3). One per view; under reduced-motion the ring holds still but stays visible.</p>
+  <div class="demo demo--center" id="fx-demo">
+    <button class="btn btn--secondary whimsy-focus">Focus me</button>
+    <button class="btn btn--secondary whimsy-focus whimsy--brand">Brand ring</button>
+    <button class="btn btn--ghost" id="fx-toggle" type="button" aria-pressed="false">Show the ring →</button>
+    <span class="meta"><b>Hover</b> a button — or <kbd>Tab</kbd> to it — to see the ring. (<b>Show the ring</b> forces it on for touch.)</span>
+  </div>
+  <script>
+    (function () {
+      var t = document.getElementById('fx-toggle');
+      var rings = document.querySelectorAll('#fx-demo .whimsy-focus');
+      if (!t) return;
+      t.addEventListener('click', function () {
+        var on = t.getAttribute('aria-pressed') !== 'true';
+        t.setAttribute('aria-pressed', String(on));
+        t.textContent = on ? 'Hide the ring' : 'Show the ring →';
+        rings.forEach(function (b) { b.classList.toggle('is-on', on); });
+      });
+    })();
+  </script>
+
+  <h2>The doctrine</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+    <li><b class="anchor">Opt-in only.</b> Never on page chrome, nav, or anything automatic. Whimsy is something a person chose to light up.</li>
+    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper.</li>
+    <li><b class="anchor">Never on load-bearing UI.</b> No whimsy on errors, destructive actions, status, or data. It decorates delight, never function. <b class="anchor">One sanctioned exception:</b> the <code>.whimsy-focus</code> ring (pattern 08), which <em>augments</em> the standard focus outline rather than replacing it — the outline still carries the a11y signal. Reach for it only on explicit request.</li>
+    <li><b class="anchor">Burnished by default.</b> It's tuned to the palette. Reach for <code>.whimsy--vivid</code> consciously, not by reflex.</li>
+    <li><b class="anchor">Display + bold only.</b> Gradient text drops contrast — keep it large. Never set body copy in whimsy.</li>
+    <li><b class="anchor">Reduced-motion is sacred.</b> The flow stops; the burnished gradient stays. Already wired — don't undo it.</li>
+    <li><b class="anchor">Whimsy rests.</b> Anything long-lived settles after a few loops — to a static gradient or a glacial drift. A rainbow that never stops is just wallpaper; the joy is in the arrival and the coming-to-rest.</li>
+  </ol>
+
+  <h2>Wiring</h2>
+  <pre class="code-block"><span class="tok-comment">&lt;!-- after artificer.css --&gt;</span>
+&lt;<span class="tok-keyword">link</span> <span class="tok-fn">rel</span>=<span class="tok-string">"stylesheet"</span> <span class="tok-fn">href</span>=<span class="tok-string">"artificer-whimsy.css"</span>&gt;
+&lt;<span class="tok-keyword">script</span> <span class="tok-fn">src</span>=<span class="tok-string">"artificer-whimsy.js"</span> <span class="tok-fn">defer</span>&gt;&lt;/<span class="tok-keyword">script</span>&gt;
+
+<span class="tok-comment">/* signature wordmark */</span>
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">class</span>=<span class="tok-string">"whimsy"</span>&gt;ultrathink&lt;/<span class="tok-keyword">span</span>&gt;
+
+<span class="tok-comment">/* sine wave — hydrate() splits it into bobbing chars */</span>
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-whimsy</span>=<span class="tok-string">"wave"</span>&gt;ultracode&lt;/<span class="tok-keyword">span</span>&gt;
+
+<span class="tok-comment">/* the ultrathink gesture + a whimsical operation */</span>
+Whimsy.<span class="tok-fn">watch</span>(input, { triggers: [<span class="tok-string">"ultrathink"</span>] });
+Whimsy.<span class="tok-fn">celebrate</span>(el);  <span class="tok-comment">// one-shot, auto-clears</span>
+
+<span class="tok-comment">/* flow, then come to rest — for long "thinking" states */</span>
+Whimsy.<span class="tok-fn">run</span>(el, { loops: <span class="tok-string">4</span>, settle: <span class="tok-string">"glacial"</span> });
+
+<span class="tok-comment">/* toggle any one layer off: */</span>
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">class</span>=<span class="tok-string">"whimsy whimsy--no-bob"</span>&gt;flow, no bob&lt;/<span class="tok-keyword">span</span>&gt;
+
+<span class="tok-comment">/* silver header — still metallic fill, no motion */</span>
+&lt;<span class="tok-keyword">h2</span> <span class="tok-fn">class</span>=<span class="tok-string">"whimsy whimsy--silver whimsy--no-flow"</span>&gt;Wiring&lt;/<span class="tok-keyword">h2</span>&gt;</pre>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.Whimsy) {
+      Whimsy.watch(document.getElementById("trigger-in"), {
+        triggers: ["ultrathink", "ultracode"],
+        onIgnite: function (t) { t.textContent = "ultrathink"; },
+        onClear:  function (t) { t.textContent = "standard"; }
+      });
+      var btn = document.getElementById("celebrate-btn");
+      var tgt = document.getElementById("celebrate-target");
+      if (btn) btn.addEventListener("click", function () { Whimsy.celebrate(tgt, 2600); });
+
+      // Pattern 06 · Settle — one-shot run that comes to rest
+      var settleTgt = document.getElementById("settle-target");
+      var runStatic = document.getElementById("settle-static");
+      var runGlacial = document.getElementById("settle-glacial");
+      if (runStatic) runStatic.addEventListener("click", function () { Whimsy.run(settleTgt, { loops: 3, settle: "static" }); });
+      if (runGlacial) runGlacial.addEventListener("click", function () { Whimsy.run(settleTgt, { loops: 3, settle: "glacial" }); });
+    }
+
+    // Playground — pure custom-property retuning
+    var sample = document.getElementById("pg-sample");
+    var chroma = document.getElementById("pg-chroma");
+    var speed  = document.getElementById("pg-speed");
+    if (sample && chroma && speed) {
+      var settleMode = "static";
+      var cancelSettle = null;
+
+      function armSettle() {
+        if (cancelSettle) { cancelSettle(); cancelSettle = null; }
+        if (window.Whimsy) Whimsy.unsettle(sample);
+        var n = +document.getElementById("pg-loops").value;
+        var lbl = document.getElementById("pg-loops-val");
+        if (n >= 9) { lbl.textContent = "∞ — never"; return; }
+        lbl.textContent = n + (n === 1 ? " loop" : " loops");
+        if (window.Whimsy) cancelSettle = Whimsy.scheduleSettle(sample, n, settleMode);
+      }
+
+      function setChroma() {
+        sample.style.setProperty("--whimsy-c", chroma.value);
+        document.getElementById("pg-chroma-val").textContent = (+chroma.value).toFixed(3);
+      }
+      function setSpeed() {
+        sample.style.setProperty("--whimsy-speed", speed.value + "s");
+        document.getElementById("pg-speed-val").textContent = (+speed.value) + "s";
+        armSettle();   // settle timing keys off flow speed — re-arm
+      }
+      chroma.addEventListener("input", setChroma);
+      speed.addEventListener("input", setSpeed);
+
+      var palBtns = document.querySelectorAll("[data-pal]");
+      palBtns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          palBtns.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+          b.setAttribute("aria-pressed", "true");
+          var brand = b.dataset.pal === "brand";
+          var silver = b.dataset.pal === "silver";
+          sample.classList.toggle("whimsy--brand", brand);
+          sample.classList.toggle("whimsy--silver", silver);
+          chroma.disabled = brand || silver;
+        });
+      });
+
+      // Per-effect toggles — flip each layer; waking the sample re-arms settle
+      document.querySelectorAll("[data-fx]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var wasOn = b.getAttribute("aria-pressed") === "true";
+          b.setAttribute("aria-pressed", String(!wasOn));
+          if (b.dataset.fx === "flow") sample.classList.toggle("whimsy--no-flow", wasOn);
+          if (b.dataset.fx === "bob")  sample.classList.toggle("whimsy--no-bob", wasOn);
+          if (b.dataset.fx === "glow") sample.classList.toggle("whimsy--glow", !wasOn);
+          armSettle();
+        });
+      });
+
+      // Settle mode + loops + replay
+      var settleBtns = document.querySelectorAll("[data-settle]");
+      settleBtns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          settleBtns.forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+          b.setAttribute("aria-pressed", "true");
+          settleMode = b.dataset.settle;
+          armSettle();
+        });
+      });
+      document.getElementById("pg-loops").addEventListener("input", armSettle);
+      document.getElementById("pg-replay").addEventListener("click", armSettle);
+
+      armSettle();   // arm on load so the settle behavior is live
+    }
+  });
+</script>
+</body>
+</html>

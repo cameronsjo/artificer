@@ -1,0 +1,2062 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ARTIFICER · An Obsidian theme
+   Cameron's personal design system, ported to Obsidian.
+   AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
+   v0.1 · 2026
+   ═══════════════════════════════════════════════════════════════════════════
+
+   How this is structured:
+   1. @font-face blocks — JetBrains Mono + iA Writer Quattro, self-hosted.
+   2. Token blocks — :root, .theme-dark, .theme-light. Map every Artificer
+      token to its Obsidian counterpart. The system rules (#1–10) are encoded
+      as variables; bend them via Style Settings, not by editing this file.
+   3. Component overrides — sidebar, tabs, editor, callouts, search, palette,
+      modals, status bar, graph, settings.
+   4. Style Settings manifest at the bottom — the @settings block lets the
+      Style Settings community plugin expose every override as a UI control.
+
+   The non-negotiable rules from Artificer that this theme honors:
+     · Dark is default
+     · One primary CTA per screen (gold accent only on the focused action)
+     · Active panes dramatic; inactive drop to 55% opacity + desaturated
+     · Tabular numerals everywhere
+     · WCAG 2.2 AA floor; AAA on body text
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ─── Self-hosted fonts ──────────────────────────────────────────────── */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/jetbrains-mono-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/jetbrains-mono-500.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('fonts/jetbrains-mono-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro';
+  src: url('fonts/ia-writer-quattro-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro';
+  src: url('fonts/ia-writer-quattro-400-italic.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro';
+  src: url('fonts/ia-writer-quattro-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro';
+  src: url('fonts/ia-writer-quattro-700-italic.woff2') format('woff2');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
+
+/* iA Writer Quattro S — sister face, available via --font-text override */
+@font-face {
+  font-family: 'iA Writer Quattro S';
+  src: url('fonts/ia-writer-quattro-s-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro S';
+  src: url('fonts/ia-writer-quattro-s-400-italic.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro S';
+  src: url('fonts/ia-writer-quattro-s-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro S';
+  src: url('fonts/ia-writer-quattro-s-700-italic.woff2') format('woff2');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
+
+/* iA Writer Quattro V — variable face, 400 only */
+@font-face {
+  font-family: 'iA Writer Quattro V';
+  src: url('fonts/ia-writer-quattro-v-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Quattro V';
+  src: url('fonts/ia-writer-quattro-v-400-italic.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKENS — DARK (default)
+   ═══════════════════════════════════════════════════════════════════════ */
+.theme-dark {
+  /* ─── Artificer source tokens ─────────────────────────────────────── */
+  --art-bg:              #292c33;
+  --art-bg-raised:       #313540;
+  --art-bg-overlay:      #3c4150;
+  --art-bg-inactive:     #1d1f21;
+  --art-fg:              #e8e6e1;
+  --art-fg-secondary:    #c5c8c6;
+  --art-fg-disabled:     #666666;
+  --art-border:          #4a4f5c;
+
+  --art-accent:          #e0b558;
+  --art-accent-bright:   #ddb96b;
+  --art-accent-fill:     #c4932a;
+  --art-attention:       #e5afb7;
+  --art-attention-fill:  #c4808a;
+  --art-urgent:          #c08070;          /* v0.6: softened from #e8836f          */
+  --art-urgent-fill:     #a04540;          /* v0.6: brick, locked w/ system        */
+  --art-success:         #5fa073;          /* v0.6: apothecary, locked w/ system   */
+  --art-steel:           #9fb6c4;
+  --art-steel-fill:      #5a7a8a;
+  --art-brand-purple:        #c9b5e8;
+  --art-brand-purple-fill:   #3d1f7a;
+  --art-ivory:           #f5ead0;
+  --art-navy:            #0d1b2a;
+  --art-on-accent:       #0d1b2a;
+  --art-on-urgent:       #f5ead0;
+
+  /* ─── Obsidian → Artificer mapping ────────────────────────────────── */
+
+  /* Backgrounds */
+  --background-primary:           var(--art-bg);
+  --background-primary-alt:       var(--art-bg-inactive);
+  --background-secondary:         var(--art-bg-raised);
+  --background-secondary-alt:     var(--art-bg-overlay);
+  --background-modifier-hover:    color-mix(in oklch, var(--art-fg) 6%, transparent);
+  --background-modifier-active-hover: color-mix(in oklch, var(--art-accent) 14%, transparent);
+  --background-modifier-border:         var(--art-border);
+  --background-modifier-border-hover:   var(--art-fg-secondary);
+  --background-modifier-border-focus:   var(--art-accent);
+  --background-modifier-form-field:     var(--art-bg);
+  --background-modifier-error:          color-mix(in oklch, var(--art-urgent-fill) 18%, transparent);
+  --background-modifier-error-hover:    color-mix(in oklch, var(--art-urgent-fill) 28%, transparent);
+  --background-modifier-success:        color-mix(in oklch, var(--art-success) 22%, transparent);
+  --background-modifier-message:        var(--art-bg-overlay);
+
+  /* Text */
+  --text-normal:                  var(--art-fg);
+  --text-muted:                   var(--art-fg-secondary);
+  --text-faint:                   var(--art-fg-disabled);
+  --text-on-accent:               var(--art-on-accent);
+  --text-error:                   var(--art-urgent);
+  --text-success:                 var(--art-success);
+  --text-warning:                 var(--art-attention);
+  --text-accent:                  var(--art-accent);
+  --text-accent-hover:            var(--art-accent-bright);
+  --text-selection:               color-mix(in oklch, var(--art-accent-fill) 35%, transparent);
+  --text-highlight-bg:            color-mix(in oklch, var(--art-accent-fill) 28%, transparent);
+
+  /* Interactive — accent / "primary" actions */
+  --interactive-normal:           var(--art-bg-raised);
+  --interactive-hover:            color-mix(in oklch, var(--art-fg) 10%, var(--art-bg-raised));
+  --interactive-accent:           var(--art-accent-fill);
+  --interactive-accent-hover:     var(--art-accent-bright);
+
+  /* Headings */
+  --h1-color: var(--art-fg);
+  --h2-color: var(--art-fg);
+  --h3-color: var(--art-fg);
+  --h4-color: var(--art-fg-secondary);
+  --h5-color: var(--art-fg-secondary);
+  --h6-color: var(--art-fg-secondary);
+
+  /* Tags */
+  --tag-color:        var(--art-accent);
+  --tag-color-hover:  var(--art-on-accent);
+  --tag-background:   color-mix(in oklch, var(--art-accent-fill) 14%, transparent);
+  --tag-background-hover: var(--art-accent-fill);
+  --tag-border-color: transparent;
+  --tag-border-color-hover: var(--art-accent);
+  --tag-border-width: 1px;
+  --tag-padding-x:    8px;
+  --tag-padding-y:    2px;
+  --tag-radius:       4px;
+  --tag-weight:       500;
+
+  /* Links */
+  --link-color:               var(--art-accent);
+  --link-color-hover:         var(--art-accent-bright);
+  --link-decoration:          none;
+  --link-decoration-hover:    underline;
+  --link-decoration-thickness: 1px;
+  --link-external-color:        var(--art-accent);
+  --link-external-color-hover:  var(--art-accent-bright);
+  --link-unresolved-color:      var(--art-attention);
+  --link-unresolved-opacity:    0.85;
+  --link-unresolved-decoration: underline dashed;
+
+  /* Code */
+  --code-background:  var(--art-bg-inactive);
+  --code-normal:      var(--art-fg);
+  --code-comment:     var(--art-fg-disabled);
+  --code-keyword:     var(--art-brand-purple);
+  --code-string:      var(--art-success);
+  --code-value:       var(--art-attention);
+  --code-function:    var(--art-accent);
+  --code-property:    var(--art-steel);
+  --code-tag:         var(--art-brand-purple);
+  --code-operator:    var(--art-fg-secondary);
+  --code-punctuation: var(--art-fg-secondary);
+  --code-important:   var(--art-urgent);
+  --code-size:        14px;
+  --code-radius:      var(--art-radius-md, 8px);
+  --code-padding:     var(--art-s-md, 16px) var(--art-s-lg, 24px);
+
+  /* Bold / italic / highlight */
+  --bold-color:      var(--art-fg);
+  --bold-weight:     700;
+  --italic-color:    var(--art-fg);
+  --italic-weight:   400;
+  --strikethrough-color: var(--art-fg-secondary);
+
+  /* Blockquote */
+  --blockquote-background-color: transparent;
+  --blockquote-border-color:     var(--art-accent);
+  --blockquote-border-thickness: 2px;
+  --blockquote-color:            var(--art-fg-secondary);
+  --blockquote-font-style:       italic;
+
+  /* Table */
+  --table-background:               transparent;
+  --table-border-width:             1px;
+  --table-border-color:             var(--art-border);
+  --table-header-background:        transparent;
+  --table-header-background-hover:  var(--art-bg-raised);
+  --table-header-border-color:      var(--art-border);
+  --table-header-color:             var(--art-fg-secondary);
+  --table-header-weight:            500;
+  --table-row-background-hover:     var(--art-bg-raised);
+  --table-row-alt-background:       transparent;
+  --table-row-alt-background-hover: var(--art-bg-raised);
+  --table-column-alt-background:    transparent;
+  --table-column-first-border-color:var(--art-border);
+  --table-column-last-border-color: var(--art-border);
+  --table-text-size:                14px;
+  --table-text-color:               var(--art-fg);
+  --table-cell-vertical-alignment:  baseline;
+
+  /* Checkboxes (markdown task lists) */
+  --checkbox-color:        var(--art-accent-fill);
+  --checkbox-color-hover:  var(--art-accent);
+  --checkbox-marker-color: var(--art-on-accent);
+  --checkbox-border-color: var(--art-border);
+  --checkbox-border-color-hover: var(--art-fg-secondary);
+  --checkbox-border-width: 1px;
+  --checkbox-radius:       3px;
+  --checkbox-size:         16px;
+  --checklist-done-color:    var(--art-fg-disabled);
+  --checklist-done-decoration: line-through;
+
+  /* Inputs */
+  --input-height:           36px;
+  --input-radius:           4px;
+  --input-border-width:     1px;
+  --input-shadow:           none;
+  --input-shadow-hover:     none;
+
+  /* Modals + overlays */
+  --modal-background: var(--art-bg-overlay);
+  --modal-border-width: 1px;
+  --modal-border-color: var(--art-border);
+  --modal-radius:       12px;
+  --dialog-width:       480px;
+  --dialog-max-width:   90vw;
+  --prompt-input-height: 44px;
+  --prompt-border-radius: 12px;
+  --prompt-border-color:  var(--art-border);
+  --prompt-border-width:  1px;
+  --modal-shadow:         0 4px 12px rgba(0, 0, 0, 0.35);
+
+  /* Scrollbar */
+  --scrollbar-active-thumb-bg: var(--art-fg-disabled);
+  --scrollbar-bg:              transparent;
+  --scrollbar-thumb-bg:        var(--art-border);
+
+  /* Layers */
+  --layer-cover:    5;
+  --layer-sidedock: 10;
+  --layer-status-bar: 15;
+  --layer-popover:   30;
+  --layer-modal:     40;
+  --layer-notice:    50;
+  --layer-menu:      60;
+  --layer-tooltip:   70;
+  --layer-dragged-item: 80;
+
+  /* Tabs */
+  --tab-background-active: var(--art-bg);
+  --tab-text-color:        var(--art-fg-secondary);
+  --tab-text-color-active: var(--art-fg);
+  --tab-text-color-focused: var(--art-fg);
+  --tab-text-color-focused-active: var(--art-accent);
+  --tab-text-color-focused-active-current: var(--art-accent);
+  --tab-curve:             0;
+  --tab-divider-color:     var(--art-border);
+  --tab-outline-color:     var(--art-border);
+  --tab-outline-width:     1px;
+  --tab-radius:            0;
+  --tab-radius-active:     0;
+
+  /* Workspace + ribbon */
+  --titlebar-background:        var(--art-bg);
+  --titlebar-background-focused: var(--art-bg);
+  --titlebar-border-width:      1px;
+  --titlebar-border-color:      var(--art-border);
+  --titlebar-text-color:        var(--art-fg-secondary);
+  --titlebar-text-color-focused: var(--art-fg);
+  --titlebar-text-weight:       500;
+
+  --ribbon-background:          var(--art-bg);
+  --ribbon-background-collapsed: var(--art-bg);
+  --ribbon-width:               44px;
+
+  /* Status bar */
+  --status-bar-background:      var(--art-bg);
+  --status-bar-border-color:    var(--art-border);
+  --status-bar-border-width:    1px 0 0 0;
+  --status-bar-font-size:       11px;
+  --status-bar-text-color:      var(--art-fg-secondary);
+  --status-bar-position:        relative;
+
+  /* Calendar / accent for active items */
+  --nav-item-color-active:      var(--art-accent);
+  --nav-item-background-active: color-mix(in oklch, var(--art-accent) 14%, transparent);
+
+  /* Graph view */
+  --graph-line:      var(--art-border);
+  --graph-node:      var(--art-fg-secondary);
+  --graph-node-tag:  var(--art-attention);
+  --graph-node-attachment: var(--art-steel);
+  --graph-node-unresolved: var(--art-fg-disabled);
+  --graph-node-focused:    var(--art-accent);
+  --graph-text:      var(--art-fg);
+
+  /* Callout — Obsidian colors them via --callout-color (RGB triplet) */
+  --callout-radius:        8px;
+  --callout-border-width:  0 0 0 2px;
+  --callout-border-opacity: 1;
+  --callout-padding:       16px 20px;
+  --callout-blend-mode:    normal;
+  --callout-title-padding: 0;
+  --callout-title-color:   inherit;
+  --callout-title-weight:  700;
+  --callout-title-size:    var(--font-text-size);
+  --callout-content-padding: 8px 0 0 0;
+  --callout-content-background: transparent;
+
+  --callout-info:      159, 182, 196;     /* steel  */
+  --callout-todo:      159, 182, 196;     /* steel  */
+  --callout-summary:   159, 182, 196;
+  --callout-quote:     201, 181, 232;     /* purple */
+  --callout-tip:       183, 189, 115;     /* olive  */
+  --callout-success:   183, 189, 115;
+  --callout-question:  224, 181, 88;      /* gold   */
+  --callout-warning:   229, 175, 183;     /* rose   */
+  --callout-important: 229, 175, 183;
+  --callout-failure:   232, 131, 111;     /* vermillion */
+  --callout-error:     232, 131, 111;
+  --callout-bug:       232, 131, 111;
+  --callout-example:   201, 181, 232;
+  --callout-abstract:  159, 182, 196;
+  --callout-note:      224, 181, 88;
+
+  color-scheme: dark;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKENS — LIGHT (cream paper)
+   ═══════════════════════════════════════════════════════════════════════ */
+.theme-light {
+  /* Cream paper alternative. The dark theme is the canonical face; this
+     mode trades drama for readability — paper-quiet, navy ink, with the
+     same gold accent used sparingly as ribbon. Surfaces step down (not up)
+     because cream is a paper metaphor; raised/overlay are deeper cream. */
+  --art-bg:              #f5ead0;   /* ivory, the paper                  */
+  --art-bg-raised:       #ebdfc0;   /* slightly deeper cream             */
+  --art-bg-overlay:      #e4d4b0;   /* recessed well, deep cream (v0.6.4: was #fdf6e3) */
+  --art-bg-inactive:     #e0d3a8;   /* code blocks, sunken               */
+  --art-fg:              #1a1410;   /* near-black, AAA on cream          */
+  --art-fg-secondary:    #5a4f3e;   /* warm grey-brown                   */
+  --art-fg-disabled:     #9a8d72;   /* muted                              */
+  --art-border:          #c9b888;   /* warm tan border                    */
+
+  --art-accent:          #7a4f08;   /* burnished gold, deep enough for AAA on cream */
+  --art-accent-bright:   #8a5a10;
+  --art-accent-fill:     #b07820;   /* solid gold for primary fills       */
+  --art-attention:       #8a4818;   /* warm burnt-sienna                  */
+  --art-attention-fill:  #c4808a;
+  --art-urgent:          #7a1810;   /* deep oxblood                       */
+  --art-urgent-fill:     #a02018;
+  --art-success:         #3a6b48;   /* v0.6: deep apothecary, locked      */
+  --art-steel:           #1d3a4a;   /* deep teal-navy                     */
+  --art-steel-fill:      #4a6878;
+  --art-brand-purple:        #3a1880;
+  --art-brand-purple-fill:   #2a1060;
+  --art-ivory:           #f5ead0;
+  --art-navy:            #0d1b2a;
+  --art-on-accent:       #f5ead0;
+  --art-on-urgent:       #f5ead0;
+
+  --background-primary:           var(--art-bg);
+  --background-primary-alt:       var(--art-bg-inactive);
+  --background-secondary:         var(--art-bg-raised);
+  --background-secondary-alt:     var(--art-bg-overlay);
+  --background-modifier-hover:    color-mix(in oklch, var(--art-fg) 6%, transparent);
+  --background-modifier-active-hover: color-mix(in oklch, var(--art-accent) 14%, transparent);
+  --background-modifier-border:         var(--art-border);
+  --background-modifier-border-hover:   var(--art-fg-secondary);
+  --background-modifier-border-focus:   var(--art-accent);
+  --background-modifier-form-field:     var(--art-bg);
+  --background-modifier-error:          color-mix(in oklch, var(--art-urgent-fill) 22%, transparent);
+  --background-modifier-error-hover:    color-mix(in oklch, var(--art-urgent-fill) 32%, transparent);
+  --background-modifier-success:        color-mix(in oklch, var(--art-success) 24%, transparent);
+  --background-modifier-message:        var(--art-bg-overlay);
+
+  --text-normal:    var(--art-fg);
+  --text-muted:     var(--art-fg-secondary);
+  --text-faint:     var(--art-fg-disabled);
+  --text-on-accent: var(--art-on-accent);
+  --text-error:     var(--art-urgent);
+  --text-success:   var(--art-success);
+  --text-warning:   var(--art-attention);
+  --text-accent:    var(--art-accent);
+  --text-accent-hover: var(--art-accent-bright);
+  --text-selection: color-mix(in oklch, var(--art-accent-fill) 32%, transparent);
+  --text-highlight-bg: color-mix(in oklch, var(--art-accent-fill) 28%, transparent);
+
+  --interactive-normal:       var(--art-bg-raised);
+  --interactive-hover:        color-mix(in oklch, var(--art-fg) 8%, var(--art-bg-raised));
+  --interactive-accent:       var(--art-accent-fill);
+  --interactive-accent-hover: var(--art-accent-bright);
+
+  --link-color: var(--art-accent);
+  --link-color-hover: var(--art-accent-bright);
+  --link-unresolved-color: var(--art-attention);
+
+  --code-background: color-mix(in oklch, var(--art-bg-inactive) 90%, var(--art-bg));
+  --code-normal:     var(--art-fg);
+  --code-comment:    var(--art-fg-disabled);
+  --code-keyword:    var(--art-brand-purple);
+  --code-string:     var(--art-success);
+  --code-value:      var(--art-urgent);
+  --code-function:   var(--art-accent);
+  --code-property:   var(--art-steel);
+  --code-tag:        var(--art-brand-purple);
+  --code-important:  var(--art-urgent);
+
+  --tag-color:        var(--art-accent);
+  --tag-background:   color-mix(in oklch, var(--art-accent-fill) 18%, transparent);
+  --tag-background-hover: var(--art-accent-fill);
+  --tag-color-hover:  var(--art-on-accent);
+
+  --modal-shadow: 0 4px 12px rgba(13, 27, 42, 0.18);
+
+  --callout-info:      29, 58, 74;
+  --callout-todo:      29, 58, 74;
+  --callout-summary:   29, 58, 74;
+  --callout-quote:     58, 24, 128;
+  --callout-tip:       58, 74, 20;
+  --callout-success:   58, 74, 20;
+  --callout-question:  122, 79, 8;
+  --callout-warning:   138, 72, 24;
+  --callout-important: 138, 72, 24;
+  --callout-failure:   122, 24, 16;
+  --callout-error:     122, 24, 16;
+  --callout-bug:       122, 24, 16;
+  --callout-example:   58, 24, 128;
+  --callout-abstract:  29, 58, 74;
+  --callout-note:      122, 79, 8;
+
+  /* Translucent frame backing — when Obsidian's "Translucent window" is
+     enabled, .titlebar and .app-container read this. Without a mapping,
+     the default kicks in and reads wrong against cream. Match the
+     opaque .app-container value from v0.6.2 so the frame stays
+     consistent across translucent / opaque modes. */
+  --workspace-background-translucent: var(--art-bg-inactive);
+
+  color-scheme: light;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL FONT STACKS
+   On tool surfaces (chrome/sidebar/tabs/status) → JetBrains Mono.
+   On document surfaces (the actual note body) → iA Writer Quattro.
+   The user can override via Style Settings.
+   ═══════════════════════════════════════════════════════════════════════ */
+.theme-dark, .theme-light {
+  --art-font-mono: 'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --art-font-sans: 'iA Writer Quattro', 'Iowan Old Style', 'Charter', system-ui, -apple-system, sans-serif;
+
+  /* Obsidian's font tokens */
+  --font-default:        var(--art-font-mono);
+  --font-text-theme:     var(--art-font-sans);
+  --font-monospace-theme:var(--art-font-mono);
+  --font-interface-theme:var(--art-font-mono);
+
+  --font-text-size:      16px;
+  --font-smaller:        13px;
+  --font-small:          14px;
+  --font-ui-smaller:     12px;
+  --font-ui-small:       13px;
+  --font-ui-medium:      14px;
+  --font-ui-large:       16px;
+
+  --font-weight:         400;
+  --font-normal:         400;
+  --font-medium:         500;
+  --font-semibold:       600;
+  --font-bold:           700;
+
+  /* Heading sizes — Artificer scale, slightly tighter for note body */
+  --h1-size:    28px;
+  --h1-weight:  700;
+  --h1-line-height: 1.3;
+  --h1-style:   normal;
+  --h1-variant: normal;
+  --h2-size:    22px;
+  --h2-weight:  700;
+  --h2-line-height: 1.35;
+  --h3-size:    18px;
+  --h3-weight:  700;
+  --h3-line-height: 1.4;
+  --h4-size:    15px;
+  --h4-weight:  600;
+  --h4-line-height: 1.4;
+  --h5-size:    14px;
+  --h5-weight:  600;
+  --h5-line-height: 1.4;
+  --h6-size:    13px;
+  --h6-weight:  500;
+  --h6-line-height: 1.4;
+
+  --line-height-normal: 1.6;
+  --line-height-tight:  1.3;
+
+  /* Radius scale */
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-xl: 16px;
+
+  /* Heading style — A is default. Switch via Style Settings or by adding
+     theme-heading-b / theme-heading-c on <body>. */
+  --heading-style: 'a-mono';
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APP CHROME
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Title bar / window frame */
+.workspace-tab-header-container {
+  background: var(--art-bg);
+  border-bottom: 1px solid var(--art-border);
+  font-family: var(--font-interface, var(--art-font-mono));
+}
+
+/* Ribbon — vertical strip on the left */
+.workspace-ribbon {
+  background: var(--art-bg);
+  border-right: 1px solid var(--art-border);
+}
+.workspace-ribbon .side-dock-ribbon-action {
+  color: var(--art-fg-secondary);
+  border-radius: var(--radius-s);
+  transition: color 160ms cubic-bezier(0.2, 0.7, 0.3, 1),
+              background 160ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.workspace-ribbon .side-dock-ribbon-action:hover {
+  color: var(--art-fg);
+  background: var(--art-bg-raised);
+}
+.workspace-ribbon .side-dock-ribbon-action.is-active {
+  color: var(--art-accent);
+  background: color-mix(in oklch, var(--art-accent) 14%, transparent);
+}
+
+/* Sidebars — opaque by default. body.artificer-translucent lets the chrome
+   inherit Obsidian's app-level translucency (vibrancy / blur backdrop). */
+body:not(.artificer-translucent) .workspace-split.mod-left-split,
+body:not(.artificer-translucent) .workspace-split.mod-right-split {
+  background: var(--art-bg-raised);
+}
+body.artificer-translucent .workspace-split.mod-left-split,
+body.artificer-translucent .workspace-split.mod-right-split {
+  background: transparent;
+}
+.nav-folder-title, .nav-file-title {
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 13px;
+  border-radius: var(--radius-s);
+  color: var(--art-fg-secondary);
+}
+.nav-file-title.is-active,
+.nav-folder.has-focus > .nav-folder-title {
+  background: color-mix(in oklch, var(--art-accent) 12%, transparent);
+  color: var(--art-fg);
+}
+.nav-file-title:hover,
+.nav-folder-title:hover {
+  background: color-mix(in oklch, var(--art-fg) 6%, transparent);
+  color: var(--art-fg);
+}
+/* Folder caret + icon */
+.nav-folder-collapse-indicator { color: var(--art-fg-disabled); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE — drawer + properties
+   Mobile renders structures the desktop rules don't target. Selectors below
+   confirmed against the live mobile DOM (emulateMobile + computed styles).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* The left drawer's view list (Files/Search/Bookmarks) reuses
+   .workspace-tab-header; without this the active row inherits the desktop
+   solid-bg rule and renders as a heavy, hard-edged box. Replace it with the
+   subtle accent tint the desktop nav uses (see .nav-file-title.is-active). */
+.is-mobile .workspace-drawer { background: var(--art-bg-overlay); }
+.is-mobile .workspace-drawer .workspace-tab-header.is-active {
+  background: color-mix(in oklch, var(--art-accent) 12%, transparent);
+  color: var(--art-fg);
+  border-radius: var(--radius-s);
+}
+
+/* Properties: mobile paints the inner .metadata-content with its own dark fill
+   (--background-primary-alt → --art-bg-inactive) and a 24px radius, nested
+   inside the styled .metadata-container card — a double-box. Flatten the inner
+   wrapper so the container owns the single card. */
+.is-mobile .metadata-content {
+  background: transparent;
+  border-radius: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TABS — Artificer treatment: dramatic active, dim inactive
+   ═══════════════════════════════════════════════════════════════════════ */
+.workspace-tab-header {
+  background: transparent;
+  border-right: 1px solid var(--art-border);
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 12px;
+  color: var(--art-fg-secondary);
+  position: relative;
+}
+.workspace-tab-header.is-active {
+  background: var(--art-bg);
+  color: var(--art-fg);
+}
+.workspace-tab-header.is-active::after {
+  content: ""; position: absolute;
+  left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--art-accent);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PANE INACTIVITY — Rule #6: dramatic
+   Set --art-inactive-opacity / --art-inactive-saturate via Style Settings.
+   ═══════════════════════════════════════════════════════════════════════ */
+.theme-dark, .theme-light {
+  --art-inactive-opacity:  0.55;
+  --art-inactive-saturate: 0.6;
+}
+.workspace-leaf:not(.mod-active) .view-content {
+  opacity: var(--art-inactive-opacity);
+  filter: saturate(var(--art-inactive-saturate));
+  transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.3, 1),
+              filter   160ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.workspace-leaf.mod-active .view-content {
+  opacity: 1;
+  filter: none;
+}
+/* Active editor leaf: gold left rail */
+.workspace-split .workspace-leaf.mod-active > .workspace-leaf-content {
+  box-shadow: inset 2px 0 0 var(--art-accent);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EDITOR · note body
+   ═══════════════════════════════════════════════════════════════════════ */
+.markdown-source-view,
+.markdown-preview-view,
+.markdown-rendered {
+  font-family: var(--font-text, var(--art-font-sans));
+  font-size:   var(--font-text-size, 16px);
+  line-height: var(--line-height-normal, 1.6);
+  background-color: var(--art-bg);
+  letter-spacing: 0.01em;
+  word-spacing: 0.16em;
+}
+
+/* B.7 — light-mode app-container needs a deeper frame than --background-secondary */
+.theme-light .app-container {
+  background-color: var(--art-bg-inactive);
+}
+
+/* Headings: three swappable styles. Default "a-mono" is plain Artificer
+   scale. Use body class theme-heading-b / theme-heading-c to switch. */
+
+/* A · all mono, 700, scale down (Artificer headlineLg/Md exact) */
+.theme-heading-a-mono :is(h1, h2, h3, h4, h5, h6),
+:not(.theme-heading-b):not(.theme-heading-c) :is(.markdown-rendered, .markdown-preview-view, .markdown-source-view) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--art-font-mono);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* B · gold accent rule under H1, smaller headings in steel */
+body.theme-heading-b :is(.markdown-rendered, .markdown-preview-view, .markdown-source-view) h1 {
+  font-family: var(--art-font-mono);
+  font-weight: 700;
+  padding-bottom: 8px; /* tuned */
+  border-bottom: 2px solid var(--art-accent);
+}
+body.theme-heading-b :is(.markdown-rendered, .markdown-preview-view, .markdown-source-view) h2 {
+  font-family: var(--art-font-mono);
+  color: var(--art-accent);
+  font-weight: 700;
+}
+body.theme-heading-b :is(.markdown-rendered, .markdown-preview-view, .markdown-source-view) :is(h3, h4, h5, h6) {
+  font-family: var(--art-font-mono);
+  color: var(--art-steel);
+  font-weight: 600;
+}
+
+/* C · monospace prefix marker (#, ##, ###) leaks through, source-mode feel */
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--art-font-mono);
+  font-weight: 700;
+  position: relative;
+}
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h1::before { content: "# ";    color: var(--art-fg-disabled); font-weight: 400; }
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h2::before { content: "## ";   color: var(--art-fg-disabled); font-weight: 400; }
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h3::before { content: "### ";  color: var(--art-fg-disabled); font-weight: 400; }
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h4::before { content: "#### "; color: var(--art-fg-disabled); font-weight: 400; }
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h5::before { content: "##### "; color: var(--art-fg-disabled); font-weight: 400; }
+body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h6::before { content: "######"; color: var(--art-fg-disabled); font-weight: 400; }
+
+/* Bold anchor words — Artificer rule #4. Slightly heavier and inherits fg */
+.markdown-rendered strong, .markdown-preview-view strong,
+.cm-strong {
+  font-weight: var(--bold-weight, 700);
+  color: var(--bold-color, var(--art-fg));
+}
+
+/* Italic — Artificer rule: inherits body color, no recoloring by default */
+.markdown-rendered em, .markdown-preview-view em,
+.cm-em {
+  color: var(--italic-color, var(--art-fg-secondary));
+}
+
+/* Inline code */
+.markdown-rendered code, .markdown-preview-view code, .cm-inline-code {
+  font-family: var(--art-font-mono);
+  font-size: var(--code-size, 14px);
+  background: transparent;
+  color: var(--art-accent);
+  padding: 0 2px;
+}
+
+/* Code blocks */
+.markdown-rendered pre, .markdown-preview-view pre {
+  background: var(--code-background);
+  border: 1px solid var(--art-border);
+  border-radius: var(--radius-m);
+  padding: 16px 24px; /* tuned */
+}
+.markdown-rendered pre code,
+.markdown-preview-view pre code {
+  color: var(--code-normal);
+  font-size: var(--code-size, 14px);
+  background: transparent;
+}
+
+/* CodeMirror frontmatter (source mode) — YAML-flavored tokens */
+.cm-s-obsidian .cm-hmd-frontmatter,
+.cm-s-obsidian .HyperMD-frontmatter,
+.cm-s-obsidian .HyperMD-frontmatter-end {
+  font-family: var(--art-font-mono);
+  color: var(--art-fg-secondary);
+}
+.cm-s-obsidian .cm-hmd-frontmatter.cm-def      { color: var(--art-steel); font-weight: 500; }
+.cm-s-obsidian .cm-hmd-frontmatter.cm-keyword  { color: var(--art-brand-purple); }
+.cm-s-obsidian .cm-hmd-frontmatter.cm-meta     { color: var(--art-fg-disabled); }
+.cm-s-obsidian .cm-hmd-frontmatter.cm-number   { color: var(--art-attention); font-variant-numeric: tabular-nums; }
+.cm-s-obsidian .cm-hmd-frontmatter.cm-string   { color: var(--art-success); }
+.cm-s-obsidian .cm-hmd-frontmatter.cm-atom     { color: var(--art-accent); }
+.cm-s-obsidian .HyperMD-frontmatter-end { border-bottom: 1px solid var(--art-border); }
+
+/* YAML code blocks (rendered) — Prism token classes */
+.markdown-rendered .language-yaml .token.comment,
+.markdown-preview-view .language-yaml .token.comment   { color: var(--art-fg-disabled); font-style: italic; }
+.markdown-rendered .language-yaml .token.constant,
+.markdown-preview-view .language-yaml .token.constant  { color: var(--art-attention); }
+.markdown-rendered .language-yaml .token.important,
+.markdown-preview-view .language-yaml .token.important { color: var(--art-urgent); font-weight: 700; }
+.markdown-rendered .language-yaml .token.key,
+.markdown-preview-view .language-yaml .token.key       { color: var(--art-steel); font-weight: 500; }
+.markdown-rendered .language-yaml .token.null,
+.markdown-preview-view .language-yaml .token.null      { color: var(--art-fg-disabled); }
+.markdown-rendered .language-yaml .token.number,
+.markdown-preview-view .language-yaml .token.number    { color: var(--art-attention); font-variant-numeric: tabular-nums; }
+.markdown-rendered .language-yaml .token.punctuation,
+.markdown-preview-view .language-yaml .token.punctuation { color: var(--art-fg-disabled); }
+.markdown-rendered .language-yaml .token.scalar,
+.markdown-preview-view .language-yaml .token.scalar    { color: var(--art-success); }
+
+/* Reduced motion — Artificer system rule. Zero out transitions/animations
+   when the user prefers it. Only blink-able state (carets, focus rings) keeps
+   instant changes; everything time-based becomes a hard cut. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* v0.6.4: --art-bg-overlay default is now #e4d4b0 (the recessed well).
+   The .art-cascade-deep class-toggle is now a no-op — setting it makes no
+   change since the default already matches. Kept here so users who opted
+   in during v0.6.1–v0.6.3 don't get a console reference error. Removed in
+   v0.7.0. Style Settings entry below is updated to reflect deprecation. */
+.theme-light.art-cascade-deep .workspace,
+.theme-light .workspace.art-cascade-deep,
+body.art-cascade-deep .theme-light {
+  --art-bg-overlay: #e4d4b0;
+}
+
+/* Blockquote — gold left rail.
+   Structure (rail + padding) lives on the block-level element. The
+   .cm-quote class is applied to multiple spans per line in CodeMirror
+   source mode — putting border-left + padding-left there yields doubled
+   bars and stair-stepped indents. Color-only on the span; structure on
+   the line/block element. */
+.markdown-rendered blockquote,
+.markdown-preview-view blockquote,
+.HyperMD-quote {
+  border-left: 2px solid var(--art-accent);
+  background: transparent;
+  padding-left: 16px; /* tuned */
+}
+.markdown-rendered blockquote,
+.markdown-preview-view blockquote,
+.cm-quote {
+  color: var(--art-fg-secondary);
+}
+
+/* Horizontal rule */
+.markdown-rendered hr { border: none; border-top: 1px solid var(--art-border); }
+
+/* Reset prose tracking on code surfaces.
+   The markdown container applies prose-tuned letter-spacing 0.01em,
+   word-spacing 0.16em, line-height 1.6 — values that inherit into code
+   and make JBM render as spaced-out instead of the monospace grid it's
+   designed for. Also disable JBM's `calt` programming ligatures
+   (`||`, `->`, `=>`, `!=`) — they read as missing characters in a notes
+   app where most code blocks are quoted snippets, not active edits.
+   Power-users who want ligatures can re-enable via Style Settings
+   `font-feature-settings` override. */
+.markdown-rendered code,
+.markdown-preview-view code,
+.markdown-rendered pre,
+.markdown-preview-view pre,
+.markdown-rendered pre code,
+.markdown-preview-view pre code,
+.cm-inline-code,
+.HyperMD-codeblock,
+.cm-s-obsidian .cm-line .cm-inline-code {
+  letter-spacing: 0;
+  word-spacing: 0;
+  line-height: 1.5;
+  font-feature-settings: "calt" 0, "liga" 0;
+  font-variant-ligatures: none;
+}
+
+/* Tables — Artificer treatment, tabular nums */
+.markdown-rendered table, .markdown-preview-view table {
+  font-family: var(--art-font-mono);
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+.markdown-rendered th {
+  font-family: var(--art-font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--art-fg-secondary);
+}
+.markdown-rendered td, .markdown-rendered th {
+  border-bottom: 1px solid var(--art-border);
+  padding: 8px 16px; /* tuned */
+}
+.markdown-rendered tbody tr:hover { background: var(--art-bg-raised); }
+
+/* Tabular nums in stat-like elements */
+.markdown-rendered .frontmatter,
+.markdown-rendered .frontmatter-container,
+.cm-line, .HyperMD-list-line, .cm-formatting-list,
+.markdown-rendered ol li::marker {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Links / unresolved links / external */
+.markdown-rendered a.internal-link,
+.markdown-preview-view a.internal-link {
+  color: var(--art-accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklch, var(--art-accent) 40%, transparent);
+}
+.markdown-rendered a.internal-link:hover {
+  color: var(--art-accent-bright);
+  border-bottom-color: var(--art-accent-bright);
+}
+.markdown-rendered a.internal-link.is-unresolved {
+  color: var(--art-attention);
+  border-bottom: 1px dashed var(--art-attention);
+  opacity: 0.85;
+}
+
+/* Tags */
+.markdown-rendered a.tag, .cm-hashtag {
+  font-family: var(--art-font-mono);
+  font-weight: 500;
+  font-size: 0.85em;
+  background: color-mix(in oklch, var(--art-accent-fill) 14%, transparent);
+  color: var(--art-accent);
+  padding: 2px 8px; /* tuned */
+  border-radius: 4px; /* tuned */
+  text-decoration: none;
+  border: none;
+}
+
+/* Task list checkboxes */
+.markdown-rendered input[type="checkbox"],
+.HyperMD-task-line input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--art-bg);
+  border: 1px solid var(--art-border);
+  border-radius: 3px;
+  cursor: pointer;
+  vertical-align: -3px;
+  position: relative;
+  transition: border-color 160ms cubic-bezier(0.2, 0.7, 0.3, 1),
+              background   160ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.markdown-rendered input[type="checkbox"]:checked {
+  background: var(--art-accent-fill);
+  border-color: var(--art-accent-fill);
+}
+.markdown-rendered input[type="checkbox"]:checked::after {
+  content: ""; position: absolute;
+  left: 5px; top: 2px;
+  width: 4px; height: 8px;
+  border: solid var(--art-on-accent);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COMMAND PALETTE / QUICK SWITCHER / MODALS
+   ═══════════════════════════════════════════════════════════════════════ */
+.modal, .prompt {
+  background: var(--art-bg-overlay);
+  border: 1px solid var(--art-border);
+  border-radius: var(--radius-l);
+  box-shadow: var(--modal-shadow);
+  font-family: var(--font-interface, var(--art-font-mono));
+}
+.modal-bg, .prompt-bg {
+  background: rgba(0, 0, 0, 0.55);
+}
+.theme-light .modal-bg, .theme-light .prompt-bg {
+  background: rgba(13, 27, 42, 0.4);
+}
+.prompt-input {
+  background: var(--art-bg);
+  border: 1px solid var(--art-border);
+  border-radius: var(--radius-s);
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 14px;
+  color: var(--art-fg);
+}
+.prompt-input:focus {
+  border-color: var(--art-accent);
+  outline: none;
+}
+.suggestion-item {
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 13px;
+  color: var(--art-fg);
+  padding: 8px 12px; /* tuned */
+  border-radius: var(--radius-s);
+}
+.suggestion-item.is-selected {
+  background: color-mix(in oklch, var(--art-accent) 18%, transparent);
+  color: var(--art-fg);
+}
+.suggestion-item .suggestion-hotkey,
+.suggestion-item .suggestion-aux {
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 11px;
+  color: var(--art-fg-secondary);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BUTTONS — destructive / warning actions
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Without this, .mod-warning inherits Obsidian's translucent error tint
+   (--background-modifier-error), which reads muddy next to a solid Cancel.
+   Give it a crisp, solid terracotta fill to match the destructive intent. */
+button.mod-warning,
+.modal button.mod-warning {
+  background: var(--art-urgent-fill);   /* deep brick */
+  color: var(--art-on-urgent);          /* ivory */
+  border: 1px solid transparent;
+}
+button.mod-warning:hover,
+.modal button.mod-warning:hover {
+  background: var(--art-urgent);        /* brighter terracotta */
+}
+button.mod-warning:focus-visible,
+.modal button.mod-warning:focus-visible {
+  outline: 2px solid var(--art-accent-bright);
+  outline-offset: 2px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STATUS BAR — bottom strip
+   ═══════════════════════════════════════════════════════════════════════ */
+.status-bar {
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--art-fg-secondary);
+  border-top: 1px solid var(--art-border);
+}
+body:not(.artificer-translucent) .status-bar { background: var(--art-bg); }
+body.artificer-translucent .status-bar { background: transparent; }
+.status-bar-item { padding: 0 12px; border-right: 1px solid var(--art-border); }
+.status-bar-item:last-child { border-right: none; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SETTINGS PANEL
+   ═══════════════════════════════════════════════════════════════════════ */
+.modal.mod-settings {
+  font-family: var(--font-interface, var(--art-font-mono));
+}
+.modal.mod-settings .vertical-tab-header {
+  background: var(--art-bg-raised);
+  border-right: 1px solid var(--art-border);
+}
+.modal.mod-settings .vertical-tab-nav-item {
+  font-family: var(--font-interface, var(--art-font-mono));
+  font-size: 13px;
+  color: var(--art-fg-secondary);
+  border-radius: var(--radius-s);
+}
+.modal.mod-settings .vertical-tab-nav-item.is-active {
+  background: color-mix(in oklch, var(--art-accent) 14%, transparent);
+  color: var(--art-fg);
+  box-shadow: inset 2px 0 0 var(--art-accent);
+}
+/* Base setting-item layout — applies everywhere, including plugin setting
+   tabs that render OUTSIDE .modal.mod-settings. Without this they fall back to
+   Obsidian defaults and the control hugs the container's right edge. */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-4-4);
+  padding: var(--size-4-3) var(--size-4-4);
+  border-top: 1px solid var(--art-border);
+}
+.setting-item-info { min-width: 0; }          /* let long titles wrap instead of pushing the control off-edge */
+.setting-item-name { color: var(--art-fg); }
+.setting-item-description { color: var(--art-fg-secondary); }
+.setting-item-control { flex: 0 0 auto; }
+
+/* Core settings modal pads its own container; drop horizontal padding here so
+   rows don't double-indent. */
+.modal.mod-settings .setting-item {
+  padding: var(--size-4-4) 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GRAPH VIEW
+   ═══════════════════════════════════════════════════════════════════════ */
+.graph-view.color-fill { color: var(--art-accent); }
+.graph-view.color-line { color: var(--art-border); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCROLLBARS
+   ═══════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar         { width: 10px; height: 10px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   {
+  background: var(--art-border);
+  border-radius: 4px; /* tuned */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--art-fg-disabled); background-clip: padding-box; border: 2px solid transparent; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SELECTION + FOCUS
+   ═══════════════════════════════════════════════════════════════════════ */
+::selection { background: var(--art-accent-fill); color: var(--art-on-accent); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   POS (parts-of-speech) HIGHLIGHTING
+   Mirrors the mock's "semantic highlighting" plugin look. Wrap any inline
+   span in your notes with .pos-v / .pos-adj / .pos-adv to opt in. Toggled
+   globally by adding the 'pos-on' class to <body> (Style Settings exposes
+   this as a toggle so it's persistent across sessions).
+
+   The colors are pulled from Artificer's accent ramp deliberately — verbs
+   ride the gold accent (you're DOING something), adjectives ride steel
+   (description, calm), adverbs ride attention (modifiers, secondary).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* v0.6.1: art-pos-on is canonical; pos-on retained for one version for migration. */
+body.pos-on .markdown-rendered .pos-v,
+body.pos-on .markdown-preview-view .pos-v,
+body.pos-on .cm-pos-v,
+body.art-pos-on .markdown-rendered .pos-v,
+body.art-pos-on .markdown-preview-view .pos-v,
+body.art-pos-on .cm-pos-v {
+  color: var(--art-accent);
+  font-weight: 500;
+}
+body.pos-on .markdown-rendered .pos-adj,
+body.pos-on .markdown-preview-view .pos-adj,
+body.pos-on .cm-pos-adj,
+body.art-pos-on .markdown-rendered .pos-adj,
+body.art-pos-on .markdown-preview-view .pos-adj,
+body.art-pos-on .cm-pos-adj {
+  color: var(--art-steel);
+  font-style: italic;
+}
+body.pos-on .markdown-rendered .pos-adv,
+body.pos-on .markdown-preview-view .pos-adv,
+body.pos-on .cm-pos-adv,
+body.art-pos-on .markdown-rendered .pos-adv,
+body.art-pos-on .markdown-preview-view .pos-adv,
+body.art-pos-on .cm-pos-adv {
+  color: var(--art-attention);
+  font-style: italic;
+}
+body.pos-on.theme-light .markdown-rendered .pos-v,
+body.art-pos-on.theme-light .markdown-rendered .pos-v {
+  color: var(--art-accent-bright); font-weight: 600;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FRONTMATTER / PROPERTIES
+   ═══════════════════════════════════════════════════════════════════════ */
+.metadata-container {
+  background: color-mix(in oklch, var(--background-secondary) 60%, transparent);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 0;
+  margin-bottom: var(--size-4-6);
+}
+.metadata-property {
+  padding: var(--size-4-1) var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-family: var(--font-monospace);
+  font-size: var(--font-smaller);
+}
+.metadata-property:last-child { border-bottom: none; }
+.metadata-property-key { color: var(--art-accent); font-weight: 500; }
+.metadata-property-key-input { font-family: var(--font-monospace) !important; font-size: 12px; }
+.metadata-property[data-property-type="tags"] .multi-select-pill,
+.multi-select-pill {
+  background: color-mix(in oklch, var(--text-accent) 14%, transparent) !important;
+  color: var(--text-accent) !important;
+  border-radius: 4px !important; /* tuned */
+  font-size: 11px !important;
+  padding: 2px 8px !important; /* tuned */
+}
+.metadata-input-longtext, .metadata-input-text {
+  font-family: var(--font-monospace) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HOVER POPOVER (link preview)
+   ═══════════════════════════════════════════════════════════════════════ */
+.popover.hover-popover {
+  background: var(--background-primary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: var(--radius-m) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
+}
+.theme-light .popover.hover-popover { box-shadow: 0 8px 24px rgba(13,27,42,.18) !important; }
+.popover.hover-popover .markdown-embed-title { display: none; }
+.popover.hover-popover .markdown-preview-view { padding: 16px 18px !important; } /* tuned */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CONTEXT MENU
+   ═══════════════════════════════════════════════════════════════════════ */
+.menu {
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  padding: 6px;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+}
+.theme-light .menu { box-shadow: 0 8px 24px rgba(13,27,42,.18); }
+.menu-item {
+  border-radius: var(--radius-s);
+  padding: 6px 10px;
+  gap: 10px;
+}
+.menu-item:hover, .menu-item.is-focused {
+  background: color-mix(in oklch, var(--text-accent) 14%, transparent);
+}
+.menu-item-icon { color: var(--text-muted); }
+.menu-item.is-warning, .menu-item[data-section="danger"] {
+  color: var(--text-error);
+}
+.menu-item.is-warning:hover {
+  background: color-mix(in oklch, var(--text-error) 14%, transparent);
+}
+.menu-separator {
+  background: var(--background-modifier-border);
+  margin: 4px 6px; /* tuned */
+}
+.menu-section-label {
+  padding: 4px 10px; /* tuned */
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOOLTIP
+   ═══════════════════════════════════════════════════════════════════════ */
+.tooltip {
+  background: var(--background-primary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: 4px !important; /* tuned */
+  padding: 4px 8px !important; /* tuned */
+  font-family: var(--font-monospace) !important;
+  font-size: 11px !important;
+  color: var(--text-normal) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3) !important;
+}
+.tooltip .tooltip-arrow { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NOTICE TOASTS
+   ═══════════════════════════════════════════════════════════════════════ */
+.notice {
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-border);
+  border-left: 2px solid var(--text-accent);
+  border-radius: var(--radius-m);
+  padding: 10px 14px;
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-normal);
+  box-shadow: 0 4px 16px rgba(0,0,0,.35);
+  font-variant-numeric: tabular-nums;
+}
+.notice.mod-success { border-left-color: var(--text-success); }
+.notice.mod-warning { border-left-color: var(--text-warning); }
+.notice.mod-error   { border-left-color: var(--text-error); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EMBEDDED NOTES, IMAGES, MERMAID
+   ═══════════════════════════════════════════════════════════════════════ */
+.markdown-embed {
+  border: 1px solid var(--background-modifier-border);
+  border-left: 2px solid var(--text-accent);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  padding: 14px 18px;
+  margin: var(--size-4-4) 0;
+  background: color-mix(in oklch, var(--background-secondary) 50%, transparent);
+}
+.markdown-embed-title {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px; /* tuned */
+}
+.markdown-embed-link {
+  color: var(--text-faint);
+  top: 8px; right: 8px;
+}
+
+.image-embed figcaption,
+.markdown-rendered figcaption,
+.markdown-rendered .image-caption {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 8px; /* tuned */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mermaid */
+.markdown-rendered .mermaid {
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 24px; /* tuned */
+  margin: var(--size-4-4) 0;
+}
+.mermaid .node rect, .mermaid .node circle, .mermaid .node polygon,
+.mermaid .cluster rect {
+  fill: var(--background-secondary) !important;
+  stroke: var(--text-accent) !important;
+  stroke-width: 1.5px !important;
+}
+.mermaid .nodeLabel, .mermaid .edgeLabel, .mermaid text {
+  font-family: var(--font-monospace) !important;
+  fill: var(--text-normal) !important;
+  color: var(--text-normal) !important;
+}
+.mermaid .edgePath path, .mermaid .flowchart-link {
+  stroke: var(--text-muted) !important;
+  stroke-width: 1.2px !important;
+}
+.mermaid .arrowheadPath { fill: var(--text-muted) !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FOOTNOTES
+   ═══════════════════════════════════════════════════════════════════════ */
+.markdown-rendered .footnote-link, sup.footnote-ref {
+  font-family: var(--font-monospace);
+  font-size: 0.7em;
+  color: var(--text-accent);
+  text-decoration: none;
+  padding: 0 2px;
+}
+.markdown-rendered .footnote-link:hover { color: var(--text-accent-hover); }
+.markdown-rendered .footnotes {
+  margin-top: 32px; /* tuned */
+  padding-top: 16px; /* tuned */
+  border-top: 1px solid var(--background-modifier-border);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DATAVIEW
+   ═══════════════════════════════════════════════════════════════════════ */
+.dataview.table-view-table,
+.markdown-rendered table.dataview {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.dataview.table-view-table thead {
+  background: var(--background-secondary);
+}
+.dataview.table-view-table th {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  font-weight: 500;
+}
+.dataview.task-list-item { font-family: var(--font-monospace); font-size: 12px; }
+.dataview.dataview-error {
+  color: var(--text-error);
+  font-family: var(--font-monospace);
+  font-size: 11px;
+}
+.dataview-result-list-li { padding: 2px 0; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KANBAN PLUGIN
+   ═══════════════════════════════════════════════════════════════════════ */
+.kanban-plugin {
+  font-family: var(--font-monospace);
+  background:
+    radial-gradient(circle at 20% 0%, color-mix(in oklch, var(--text-accent) 4%, transparent), transparent 60%),
+    var(--background-primary);
+}
+.kanban-plugin__board { padding: 16px; gap: 12px; } /* tuned */
+.kanban-plugin__lane {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  width: 280px;
+}
+.kanban-plugin__lane-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.kanban-plugin__lane-title-text { color: var(--text-normal); }
+.kanban-plugin__lane-marker-count {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.kanban-plugin__item {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: 10px 12px;
+  font-size: 12px;
+  margin-bottom: 6px;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.kanban-plugin__item:hover {
+  border-color: var(--text-accent);
+  transform: translateY(-1px);
+}
+.kanban-plugin__item-tags .tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: color-mix(in oklch, var(--text-accent) 14%, transparent);
+  color: var(--text-accent);
+  border-radius: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EXCALIDRAW PLUGIN
+   ═══════════════════════════════════════════════════════════════════════ */
+.excalidraw .App-toolbar,
+.excalidraw .Island {
+  background: var(--background-primary-alt) !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  border-radius: var(--radius-m) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3) !important;
+}
+.theme-light .excalidraw .App-toolbar,
+.theme-light .excalidraw .Island {
+  box-shadow: 0 2px 8px rgba(13,27,42,.15) !important;
+}
+.excalidraw .ToolIcon__icon {
+  color: var(--text-muted);
+  border-radius: var(--radius-s);
+}
+.excalidraw .ToolIcon__icon:hover {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+}
+.excalidraw .ToolIcon--selected .ToolIcon__icon,
+.excalidraw .ToolIcon__keybinding {
+  color: var(--text-accent);
+}
+.excalidraw .ToolIcon--selected .ToolIcon__icon {
+  background: color-mix(in oklch, var(--text-accent) 18%, transparent);
+}
+.excalidraw .Stats {
+  font-family: var(--font-monospace) !important;
+  font-size: 11px !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VIM MODE INDICATOR (status bar)
+   ═══════════════════════════════════════════════════════════════════════ */
+.status-bar-item.plugin-vim-mode,
+.status-bar-item.mod-clickable[aria-label*="vim" i] {
+  font-family: var(--font-monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  border-radius: 3px;
+  padding: 0 6px;
+}
+.cm-vim-panel {
+  background: var(--background-primary-alt);
+  border-top: 1px solid var(--background-modifier-border);
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  padding: 4px 12px; /* tuned */
+  color: var(--text-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SYNC STATUS
+   ═══════════════════════════════════════════════════════════════════════ */
+.status-bar-item.plugin-sync,
+.workspace .sync-detail {
+  font-family: var(--font-monospace);
+  font-variant-numeric: tabular-nums;
+}
+.sync-status-icon.mod-success { color: var(--text-success); }
+.sync-status-icon.mod-warning { color: var(--text-warning); }
+.sync-status-icon.mod-error   { color: var(--text-error); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STYLE SETTINGS — class-toggle / class-select rules
+   Every class-toggle and class-select in the @settings block below has a
+   matching rule here. Style Settings adds the class to <body>; we react.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Tab style — filled (vanilla-Obsidian feel). Default in theme is underline. */
+body.theme-tabs-filled .workspace-tab-header {
+  background: transparent;
+}
+body.theme-tabs-filled .workspace-tab-header.is-active {
+  background: var(--art-bg);
+  border-bottom-color: transparent;
+}
+body.theme-tabs-filled .workspace-tab-header.is-active::after {
+  display: none;
+}
+body.theme-tabs-filled .workspace-tab-header-container {
+  background: var(--art-bg-inactive);
+}
+
+/* Tag style — underline (no pill background) */
+body.theme-tags-underline a.tag,
+body.theme-tags-underline .tag {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  text-decoration: underline;
+  text-decoration-color: var(--art-accent);
+  text-underline-offset: 2px;
+  color: var(--art-accent) !important;
+}
+body.theme-tags-underline a.tag:hover {
+  color: var(--art-accent-bright) !important;
+  text-decoration-color: var(--art-accent-bright);
+}
+
+/* Compact frontmatter */
+body.art-frontmatter-compact .metadata-container {
+  padding: var(--size-4-2) var(--size-4-3);
+}
+body.art-frontmatter-compact .metadata-property {
+  padding: 2px var(--size-4-2);
+  font-size: 11px;
+}
+body.art-frontmatter-compact .metadata-property-key {
+  width: 96px;
+  min-width: 96px;
+  flex: 0 0 96px;
+}
+
+/* Soften callout backgrounds — denser padding scale */
+body.callout-blend-mode .callout {
+  padding: 8px 12px; /* tuned */
+  margin: 8px 0; /* tuned */
+}
+body.callout-blend-mode .callout-title {
+  padding: 0;
+  font-size: 12px;
+}
+
+/* Show line numbers on code blocks */
+body.code-line-numbers .markdown-rendered pre > code,
+body.code-line-numbers .HyperMD-codeblock {
+  counter-reset: line;
+}
+body.code-line-numbers .markdown-rendered pre > code {
+  display: block;
+  position: relative;
+}
+body.code-line-numbers .markdown-rendered pre > code > span,
+body.code-line-numbers .markdown-rendered pre > code .line {
+  counter-increment: line;
+}
+body.code-line-numbers .markdown-rendered pre > code > span::before,
+body.code-line-numbers .markdown-rendered pre > code .line::before {
+  content: counter(line);
+  display: inline-block;
+  width: 2.5em;
+  margin-right: 1em;
+  text-align: right;
+  color: var(--art-fg-disabled);
+  border-right: 1px solid var(--background-modifier-border);
+  padding-right: 0.5em;
+  user-select: none;
+}
+
+/* Style Settings exposes --tag-radius — make sure tag CSS picks it up */
+.tag, a.tag {
+  border-radius: var(--tag-radius) !important;
+}
+
+/* Honor --callout-radius and --callout-border-opacity at the callout root */
+.callout {
+  --callout-border-opacity: 0.18;
+  border-radius: var(--callout-radius) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STYLE SETTINGS — UI controls for the Style Settings community plugin.
+   This block is parsed by the plugin and exposes every override as a
+   toggle/dropdown/color picker. Without the plugin, the defaults above
+   are what you get.
+   See: https://github.com/mgmeyers/obsidian-style-settings
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* @settings
+
+name: Artificer
+id: artificer-theme
+settings:
+  -
+    id: art-info
+    type: info-text
+    title: About Artificer
+    description: |
+      Artificer is a personal design system ported to Obsidian. Defaults are dark, gold, mono.
+      Every variable below is a real CSS custom property — Style Settings writes them straight
+      into :root. If you want to go further, edit theme.css directly; the source tokens at the
+      top of the file (--art-bg, --art-accent, --art-attention, etc.) drive everything else.
+
+  # ─── Typography ──────────────────────────────────────────────────
+  -
+    id: art-typography
+    title: Typography
+    type: heading
+    level: 2
+    collapsed: false
+  -
+    id: font-text
+    title: Body (document) font
+    description: Used for note prose. iA Writer Quattro by default. Try 'Iowan Old Style', 'Charter', or 'Source Serif Pro' for a serif feel.
+    type: variable-text
+    default: "'iA Writer Quattro', 'Iowan Old Style', 'Charter', system-ui, sans-serif"
+    quotes: false
+  -
+    id: font-monospace
+    title: Mono font
+    description: Drives code, chrome, identifiers, and all UI surfaces. JetBrains Mono is bundled. Try 'Berkeley Mono', 'Iosevka', or 'IBM Plex Mono'.
+    type: variable-text
+    default: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace"
+    quotes: false
+  -
+    id: font-interface
+    title: UI / interface font
+    description: Sidebar, tabs, palette, settings. Defaults to mono — match it to the document font for a softer chrome.
+    type: variable-text
+    default: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace"
+    quotes: false
+  -
+    id: font-text-size
+    title: Body text size
+    type: variable-number
+    default: 16
+    format: px
+  -
+    id: line-height-normal
+    title: Line height
+    description: 1.6 is comfortable for prose. Drop to 1.4 for denser editor.
+    type: variable-number-slider
+    default: 1.6
+    min: 1.2
+    max: 2.0
+    step: 0.05
+  -
+    id: file-line-width
+    title: Readable line width
+    description: Caps the editor width when "Readable line length" is on. 700px is generous; 600 is classic.
+    type: variable-number
+    default: 700
+    format: px
+
+  -
+    id: art-heading-style
+    title: Heading style
+    description: |
+      A — pure mono, 700 weight (default).
+      B — gold rule under H1, steel hierarchy for H3-H6.
+      C — source-mode markers (#, ##, ###) prepended in muted gold.
+    type: class-select
+    default: theme-heading-a
+    allowEmpty: false
+    options:
+      - label: A · Pure mono
+        value: theme-heading-a
+      - label: B · Gold rule + steel hierarchy
+        value: theme-heading-b
+      - label: C · Source-mode prefix markers
+        value: theme-heading-c
+  -
+    id: h1-size
+    title: H1 size
+    type: variable-number
+    default: 32
+    format: px
+  -
+    id: h2-size
+    title: H2 size
+    type: variable-number
+    default: 26
+    format: px
+  -
+    id: h3-size
+    title: H3 size
+    type: variable-number
+    default: 21
+    format: px
+
+  # ─── Panes & focus ───────────────────────────────────────────────
+  -
+    id: art-panes
+    title: Panes & focus
+    type: heading
+    level: 2
+    collapsed: false
+  -
+    id: art-inactive-opacity
+    title: Inactive pane opacity
+    description: Artificer rule \#6 says inactive = 0.55. Lower for more drama, raise to 1 to disable.
+    type: variable-number-slider
+    default: 0.55
+    min: 0.3
+    max: 1.0
+    step: 0.05
+  -
+    id: art-inactive-saturate
+    title: Inactive pane desaturation
+    description: 0 = fully grey, 1 = full color. Default 0.6 matches the source system.
+    type: variable-number-slider
+    default: 0.6
+    min: 0
+    max: 1
+    step: 0.05
+  -
+    id: art-tab-style
+    title: Tab style
+    description: |
+      Underline — minimal, gold underline on active (default).
+      Filled — active tab has raised fill (closer to vanilla Obsidian).
+    type: class-select
+    default: theme-tabs-underline
+    allowEmpty: false
+    options:
+      - label: Underline (gold rule)
+        value: theme-tabs-underline
+      - label: Filled (raised active)
+        value: theme-tabs-filled
+
+  # ─── Accent colors ───────────────────────────────────────────────
+  -
+    id: art-accents
+    title: Accent colors
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: art-accent
+    title: Accent (gold)
+    description: Burnished gold. AAA on dark. Used for links, focus, active states.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e0b558'
+    default-light: '#7a5a10'
+  -
+    id: art-accent-bright
+    title: Accent (hover)
+    description: One step brighter than accent. Used on link hover, focus rings.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#ddb96b'
+    default-light: '#8d6a18'
+  -
+    id: art-accent-fill
+    title: Accent fill
+    description: Solid gold for primary buttons and badges. Defaults match in both modes.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#c4932a'
+    default-light: '#7a4f08'
+  -
+    id: art-attention
+    title: Attention (rose)
+    description: Used for warnings, unresolved links, modifiers in POS mode.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e5afb7'
+    default-light: '#7a3344'
+  -
+    id: art-urgent
+    title: Urgent (terracotta)
+    description: Errors, danger menu items, destructive actions.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e8836f'
+    default-light: '#9b3a25'
+  -
+    id: art-success
+    title: Success (olive)
+    description: Sync confirmations, success toasts, code strings.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#b7bd73'
+    default-light: '#4a5a1a'
+  -
+    id: art-steel
+    title: Steel (cool blue)
+    description: Secondary metadata, code properties, descriptive text.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#9fb6c4'
+    default-light: '#3a5566'
+  -
+    id: art-brand-purple
+    title: Brand purple
+    description: Code keywords and tags. Reserved for emphasis you want to feel different.
+    type: variable-themed-color
+    format: hex
+    default-dark: '#c9b5e8'
+    default-light: '#4a25a0'
+
+  # ─── Tags ────────────────────────────────────────────────────────
+  -
+    id: art-tags
+    title: Tags
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: tag-style
+    title: Tag style
+    description: |
+      Pill — solid pill with gold fill on hover (default).
+      Underline — text-only, gold underline. Less visual weight.
+    type: class-select
+    default: theme-tags-pill
+    allowEmpty: false
+    options:
+      - label: Pill
+        value: theme-tags-pill
+      - label: Underline
+        value: theme-tags-underline
+  -
+    id: tag-radius
+    title: Tag corner radius
+    type: variable-number-slider
+    default: 4
+    min: 0
+    max: 16
+    step: 1
+    format: px
+
+  # ─── Callouts ────────────────────────────────────────────────────
+  -
+    id: art-callouts
+    title: Callouts
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: callout-radius
+    title: Callout radius
+    type: variable-number-slider
+    default: 8
+    min: 0
+    max: 16
+    step: 1
+    format: px
+  -
+    id: callout-border-opacity
+    title: Callout border tint
+    description: 0 = no tinted border, 0.4 = strong (default 0.18).
+    type: variable-number-slider
+    default: 0.18
+    min: 0
+    max: 0.5
+    step: 0.02
+  -
+    id: callout-blend-mode
+    title: Soften callout backgrounds
+    description: Compact callouts use a tighter padding scale.
+    type: class-toggle
+    default: false
+    addCommand: true
+
+  # ─── Code blocks ─────────────────────────────────────────────────
+  -
+    id: art-code
+    title: Code blocks
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: code-size
+    title: Code font size
+    type: variable-number
+    default: 14
+    format: px
+  -
+    id: code-radius
+    title: Code block radius
+    type: variable-number-slider
+    default: 8
+    min: 0
+    max: 16
+    step: 1
+    format: px
+  -
+    id: code-line-numbers
+    title: Show line numbers
+    description: Toggles the gutter on fenced code blocks.
+    type: class-toggle
+    default: false
+    addCommand: true
+  -
+    id: code-keyword
+    title: Keyword color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#c9b5e8'
+    default-light: '#4a25a0'
+  -
+    id: code-string
+    title: String color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#b7bd73'
+    default-light: '#4a5a1a'
+  -
+    id: code-function
+    title: Function color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e0b558'
+    default-light: '#7a5a10'
+  -
+    id: code-comment
+    title: Comment color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#666666'
+    default-light: '#8a7c5a'
+  -
+    id: code-property
+    title: Property color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#9fb6c4'
+    default-light: '#3a5566'
+
+  # ─── Frontmatter ─────────────────────────────────────────────────
+  -
+    id: art-frontmatter
+    title: Frontmatter / properties
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: art-frontmatter-compact
+    title: Compact frontmatter
+    description: Tightens the properties block — smaller padding, smaller key column. Good for note-heavy vaults.
+    type: class-toggle
+    default: false
+
+  # ─── Markdown emphasis ───────────────────────────────────────────
+  -
+    id: art-emphasis
+    title: Markdown emphasis
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: bold-color
+    title: Bold color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e8e6e1'
+    default-light: '#1a1410'
+  -
+    id: bold-weight
+    title: Bold weight
+    type: variable-number-slider
+    default: 700
+    min: 500
+    max: 900
+    step: 100
+  -
+    id: italic-color
+    title: Italic color
+    type: variable-themed-color
+    format: hex
+    default-dark: '#e8e6e1'
+    default-light: '#1a1410'
+  -
+    id: blockquote-font-style
+    title: Blockquote font style
+    type: variable-select
+    default: italic
+    options:
+      - italic
+      - normal
+
+  # ─── POS highlighting ────────────────────────────────────────────
+  -
+    id: art-pos
+    title: Parts-of-speech highlighting
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: art-pos-on
+    title: Enable POS highlighting
+    description: Verbs in gold, adjectives in italic steel, adverbs in italic attention rose. Pairs with a POS-tagging plugin that wraps tokens in .pos-v / .pos-adj / .pos-adv. No-op without that plugin. (v0.6.0 used `pos-on`; both selectors still work in v0.6.1 — re-toggle here to migrate.)
+    type: class-toggle
+    default: false
+
+  # ─── Light-mode cascade ────────────────────────────────
+  -
+    id: art-cascade-deep
+    title: Deep overlay (light mode) — deprecated
+    description: As of v0.6.4, the recessed overlay (#e4d4b0) is the default. This toggle is a no-op kept for one version so v0.6.1–v0.6.3 users who opted in don't break. Removed in v0.7.0.
+    type: class-toggle
+    default: false
+
+  # ─── Translucency ───────────────────────────────────────
+  -
+    id: artificer-translucent
+    title: Translucent chrome
+    description: Off (default) — sidebars and the status bar are opaque. On — they go transparent so Obsidian's app-level translucency (vibrancy on macOS, blur backdrop elsewhere) shows through. Only meaningful if Obsidian's window translucency is also enabled.
+    type: class-toggle
+    default: false
+
+*/

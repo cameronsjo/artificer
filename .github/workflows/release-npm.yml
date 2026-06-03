@@ -1,0 +1,104 @@
+name: Release npm package
+
+# Fires only when a `v*` tag is pushed (distinct from `obsidian-v*`).
+#
+# Auth = npm trusted publishing (OIDC). No long-lived token in steady state:
+# npm exchanges the OIDC env (id-token: write) for a short-lived publish
+# credential IF a trusted publisher is configured for this package + this exact
+# workflow filename (release-npm.yml) on npmjs.com.
+#
+# First-publish bootstrap: a trusted publisher can only attach to a package that
+# already exists, so the very first cut needs either a manual local
+# `npm publish` or a short-lived NPM_TOKEN secret (the fallback below). After the
+# first publish: configure trusted publishing, then delete NODE_AUTH_TOKEN here
+# and revoke the NPM_TOKEN secret. Public repo → npm provenance is available.
+#
+# Before the first run: (1) set the release version, (2) bootstrap auth (token
+# or manual), (3) push a `v<x.y.z>` tag matching package.json version.
+# See docs/SHARING.md.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # gh release create
+  id-token: write   # OIDC trusted publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Ensure npm >= 11.5.1 (OIDC trusted publishing floor)
+        run: npm install -g npm@latest
+
+      - name: Verify package version matches tag
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+            echo "::error::Tag '$REF_NAME' does not match expected pattern vX.Y.Z[-suffix]."
+            exit 1
+          fi
+          tag_version="${REF_NAME#v}"
+          pkg_version=$(jq -r .version package.json)
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::Tag is v${tag_version} but package.json has version ${pkg_version}."
+            exit 1
+          fi
+          echo "VERSION=${pkg_version}" >> "$GITHUB_ENV"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to npm
+        # OIDC trusted publishing when configured; NODE_AUTH_TOKEN is the
+        # first-publish bootstrap fallback only. --access public is required for
+        # a scoped package's first cut.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Generate SRI block
+        run: node scripts/gen-sri.mjs
+
+      - name: Assemble release notes
+        run: |
+          set -euo pipefail
+          {
+            echo "Artificer web design system \`@cameronsjo/artificer@${VERSION}\` — published to npm and mirrored on jsDelivr."
+            echo
+            echo "Apache-2.0; published for Cameron's own reuse, unsupported and Cameron-first. See docs/UPGRADE.md for the pin/versioning contract."
+            echo
+            echo "## Install"
+            echo
+            echo '```bash'
+            echo "npm install @cameronsjo/artificer@${VERSION}"
+            echo '```'
+            echo
+            echo "## CDN + SRI (pinned)"
+            echo
+            echo '```html'
+            cat dist-meta/cdn-snippet.html
+            echo '```'
+          } > release-notes.md
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$REF_NAME" \
+            --title "v${VERSION}" \
+            --notes-file release-notes.md \
+            dist-meta/integrity.json

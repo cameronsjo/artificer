@@ -1,0 +1,39 @@
+# Artificer Light — Ghostty theme
+# Ivory paper, midnight indigo ink
+# Drop in: ~/.config/ghostty/themes/artificer-light
+# Then in config:  theme = artificer-light
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+background = f5ead0
+foreground = 20203e
+
+cursor-color = 7a5a10
+cursor-text  = f5ead0
+
+selection-background = c4932a
+selection-foreground = f5ead0
+
+# ANSI 0–7 (normal)
+# Invariant: positions 4 (normal blue) and 12 (bright blue) must be a
+# brightness pair on the same hue. Markdown renderers emit bright-blue
+# for inline code; sibling hues (e.g. rose + peach) make inline code
+# render a visibly different color than surrounding text.
+palette = 0=f5ead0
+palette = 1=8a2418
+palette = 2=2a5a3a
+palette = 3=7a5a10
+palette = 4=406278
+palette = 5=4a25a0
+palette = 6=3a6a68
+palette = 7=20203e
+
+# ANSI 8–15 (bright)
+palette = 8=8a8070
+palette = 9=a04540
+palette = 10=3a7050
+palette = 11=866010
+palette = 12=2e4a5a
+palette = 13=5a35b0
+palette = 14=4a8280
+palette = 15=20203e

@@ -1,0 +1,18 @@
+{
+  "name": "artificer-design-system",
+  "description": "Cameron's personal design system — Artificer. AuDHD-optimized, dark-first, Jazz Age Deco palette. For tools, dashboards, agent UIs, terminals, settings panels.",
+  "author": {
+    "name": "Cameron Sjo",
+    "url": "https://github.com/cameronsjo"
+  },
+  "repository": "https://github.com/cameronsjo/artificer",
+  "license": "Apache-2.0",
+  "keywords": [
+    "design-system",
+    "artificer",
+    "dark-mode",
+    "audhd",
+    "ui-kit",
+    "personal"
+  ]
+}

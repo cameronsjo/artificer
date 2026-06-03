@@ -1,0 +1,159 @@
+// Artificer Dark — Claude Code theme (annotated playground edition) · v0.6
+//
+// Claude Code's theme loader requires strict JSON, so this .jsonc is a
+// READING copy with alternates as comments. To experiment:
+//   1. Edit a hex below.
+//   2. Strip comments + save as artificer-dark.json (or run `jq . file.jsonc`).
+//   3. Save into ~/.claude/themes/ — Claude Code hot-reloads.
+//
+// Contrast targets (on bg #292c33):
+//   - text:        AAA (≥7:1)
+//   - permission/  AAA preferred; AA (≥4.5:1) acceptable for accent roles
+//   - success/error: ≥4.5:1 minimum
+//
+// v0.6 palette: brick replaces vermillion, apothecary replaces olive,
+// purple replaces lilac, indigo ink replaces navy, gold warmed to #dbbb6f.
+//
+{
+  "$schema": "./theme.schema.json",
+  "name": "Artificer Dark",
+  "base": "dark-ansi",
+  "overrides": {
+    // ── Brand & spinner ──────────────────────────────────────────────
+    "claude": "#dbbb6f",
+    // alts: c4932a (deeper) | e3c885 (lighter shimmer-tier) | d6a040 (more orange)
+
+    "claudeShimmer": "#e3c885",
+    // alts: f0c878 (brighter) | e8c478 (warmer)
+
+    "claudeBlue_FOR_SYSTEM_SPINNER": "#b8cad4",
+    // alts: 9fb6c4 (calmer) | a4c2d5 (bluer) — used during system thinking
+
+    "claudeBlueShimmer_FOR_SYSTEM_SPINNER": "#9fb6c4",
+    // alts: c8d4dc (lighter shimmer)
+
+    // ── Text & surfaces ──────────────────────────────────────────────
+    "text": "#e8e6e1",
+    // alts: ffffff (max contrast, harsh) | dcd9d2 (warmer parchment)
+
+    "inverseText": "#20203e",
+    // alt: 1a1a32 (lighter indigo on accent — softer)
+
+    "inactive": "#c5c8c6",
+    // alts: a8aba9 (more obviously dim) | 999c9a (deeper grey)
+
+    "inactiveShimmer": "#d5d8d6",
+    "subtle": "#666666",
+    // alts: 808080 (more visible) | 4a4f5c (cooler)
+
+    "background": "#292c33",
+    // alts: 1d1f21 (Ghostty default-dark) | 222530 (navy-leaning)
+
+    // ── The periwinkle trio (steel + purple) ────────────────────────
+    "permission": "#b8cad4",
+    // alts: 9fb6c4 (muted) | a4c2d5 (bluer)
+
+    "permissionShimmer": "#9fb6c4",
+    "remember": "#5a3a9a",
+    // alts: 7050b8 (lifted) | 4a25a0 (deeper) | 331567 (deepest royal)
+
+    "suggestion": "#5a3a9a",
+    // alts: b8cad4 (steel — pairs w/ remember=purple for differentiation)
+
+    // ── Status (v0.6) ───────────────────────────────────────────────
+    "success": "#4a8a5e",
+    // alts: 3d5a3d (deeper apothecary) | 5fa073 (lifted)
+
+    "error": "#a04540",
+    // alts: b85550 (lifted brick) | 8a2418 (deepest)
+
+    "warning": "#c4808a",
+    // alts: dbbb6f (gold instead of rose) | d693a0 (deeper rose)
+
+    "warningShimmer": "#d49ba4",
+    "merged": "#b8cad4",
+
+    // ── Mode borders ────────────────────────────────────────────────
+    "promptBorder": "#4a4f5c",
+    // alts: 5a606e (lifted) | dbbb6f (gold accent — bold) | 3a3f4c (subtler)
+
+    "promptBorderShimmer": "#5a606e",
+    "planMode": "#5a3a9a",
+    // alts: b8cad4 (steel) | dbbb6f (gold)
+
+    "autoAccept": "#4a8a5e",
+    "bashBorder": "#dbbb6f",
+    "ide": "#b8cad4",
+    "fastMode": "#c4808a",
+    "fastModeShimmer": "#d49ba4",
+
+    // ── Diff (background tints — keep low chroma) ───────────────────
+    "diffAdded": "#1f3a28",
+    // alts: 2d5a3a (lifted) | 1a3024 (deeper)
+    "diffRemoved": "#3a1f1d",
+    // alts: 4a2520 (lifted) | 2e1614 (deeper)
+    "diffAddedDimmed": "#1a2a20",
+    "diffRemovedDimmed": "#2a1816",
+    "diffAddedWord": "#2d5a3a",
+    // alts: 3d6a4a (lighter) — word-level, can be more saturated
+    "diffRemovedWord": "#5a2e2a",
+
+    // ── Fullscreen mode backgrounds ─────────────────────────────────
+    "userMessageBackground": "#313540",
+    // alts: 2e323c (subtler) | 363a45 (lifted)
+    "userMessageBackgroundHover": "#3c4150",
+    "messageActionsBackground": "#2a2d36",
+    "bashMessageBackgroundColor": "#2e2b25",
+    "memoryBackgroundColor": "#252a30",
+    "selectionBg": "#c4932a",
+    // alts: dbbb6f (brighter highlight) | 4a4f5c (graphite — invisible)
+
+    // ── Rate limit ──────────────────────────────────────────────────
+    "rate_limit_fill": "#c4932a",
+    // alts: dbbb6f (brighter) | 4a8a5e (green=safe) | a04540 (brick=alarm)
+    "rate_limit_empty": "#2a2d36",
+
+    // ── Speaker labels ──────────────────────────────────────────────
+    "briefLabelYou": "#b8cad4",
+    // alts: 5a3a9a (purple) | e8e6e1 (bone — neutral)
+    "briefLabelClaude": "#dbbb6f",
+
+    // ── Misc ────────────────────────────────────────────────────────
+    "professionalBlue": "#b8cad4",
+    "chromeYellow": "#dbbb6f",
+
+    // The clawd mascot — go wild here, it's the welcome screen
+    "clawd_body": "#dbbb6f",
+    // alts: c4932a (deeper gold) | a04540 (brick) | 5a3a9a (purple)
+    "clawd_background": "#292c33",
+
+    // ── Subagents ───────────────────────────────────────────────────
+    // These are role labels — keep distinct hues. Avoid swapping unless
+    // you want subagent identity to feel different.
+    "red_FOR_SUBAGENTS_ONLY": "#a04540",
+    "blue_FOR_SUBAGENTS_ONLY": "#b8cad4",
+    "green_FOR_SUBAGENTS_ONLY": "#4a8a5e",
+    "yellow_FOR_SUBAGENTS_ONLY": "#dbbb6f",
+    "purple_FOR_SUBAGENTS_ONLY": "#5a3a9a",
+    "orange_FOR_SUBAGENTS_ONLY": "#b87333",
+    "pink_FOR_SUBAGENTS_ONLY": "#c4808a",
+    "cyan_FOR_SUBAGENTS_ONLY": "#7da6a4",
+
+    // ── Rainbow (ultrathink / ultraplan) ────────────────────────────
+    // Pulled from the same palette so /ultrathink looks cohesive.
+    "rainbow_red": "#a04540",
+    "rainbow_orange": "#b87333",
+    "rainbow_yellow": "#dbbb6f",
+    "rainbow_green": "#4a8a5e",
+    "rainbow_blue": "#b8cad4",
+    "rainbow_indigo": "#5a3a9a",
+    "rainbow_violet": "#c4808a",
+    "rainbow_red_shimmer": "#b85a55",
+    "rainbow_orange_shimmer": "#cc8845",
+    "rainbow_yellow_shimmer": "#e3c885",
+    "rainbow_green_shimmer": "#5fa073",
+    "rainbow_blue_shimmer": "#9fb6c4",
+    "rainbow_indigo_shimmer": "#7050b8",
+    "rainbow_violet_shimmer": "#d49ba4"
+  }
+}

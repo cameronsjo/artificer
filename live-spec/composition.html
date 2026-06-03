@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<title>Artificer · Composition</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  /* page chrome — matches data-display.html */
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); border: 1px solid var(--border); }
+  .demo--frame { padding: 0; overflow: hidden; }
+  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Dashboard frame — sits inside .demo to look like a real screen */
+  .dash {
+    display: grid; grid-template-rows: auto auto 1fr; gap: var(--s-md);
+    padding: var(--s-md) var(--s-lg) var(--s-lg);
+    background: var(--bg);
+    min-height: 480px;
+  }
+  .dash__topbar { display: flex; align-items: center; justify-content: space-between; gap: var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .dash__title  { font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--fg); margin: 0; letter-spacing: .04em; }
+  .dash__actions { display: flex; gap: var(--s-sm); align-items: center; }
+
+  /* stat used in this page (mirrors data-display) */
+  .stat { display: flex; flex-direction: column; gap: 4px; padding: var(--s-md); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); }
+  .stat__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); }
+  .stat__value { font-family: var(--font-mono); font-weight: 700; font-size: 24px; color: var(--fg); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat__delta { font-family: var(--font-mono); font-size: 11px; color: var(--success); }
+  .stat__delta.down { color: var(--urgent); }
+  .stat__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-sm); }
+
+  /* sidebar nav for split-pane example */
+  .sidenav { padding: var(--s-md); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; height: 100%; }
+  .sidenav__group { font-family: var(--font-sans); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); padding: var(--s-sm) var(--s-sm) 4px; }
+  .sidenav a { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); padding: 6px 10px; border-radius: var(--radius-sm); color: var(--fg-secondary); font-family: var(--font-mono); font-size: 13px; text-decoration: none; }
+  .sidenav a:hover { background: var(--bg); color: var(--fg); }
+  .sidenav a[aria-current="page"] { background: var(--bg); color: var(--accent); border-left: 2px solid var(--accent); padding-left: 8px; }
+  .sidenav a .count { font-size: 11px; color: var(--fg-disabled); font-variant-numeric: tabular-nums; }
+
+  /* mini sparkline svg helper */
+  .spark-cell { display: inline-flex; align-items: center; gap: var(--s-sm); }
+
+  /* compact ops console */
+  .console { background: var(--bg-inactive); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--s-sm) var(--s-md); font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--fg-secondary); max-height: 240px; overflow: auto; }
+  .console .ts { color: var(--fg-disabled); }
+  .console .ok { color: var(--success); }
+  .console .err { color: var(--urgent); }
+  .console .warn { color: var(--attention); }
+
+  /* notes column */
+  .notes { color: var(--fg-secondary); line-height: 1.6; }
+  .notes ul { padding-left: 1.4em; }
+  .notes li { margin: 4px 0; }
+  .notes b.anchor { color: var(--fg); }
+
+  /* tweaks panel chrome */
+  .tweaks {
+    position: fixed; right: 16px; bottom: 16px; z-index: var(--z-overlay);
+    background: var(--bg-overlay); border: 1px solid var(--border); border-radius: var(--radius-md);
+    box-shadow: var(--shadow-overlay);
+    padding: var(--s-md); width: 240px;
+    display: none; flex-direction: column; gap: var(--s-sm);
+    font-family: var(--font-sans); font-size: 12px;
+  }
+  .tweaks.open { display: flex; }
+  .tweaks__title { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-xs); }
+  .tweaks__row   { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); }
+  .tweaks__row > span:first-child { color: var(--fg-secondary); }
+  .tweaks .timerange button { padding: 4px 8px; font-size: 11px; }
+  .tweaks__open-btn {
+    position: fixed; right: 16px; bottom: 16px; z-index: var(--z-raised);
+    background: var(--bg-overlay); color: var(--fg); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px; font-family: var(--font-sans); font-size: 12px; cursor: pointer;
+  }
+  .tweaks__open-btn:hover { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+
+<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Composition</p>
+  <h1 class="t-headline-lg">composition.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">
+    The atoms ship in <a href="components.html">components</a> and <a href="data-display.html">data display</a>.
+    This page is about <b class="anchor">how they sit together</b> on a real page —
+    dashboard skeletons, filter rows, density modes, the small chrome decisions
+    (last-updated stamp, live-tick, sticky table headers) that make a real product feel right.
+  </p>
+
+  <h2>The four dashboard skeletons</h2>
+  <p class="meta">Pick by <b class="anchor">primary task</b>, not by aesthetic. Each skeleton has a job. If yours doesn't fit one of these, push back on the brief — usually two pages in a trench coat.</p>
+
+  <!-- 1. KPI dashboard -->
+  <h3>1 · KPI dashboard <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "what's the headline?"</span></h3>
+  <p class="meta">Big numbers up top, supporting chart, recent activity. Use when the user came to <i>check status</i>, not investigate.</p>
+  <div class="demo demo--frame">
+    <section class="dash density-cozy" data-dash="kpi" aria-label="KPI dashboard example">
+      <div class="dash__topbar">
+        <h4 class="dash__title">Operations · today</h4>
+        <div class="dash__actions">
+          <span class="live-tick">live</span>
+          <span class="last-updated">14:32:08 UTC</span>
+        </div>
+      </div>
+      <div class="kpi-strip">
+        <div class="stat"><div class="stat__label">Active runs</div><div class="stat__row"><div class="stat__value">42</div><svg class="sparkline" viewBox="0 0 80 22" preserveAspectRatio="none"><path class="line" d="M0 16 L10 14 L20 17 L30 11 L40 9 L50 12 L60 6 L70 8 L80 4"/><circle class="last-point" cx="80" cy="4" r="2"/></svg></div><div class="stat__delta">+8 this hour</div></div>
+        <div class="stat"><div class="stat__label">P95 latency</div><div class="stat__row"><div class="stat__value">312<span style="font-size:14px;color:var(--fg-secondary)"> ms</span></div><svg class="sparkline" viewBox="0 0 80 22" preserveAspectRatio="none"><path class="line" d="M0 14 L10 12 L20 13 L30 10 L40 11 L50 8 L60 6 L70 9 L80 7"/><circle class="last-point" cx="80" cy="7" r="2"/></svg></div><div class="stat__delta down">+24 ms vs. yesterday</div></div>
+        <div class="stat"><div class="stat__label">Success rate</div><div class="stat__row"><div class="stat__value">99.4<span style="font-size:14px;color:var(--fg-secondary)">%</span></div><svg class="sparkline" viewBox="0 0 80 22" preserveAspectRatio="none"><path class="line" d="M0 8 L10 6 L20 5 L30 7 L40 4 L50 5 L60 4 L70 5 L80 3"/><circle class="last-point" cx="80" cy="3" r="2"/></svg></div><div class="stat__delta">+0.2% w/w</div></div>
+        <div class="stat"><div class="stat__label">Spend</div><div class="stat__row"><div class="stat__value">$184</div><svg class="sparkline" viewBox="0 0 80 22" preserveAspectRatio="none"><path class="line" d="M0 18 L10 17 L20 15 L30 14 L40 13 L50 11 L60 9 L70 8 L80 6"/><circle class="last-point" cx="80" cy="6" r="2"/></svg></div><div class="stat__delta">on track</div></div>
+      </div>
+
+      <div class="grid-2" style="--gap:var(--s-md)">
+        <div class="chart">
+          <div class="chart__header"><h5 class="chart__title">Runs · 24h</h5><div class="chart__value">1,284</div></div>
+          <div class="chart__plot">
+            <svg viewBox="0 0 320 130" preserveAspectRatio="none" width="100%" height="100%" aria-label="Runs over 24 hours">
+              <line x1="0" y1="100" x2="320" y2="100" stroke="var(--chart-grid-strong)" stroke-width="1"/>
+              <line x1="0" y1="60"  x2="320" y2="60"  stroke="var(--chart-grid)" stroke-width="1"/>
+              <line x1="0" y1="20"  x2="320" y2="20"  stroke="var(--chart-grid)" stroke-width="1"/>
+              <path class="series-1" fill="none" stroke-width="1.6" d="M0 88 L20 80 L40 84 L60 70 L80 60 L100 64 L120 50 L140 40 L160 44 L180 32 L200 36 L220 24 L240 28 L260 18 L280 22 L300 14 L320 10"/>
+              <path class="series-1" stroke="none" opacity=".12" d="M0 88 L20 80 L40 84 L60 70 L80 60 L100 64 L120 50 L140 40 L160 44 L180 32 L200 36 L220 24 L240 28 L260 18 L280 22 L300 14 L320 10 L320 100 L0 100 Z"/>
+              <text class="dia-node-meta" x="0"   y="115" text-anchor="start">00:00</text>
+              <text class="dia-node-meta" x="160" y="115" text-anchor="middle">12:00</text>
+              <text class="dia-node-meta" x="320" y="115" text-anchor="end">24:00</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="chart">
+          <div class="chart__header"><h5 class="chart__title">Top failures</h5><div class="chart__value">17</div></div>
+          <div class="chart__plot">
+            <svg viewBox="0 0 320 130" width="100%" height="100%" aria-label="Top failure reasons">
+              <g font-family="var(--font-mono)" font-size="11" fill="var(--fg-secondary)">
+                <text x="0" y="14">timeout</text>     <rect x="100" y="4"  width="180" height="14" class="series-1"/>     <text x="288" y="14" text-anchor="end" fill="var(--fg)" font-weight="700">8</text>
+                <text x="0" y="38">429 throttle</text><rect x="100" y="28" width="100" height="14" class="series-1" opacity=".75"/> <text x="288" y="38" text-anchor="end" fill="var(--fg)" font-weight="700">5</text>
+                <text x="0" y="62">5xx</text>         <rect x="100" y="52" width="56"  height="14" class="series-1" opacity=".55"/> <text x="288" y="62" text-anchor="end" fill="var(--fg)" font-weight="700">3</text>
+                <text x="0" y="86">parse</text>       <rect x="100" y="76" width="20"  height="14" class="series-1" opacity=".4"/>  <text x="288" y="86" text-anchor="end" fill="var(--fg)" font-weight="700">1</text>
+              </g>
+              <line x1="100" y1="0" x2="100" y2="100" stroke="var(--chart-grid-strong)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 2. Ops console -->
+  <h3>2 · Ops console <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "something is wrong, where?"</span></h3>
+  <p class="meta">Dense table of recent activity, filter row, log stream. Use when the user came to <i>investigate</i>. Compact density. Sticky table header.</p>
+  <div class="demo demo--frame">
+    <section class="dash density-compact" aria-label="Ops console example">
+      <div class="dash__topbar">
+        <h4 class="dash__title">Runs</h4>
+        <div class="dash__actions">
+          <div class="timerange" role="group" aria-label="Time range">
+            <button type="button">15m</button>
+            <button type="button" aria-pressed="true">1h</button>
+            <button type="button">24h</button>
+            <button type="button">7d</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="chip" aria-pressed="true">all <span class="chip__count">128</span></button>
+        <button class="chip">passed <span class="chip__count">114</span></button>
+        <button class="chip" style="color:var(--urgent);border-color:var(--urgent)">failed <span class="chip__count">9</span></button>
+        <button class="chip">throttled <span class="chip__count">5</span></button>
+        <span class="grow"></span>
+        <input class="input" type="search" placeholder="search by run id, branch, author…" style="max-width:280px"/>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:var(--s-md);min-height:0">
+        <div style="overflow:auto;max-height:280px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+          <table class="table table--sticky-head">
+            <thead><tr><th>Run</th><th>Status</th><th>Branch</th><th>Started</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
+            <tbody>
+              <tr><td>build-1284</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:32</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+              <tr><td>build-1283</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:28</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+              <tr><td>build-1282</td><td><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td>fix/auth</td><td>14:25</td><td class="num">—</td><td class="num">$0.08</td></tr>
+              <tr><td>build-1281</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:20</td><td class="num">2m 21s</td><td class="num">$0.44</td></tr>
+              <tr><td>build-1280</td><td><span class="badge badge--attention"><span class="dot dot--attention"></span>throttled</span></td><td>chore/deps</td><td>14:14</td><td class="num">3m 02s</td><td class="num">$0.49</td></tr>
+              <tr><td>build-1279</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:09</td><td class="num">2m 11s</td><td class="num">$0.42</td></tr>
+              <tr><td>build-1278</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:02</td><td class="num">2m 16s</td><td class="num">$0.43</td></tr>
+              <tr><td>build-1277</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>13:58</td><td class="num">2m 13s</td><td class="num">$0.42</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="console" aria-label="Recent log stream">
+          <div><span class="ts">14:32:08</span> <span class="ok">PASS</span> build-1284 deployed to canary</div>
+          <div><span class="ts">14:31:54</span> <span class="ok">PASS</span> build-1284 tests 248/248</div>
+          <div><span class="ts">14:30:12</span>      build-1284 tests started</div>
+          <div><span class="ts">14:29:48</span>      build-1284 build complete (38.2 s)</div>
+          <div><span class="ts">14:28:01</span> <span class="ok">PASS</span> build-1283 deployed to canary</div>
+          <div><span class="ts">14:25:32</span> <span class="err">FAIL</span> build-1282: timeout in <code>auth.test.ts</code> at 600s</div>
+          <div><span class="ts">14:21:11</span>      build-1282 tests started</div>
+          <div><span class="ts">14:20:58</span> <span class="ok">PASS</span> build-1281 deployed to canary</div>
+          <div><span class="ts">14:14:02</span> <span class="warn">WARN</span> build-1280 hit 429 throttle 12× — retry succeeded</div>
+          <div><span class="ts">14:09:48</span> <span class="ok">PASS</span> build-1279 deployed to canary</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 3. Split-pane / browse-and-detail -->
+  <h3>3 · Split pane <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "browse a list, look at one"</span></h3>
+  <p class="meta">Sidebar = the list. Main = the detail. Settings, inbox, audit log, file browser. Cozy density.</p>
+  <div class="demo demo--frame">
+    <section class="dash density-cozy" style="grid-template-rows:auto 1fr" aria-label="Split-pane example">
+      <div class="dash__topbar">
+        <h4 class="dash__title">Settings</h4>
+        <div class="dash__actions"><span class="meta">Last saved 14:30</span></div>
+      </div>
+      <div class="split-pane" style="min-height:380px">
+        <nav class="sidenav" aria-label="Settings sections">
+          <div class="sidenav__group">Workspace</div>
+          <a href="#"><span>General</span><span class="count"></span></a>
+          <a href="#" aria-current="page"><span>API keys</span><span class="count">7</span></a>
+          <a href="#"><span>Members</span><span class="count">12</span></a>
+          <a href="#"><span>Billing</span><span class="count"></span></a>
+          <div class="sidenav__group" style="margin-top:8px">Personal</div>
+          <a href="#"><span>Profile</span><span class="count"></span></a>
+          <a href="#"><span>Notifications</span><span class="count">3</span></a>
+          <a href="#"><span>Sessions</span><span class="count">2</span></a>
+        </nav>
+
+        <div class="card" style="overflow:auto">
+          <h5 style="font-family:var(--font-mono);font-weight:700;font-size:16px;margin:0 0 var(--s-sm)">API keys</h5>
+          <p class="meta" style="margin:0 0 var(--s-md)">Keys grant programmatic access to your workspace. Rotate any key whose use is unaccounted for.</p>
+          <div class="cluster cluster--between" style="margin-bottom:var(--s-md)">
+            <span class="meta">7 active · 1 unused 30+ days</span>
+            <button class="btn btn--primary">New key</button>
+          </div>
+          <table class="table">
+            <thead><tr><th>Name</th><th>Last used</th><th>Created</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>ci-deploy</td><td>2h ago</td><td>2026-01-12</td><td style="text-align:right"><button class="btn btn--ghost" style="padding:4px 8px;font-size:12px">rotate</button></td></tr>
+              <tr><td>local-dev</td><td>14h ago</td><td>2026-02-04</td><td style="text-align:right"><button class="btn btn--ghost" style="padding:4px 8px;font-size:12px">rotate</button></td></tr>
+              <tr><td>staging-runner</td><td>3d ago</td><td>2025-11-22</td><td style="text-align:right"><button class="btn btn--ghost" style="padding:4px 8px;font-size:12px">rotate</button></td></tr>
+              <tr><td>archive-job</td><td><span style="color:var(--attention)">42d ago</span></td><td>2025-09-08</td><td style="text-align:right"><button class="btn btn--ghost" style="padding:4px 8px;font-size:12px">rotate</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 4. Table-first -->
+  <h3>4 · Table-first <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "show me everything"</span></h3>
+  <p class="meta">The table <i>is</i> the page. Filter row pinned, sticky headers, group rows, footer totals, comfortable on the eyes.</p>
+  <div class="demo demo--frame">
+    <section class="dash density-cozy" aria-label="Table-first example">
+      <div class="dash__topbar">
+        <h4 class="dash__title">Spend · April</h4>
+        <div class="dash__actions">
+          <span class="meta num">12 of 312 rows</span>
+          <button class="btn btn--ghost" style="padding:6px 10px;font-size:12px">Export CSV</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <button class="chip" aria-pressed="true">All</button>
+        <button class="chip">Compute</button>
+        <button class="chip">Storage</button>
+        <button class="chip">Network</button>
+        <button class="chip">Other</button>
+        <span class="grow"></span>
+        <input class="input" type="search" placeholder="search…" style="max-width:240px"/>
+      </div>
+      <div style="overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+        <table class="table table--sticky-head">
+          <thead>
+            <tr><th>Item</th><th>Project</th><th>Category</th><th class="num">Hours</th><th class="num">Rate</th><th class="num">Total</th></tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="6">Compute · 8 items</td></tr>
+            <tr><td>cluster-a · gpu</td><td>artificer</td><td>Compute</td><td class="num">142.5</td><td class="num">$0.89</td><td class="num">$126.83</td></tr>
+            <tr><td>cluster-a · cpu</td><td>artificer</td><td>Compute</td><td class="num">312.0</td><td class="num">$0.04</td><td class="num">$12.48</td></tr>
+            <tr><td>cluster-b · gpu</td><td>experiments</td><td>Compute</td><td class="num">88.4</td><td class="num">$0.89</td><td class="num">$78.68</td></tr>
+            <tr><td>cluster-b · cpu</td><td>experiments</td><td>Compute</td><td class="num">204.0</td><td class="num">$0.04</td><td class="num">$8.16</td></tr>
+            <tr class="group-row"><td colspan="6">Storage · 3 items</td></tr>
+            <tr><td>s3 · cold</td><td>archive</td><td>Storage</td><td class="num">—</td><td class="num">$0.004/GB</td><td class="num">$24.10</td></tr>
+            <tr><td>s3 · standard</td><td>artificer</td><td>Storage</td><td class="num">—</td><td class="num">$0.023/GB</td><td class="num">$8.84</td></tr>
+            <tr><td>r2 · standard</td><td>preview</td><td>Storage</td><td class="num">—</td><td class="num">$0.015/GB</td><td class="num">$3.20</td></tr>
+            <tr class="group-row"><td colspan="6">Network · 1 item</td></tr>
+            <tr><td>egress</td><td>artificer</td><td>Network</td><td class="num">—</td><td class="num">$0.09/GB</td><td class="num">$22.40</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="5">Total</td><td class="num">$284.69</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Density modes -->
+  <h2>Density modes</h2>
+  <p class="meta">Same content, three densities. Pick by surface: <b class="anchor">compact</b> for ops/console, <b class="anchor">cozy</b> for default product, <b class="anchor">comfortable</b> for documents.</p>
+
+  <h3>Compact <span style="color:var(--fg-disabled);font-weight:400">— 4px row, 10px gutter</span></h3>
+  <div class="demo">
+    <div class="density-compact">
+      <table class="table">
+        <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
+        <tbody>
+          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Cozy <span style="color:var(--fg-disabled);font-weight:400">— 8px row, 16px gutter (default)</span></h3>
+  <div class="demo">
+    <div class="density-cozy">
+      <table class="table">
+        <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
+        <tbody>
+          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Comfortable <span style="color:var(--fg-disabled);font-weight:400">— 14px row, 20px gutter</span></h3>
+  <div class="demo">
+    <div class="density-comfortable">
+      <table class="table">
+        <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
+        <tbody>
+          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Live atoms -->
+  <h2>Live-update atoms</h2>
+  <p class="meta">The small chrome that signals real-time without overwhelming. <b class="anchor">Pulse on what's live, not on what's important.</b> Use one indicator per region — a page covered in pulsing dots reads as broken.</p>
+  <div class="demo">
+    <div class="cluster" style="--gap:var(--s-xl)">
+      <div>
+        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live tick</div>
+        <div class="cluster" style="--gap:var(--s-md)">
+          <span class="live-tick">live</span>
+          <span class="live-tick">streaming</span>
+        </div>
+      </div>
+      <div>
+        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Last-updated</div>
+        <span class="last-updated" id="liveStamp">14:32:08 UTC</span>
+      </div>
+      <div>
+        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live value</div>
+        <span class="t-mono-headline-lg num live-value" id="liveValue">42</span>
+      </div>
+    </div>
+    <p class="meta" style="margin-top:var(--s-md);font-size:12px">The live value flashes the accent color momentarily on each change — a single perceptual "tick" so the user knows it moved without animating between states.</p>
+  </div>
+
+  <!-- Filters -->
+  <h2>Filters · time range · faceted browse</h2>
+  <p class="meta">Three patterns, in order of complexity. Start with chips. Add time-range when the data is temporal. Reach for a faceted sidebar only when the dataset has &gt;3 axes worth filtering on.</p>
+  <div class="demo stack stack--lg">
+    <div>
+      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Chips</div>
+      <div class="cluster">
+        <button class="chip" aria-pressed="true">All <span class="chip__count">128</span></button>
+        <button class="chip">Active <span class="chip__count">42</span></button>
+        <button class="chip">Pending <span class="chip__count">17</span></button>
+        <button class="chip">Archived <span class="chip__count">69</span></button>
+      </div>
+    </div>
+    <div>
+      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Time range</div>
+      <div class="timerange" role="group" aria-label="Time range">
+        <button type="button">15m</button>
+        <button type="button">1h</button>
+        <button type="button" aria-pressed="true">24h</button>
+        <button type="button">7d</button>
+        <button type="button">30d</button>
+        <button type="button">custom</button>
+      </div>
+    </div>
+    <div>
+      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Faceted</div>
+      <div class="filter-bar">
+        <button class="chip" aria-pressed="true">All</button>
+        <button class="chip">Compute</button>
+        <button class="chip">Storage</button>
+        <button class="chip">Network</button>
+        <span class="grow"></span>
+        <span class="meta" style="font-size:12px">312 results</span>
+        <input class="input" type="search" placeholder="filter…" style="max-width:200px"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <h2>Rules</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
+    <li><b class="anchor">Pick the skeleton from the user's task.</b> KPI for "what's the headline," ops for "where's the problem," split-pane for "browse-and-detail," table-first for "show me everything." Mixing skeletons on one page = confused users.</li>
+    <li><b class="anchor">One density per surface</b>, set on the page-shell or section. Don't mix compact and comfortable in the same view — it reads as sloppy.</li>
+    <li><b class="anchor">KPI cards: cap at 4–6.</b> Beyond that they become wallpaper. Promote the most important to an explicit headline (chart with big number).</li>
+    <li><b class="anchor">Filter bar is part of the table</b>, not a separate widget. Same width, sits directly above. Search input goes on the right, chips on the left.</li>
+    <li><b class="anchor">Sticky header on any table that scrolls.</b> Sticky first column when the row identifier is long enough to lose context.</li>
+    <li><b class="anchor">Group rows are uppercase mini-headers</b>, not full table rows. They reset the eye between sections.</li>
+    <li><b class="anchor">Footer = totals</b>, not "see more." The user wants the sum.</li>
+    <li><b class="anchor">"Last updated" lives in the topbar</b>, right side, mono, secondary color. The pulse goes on the data region itself, not on the timestamp.</li>
+    <li><b class="anchor">No more than one "live" pulse per region.</b> Two competing pulses create the impression of multiple things needing attention.</li>
+    <li><b class="anchor">Empty toolbar &gt; clutter.</b> If there are no actions yet, leave the action area blank. Don't fill it with a "tip" or a logo.</li>
+  </ol>
+
+  <h2>Anti-patterns</h2>
+  <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
+    <li><b class="anchor">12 KPI cards in two rows.</b> Reading suspended. Pick four. Promote the others to a "all metrics" page.</li>
+    <li><b class="anchor">Both a sidebar nav and a top tab bar.</b> Pick one. Two navs = the page has no spine.</li>
+    <li><b class="anchor">Filters that don't restate selection in the table header.</b> If the user filters to "failed runs," the table title should change to reflect it. Otherwise they forget what they're looking at.</li>
+    <li><b class="anchor">Spinning loader on a 300ms response.</b> Use a disabled state on the button instead. Skeletons are for &gt;1s; spinners are almost never the right answer.</li>
+    <li><b class="anchor">Pie charts on dashboards.</b> See <a href="charts.html">charts</a> — bar is almost always better. Pie is permitted at n ≤ 3 and only when the parts-of-whole reading is the entire point.</li>
+  </ul>
+</main>
+
+<!-- Tweaks panel — wired by the script below; toggled from the toolbar via __edit_mode_available -->
+<aside class="tweaks" id="tweaksPanel" aria-label="Tweaks">
+  <h3 class="tweaks__title">Tweaks</h3>
+  <div class="tweaks__row"><span>Density</span>
+    <div class="timerange" role="group" aria-label="Density">
+      <button type="button" data-density="compact">compact</button>
+      <button type="button" data-density="cozy" aria-pressed="true">cozy</button>
+      <button type="button" data-density="comfortable">comf</button>
+    </div>
+  </div>
+  <div class="tweaks__row"><span>Live demo</span>
+    <label class="toggle"><input type="checkbox" id="tweakLive" checked/><span>animate</span></label>
+  </div>
+  <button class="btn btn--ghost" id="tweakClose" style="padding:6px 10px;font-size:12px;align-self:flex-end">close</button>
+</aside>
+<button class="tweaks__open-btn" id="tweaksOpen" hidden>Tweaks</button>
+
+<script>
+(function(){
+  // Tweaks plumbing
+  var panel = document.getElementById('tweaksPanel');
+  var openBtn = document.getElementById('tweaksOpen');
+  var closeBtn = document.getElementById('tweakClose');
+
+  window.addEventListener('message', function(e){
+    var d = e && e.data;
+    if (!d || !d.type) return;
+    if (d.type === '__activate_edit_mode')   { panel.classList.add('open'); openBtn.hidden = true; }
+    if (d.type === '__deactivate_edit_mode') { panel.classList.remove('open'); openBtn.hidden = true; }
+  });
+  window.parent && window.parent.postMessage && window.parent.postMessage({type:'__edit_mode_available'},'*');
+  closeBtn.addEventListener('click', function(){
+    panel.classList.remove('open');
+    window.parent && window.parent.postMessage({type:'__edit_mode_dismissed'}, '*');
+  });
+
+  // Density toggle — applies to all .dash sections at once
+  panel.querySelectorAll('[data-density]').forEach(function(b){
+    b.addEventListener('click', function(){
+      panel.querySelectorAll('[data-density]').forEach(function(x){ x.removeAttribute('aria-pressed'); });
+      b.setAttribute('aria-pressed','true');
+      var d = b.getAttribute('data-density');
+      document.querySelectorAll('.dash').forEach(function(s){
+        s.classList.remove('density-compact','density-cozy','density-comfortable');
+        s.classList.add('density-' + d);
+      });
+    });
+  });
+
+  // Time-range pressed-state (visual only — for demo)
+  document.querySelectorAll('.timerange').forEach(function(group){
+    if (group.closest('.tweaks')) return; // skip tweaks panel
+    group.addEventListener('click', function(e){
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      group.querySelectorAll('button').forEach(function(b){ b.removeAttribute('aria-pressed'); });
+      btn.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // Chip pressed-state toggle (multi-select for filter chips, but we keep single-select for "all" group)
+  document.querySelectorAll('.filter-bar').forEach(function(bar){
+    bar.addEventListener('click', function(e){
+      var c = e.target.closest('.chip');
+      if (!c) return;
+      bar.querySelectorAll('.chip').forEach(function(x){ x.removeAttribute('aria-pressed'); });
+      c.setAttribute('aria-pressed','true');
+    });
+  });
+
+  // Live atoms — tick every 2s; pause if reduced-motion or if tweak off
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var liveOn = !prefersReduced;
+  var live = document.getElementById('tweakLive');
+  if (live) {
+    live.checked = liveOn;
+    live.addEventListener('change', function(){ liveOn = live.checked; });
+  }
+  var stamp = document.getElementById('liveStamp');
+  var val = document.getElementById('liveValue');
+  var n = 42;
+  setInterval(function(){
+    if (!liveOn) return;
+    var d = new Date();
+    var hh = String(d.getUTCHours()).padStart(2,'0');
+    var mm = String(d.getUTCMinutes()).padStart(2,'0');
+    var ss = String(d.getUTCSeconds()).padStart(2,'0');
+    if (stamp) stamp.textContent = hh+':'+mm+':'+ss+' UTC';
+    if (val) {
+      n = Math.max(0, n + Math.round((Math.random()-0.5)*4));
+      val.textContent = n;
+      val.classList.add('flash');
+      setTimeout(function(){ val.classList.remove('flash'); }, 200);
+    }
+  }, 2000);
+})();
+</script>
+</body>
+</html>

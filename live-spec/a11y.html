@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Accessibility</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
+  .check { display: grid; grid-template-columns: 24px 1fr; gap: var(--s-sm) var(--s-md); align-items: baseline; }
+  .check b { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--success); }
+  .ratio-card { padding: var(--s-md) var(--s-lg); border: 1px solid var(--border); border-radius: var(--radius-md); }
+  .ratio-card b { font-family: var(--font-mono); font-size: 24px; font-weight: 700; }
+  .pass { color: var(--success); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Accessibility</p>
+  <h1 class="t-headline-lg">accessibility.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Artificer targets <b class="anchor">WCAG 2.2 Level AA</b> as a floor and Level AAA on body text. Most of this is already wired into the CSS — this page is the audit and the rules you must not break.</p>
+
+  <h2>Contrast — what's already wired</h2>
+  <p class="meta">All values measured against the canonical <code>--bg</code> for that theme. AA = 4.5:1 normal text, 3:1 large/UI. AAA = 7:1 normal text.</p>
+  <div class="grid-auto" style="--min:200px;margin-top:var(--s-md)">
+    <div class="ratio-card"><div class="meta">Body on bg (dark)</div><b class="pass">12.8 : 1</b><div class="meta">AAA</div></div>
+    <div class="ratio-card"><div class="meta">Body on bg (cream)</div><b class="pass">11.4 : 1</b><div class="meta">AAA</div></div>
+    <div class="ratio-card"><div class="meta">Secondary on bg</div><b class="pass">7.2 : 1</b><div class="meta">AAA</div></div>
+    <div class="ratio-card"><div class="meta">Accent on bg</div><b class="pass">5.1 : 1</b><div class="meta">AA</div></div>
+    <div class="ratio-card"><div class="meta">on-accent on accent-fill</div><b class="pass">8.4 : 1</b><div class="meta">AAA</div></div>
+    <div class="ratio-card"><div class="meta">Border on bg</div><b class="pass">3.2 : 1</b><div class="meta">UI </div></div>
+  </div>
+
+  <h2>Focus rings — already wired</h2>
+  <p class="meta">Every focusable element gets a 2px <code>--accent</code> outline with 2px offset. Try tabbing through the page.</p>
+  <div class="demo cluster">
+    <button class="btn btn--primary">Tab to me</button>
+    <button class="btn btn--secondary">Then me</button>
+    <a href="#" class="btn btn--ghost">Then me</a>
+    <input class="input" placeholder="Then here" style="max-width:200px"/>
+  </div>
+  <pre class="code-block"><span class="tok-comment">/* Already in artificer.css */</span>
+button:focus-visible, input:focus-visible, select:focus-visible,
+[tabindex]:focus-visible, [role=<span class="tok-string">"button"</span>]:focus-visible {
+  outline: 2px solid <span class="tok-keyword">var</span>(--accent);
+  outline-offset: 2px;
+}</pre>
+
+  <h2>Skip link</h2>
+  <p class="meta">Tab from a fresh page reload — the skip link appears in the top-left. Always include it as the first focusable element.</p>
+  <pre class="code-block"><span class="tok-keyword">&lt;a</span> href=<span class="tok-string">"#main"</span> class=<span class="tok-string">"skip-link"</span><span class="tok-keyword">&gt;</span>Skip to content<span class="tok-keyword">&lt;/a&gt;</span>
+<span class="tok-comment">// …later</span>
+<span class="tok-keyword">&lt;main</span> id=<span class="tok-string">"main"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/main&gt;</span></pre>
+
+  <h2>Visible-to-screenreader text</h2>
+  <p class="meta">For icon-only buttons. <code>.sr-only</code> hides text visually but keeps it readable by assistive tech.</p>
+  <div class="demo cluster">
+    <button class="btn btn--secondary" aria-label="Close">
+      <span class="i-close" aria-hidden="true"></span>
+      <span class="sr-only">Close</span>
+    </button>
+    <span class="meta">← Visually just an X. To a screen reader, it says "Close, button."</span>
+  </div>
+
+  <h2>The audit checklist</h2>
+  <p class="meta">Run through this before shipping any new view. Most items map to existing utilities; a few require thought.</p>
+  <div class="check" style="margin-top:var(--s-md)">
+    <b></b><div><b class="anchor">One <code>&lt;h1&gt;</code> per page</b>; headings nest in order (no h2 → h4 jumps). Helps screen-reader users navigate by landmark.</div>
+    <b></b><div><b class="anchor">Every form input has a <code>&lt;label for&gt;</code></b>. Placeholder is not a label.</div>
+    <b></b><div><b class="anchor">Errors use <code>aria-invalid="true"</code> + <code>aria-describedby</code></b> pointing to the error message id.</div>
+    <b></b><div><b class="anchor">Color is not the only signal.</b> Status badges include a dot AND text. Required fields say "required," not just a red asterisk.</div>
+    <b></b><div><b class="anchor">All interactive elements are reachable by keyboard.</b> No <code>onclick</code> on plain divs without <code>tabindex="0"</code> + <code>role</code> + <code>Enter</code>/<code>Space</code> handlers.</div>
+    <b></b><div><b class="anchor">Focus order matches visual order.</b> No CSS <code>order</code> tricks that put Tab out of sequence.</div>
+    <b></b><div><b class="anchor">Modals trap focus</b> via <code>artificer-focus.js</code>; Esc closes; focus returns to the trigger.</div>
+    <b></b><div><b class="anchor">Touch targets ≥ 44 × 44 px.</b> Buttons, toggles, links in nav. Smaller is OK in dense tables.</div>
+    <b></b><div><b class="anchor">Images have <code>alt</code></b> — empty <code>alt=""</code> for decorative, descriptive otherwise. Icons that are also labels need an <code>aria-label</code> on the parent.</div>
+    <b></b><div><b class="anchor">Honor <code>prefers-reduced-motion</code></b> — already wired; durations collapse to 0ms. Don't re-introduce hard-coded transitions.</div>
+    <b></b><div><b class="anchor">Page works at 200% zoom</b> without horizontal scroll. Use <code>rem</code>/<code>em</code> for type, <code>min()</code>/<code>max()</code> for widths.</div>
+    <b></b><div><b class="anchor">Page is usable without JavaScript</b> for content reading. Forms can require JS, but content shouldn't.</div>
+  </div>
+
+  <h2>Common mistakes</h2>
+  <table class="table" style="margin-top:var(--s-md)">
+    <thead><tr><th>Don't</th><th>Do</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;div onClick&gt;</code></td><td><code>&lt;button&gt;</code></td></tr>
+      <tr><td>Placeholder as label</td><td><code>&lt;label for&gt;</code> + placeholder for example</td></tr>
+      <tr><td>Removing default focus ring</td><td>Customizing it (we use 2px --accent)</td></tr>
+      <tr><td>Red asterisk = required</td><td>Asterisk + the word "required" in the label</td></tr>
+      <tr><td><code>title="…"</code> as a tooltip</td><td><code>aria-describedby</code> + visible popover</td></tr>
+      <tr><td>Auto-playing animations</td><td>Animation that respects reduced-motion</td></tr>
+      <tr><td>Color-only status (red dot)</td><td>Dot + label ("failed")</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Testing</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+    <li><b class="anchor">Tab through the page.</b> Can you reach everything? Is the order logical? Is the focus visible at all times?</li>
+    <li><b class="anchor">Turn off your mouse.</b> Can you complete the primary task with just the keyboard?</li>
+    <li><b class="anchor">Run axe DevTools.</b> Browser extension, free, finds 90% of issues. Aim for zero violations.</li>
+    <li><b class="anchor">VoiceOver / NVDA pass.</b> At least once per major view. Listen to the page; if it makes sense aurally, it's good.</li>
+    <li><b class="anchor">Set <code>prefers-reduced-motion</code> in OS settings</b> and reload. Nothing should jump or shimmer.</li>
+  </ol>
+</main>
+</body>
+</html>

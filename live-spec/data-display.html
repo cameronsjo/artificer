@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Data display</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .stat { display: flex; flex-direction: column; gap: 4px; padding: var(--s-md) var(--s-lg); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); }
+  .stat__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); }
+  .stat__value { font-family: var(--font-mono); font-weight: 700; font-size: 28px; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .stat__delta { font-family: var(--font-mono); font-size: 12px; color: var(--success); }
+  .stat__delta.down { color: var(--urgent); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Data display</p>
+  <h1 class="t-headline-lg">data display.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Tables for rows, key-value lists for records, stat cards for headlines. <b class="anchor">Always tabular-nums</b> for numbers — alignment is information.</p>
+
+  <h2>Table</h2>
+  <p class="meta">Mono body, sans header, hover row. Add <code>.table--zebra</code> for striped rows on dense data. Add <code>.table--responsive</code> (+ <code>data-label</code> on each cell) and the rows reflow to cards below 640px — narrow this window to see it.</p>
+  <div class="demo">
+    <table class="table table--responsive">
+      <thead><tr><th>Run</th><th>Status</th><th>Duration</th><th class="num" style="text-align:right">Cost</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Run">build-1284</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 14s</td><td class="num" data-label="Cost" style="text-align:right">$0.42</td></tr>
+        <tr><td data-label="Run">build-1283</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 09s</td><td class="num" data-label="Cost" style="text-align:right">$0.41</td></tr>
+        <tr><td data-label="Run">build-1282</td><td data-label="Status"><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td data-label="Duration">—</td><td class="num" data-label="Cost" style="text-align:right">$0.08</td></tr>
+        <tr><td data-label="Run">build-1281</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 21s</td><td class="num" data-label="Cost" style="text-align:right">$0.44</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">Zebra variant</h3>
+  <div class="demo">
+    <table class="table table--zebra">
+      <thead><tr><th>Pkg</th><th>Version</th><th class="num" style="text-align:right">Size</th></tr></thead>
+      <tbody>
+        <tr><td>react</td><td>18.3.1</td><td class="num" style="text-align:right">42.1 KB</td></tr>
+        <tr><td>react-dom</td><td>18.3.1</td><td class="num" style="text-align:right">132.6 KB</td></tr>
+        <tr><td>tokens-cli</td><td>0.4.0</td><td class="num" style="text-align:right">8.3 KB</td></tr>
+        <tr><td>artificer</td><td>0.1.0</td><td class="num" style="text-align:right">6.9 KB</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Key–value list</h2>
+  <p class="meta">For metadata blocks. Two-column grid, mono throughout.</p>
+  <div class="demo">
+    <dl class="kv">
+      <dt>Build ID</dt><dd>build-1284</dd>
+      <dt>Branch</dt><dd>main · 4f2a8c1</dd>
+      <dt>Duration</dt><dd class="num">2m 14s</dd>
+      <dt>Started</dt><dd>2026-04-26 14:32 UTC</dd>
+      <dt>Trigger</dt><dd>push · cameron</dd>
+    </dl>
+  </div>
+  <pre class="code-block"><span class="tok-keyword">&lt;dl</span> class=<span class="tok-string">"kv"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;dt&gt;</span>Label<span class="tok-keyword">&lt;/dt&gt;&lt;dd&gt;</span>Value<span class="tok-keyword">&lt;/dd&gt;</span>
+<span class="tok-keyword">&lt;/dl&gt;</span></pre>
+
+  <h2>Stat cards</h2>
+  <p class="meta">For headline numbers. Big mono number, label above, optional delta below. Don't put more than 4 in a row — it stops being scan-able.</p>
+  <div class="demo">
+    <div class="grid-auto" style="--min:160px">
+      <div class="stat">
+        <div class="stat__label">Active runs</div>
+        <div class="stat__value">42</div>
+        <div class="stat__delta">+8 this hour</div>
+      </div>
+      <div class="stat">
+        <div class="stat__label">P95 latency</div>
+        <div class="stat__value">312<span style="font-size:18px;color:var(--fg-secondary)"> ms</span></div>
+        <div class="stat__delta down">+24 ms vs. yesterday</div>
+      </div>
+      <div class="stat">
+        <div class="stat__label">Success rate</div>
+        <div class="stat__value">99.4<span style="font-size:18px;color:var(--fg-secondary)">%</span></div>
+        <div class="stat__delta">+0.2% week-over-week</div>
+      </div>
+      <div class="stat">
+        <div class="stat__label">Spend</div>
+        <div class="stat__value">$184</div>
+        <div class="stat__delta">on track</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Progress bar</h2>
+  <p class="meta">Determinate only. For unknown durations, use a skeleton — see <a href="states.html">states</a>.</p>
+  <div class="demo stack">
+    <div>
+      <div class="cluster cluster--between" style="margin-bottom:var(--s-xs)">
+        <span class="meta">Indexing</span><span class="meta num">68%</span>
+      </div>
+      <div class="progress"><div class="progress__bar" style="width:68%"></div></div>
+    </div>
+    <div>
+      <div class="cluster cluster--between" style="margin-bottom:var(--s-xs)">
+        <span class="meta">Uploading</span><span class="meta num">12%</span>
+      </div>
+      <div class="progress"><div class="progress__bar" style="width:12%"></div></div>
+    </div>
+  </div>
+
+  <h2>Rules</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+    <li><b class="anchor">Numbers use <code>font-variant-numeric: tabular-nums</code></b>. Always. Add <code>.num</code> or set on parent.</li>
+    <li><b class="anchor">Right-align numeric columns</b>, left-align text. Don't center either.</li>
+    <li><b class="anchor">Include units in the value</b>, scaled down (smaller, secondary color). Don't put units in the label.</li>
+    <li><b class="anchor">Cap stat rows at 4</b>. More than 4 means people stop reading.</li>
+    <li><b class="anchor">Empty cells get <code>—</code></b> (em dash), not "N/A" or 0.</li>
+    <li><b class="anchor">Status uses badge + dot</b>, not color alone — color-blind users.</li>
+  </ol>
+</main>
+</body>
+</html>

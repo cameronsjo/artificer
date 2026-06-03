@@ -1,0 +1,29 @@
+# Artificer v0.12.0 · Dark — lazygit theme block
+# lazygit has no @import mechanism. Two install paths:
+#
+#   1. Paste this block under `gui:` in your ~/.config/lazygit/config.yml
+#   2. Splice in via chezmoi templating — see themes/README.md
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+theme:
+  activeBorderColor:
+    - "#b095e0"
+    - bold
+  inactiveBorderColor:
+    - "#666666"
+  searchingActiveBorderColor:
+    - "#dbbb6f"
+    - bold
+  optionsTextColor:
+    - "#b095e0"
+  selectedLineBgColor:
+    - "#3c4150"
+  cherryPickedCommitBgColor:
+    - "#1f3a28"
+  cherryPickedCommitFgColor:
+    - "#4a8a5e"
+  unstagedChangesColor:
+    - "#a04540"
+  defaultFgColor:
+    - "#c5c8c6"

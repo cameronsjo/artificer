@@ -1,0 +1,8 @@
+{
+  "name": "Artificer",
+  "version": "0.6.4",
+  "minAppVersion": "1.4.0",
+  "author": "Cameron",
+  "authorUrl": "https://github.com/cameronsjo",
+  "description": "Personal design system ported to Obsidian. Dark by default, burnished gold, JetBrains Mono, paper-cream light mode. Pairs with Style Settings."
+}

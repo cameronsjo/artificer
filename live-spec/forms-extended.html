@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Forms</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field__label { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--fg); letter-spacing: .02em; }
+  .field__hint { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
+  .field__error { font-family: var(--font-mono); font-size: 11px; color: var(--urgent); }
+  .field--invalid .input, .field--invalid .textarea, .field--invalid .select { border-color: var(--urgent); }
+  fieldset { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
+  legend { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); padding: 0 var(--s-sm); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Forms</p>
+  <h1 class="t-headline-lg">forms.</h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Inputs, validation, fieldsets, helper text. The boring components that decide whether your app feels well-made.</p>
+
+  <h2>The .field anatomy</h2>
+  <p class="meta">Always: <code>label</code> on top, control, optional hint or error. Never: placeholder-as-label.</p>
+  <div class="demo stack stack--lg" style="max-width:480px">
+    <div class="field">
+      <label class="field__label" for="name">Project name</label>
+      <input class="input" id="name" type="text" placeholder="e.g. atlas-runner"/>
+      <p class="field__hint">Lowercase, alphanumeric, hyphens. 2–32 characters.</p>
+    </div>
+
+    <div class="field field--invalid">
+      <label class="field__label" for="email">Email</label>
+      <input class="input" id="email" type="email" value="cameron@" aria-invalid="true" aria-describedby="email-err"/>
+      <p class="field__error" id="email-err">That doesn't look like a complete email yet.</p>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="bio">Bio</label>
+      <textarea class="textarea" id="bio" rows="3" placeholder="A sentence about you."></textarea>
+      <p class="field__hint">Markdown OK. <kbd>⌘ Enter</kbd> to save.</p>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="region">Region</label>
+      <select class="select" id="region">
+        <option>us-east-1 — N. Virginia</option>
+        <option>us-west-2 — Oregon</option>
+        <option>eu-west-1 — Ireland</option>
+      </select>
+    </div>
+  </div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"field"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;label</span> class=<span class="tok-string">"field__label"</span> for=<span class="tok-string">"name"</span><span class="tok-keyword">&gt;</span>Project name<span class="tok-keyword">&lt;/label&gt;</span>
+  <span class="tok-keyword">&lt;input</span> class=<span class="tok-string">"input"</span> id=<span class="tok-string">"name"</span> type=<span class="tok-string">"text"</span><span class="tok-keyword">/&gt;</span>
+  <span class="tok-keyword">&lt;p</span> class=<span class="tok-string">"field__hint"</span><span class="tok-keyword">&gt;</span>2–32 characters.<span class="tok-keyword">&lt;/p&gt;</span>
+<span class="tok-keyword">&lt;/div&gt;</span>
+
+<span class="tok-comment">// invalid: add .field--invalid + aria-invalid + aria-describedby</span></pre>
+
+  <h2>Choices — checkbox, radio, toggle</h2>
+  <p class="meta"><b class="anchor">Checkbox</b> for many-of-many. <b class="anchor">Radio</b> for one-of-few (≤ 5). <b class="anchor">Select</b> for one-of-many. <b class="anchor">Toggle</b> for instant on/off (no Save needed).</p>
+  <div class="demo stack stack--lg" style="max-width:520px">
+    <fieldset>
+      <legend>Notify me when</legend>
+      <div class="stack stack--sm" style="margin-top:var(--s-sm)">
+        <label class="checkbox"><input type="checkbox" checked/> A build fails</label>
+        <label class="checkbox"><input type="checkbox" checked/> A build takes &gt; 5 minutes</label>
+        <label class="checkbox"><input type="checkbox"/> Spend exceeds the daily cap</label>
+        <label class="checkbox"><input type="checkbox"/> A teammate @-mentions me</label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Theme</legend>
+      <div class="stack stack--sm" style="margin-top:var(--s-sm)">
+        <label class="radio"><input type="radio" name="theme"/> Dark</label>
+        <label class="radio"><input type="radio" name="theme" checked/> Cream</label>
+        <label class="radio"><input type="radio" name="theme"/> Match system</label>
+      </div>
+    </fieldset>
+
+    <div class="cluster cluster--between" style="background:var(--bg-raised);border-radius:var(--radius-md);padding:var(--s-md) var(--s-lg)">
+      <div>
+        <p class="t-label-md" style="margin:0;font-weight:500">Auto-deploy on green</p>
+        <p class="meta" style="margin:0">Push to <code>main</code> deploys automatically.</p>
+      </div>
+      <label class="toggle"><input type="checkbox" checked/></label>
+    </div>
+  </div>
+
+  <h2>Search input</h2>
+  <div class="demo">
+    <div class="search" style="max-width:360px">
+      <span style="color:var(--fg-secondary)" class="i-search" aria-hidden="true"></span>
+      <input class="input" type="search" placeholder="Search projects, runs, files…" style="border:none;padding:10px 0;background:transparent"/>
+      <kbd>⌘K</kbd>
+    </div>
+  </div>
+
+  <h2>Slider</h2>
+  <div class="demo stack stack--sm" style="max-width:420px">
+    <div class="cluster cluster--between"><span class="t-label-md">Concurrency</span><span class="meta num">8</span></div>
+    <input class="slider" type="range" min="1" max="16" value="8" aria-label="Concurrency"/>
+  </div>
+
+  <h2>Form rules</h2>
+  <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+    <li><b class="anchor">Label every field.</b> Placeholder is not a label — it disappears.</li>
+    <li><b class="anchor">Hint text explains constraints</b> ("2–32 chars") <em>before</em> the user types, not after.</li>
+    <li><b class="anchor">Error text says what to do</b>, not just what went wrong. "Add a digit" beats "Invalid."</li>
+    <li><b class="anchor">Wire <code>aria-invalid</code> + <code>aria-describedby</code></b> to the error message id. SR users need this.</li>
+    <li><b class="anchor">Validate on blur, not on every keystroke</b> — except for password strength and async checks (e.g. username taken).</li>
+    <li><b class="anchor">One primary button per form.</b> If you need two, the secondary is "Cancel" or a ghost variant.</li>
+    <li><b class="anchor">Submit on <kbd>Enter</kbd></b> from any text input. Multi-line forms: <kbd>⌘ Enter</kbd>.</li>
+    <li><b class="anchor">Don't reset the form on error.</b> Preserve everything the user typed.</li>
+  </ol>
+</main>
+</body>
+</html>

@@ -1,0 +1,398 @@
+# Artificer — consumer rules for Claude Code
+
+> Drop this file into your project root. Claude Code reads it automatically and
+> follows Artificer's rules from then on. This is the **consumer half** of the
+> system's rules — the hard rules, the surface decision, the token cheatsheet,
+> recipes, composition, voice, the five motion patterns, Brand, the Whimsy
+> layer, and the form / a11y / voice checklists.
+>
+> New here? Read **`QUICKSTART.md`** first (files → a working themed button in
+> ~25 lines), then this file and **`reference/SKILL.md`** (the exhaustive
+> cheatsheet). Open any page under **`live-spec/`** in a browser for the live
+> visual reference.
+
+## Hard rules — do not break
+
+1. **Use existing tokens.** Never write hex codes, hardcoded `px` for spacing, or invented `cubic-bezier` curves. If the value isn't in `artificer.css` (search for `--`), don't use it. *(The sole exception is the **Whimsy** layer — see § Whimsy — which is opt-in, bounded, and the one place full-spectrum color and looping motion are sanctioned.)*
+2. **Use existing utility classes.** `.stack`, `.cluster`, `.grid-auto`, `.container`, `.btn`, `.card`, `.field`, `.notif`, etc. Don't recreate them with bespoke flexbox.
+3. **One primary CTA per view.** `.btn--primary` shows up at most once per visible screen. Secondary actions use `.btn--secondary` or `.btn--ghost`.
+4. **Lists cap at 7 visible items** (default 5). Beyond that: progressive disclosure, search, or grouping.
+5. **Anchor words bold** — 3–5 `<b class="anchor">` per paragraph in body content. This is the system's primary scan mechanism, not optional emphasis.
+6. **Notifications tier by action required**, not severity. See the four `.notif--*` modifiers.
+7. **Numbers use `font-variant-numeric: tabular-nums`** — there's a `.num` utility, or set on parent.
+8. **z-index uses the six rungs only**: `--z-base | --z-raised | --z-overlay | --z-popover | --z-modal | --z-toast`. No improvising.
+9. **Honor `prefers-reduced-motion`.** Already wired. Don't add hard-coded `transition: 600ms` that bypasses `--dur-*`.
+10. **WCAG 2.2 AA floor.** Every focusable element gets a `:focus-visible` outline (already wired). Every form field gets a `<label for>`. Every status uses dot+text, not color alone.
+
+## First decision — what surface is this?
+
+Before you write any CSS, decide: **is this a tool surface or a document surface?** The answer determines the body font and a couple of other defaults. If you skip this, you'll end up setting prose in monospace, which is the single fastest way to make Artificer feel wrong.
+
+| | **Tool surface** | **Document surface** |
+|---|---|---|
+| What it is | Dashboards, consoles, terminals, log views, settings panels, command palettes, data tables, IDE-adjacent UI — anywhere the user came to *do something* | Writeups, READMEs, reports, postmortems, design docs, onboarding explainers, marketing-adjacent pages — anywhere the user came to *read something* |
+| Body font | `var(--font-mono)` | `var(--font-sans)` |
+| Default size | 14px | 15–16px |
+| Mono shows up in… | Most things | Code, identifiers, file paths, numerals, table cells |
+| Sans shows up in… | Labels, hints, microcopy | Most things |
+| Mental model | Mono *is* the voice — every line is "data" | Mono is the *exception* — used to mark things that aren't prose |
+
+**The same project can mix both.** A settings page is a tool. The README explaining the settings is a document. Use the right default for the right page; don't try to make one rule cover both.
+
+**Why this matters.** Monospace gives every glyph the same horizontal slot. That's an asset for column-aligned numbers and code, and a liability for prose: it kills kerning cues, mutes bold/italic contrast, and flattens the anchor-word scan mechanism that Artificer's whole reading model depends on. When the *whole page* is mono, **nothing stands out** — which defeats the point.
+
+**Anti-pattern that bit us once.** A written analysis with embedded data tables, set in mono throughout, with three explicit overrides back to sans (`.meta`, `h3`, `th`). That's the tell: if you're spending the type budget *escaping* the body face, the body face is wrong. Flip it — sans body, mono only on the identifiers and numbers — and the overrides disappear.
+
+## Token cheatsheet
+
+```css
+/* Colors — always semantic, never raw */
+var(--bg) /* base surface */
+var(--bg-raised) /* cards, sidebar */
+var(--bg-overlay) /* modals, palette */
+var(--bg-inactive) /* unfocused panes */
+var(--fg) /* primary text */
+var(--fg-secondary) /* secondary text — meta, hints */
+var(--fg-disabled) /* disabled text */
+var(--accent) /* primary interactive — gold (dark) / sienna (light) */
+var(--accent-bright) /* hover/focus accent */
+var(--accent-fill) /* button bg, filled badges */
+var(--on-accent) /* text on accent-fill */
+var(--brand-purple) /* Cameron's purple — wordmark, brand surfaces; pair with --brand-purple-bright for hover */
+var(--success) /* sage green */
+var(--attention) /* burnished amber */
+var(--urgent) /* terracotta red */
+var(--border) /* dividers, input borders */
+
+/* Spacing */
+var(--s-xs) /* 4 */
+var(--s-sm) /* 8 */
+var(--s-md) /* 16 — default gap */
+var(--s-lg) /* 24 */
+var(--s-xl) /* 32 */
+var(--s-2xl) /* 48 */
+
+/* Type — read this. The default depends on surface kind. */
+var(--font-mono) /* JetBrains Mono — code, identifiers, file paths,
+                          numerals, dense UI chrome (toolbars, status bars,
+                          terminals). Default body face for TOOL surfaces:
+                          dashboards, consoles, log views, data tables. */
+var(--font-sans) /* Inter — prose. Default body face for DOCUMENT
+                          surfaces: writeups, READMEs, reports, settings
+                          explainers, marketing-adjacent content. Also: form
+                          labels, hints, microcopy on tool surfaces. */
+/* Sizes via classes: .t-headline-lg/md, .t-body-lg/md, .t-label-md/sm */
+
+/* Radius */
+var(--radius-sm) /* 4 — inputs, badges */
+var(--radius-md) /* 8 — cards, popovers */
+var(--radius-lg) /* 12 — modals */
+
+/* Motion */
+var(--dur-instant) /* 80ms — hover/focus */
+var(--dur-fast) /* 160ms — default */
+var(--dur-max) /* 300ms — modal entry. Ceiling. */
+var(--ease) /* cubic-bezier(.2,.7,.3,1) — single curve */
+var(--ease-linear) /* linear — continuous translation ONLY (pattern #02) */
+
+/* Focus ring — geometry tokenized; color is --accent */
+var(--focus-width) /* 2px */
+var(--focus-offset) /* 2px — outside the box (default) */
+var(--focus-offset-loose) /* 4px — sliders/thumbs */
+var(--focus-offset-inset) /* -2px — nav items, table rows, tabs */
+
+/* z-index — six rungs, no improvising */
+var(--z-base) var(--z-raised) var(--z-overlay) var(--z-popover) var(--z-modal) var(--z-toast)
+
+/* Breakpoints (v0.10.0) — max-width, mobile-first-down. CSS @media CANNOT
+   read these vars, so tokens.json is the source of truth (JS/Tailwind/Figma)
+   and the literal @media widths in artificer.css are kept equal to them. */
+var(--bp-mobile) /* 640 — phone; stacks grids, .table--responsive reflows */
+var(--bp-tablet) /* 800 — split-pane + appbar collapse, drawer takes over */
+var(--bp-wide)   /* 1200 — wide desktop */
+```
+
+```css
+/* Chart / categorical scale — exist in CSS + tokens.json (chart object).
+   Series are aliases of semantic tokens, so they track theme. */
+var(--series-1) /* …5 — categorical, 5 max. 1=gold 2=steel 3=purple 4=green 5=rose */
+var(--ramp-1)   /* …5 — single-hue sequential (magnitude). NOT --series-ramp-* */
+var(--diverge-low|mid|high) /* signed deltas: brick → neutral → green */
+var(--chart-grid|chart-grid-strong|chart-axis) /* chart chrome */
+```
+
+**Responsive & touch.** The **44px target is a NAV rule** (a11y #8: "in
+nav") — desktop form controls stay dense on purpose. Touch devices escalate
+automatically via `@media (pointer: coarse)` (btn/inputs/checkbox/radio/
+toggle/slider grow to ≥44px on a finger; mouse desktops are untouched).
+Sticky/fixed chrome (`.appbar`, `.nav-drawer`) clears the notch with
+`env(safe-area-inset-*)` — set `viewport-fit=cover`. Wide data tables reflow
+to cards below 640px with `.table--responsive` + `data-label` on each `<td>`.
+Type **sizes are `rem`** (root is never overridden) so text honors the
+browser font-size preference, not just zoom — **never set a px `html`/`:root`
+font-size** (it silently re-breaks this). Spacing/radii/component-internal
+padding stay px. Fluid `clamp()` type is allowed **only** on editorial hero
+titles (an editorial-hero carve) — never the
+core scale or tool UI.
+
+## Recipe — when asked to build…
+
+| Ask | Use |
+|---|---|
+| "Add a settings page" | `.page-shell` + `.container--md` + `<fieldset>` + `.field` blocks, 3–5 fields per group |
+| "Confirmation dialog" | `.scrim` + `.modal` + `ArtificerFocus.trap()` — see `overlay.html` in live system |
+| "Toast" | `.notif` + tier modifier; pick by action-required not severity |
+| "Status pill" | `.badge--{tier}` + `.dot--{tier}` inside |
+| "Loading state" | Pick by duration: <100ms nothing · 100–500ms disabled label · 500ms–2s `.skeleton` · >2s `.progress` with concrete copy · >10s background |
+| "Empty state" | `.empty-state` — title + body + ONE primary action |
+| "Table" | `.table`, right-align numerics with `.num`, em-dash for empty cells. `.table--responsive` + `data-label` to reflow to cards <640px |
+| "Tabs / view switcher" | `.tabs` + `role=tablist`/`tab`/`tabpanel` + `aria-controls`; then `ArtificerTabs.enhance(el)` (or `data-tabs` + `observe()`) for the APG keyboard model — the CSS alone is style-only. NOT `.timerange`. |
+| "Segmented control / view-param switch" | `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) |
+| "Stat card" | Stat pattern: label (mono small caps) + value (mono large tabular) + delta (small) |
+| "Form field" | `<div class="field">` with label, input, and EITHER hint OR error (with `aria-describedby`) |
+| "Avatar" | `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`. Not `.dot` (8px status) or `.badge` (pill). |
+| "Accordion / disclosure" | `.accordion` wrapping native `<details><summary>` + `.accordion__body` — keyboard + a11y for free, no JS |
+| "Combobox / dropdown / palette" | One option-popover (`.menu`/`.listbox` + `__option`) — don't hand-roll a floating list |
+| "Animation" | Only animate state changes. `transition: prop var(--dur-fast) var(--ease)`. Never invent durations. |
+| "User-defined fun element / celebration / long 'thinking' state / brand wordmark" | `.whimsy` + `artificer-whimsy.css` & `.js` — the ONE sanctioned exception to the motion + raw-color rules. **See § Whimsy.** Never reach for it on chrome, status, data, or errors. |
+| "Make it fun / playful / celebratory / rainbow" | The **Whimsy** layer — see § Whimsy. `.whimsy` / `data-whimsy="wave"` / `Whimsy.celebrate()`. Don't hand-roll a one-off. |
+
+## Composition — dashboards, charts, diagrams
+
+When you're past primitives and assembling product surfaces, three more rule-sets kick in. The full reference lives in `live-spec/composition.html`, `live-spec/charts.html`, `live-spec/diagrams.html`.
+
+### Dashboards (`composition.html`)
+
+- **One frame, five recipes — `.dash` + a density + a primitive body. Don't invent a sixth recipe.** The shell is `.dash` (framed surface) with `.dash__topbar` (`.dash__title` + `.dash__actions`); the body (1fr) is built from shipped primitives. The five: **KPI** = `.kpi-strip` over a chart · **ops console** = `.split-pane` + log + `.table` · **observability** = a chart grid (`.grid-2`/`.grid-auto`) · **table-first** = `.table` is the body · **split** = `.split-pane` (master/detail). They are recipes, **not** classes — there is no `.dash-kpi-strip`/`.dash-ops`/etc.
+- **Density is a container choice.** Set `.density-compact|cozy|comfortable` on the page or panel. Compact for ops/log views, cozy default, comfortable for docs.
+- **Filters live in one bar at the top — `.filter-bar`.** Time-range (`.timerange`), search, faceted chips (`.chip`), and the density toggle. Don't sprinkle filters into individual panels.
+- **Live data uses `.live-tick` (pulsing dot) + `.last-updated` (timestamp) atoms.** No spinning refresh icons; the dot pulses and the timestamp updates. (No `.streaming`/`.live-dot` class — those names were doc drift.)
+
+### Charts (`charts.html`)
+
+- **No new chart libraries without forwarding tokens.** ECharts, Recharts, Chart.js, vanilla SVG — all read `--chart-grid`, `--chart-axis`, `--series-1..5`. Snippets in `charts.html`.
+- **Five series max.** If you need more, you have two charts or you have a sequential ramp problem. Use `--ramp-1..5` (single-hue sequential) for magnitude. *(The token is `--ramp-*`, not `--series-ramp-*`.)*
+- **No pies/donuts above 3 slices.** Bar chart instead. Hard rule.
+- **Sparklines have no axes** and use `.sparkline` / `.sparkbars`. They live in tables, not standalone.
+- **Two gridlines max** — baseline and one mid. Bars start at zero; lines may use a fitted Y range.
+- **Don't animate chart entry by default.** Honor `prefers-reduced-motion`. The data is the point, not the reveal.
+
+### Diagrams (`diagrams.html`)
+
+- **Use `.dia-node` / `.dia-edge` / `.dia-edge-label` on inline SVG.** They inherit theme; you don't restyle.
+- **One accent node per diagram** (`.dia-node--accent`) — the thing the diagram is *about*. Everything else is the default surface.
+- **Ghost nodes for "planned/optional"** (`.dia-node--ghost` — dashed border, transparent fill). No legend needed.
+- **Edge weight encodes resolution, not importance.** `.dia-edge--strong` for the message that closes a flow; default for everything else; `.dia-edge--dashed` for async/return.
+- **No more than 9 nodes per diagram.** Group into sub-systems and link out.
+- **Mermaid:** call `mermaid.initialize({ theme: 'base', themeVariables })` once at boot, reading from CSS vars. Snippet in `diagrams.html`.
+- **React Flow:** wrap in `.rf-artificer` — class-scoped overrides forward all tokens.
+
+## Voice & microcopy
+
+- **Literal, not gestural.** "No runs yet" beats "Nothing to see here."
+- **Name what's missing**, **why** (briefly), **what to do.** Three sentences max for empty states.
+- **Errors say what to do**, not just what went wrong. "Add a digit" beats "Invalid."
+- **No loading verbs alone.** "Loading…" → "Indexing 1,247 of 8,300 files."
+- **Tabular > narrative for data.** Tables before paragraphs.
+
+## Anti-patterns
+
+```html
+<!-- Don't -->
+<div onclick="..." style="padding:12px;background:#3c4150">Click</div>
+<input placeholder="Email" /> <!-- placeholder-as-label -->
+<div class="my-stack">...</div> <!-- bespoke layout -->
+<button style="border-radius:24px">Save</button> <!-- non-token radius -->
+<span class="text-red-500"></span> <!-- color-only signal -->
+<div class="row"><button>OK</button><button>Cancel</button></div> <!-- two primary CTAs -->
+
+<!-- Do -->
+<button class="btn btn--secondary">Click</button>
+<div class="field">
+  <label class="field__label" for="e">Email</label>
+  <input class="input" id="e" type="email" />
+</div>
+<div class="stack">...</div>
+<button class="btn btn--primary">Save</button>
+<span class="badge badge--urgent"><span class="dot dot--urgent"></span>Failed</span>
+<div class="cluster"><button class="btn btn--primary">Save</button><button class="btn btn--ghost">Cancel</button></div>
+```
+
+## Before shipping a UI change
+
+1. Did you use existing tokens for every color/space/duration?
+2. Did you add a new utility class only if no existing one fits?
+3. Does the page work at 200% zoom without horizontal scroll?
+4. Tab through — every interactive element reachable, focus order matches visual order?
+5. Set OS to reduced-motion — does anything still animate?
+6. Squint test — can you tell what's active without color?
+7. Run axe DevTools — zero violations?
+
+---
+
+## The 5 motion patterns
+
+| # | Pattern | When | Spec |
+|---|---|---|---|
+| 01 | **State change** | Hover, focus, theme toggle, toggle/switch | `var(--dur-fast) var(--ease)` (160ms) |
+| 02 | **Continuous translation** | Loading bars, scrubbers, progress | `var(--ease-linear)` (the one place linear is allowed); everything else stays on `--ease` |
+| 03 | **Attention pulse** | **Urgent only.** Blocking errors. | `.pulse` class — 1.6s, low contrast, suppressed under reduced-motion |
+| 04 | **Skeleton shimmer** | Wait states > 1s | `.skeleton` — 1.4s horizontal sweep |
+| 05 | **Modal entry** | `.modal` opening | Slide-up 8px + fade, 160ms — already wired |
+
+**Rules.** 300ms is the ceiling. One easing — don't invent `cubic-bezier`s, use `--ease`. No parallax, no auto-play, no looping decoration. Honor reduced-motion (already wired). Animate state, not arrival — never animate things appearing on page load. **The one sanctioned exception is Whimsy (§ Whimsy) — opt-in, user-defined fun only.**
+
+---
+
+## Brand — the wordmark
+
+The mark is **`artificer.`** — lowercase, set in `--font-mono`, tight
+tracking, closed by a **burnished full stop** (the period in `--accent`).
+That stop is the signature; it's the same period that caps display page
+titles ("Navigation."). Use `.wordmark` (core `artificer.css`):
+
+`<a class="wordmark" href="/">artificer</a>`  → renders `artificer.`
+
+Rules: lowercase always; mono always; never stretch the tracking; the stop
+may recolor per surface but stays present. The wordmark is also a sanctioned
+`.whimsy` home (§ Whimsy) — a flowing `artificer.` is on-brand; nothing else
+in the chrome around it is. Prose may capitalize "Artificer" as a proper
+noun; the *mark* is lowercase-with-stop.
+
+**The period denotes a mark, and marks are lowercase.** That's the rule that
+unifies the wordmark with the display page titles: a title that takes the
+burnished full stop ("navigation.", "accessibility.", "data display.") is a
+mark, so it's set lowercase. Section headers and labels that *don't* take the
+stop are ordinary sentence-case/uppercase and stay as they are — the period
+is the tell.
+
+## Whimsy — the sanctioned exception
+
+Whimsy is the **one** place Artificer relaxes "no looping decoration" and "no raw color": a flowing, burnished rainbow on text — the feeling of Claude Code's `ultrathink` shimmer. It exists for **user-defined fun elements** and **whimsical operations** — and nowhere else. Lives in `artificer-whimsy.css` + `artificer-whimsy.js` (in both `src/` and `live-spec/`); full interactive reference + playground at `live-spec/whimsy.html`.
+
+**Load it (after `artificer.css`):**
+
+```html
+<link rel="stylesheet" href="artificer-whimsy.css" />
+<script src="artificer-whimsy.js" defer></script>
+```
+
+### When to reach for it
+
+- A **user-defined fun element** — a feature a person chose to light up, a brand wordmark, an easter egg.
+- A **whimsical operation** — a celebration (deploy succeeded, streak hit), the `ultrathink` trigger-word gesture, a long "thinking" state.
+
+That's the whole list. If it's not user-chosen delight, it doesn't get whimsy.
+
+**Where whimsy goes.** This is the right home for *any* request to make
+something "fun," "playful," "celebratory," or "rainbow." Don't invent a one-off
+animation — point it here.
+
+| Ask | Use |
+|---|---|
+| Flowing wordmark / feature name | `.whimsy` on short, large, bold text |
+| Travelling sine wave (per-char bob) | `data-whimsy="wave"` + `Whimsy.hydrate()` |
+| Rainbow divider / flourish | `.whimsy-rule` (or `--sm`) |
+| "Type ultrathink…" trigger gesture | `Whimsy.watch(input, {triggers})` |
+| One-shot "operation succeeded" joy | `Whimsy.celebrate(el)` — auto-clears |
+| Long "thinking" state that should rest | `Whimsy.run(el, {loops, settle})` |
+| Artificer colors, not full spectrum | `.whimsy--brand` |
+| Metal sheen for a header (static) | `.whimsy--silver.whimsy--no-flow` |
+| Focus ring on a control (on explicit request) | `.whimsy-focus` — spins *over* the focus outline, never replaces it |
+| Your own palette | override `--whimsy-gradient` in one line |
+| Maximum saturation (rare) | `.whimsy--vivid` |
+
+### The three effects (the whole motion vocabulary)
+
+- **Flow** — the hue gradient slides sideways through the glyphs. On by default on every `.whimsy`. (Tiles seamlessly — never scrolls off / pops.)
+- **Bob** — per-character sine bob; wave elements only (`data-whimsy="wave"`, hydrated into `.whimsy-char` spans).
+- **Glow** — a static halo (`.whimsy--glow`). Not motion.
+
+Toggle any layer off independently: `.whimsy--no-flow`, `.whimsy--no-bob`. Freezing a wave needs **both** off.
+
+### Palettes (color, not motion)
+
+- **Spectrum** (default) — burnished full-spectrum, generated in oklch at the palette's own chroma; hue stops land on Artificer's brand colors.
+- **`.whimsy--brand`** — cycles the real semantic tokens (gold → rose → purple → steel → green); tracks light/dark for free.
+- **`.whimsy--silver`** — near-neutral metal sheen: silver/grey on dark, warm graphite on cream. The most restrained variant — the only one calm enough to consider for headers (and only as a **static fill**: `.whimsy--silver.whimsy--no-flow`).
+
+Knobs are all custom properties (`--whimsy-c` chroma, `--whimsy-speed`, `--whimsy-angle`, `--whimsy-gradient`, …). Override on any scope — no new tokens, no hex.
+
+### Settle — whimsy rests
+
+Long-lived whimsy must not loop forever. After N hue-cycles it settles: **static** (motion off, gradient frozen) or **glacial** (one hue drift over `--whimsy-settle-speed` ≈ 2.5 min, all secondary motion off). `Whimsy.run(el, {loops, settle})`, `Whimsy.watch(input, {…, loops, settle})`, or `Whimsy.scheduleSettle(el, n, mode)`.
+
+### API
+
+```js
+Whimsy.hydrate(root?)            // split [data-whimsy~="wave"] into bobbing chars
+Whimsy.watch(input, opts)        // ignite a target when a trigger word is typed
+Whimsy.celebrate(el, ms?)        // one-shot, auto-clears
+Whimsy.run(el, {loops, settle})  // ignite, then settle after N loops
+Whimsy.settle(el, mode) / .unsettle(el)   // mode: "static" | "glacial"
+Whimsy.ignite(el) / .clear(el)   // manual toggle
+```
+
+### Doctrine — do not break
+
+1. **Opt-in only.** Never on chrome, nav, or anything automatic.
+2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper.
+3. **Never on load-bearing UI.** No whimsy on errors, destructive actions, status, or data. **One sanctioned exception:** the `.whimsy-focus` ring (artificer-whimsy.css) — a burnished ring that *augments* a control's standard `:focus-visible` outline on **hover or focus**, never replacing it (the outline still carries the WCAG focus signal). Opt-in, on explicit request only, one per view, reduced-motion holds it still-but-visible.
+4. **Burnished by default.** `.whimsy--vivid` is a conscious choice, not a reflex.
+5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy.
+6. **Reduced-motion is sacred.** Flow stops, burnish stays. Already wired — don't undo it.
+7. **Whimsy rests.** Anything long-lived settles. A rainbow that never stops is just noise.
+
+---
+
+## The 8 form rules
+
+1. **Label every field.** Placeholder is not a label — it disappears.
+2. **Hint text explains constraints** ("2–32 chars") *before* the user types, not after.
+3. **Error text says what to do**, not just what went wrong. "Add a digit" beats "Invalid."
+4. **Wire `aria-invalid` + `aria-describedby`** to the error message id. Screen-reader users need this.
+5. **Validate on blur**, not on every keystroke — except for password strength and async checks (e.g. username taken).
+6. **One primary button per form.** If you need two, the secondary is "Cancel" or a ghost variant.
+7. **Submit on `Enter`** from any text input. Multi-line forms: `⌘ Enter`.
+8. **Don't reset the form on error.** Preserve everything the user typed.
+
+---
+
+## The 12-point a11y shipping checklist
+
+1. **One `<h1>` per page;** headings nest in order (no h2 → h4 jumps).
+2. **Every form input has a `<label for>`.** Placeholder is not a label.
+3. **Errors use `aria-invalid="true"` + `aria-describedby`** pointing to the error id.
+4. **Color is not the only signal.** Status badges include a dot AND text. Required fields say "required."
+5. **All interactive elements reachable by keyboard.** No `onclick` on bare divs.
+6. **Focus order matches visual order.** No CSS `order` tricks that desync Tab.
+7. **Modals trap focus** via `artificer-focus.js`; Esc closes; focus returns to trigger.
+8. **Touch targets ≥ 44 × 44 px** in nav; smaller OK only inside dense tables.
+9. **Images have `alt`** — empty `alt=""` for decorative, descriptive otherwise. Icons-as-labels need `aria-label` on the parent.
+10. **Honor `prefers-reduced-motion`** — already wired; durations collapse to 0ms.
+11. **Page works at 200% zoom** without horizontal scroll.
+12. **Content readable without JavaScript.** Forms can require JS; content shouldn't.
+
+**Test it.** Tab through. Turn off your mouse. Run axe DevTools (zero violations). VoiceOver/NVDA once per major view. Set OS reduced-motion, reload — nothing should jump.
+
+---
+
+## The 7-point voice & tone checklist
+
+1. **Name the surface or object.** "No projects yet" beats "Nothing here."
+2. **Front-load the verb.** The first word of a button is what it does.
+3. **Three jobs for an error:** what broke · why · how to fix.
+4. **No emoji** in product copy. (Wordmarks and avatars are fine.)
+5. **No metaphor in failures.** "Gremlins" / "magic" / "sideways" are confusing under stress.
+6. **Don't celebrate.** A success message is a receipt, not a parade.
+7. **Read it back at 1.5× speed.** If anything feels like filler, cut it.
+
+---
+
+## Where to read more
+
+- `README.md` (this folder) — system overview, install paths
+- `docs/STATE.md` — maturity baseline (clay / materials / rooms / trust), re-assessed each minor version
+- `reference/SKILL.md` — exhaustive token cheatsheet, recipe table, anti-patterns
+- `live-spec/` — every HTML preview page, copied verbatim from the source project. Open any of them in a browser alongside `src/artificer.css`.
+- `themes/` — Artificer ported to Claude Code, Ghostty, and VS Code. Same palette across all three; install paths in `themes/README.md`.

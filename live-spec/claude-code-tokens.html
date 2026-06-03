@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Claude Code Tokens</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  body { font-family: var(--font-mono); font-size: var(--t-label-md-size); }
+  .page { max-width: 1080px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  .bc { font-family: var(--font-sans); font-size: var(--t-label-xs-size); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); }
+  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
+
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); border-bottom: 1px solid var(--border); padding-bottom: var(--s-sm); }
+  h2 .num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+
+  /* Controls */
+  .controls { display: flex; gap: var(--s-sm); align-items: center; margin-bottom: var(--s-xl); flex-wrap: wrap; }
+  .mode-btn {
+    font-family: var(--font-mono); font-size: 12px; padding: 6px 14px;
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--fg-secondary); cursor: pointer; transition: all var(--dur-fast) var(--ease);
+  }
+  .mode-btn.active { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
+  .load-status { font-size: var(--t-label-xs-size); color: var(--fg-secondary); }
+  .load-status.ok { color: #4a8a5e; }
+  .load-status.err { color: var(--urgent); }
+
+  /* Sections */
+  .section { margin-bottom: var(--s-xl); }
+
+  /* Token row layout */
+  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
+  @media (max-width: 720px) { .token-grid { grid-template-columns: 1fr; } }
+
+  /* Terminal canvas — actual Ghostty background, not Artificer card surface */
+  .terminal-canvas {
+    background: #292c33; /* overwritten by JS when theme loads */
+  }
+  [data-theme="light"] .terminal-canvas {
+    background: #f5ead0;
+  }
+
+  /* Mock panel wrapper */
+  .mock-panel {
+    background: var(--bg-raised); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: var(--s-md); display: flex; flex-direction: column; gap: var(--s-sm);
+  }
+  .mock-panel-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-disabled);
+    margin-bottom: 2px;
+  }
+
+  /* Token label inline */
+  .tok { font-size: 10px; color: var(--fg-disabled); margin-left: 6px; white-space: nowrap; }
+  .tok-block { font-size: 10px; color: var(--fg-disabled); margin-top: 2px; }
+
+  /* WCAG badge */
+  .wcag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 1px 5px; border-radius: 3px; vertical-align: middle; margin-left: 4px; }
+  .wcag.aaa { background: #1f3a28; color: #b7bd73; }
+  .wcag.aa  { background: #1a2e1c; color: #7db87f; }
+  .wcag.aa3 { background: #2a1f00; color: #c4932a; }
+  .wcag.fail{ background: #3a1f1d; color: #e8836f; }
+  [data-theme="light"] .wcag.aaa { background: #d8e4cc; color: #2a5a3a; }
+  [data-theme="light"] .wcag.aa  { background: #cce0cc; color: #1a4a28; }
+  [data-theme="light"] .wcag.aa3 { background: #f0e4c0; color: #7a5a10; }
+  [data-theme="light"] .wcag.fail{ background: #ecd6d4; color: #8a2418; }
+
+  /* Prompt input mock */
+  .prompt-mock {
+    border-radius: var(--radius-sm); padding: 8px 12px;
+    font-size: var(--t-label-md-size); display: flex; align-items: center; gap: 8px;
+    border-width: 1.5px; border-style: solid;
+  }
+  .prompt-cursor { display: inline-block; width: 2px; height: 14px; background: currentColor; opacity: 0.7; animation: blink 1.1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Brief labels */
+  .brief-row { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .brief-row:last-child { border-bottom: none; }
+  .brief-sender { font-weight: 700; font-size: 12px; min-width: 60px; }
+  .brief-text { font-size: var(--t-label-md-size); color: var(--fg-secondary); }
+
+  /* Status row */
+  .status-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-text { font-size: var(--t-label-md-size); }
+
+  /* Spinner mock */
+  .spinner-mock { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .spinner-icon { width: 14px; height: 14px; border-radius: 50%; border: 2px solid transparent; flex-shrink: 0; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner-text { font-size: var(--t-label-md-size); }
+
+  /* Diff view mock */
+  .diff-view { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); font-size: 12px; }
+  .diff-line { display: flex; gap: 0; padding: 2px 8px; font-family: var(--font-mono); white-space: pre; }
+  .diff-line .ln { min-width: 32px; color: var(--fg-disabled); user-select: none; margin-right: 8px; }
+  .diff-line .sig { min-width: 14px; }
+  .diff-word-mark { border-radius: 2px; }
+
+  /* Permission mock */
+  .permission-mock {
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    font-size: var(--t-label-md-size); line-height: 1.6;
+    border-width: 1px; border-style: solid;
+  }
+  .permission-title { font-weight: 700; font-size: 12px; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .permission-body { font-size: 12px; color: var(--fg-secondary); }
+  .permission-tools { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .permission-tool { font-size: var(--t-label-xs-size); border-radius: 3px; padding: 2px 8px; border: 1px solid; }
+
+  /* Subagent swatches */
+  .subagent-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-sm); }
+  @media (max-width: 640px) { .subagent-grid { grid-template-columns: repeat(2, 1fr); } }
+  .subagent-chip { border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; font-weight: 700; }
+
+  /* Rainbow swatches */
+  .rainbow-strip { display: flex; border-radius: var(--radius-sm); overflow: hidden; height: 40px; }
+  .rainbow-cell { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+
+  /* Background panels */
+  .bg-panel { border-radius: var(--radius-md); padding: var(--s-md); font-size: 12px; line-height: 1.6; }
+
+  /* Token swatch inline */
+  .sw-inline { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin-right: 4px; border: 1px solid rgba(128,128,128,0.25); }
+
+  /* Rate limit bar */
+  .rate-bar { height: 6px; border-radius: 3px; overflow: hidden; display: flex; }
+  .rate-fill { width: 60%; transition: width var(--dur-fast) var(--ease); }
+  .rate-empty { flex: 1; }
+
+  /* Token table */
+  .tok-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tok-table th { text-align: left; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-secondary); border-bottom: 1px solid var(--border); padding: 4px 8px; font-weight: 600; }
+  .tok-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .tok-table tr:last-child td { border-bottom: none; }
+  .tok-name { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--fg); }
+  .tok-hex  { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--fg-secondary); }
+
+  /* loading placeholder */
+  .loading-placeholder { color: var(--fg-disabled); font-size: 12px; padding: var(--s-md) 0; }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+  <span class="dot"></span><span data-theme-label>Dark</span>
+</button>
+
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Claude Code Tokens</div>
+  <h1>Claude Code Tokens<span class="amp">.</span></h1>
+  <p class="lede">Pseudo-renderer for <span class="anchor">artificer-dark.json</span> and <span class="anchor">artificer-light.json</span>. Each section exercises the actual token colors against mock UI elements, with sRGB-correct WCAG contrast ratios.</p>
+
+  <div class="controls">
+    <button class="mode-btn active" id="btn-dark" onclick="loadTheme('dark')">Dark</button>
+    <button class="mode-btn" id="btn-light" onclick="loadTheme('light')">Light</button>
+    <span class="load-status" id="load-status">Loading…</span>
+  </div>
+
+
+  <!-- 00 ANSI Palette (Ghostty layer) ─────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">00</span> ANSI palette (Ghostty flow-through)</h2>
+    <p style="font-size:12px;color:var(--fg-secondary);max-width:68ch;margin:0 0 var(--s-md)">
+      Under <code>dark-ansi</code> base, unmapped Claude Code tokens fall through to this 16-color palette.
+      Response body text, inline code, syntax highlighting, and shell output all render through these ANSI colors,
+      not the JSON override tokens above.
+    </p>
+    <div class="mock-panel terminal-canvas" id="ansi-panel">
+      <div class="mock-panel-label">16-color ANSI palette · foreground, cursor, selection</div>
+      <div id="ansi-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px"></div>
+      <div id="ansi-demo" style="margin-top:var(--s-sm);display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </section>
+
+  <!-- 01 Prompt Input ─────────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">01</span> Prompt input border modes</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="mock-panel-label">Border color changes with mode — bg is always terminal canvas</div>
+
+      <div id="prompt-default" class="prompt-mock" style="background:transparent">
+        <span id="txt-you" class="brief-sender">You</span>
+        <span style="flex:1;color:var(--fg-secondary)">write a test for the parser</span>
+        <span class="prompt-cursor" id="cursor-default"></span>
+        <span class="tok">promptBorder</span>
+      </div>
+
+      <div id="prompt-bash" class="prompt-mock" style="background:transparent">
+        <span style="font-size: var(--t-label-xs-size);opacity:0.7;color:var(--fg-secondary)">bash</span>
+        <span style="flex:1;color:var(--fg-secondary)">npm test</span>
+        <span class="tok">bashBorder</span>
+      </div>
+
+      <div id="prompt-plan" class="prompt-mock" style="background:transparent">
+        <span style="font-size: var(--t-label-xs-size);opacity:0.7;color:var(--fg-secondary)">plan mode</span>
+        <span style="flex:1;color:var(--fg-secondary)">Step 1: analyze the codebase…</span>
+        <span class="tok">planMode</span>
+      </div>
+
+      <div id="prompt-auto" class="prompt-mock" style="background:transparent">
+        <span style="font-size: var(--t-label-xs-size);opacity:0.7;color:var(--fg-secondary)">auto-accept</span>
+        <span style="flex:1;color:var(--fg-secondary)">Applying 3 edits…</span>
+        <span class="tok">autoAccept</span>
+      </div>
+
+      <div id="prompt-fast" class="prompt-mock" style="background:transparent">
+        <span style="font-size: var(--t-label-xs-size);opacity:0.7;color:var(--fg-secondary)">fast mode</span>
+        <span style="flex:1;color:var(--fg-secondary)">Running in fast mode</span>
+        <span class="tok">fastMode</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Brief labels ─────────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">02</span> Brief labels &amp; message sender</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="brief-row">
+        <span class="brief-sender" id="lbl-you">You</span>
+        <span class="brief-text">Can you refactor this function to be more readable?</span>
+        <span class="tok">briefLabelYou</span>
+      </div>
+      <div class="brief-row">
+        <span class="brief-sender" id="lbl-claude">Claude</span>
+        <span class="brief-text">Sure! Here's a cleaner version with extracted helpers…</span>
+        <span class="tok">briefLabelClaude</span>
+      </div>
+      <div class="brief-row" style="align-items:center">
+        <span id="lbl-inverse" style="font-size: var(--t-label-xs-size);font-weight:700;padding:2px 8px;border-radius:3px;">CLAUDE</span>
+        <span class="brief-text" style="margin-left:6px">inverseText on suggestion background</span>
+        <span class="tok">inverseText</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Spinner & status ──────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">03</span> Spinner &amp; status text</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="spinner-mock">
+        <div class="spinner-icon" id="spinner-claude"></div>
+        <span id="txt-claude" class="spinner-text">Thinking…</span>
+        <span class="tok">claude / claudeShimmer</span>
+      </div>
+      <div class="spinner-mock">
+        <div class="spinner-icon" id="spinner-system"></div>
+        <span id="txt-system" class="spinner-text">Running tool…</span>
+        <span class="tok">claudeBlue_FOR_SYSTEM_SPINNER</span>
+      </div>
+      <div class="spinner-mock">
+        <div class="status-dot" id="bg-token-swatch"></div>
+        <span id="txt-background" class="spinner-text">Running…</span>
+        <span class="tok">background — must be visible on the canvas (was invisibly broken in v5)</span>
+      </div>
+      <div class="spinner-mock">
+        <div class="status-dot" id="dot-inactive" style="border:1px solid;background:transparent"></div>
+        <span id="txt-inactive" class="spinner-text">2m ago · 4 tool uses</span>
+        <span class="tok">inactive — timestamps, metadata</span>
+      </div>
+      <div class="spinner-mock">
+        <div class="status-dot" style="background:transparent;border:1px dashed var(--fg-disabled)"></div>
+        <span id="txt-subtle" class="spinner-text">subtle border / divider color</span>
+        <span class="tok">subtle</span>
+      </div>
+    </div>
+    <div id="contrast-background-note" class="load-status" style="margin-top:8px;font-size: var(--t-label-xs-size)"></div>
+  </section>
+
+  <!-- 04 Text hierarchy ────────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">04</span> Text hierarchy</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="status-row">
+        <span id="txt-text" class="status-text" style="font-size:15px;font-weight:700">Primary text — the default foreground</span>
+        <span class="tok">text</span>
+        <span class="wcag" id="wcag-text">…</span>
+      </div>
+      <div class="status-row">
+        <span id="txt-inactive2" class="status-text">Inactive · timestamps · hints · secondary context</span>
+        <span class="tok">inactive</span>
+        <span class="wcag" id="wcag-inactive">…</span>
+      </div>
+      <div class="status-row">
+        <span id="txt-subtle2" class="status-text">Subtle · faint borders and dividers</span>
+        <span class="tok">subtle</span>
+        <span class="wcag" id="wcag-subtle">…</span>
+      </div>
+      <div class="status-row">
+        <span id="txt-suggestion" class="status-text">suggestion → autocomplete · focused list item highlight</span>
+        <span class="tok">suggestion</span>
+        <span class="wcag" id="wcag-suggestion">…</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Status indicators ─────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">05</span> Status indicators</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="status-row">
+        <div class="status-dot" id="dot-success"></div>
+        <span id="txt-success" class="status-text">✓ All checks passed</span>
+        <span class="tok">success</span>
+        <span class="wcag" id="wcag-success">…</span>
+      </div>
+      <div class="status-row">
+        <div class="status-dot" id="dot-error"></div>
+        <span id="txt-error" class="status-text">✕ Build failed — exit 1</span>
+        <span class="tok">error</span>
+        <span class="wcag" id="wcag-error">…</span>
+      </div>
+      <div class="status-row">
+        <div class="status-dot" id="dot-warning"></div>
+        <span id="txt-warning" class="status-text">⚠ 3 deprecation warnings</span>
+        <span class="tok">warning</span>
+        <span class="wcag" id="wcag-warning">…</span>
+      </div>
+      <div class="status-row">
+        <div class="status-dot" id="dot-merged"></div>
+        <span id="txt-merged" class="status-text">↗ PR #42 merged into main</span>
+        <span class="tok">merged</span>
+        <span class="wcag" id="wcag-merged">…</span>
+      </div>
+      <div class="status-row">
+        <div class="status-dot" id="dot-remember"></div>
+        <span id="txt-remember" class="status-text">✦ CLAUDE.md · project memory</span>
+        <span class="tok">remember</span>
+        <span class="wcag" id="wcag-remember">…</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 Permission dialog ─────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">06</span> Permission dialog</h2>
+    <div class="mock-panel terminal-canvas">
+      <div id="permission-box" class="permission-mock">
+        <div class="permission-title" id="permission-title">Allow tool use?</div>
+        <div class="permission-body">Claude wants to run <code>npm test</code> in the current directory.</div>
+        <div class="permission-tools">
+          <span class="permission-tool" id="permission-tool-1">Bash</span>
+          <span class="permission-tool" id="permission-tool-2">ReadFile</span>
+          <span class="permission-tool" id="permission-tool-3">WriteFile</span>
+        </div>
+      </div>
+      <div class="tok-block">permission (border) · permissionShimmer (tool badges)</div>
+    </div>
+  </section>
+
+  <!-- 07 Diff view ─────────────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">07</span> Diff view</h2>
+    <div class="mock-panel terminal-canvas">
+      <div class="diff-view">
+        <div class="diff-line" id="diff-ctx-top"><span class="ln">42</span><span class="sig"> </span><span>function parseTokens(src) {</span></div>
+        <div class="diff-line" id="diff-removed"><span class="ln">43</span><span class="sig" id="diff-sig-r">−</span><span>  const tokens = src.split(' ');</span></div>
+        <div class="diff-line" id="diff-removed-dim"><span class="ln">  </span><span class="sig" id="diff-sig-rd">−</span><span>  return tokens.filter(t =&gt; t.length &gt; 0);</span></div>
+        <div class="diff-line" id="diff-added"><span class="ln">43</span><span class="sig" id="diff-sig-a">+</span><span>  const tokens = src.split(<span id="diff-word-r" class="diff-word-mark"> ' ' </span>).filter(Boolean);</span></div>
+        <div class="diff-line" id="diff-added-dim"><span class="ln">44</span><span class="sig" id="diff-sig-ad">+</span><span>  return tokens.map(t =&gt; t.trim()).filter(<span id="diff-word-a" class="diff-word-mark">Boolean</span>);</span></div>
+        <div class="diff-line" id="diff-ctx-bot"><span class="ln">45</span><span class="sig"> </span><span>}</span></div>
+      </div>
+      <div class="tok-block">diffAdded · diffRemoved · diffAddedDimmed · diffRemovedDimmed · diffAddedWord · diffRemovedWord</div>
+    </div>
+  </section>
+
+  <!-- 08 Subagent colors ───────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">08</span> Subagent colors</h2>
+    <div class="mock-panel">
+      <div class="subagent-grid" id="subagent-grid">
+        <div class="loading-placeholder">Loading…</div>
+      </div>
+      <div class="tok-block">*_FOR_SUBAGENTS_ONLY — 8 role colors for parallel agent labels</div>
+    </div>
+  </section>
+
+  <!-- 09 Rainbow palette ───────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">09</span> Rainbow palette</h2>
+    <div class="mock-panel">
+      <div class="rainbow-strip" id="rainbow-strip">
+        <div class="loading-placeholder">Loading…</div>
+      </div>
+      <div class="tok-block">rainbow_red · orange · yellow · green · blue · indigo · violet</div>
+    </div>
+  </section>
+
+  <!-- 10 Message backgrounds ───────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">10</span> Message &amp; fullscreen backgrounds</h2>
+    <div class="token-grid">
+      <div>
+        <div id="bg-user" class="bg-panel">
+          <div style="font-weight:700;margin-bottom:4px">User message</div>
+          <div style="color:var(--fg-secondary);font-size:12px">Can you help me debug this?</div>
+        </div>
+        <div class="tok-block">userMessageBackground</div>
+      </div>
+      <div>
+        <div id="bg-bash" class="bg-panel">
+          <div style="font-weight:700;margin-bottom:4px">Bash output</div>
+          <div style="color:var(--fg-secondary);font-size:12px">$ npm test — 42 tests passing</div>
+        </div>
+        <div class="tok-block">bashMessageBackgroundColor</div>
+      </div>
+      <div>
+        <div id="bg-memory" class="bg-panel">
+          <div style="font-weight:700;margin-bottom:4px">Memory / CLAUDE.md</div>
+          <div style="color:var(--fg-secondary);font-size:12px">Project context loaded from CLAUDE.md</div>
+        </div>
+        <div class="tok-block">memoryBackgroundColor</div>
+      </div>
+      <div>
+        <div id="bg-actions" class="bg-panel">
+          <div style="font-weight:700;margin-bottom:4px">Message actions</div>
+          <div style="color:var(--fg-secondary);font-size:12px">Copy · Edit · Retry</div>
+        </div>
+        <div class="tok-block">messageActionsBackground</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 Selection & rate limit ────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">11</span> Selection &amp; rate limit</h2>
+    <div class="token-grid">
+      <div class="mock-panel">
+        <div class="mock-panel-label">Selection background</div>
+        <div id="selection-demo" style="padding:6px 10px;border-radius:var(--radius-sm);font-size: var(--t-label-md-size)">
+          Selected <span id="selection-highlight" style="padding:0 2px;border-radius:2px">text appears</span> highlighted
+        </div>
+        <div class="tok-block">selectionBg</div>
+      </div>
+      <div class="mock-panel">
+        <div class="mock-panel-label">Rate limit bar</div>
+        <div class="rate-bar">
+          <div class="rate-fill" id="rate-fill"></div>
+          <div class="rate-empty" id="rate-empty"></div>
+        </div>
+        <div style="font-size: var(--t-label-xs-size);color:var(--fg-secondary);margin-top:6px">60% used this period</div>
+        <div class="tok-block">rate_limit_fill · rate_limit_empty</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 Full token table ──────────────────────────────────────── -->
+  <section class="section">
+    <h2><span class="num">12</span> Full token table</h2>
+    <div class="mock-panel" style="padding: var(--s-sm);">
+      <table class="tok-table">
+        <thead>
+          <tr>
+            <th>Swatch</th>
+            <th>Token</th>
+            <th>Hex</th>
+            <th>Contrast vs canvas</th>
+          </tr>
+        </thead>
+        <tbody id="token-table-body">
+          <tr><td colspan="4" class="loading-placeholder">Loading theme data…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ── Contrast math (sRGB-correct) ──────────────────────────────────────────
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) { hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2]; }
+  return [
+    parseInt(hex.slice(0,2),16)/255,
+    parseInt(hex.slice(2,4),16)/255,
+    parseInt(hex.slice(4,6),16)/255
+  ];
+}
+function linearize(c) {
+  return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+}
+function luminance(hex) {
+  var rgb = hexToRgb(hex).map(linearize);
+  return 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2];
+}
+function contrastRatio(hex1, hex2) {
+  var l1 = luminance(hex1), l2 = luminance(hex2);
+  return (Math.max(l1,l2)+0.05) / (Math.min(l1,l2)+0.05);
+}
+function wcagClass(ratio) {
+  if (ratio >= 7.0) { return 'aaa'; }
+  if (ratio >= 4.5) { return 'aa'; }
+  if (ratio >= 3.0) { return 'aa3'; }
+  return 'fail';
+}
+function wcagLabel(ratio) {
+  var r = ratio.toFixed(1);
+  if (ratio >= 7.0) { return 'AAA ' + r; }
+  if (ratio >= 4.5) { return 'AA ' + r; }
+  if (ratio >= 3.0) { return 'AA³ ' + r; }
+  return 'FAIL ' + r;
+}
+
+// Pick readable label color (dark-navy or cream) based on background luminance
+function labelFgFor(hex) {
+  return luminance(hex) > 0.35 ? '#0d1b2a' : '#f5ead0';
+}
+
+// ── DOM helpers ───────────────────────────────────────────────────────────
+function setStyle(id, prop, val) {
+  var el = document.getElementById(id);
+  if (el && val) { el.style[prop] = val; }
+}
+
+function applyBadge(el, fgHex, bgHex) {
+  if (!el) { return; }
+  var r = contrastRatio(fgHex, bgHex);
+  el.className = 'wcag ' + wcagClass(r);
+  el.textContent = wcagLabel(r);
+}
+
+function setBadge(id, fgHex, bgHex) {
+  applyBadge(document.getElementById(id), fgHex, bgHex);
+}
+
+// Safe DOM builder for the subagent grid — avoids innerHTML with dynamic data
+function buildSubagentGrid(container, tokens, bg) {
+  var subagents = [
+    { key: 'red_FOR_SUBAGENTS_ONLY',    label: 'red' },
+    { key: 'blue_FOR_SUBAGENTS_ONLY',   label: 'blue' },
+    { key: 'green_FOR_SUBAGENTS_ONLY',  label: 'green' },
+    { key: 'yellow_FOR_SUBAGENTS_ONLY', label: 'yellow' },
+    { key: 'purple_FOR_SUBAGENTS_ONLY', label: 'purple' },
+    { key: 'orange_FOR_SUBAGENTS_ONLY', label: 'orange' },
+    { key: 'pink_FOR_SUBAGENTS_ONLY',   label: 'pink' },
+    { key: 'cyan_FOR_SUBAGENTS_ONLY',   label: 'cyan' },
+  ];
+  // Clear existing children safely
+  while (container.firstChild) { container.removeChild(container.firstChild); }
+  subagents.forEach(function(s) {
+    var hex = tokens[s.key] || '#888888';
+    var cr  = contrastRatio(hex, bg);
+    var fg  = labelFgFor(hex);
+
+    var chip = document.createElement('div');
+    chip.className = 'subagent-chip';
+    chip.style.background = hex;
+    chip.style.color = fg;
+
+    var nameLine = document.createTextNode(s.label);
+    chip.appendChild(nameLine);
+
+    var br = document.createElement('br');
+    chip.appendChild(br);
+
+    var meta = document.createElement('span');
+    meta.style.cssText = 'font-size:9px;opacity:0.75;font-weight:400';
+    meta.textContent = hex + ' · ' + cr.toFixed(1);
+    chip.appendChild(meta);
+
+    container.appendChild(chip);
+  });
+}
+
+// Safe DOM builder for the rainbow strip
+function buildRainbowStrip(container, tokens) {
+  var names = ['red','orange','yellow','green','blue','indigo','violet'];
+  while (container.firstChild) { container.removeChild(container.firstChild); }
+  names.forEach(function(name) {
+    var hex = tokens['rainbow_' + name] || '#888888';
+    var fg  = labelFgFor(hex);
+
+    var cell = document.createElement('div');
+    cell.className = 'rainbow-cell';
+    cell.style.background = hex;
+    cell.style.color = fg;
+    cell.title = name + ': ' + hex;
+    cell.textContent = name.slice(0,3);
+    container.appendChild(cell);
+  });
+}
+
+// Safe DOM builder for the full token table
+function buildTokenTable(tbody, tokens, bg) {
+  while (tbody.firstChild) { tbody.removeChild(tbody.firstChild); }
+  Object.keys(tokens).forEach(function(key) {
+    var hex = tokens[key];
+    if (!hex || typeof hex !== 'string' || !hex.startsWith('#')) { return; }
+    var r = contrastRatio(hex, bg);
+
+    var tr = document.createElement('tr');
+
+    // Swatch cell
+    var tdSw = document.createElement('td');
+    var sw = document.createElement('span');
+    sw.className = 'sw-inline';
+    sw.style.background = hex;
+    tdSw.appendChild(sw);
+    tr.appendChild(tdSw);
+
+    // Token name cell
+    var tdName = document.createElement('td');
+    tdName.className = 'tok-name';
+    tdName.textContent = key;
+    tr.appendChild(tdName);
+
+    // Hex cell
+    var tdHex = document.createElement('td');
+    tdHex.className = 'tok-hex';
+    tdHex.textContent = hex;
+    tr.appendChild(tdHex);
+
+    // Contrast cell
+    var tdCr = document.createElement('td');
+    var badge = document.createElement('span');
+    badge.className = 'wcag ' + wcagClass(r);
+    badge.textContent = wcagLabel(r);
+    tdCr.appendChild(badge);
+    tr.appendChild(tdCr);
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+// ── ANSI palette (Ghostty layer) ─────────────────────────────────
+var ansiPalette = {
+  dark: {
+    bg: '#292c33', fg: '#e8e6e1',
+    cursor: '#dbbb6f', cursorText: '#292c33',
+    selBg: '#c4932a', selFg: '#20203e',
+    colors: [
+      { pos: 0,  name: 'black',         hex: '#292c33', role: 'canvas bg' },
+      { pos: 1,  name: 'red',           hex: '#a04540', role: 'errors, urgent' },
+      { pos: 2,  name: 'green',         hex: '#4a8a5e', role: 'success, diffs +' },
+      { pos: 3,  name: 'yellow',        hex: '#dbbb6f', role: 'accent, warnings' },
+      { pos: 4,  name: 'blue',          hex: '#9fb6c4', role: 'inline code (normal), steel info' },
+      { pos: 5,  name: 'magenta',       hex: '#9070d0', role: 'brand purple, keywords' },
+      { pos: 6,  name: 'cyan',          hex: '#7da6a4', role: 'strings, links' },
+      { pos: 7,  name: 'white',         hex: '#e8e6e1', role: 'foreground text' },
+      { pos: 8,  name: 'brightBlack',   hex: '#666666', role: 'comments, disabled' },
+      { pos: 9,  name: 'brightRed',     hex: '#b85a55', role: 'urgent bright' },
+      { pos: 10, name: 'brightGreen',   hex: '#5fa073', role: 'success bright' },
+      { pos: 11, name: 'brightYellow',  hex: '#e3c885', role: 'accent bright' },
+      { pos: 12, name: 'brightBlue',    hex: '#b8cad4', role: 'inline code (bright), steel' },
+      { pos: 13, name: 'brightMagenta', hex: '#b095e0', role: 'brand purple bright' },
+      { pos: 14, name: 'brightCyan',    hex: '#9bc1bf', role: 'cyan bright' },
+      { pos: 15, name: 'brightWhite',   hex: '#f5ead0', role: 'ivory/bold white' },
+    ]
+  },
+  light: {
+    bg: '#f5ead0', fg: '#20203e',
+    cursor: '#7a5a10', cursorText: '#f5ead0',
+    selBg: '#c4932a', selFg: '#f5ead0',
+    colors: [
+      { pos: 0,  name: 'black',         hex: '#f5ead0', role: 'canvas bg' },
+      { pos: 1,  name: 'red',           hex: '#8a2418', role: 'errors, urgent' },
+      { pos: 2,  name: 'green',         hex: '#2a5a3a', role: 'success, diffs +' },
+      { pos: 3,  name: 'yellow',        hex: '#7a5a10', role: 'accent, warnings' },
+      { pos: 4,  name: 'blue',          hex: '#406278', role: 'inline code (normal), steel info' },
+      { pos: 5,  name: 'magenta',       hex: '#4a25a0', role: 'brand purple, keywords' },
+      { pos: 6,  name: 'cyan',          hex: '#3a6a68', role: 'strings, links' },
+      { pos: 7,  name: 'white',         hex: '#20203e', role: 'foreground text' },
+      { pos: 8,  name: 'brightBlack',   hex: '#8a8070', role: 'comments, disabled' },
+      { pos: 9,  name: 'brightRed',     hex: '#a04540', role: 'urgent bright' },
+      { pos: 10, name: 'brightGreen',   hex: '#3a7050', role: 'success bright' },
+      { pos: 11, name: 'brightYellow',  hex: '#8a6618', role: 'accent bright' },
+      { pos: 12, name: 'brightBlue',    hex: '#2e4a5a', role: 'inline code (bright), steel' },
+      { pos: 13, name: 'brightMagenta', hex: '#6a30d0', role: 'brand purple bright' },
+      { pos: 14, name: 'brightCyan',    hex: '#4a8280', role: 'cyan bright' },
+      { pos: 15, name: 'brightWhite',   hex: '#20203e', role: 'ink/bold' },
+    ]
+  }
+};
+// ── Theme state ───────────────────────────────────────────────────────────
+var currentMode = 'dark';
+var themes = { dark: null, light: null };
+// Canvas background per mode — updated when JSON loads from clawd_background token
+var canvasBg = { dark: '#292c33', light: '#f5ead0' };
+
+function loadTheme(mode) {
+  currentMode = mode;
+  document.getElementById('btn-dark').classList.toggle('active', mode === 'dark');
+  document.getElementById('btn-light').classList.toggle('active', mode === 'light');
+
+  // Sync Artificer page-chrome theme
+  document.documentElement.setAttribute('data-theme', mode);
+  try { localStorage.setItem('artificer.theme', mode); } catch(e) {}
+
+  if (themes[mode]) { applyTheme(themes[mode]); return; }
+
+  var statusEl = document.getElementById('load-status');
+  statusEl.textContent = 'Loading…';
+  statusEl.className = 'load-status';
+
+  var file = mode === 'dark' ? 'artificer-dark.json' : 'artificer-light.json';
+  fetch('../themes/claude-code/' + file)
+    .then(function(r) {
+      if (!r.ok) { throw new Error('HTTP ' + r.status); }
+      return r.json();
+    })
+    .then(function(data) {
+      themes[mode] = data.overrides || {};
+      if (themes[mode].clawd_background) {
+        canvasBg[mode] = themes[mode].clawd_background;
+      }
+      statusEl.textContent = 'Loaded ' + (data.name || file);
+      statusEl.className = 'load-status ok';
+      applyTheme(themes[mode]);
+    })
+    .catch(function(err) {
+      statusEl.textContent = 'Error: ' + err.message;
+      statusEl.className = 'load-status err';
+    });
+}
+
+function applyTheme(t) {
+  var bg = canvasBg[currentMode];
+
+  // Set terminal canvas backgrounds on all mock panels
+  var canvases = document.querySelectorAll('.terminal-canvas');
+  for (var i = 0; i < canvases.length; i++) {
+    canvases[i].style.background = bg;
+  }
+
+  // ── 01 Prompt borders ─────────────────────────────────────────
+  setStyle('prompt-default', 'borderColor', t.promptBorder);
+  setStyle('prompt-bash',    'borderColor', t.bashBorder);
+  setStyle('prompt-plan',    'borderColor', t.planMode);
+  setStyle('prompt-auto',    'borderColor', t.autoAccept);
+  setStyle('prompt-fast',    'borderColor', t.fastMode);
+  setStyle('cursor-default', 'background', t.text);
+
+  // ── 02 Brief labels ───────────────────────────────────────────
+  setStyle('lbl-you',    'color', t.briefLabelYou);
+  setStyle('txt-you',    'color', t.briefLabelYou);
+  setStyle('lbl-claude', 'color', t.briefLabelClaude);
+
+  var invBadge = document.getElementById('lbl-inverse');
+  if (invBadge && t.inverseText && t.suggestion) {
+    invBadge.style.color      = t.inverseText;
+    invBadge.style.background = t.suggestion;
+  }
+
+  // ── 03 Spinner & status ───────────────────────────────────────
+  var spinClaude = document.getElementById('spinner-claude');
+  if (spinClaude && t.claude) {
+    spinClaude.style.borderColor    = t.claude + '44';
+    spinClaude.style.borderTopColor = t.claude;
+  }
+  setStyle('txt-claude', 'color', t.claude);
+
+  var spinSys = document.getElementById('spinner-system');
+  var sysTok  = t.claudeBlue_FOR_SYSTEM_SPINNER;
+  if (spinSys && sysTok) {
+    spinSys.style.borderColor    = sysTok + '44';
+    spinSys.style.borderTopColor = sysTok;
+  }
+  setStyle('txt-system', 'color', sysTok);
+
+  setStyle('bg-token-swatch', 'background', t.background);
+  setStyle('txt-background',  'color',      t.background);
+  var noteEl = document.getElementById('contrast-background-note');
+  if (noteEl && t.background && bg) {
+    var r = contrastRatio(t.background, bg);
+    noteEl.textContent = '"background" token: ' + t.background + ' on canvas ' + bg +
+      ' → contrast ' + r.toFixed(2) + ':1 (' +
+      (r >= 4.5 ? 'AA pass' : r >= 3.0 ? 'AA³ pass (large text only)' : 'FAIL — was invisible in v5') + ')';
+    noteEl.className = 'load-status ' + (r >= 4.5 ? 'ok' : 'err');
+  }
+
+  setStyle('dot-inactive', 'color',      t.inactive);
+  setStyle('txt-inactive', 'color',      t.inactive);
+  setStyle('txt-subtle',   'color',      t.subtle);
+
+  // ── 04 Text hierarchy ─────────────────────────────────────────
+  setStyle('txt-text',        'color', t.text);
+  setStyle('txt-inactive2',   'color', t.inactive);
+  setStyle('txt-subtle2',     'color', t.subtle);
+  setStyle('txt-suggestion',  'color', t.suggestion);
+  setBadge('wcag-text',        t.text       || '', bg);
+  setBadge('wcag-inactive',    t.inactive   || '', bg);
+  setBadge('wcag-subtle',      t.subtle     || '', bg);
+  setBadge('wcag-suggestion',  t.suggestion || '', bg);
+
+  // ── 05 Status indicators ──────────────────────────────────────
+  setStyle('dot-success',  'background', t.success);
+  setStyle('dot-error',    'background', t.error);
+  setStyle('dot-warning',  'background', t.warning);
+  setStyle('dot-merged',   'background', t.merged);
+  setStyle('dot-remember', 'background', t.remember);
+  setStyle('txt-success',  'color', t.success);
+  setStyle('txt-error',    'color', t.error);
+  setStyle('txt-warning',  'color', t.warning);
+  setStyle('txt-merged',   'color', t.merged);
+  setStyle('txt-remember', 'color', t.remember);
+  setBadge('wcag-success',  t.success  || '', bg);
+  setBadge('wcag-error',    t.error    || '', bg);
+  setBadge('wcag-warning',  t.warning  || '', bg);
+  setBadge('wcag-merged',   t.merged   || '', bg);
+  setBadge('wcag-remember', t.remember || '', bg);
+
+  // ── 06 Permission dialog ──────────────────────────────────────
+  var perm = document.getElementById('permission-box');
+  if (perm && t.permission) {
+    perm.style.borderColor = t.permission;
+    perm.style.background  = bg;
+  }
+  setStyle('permission-title', 'color', t.permission);
+  ['permission-tool-1','permission-tool-2','permission-tool-3'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && t.permissionShimmer) {
+      el.style.borderColor = t.permissionShimmer;
+      el.style.color       = t.permissionShimmer;
+      el.style.background  = 'transparent';
+    }
+  });
+
+  // ── 07 Diff view ──────────────────────────────────────────────
+  setStyle('diff-ctx-top',     'background', bg);
+  setStyle('diff-ctx-bot',     'background', bg);
+  setStyle('diff-removed',     'background', t.diffRemoved);
+  setStyle('diff-removed-dim', 'background', t.diffRemovedDimmed);
+  setStyle('diff-added',       'background', t.diffAdded);
+  setStyle('diff-added-dim',   'background', t.diffAddedDimmed);
+  setStyle('diff-word-r',      'background', t.diffRemovedWord);
+  setStyle('diff-word-a',      'background', t.diffAddedWord);
+  var addSig = currentMode === 'dark' ? '#b7bd73' : '#2a5a3a';
+  var remSig = currentMode === 'dark' ? '#e8836f' : '#8a2418';
+  setStyle('diff-sig-a',  'color', addSig);
+  setStyle('diff-sig-ad', 'color', addSig);
+  setStyle('diff-sig-r',  'color', remSig);
+  setStyle('diff-sig-rd', 'color', remSig);
+
+  // ── 08 Subagent grid ──────────────────────────────────────────
+  buildSubagentGrid(document.getElementById('subagent-grid'), t, bg);
+
+  // ── 09 Rainbow strip ──────────────────────────────────────────
+  buildRainbowStrip(document.getElementById('rainbow-strip'), t);
+
+  // ── 10 Message backgrounds ────────────────────────────────────
+  setStyle('bg-user',    'background', t.userMessageBackground);
+  setStyle('bg-bash',    'background', t.bashMessageBackgroundColor);
+  setStyle('bg-memory',  'background', t.memoryBackgroundColor);
+  setStyle('bg-actions', 'background', t.messageActionsBackground);
+
+  // ── 11 Selection & rate limit ─────────────────────────────────
+  var selHl = document.getElementById('selection-highlight');
+  if (selHl && t.selectionBg) {
+    selHl.style.background = t.selectionBg;
+    selHl.style.color      = labelFgFor(t.selectionBg);
+  }
+  setStyle('rate-fill',  'background', t.rate_limit_fill);
+  setStyle('rate-empty', 'background', t.rate_limit_empty);
+
+  // ── 12 Full token table ───────────────────────────────────────
+  buildTokenTable(document.getElementById('token-table-body'), t, bg);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var stored = '';
+  try { stored = localStorage.getItem('artificer.theme') || ''; } catch(e) {}
+  var sysLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  var initial  = (stored === 'light' || stored === 'dark') ? stored : (sysLight ? 'light' : 'dark');
+  loadTheme(initial);
+});
+</script>
+</body>
+</html>

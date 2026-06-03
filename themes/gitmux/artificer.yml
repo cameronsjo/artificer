@@ -1,0 +1,39 @@
+# Artificer v0.12.0 · gitmux config
+# Symlink in: ~/.config/tmux/gitmux.yml
+#
+# Mode-independent: state colors route through ANSI names (red/green/...)
+# which Ghostty resolves to the active Artificer palette. Brand accent
+# uses colour13 → brandPurpleBright. No hex anywhere; no rebuild needed
+# when the palette mutates.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+tmux:
+  symbols:
+    branch: " "
+    hashprefix: ":"
+    ahead: "↑"
+    behind: "↓"
+    staged: "+"
+    conflict: "!"
+    modified: "~"
+    untracked: "?"
+    stashed: "*"
+    clean: ""
+  styles:
+    clear: "#[fg=default]"
+    state: "#[fg=red,bold]"
+    branch: "#[fg=colour13,bold]"
+    remote: "#[fg=cyan]"
+    divergence: "#[fg=green]"
+    staged: "#[fg=default]"
+    conflict: "#[fg=red]"
+    modified: "#[fg=yellow]"
+    untracked: "#[fg=default]"
+    stashed: "#[fg=blue]"
+    clean: "#[fg=green]"
+  layout: [branch, divergence, " ", flags]
+  options:
+    branch_max_len: 20
+    branch_trim: right
+    ellipsis: "…"

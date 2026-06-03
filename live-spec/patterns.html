@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Patterns</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<script src="artificer-theme.js" defer></script>
+<style>
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
+  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 .amp { color: var(--accent); }
+  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
+  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  .note { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.6; max-width: 62ch; margin-top: var(--s-md); }
+
+  /* Command palette */
+  .palette { background: var(--bg-overlay); border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); padding: 10px; max-width: 560px; margin: 0 auto; }
+  .palette input { width: 100%; background: transparent; border: none; outline: none; color: var(--fg); font-family: var(--font-mono); font-size: 15px; padding: 10px 12px; }
+  .palette input::placeholder { color: var(--fg-disabled); }
+  .palette .caret { display: inline-block; width: 8px; height: 15px; background: var(--accent); vertical-align: -2px; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .palette .sep { height: 1px; background: var(--border); margin: 6px 0; }
+  .palette .item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 13px; color: var(--fg); }
+  .palette .item.sel { background: color-mix(in oklch, var(--accent) 18%, transparent); }
+  .palette .item .i { color: var(--accent); width: 14px; text-align: center; }
+  .palette .item .m { margin-left: auto; color: var(--fg-secondary); font-size: 12px; }
+  .palette .more { padding: 6px 12px; font-family: var(--font-sans); font-size: 11px; color: var(--fg-disabled); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Sidebar */
+  .mockwrap { display: grid; grid-template-columns: 220px 1fr; gap: var(--s-md); background: var(--bg); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border); min-height: 360px; }
+  .sidebar { background: var(--bg-raised); padding: var(--s-md); display: flex; flex-direction: column; gap: var(--s-md); }
+  .sidebar .sec { display: flex; flex-direction: column; gap: 2px; }
+  .sidebar .sec-title { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-disabled); padding: 0 8px; margin-bottom: 4px; }
+  .sidebar .item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); }
+  .sidebar .item.active { color: var(--fg); background: var(--bg); border-left: 2px solid var(--accent); padding-left: 6px; }
+  .sidebar .item .badge { margin-left: auto; }
+  .sidebar .branch { font-family: var(--font-mono); font-size: 12px; color: var(--accent); padding: 0 8px; }
+
+  .main { padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-md); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+  .tabs .tab { padding: 10px 16px 12px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--fg-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .tabs .tab.active { color: var(--fg); font-weight: 700; border-bottom-color: var(--accent); }
+  .tabs .tab:hover { color: var(--fg); }
+
+  @media (max-width:640px){.mockwrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main class="page">
+  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Patterns</div>
+  <h1>patterns<span class="amp">.</span></h1>
+  <p class="lede">The surfaces that carry Artificer's <span class="anchor">working-memory caps</span>: command palette (5–7), sidebar (8–10), tabs (few, informative), all keyboard-first.</p>
+
+  <section>
+    <h2><span class="num">01</span> Command palette</h2>
+    <div class="palette">
+      <div style="display:flex;align-items:center;padding:4px 8px">
+        <span style="color:var(--accent);font-family:var(--font-mono);margin-right:6px">></span>
+        <input type="text" placeholder="Type a command or file…" />
+        <kbd style="margin-right:4px">Esc</kbd>
+      </div>
+      <div class="sep"></div>
+      <div class="item sel"><span class="i"></span><span>Open file…</span><span class="m">⌘ O</span></div>
+      <div class="item"><span class="i"></span><span>Switch agent</span><span class="m">⌘ K</span></div>
+      <div class="item"><span class="i"></span><span>Run build</span><span class="m">⌘ B</span></div>
+      <div class="item"><span class="i"></span><span>Commit changes…</span><span class="m">⌘ ↵</span></div>
+      <div class="item"><span class="i"></span><span>Toggle theme</span><span class="m">⌘ ⇧ L</span></div>
+      <div class="more">42 more · keep typing</div>
+    </div>
+    <p class="note"><span class="anchor">5 items shown</span>, frequent/recent first (not alphabetical). <span class="anchor">Keyboard-first</span> — arrow keys + enter. Overflow is a quiet line, not a list dump.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span> Sidebar</h2>
+    <div class="mockwrap">
+      <aside class="sidebar">
+        <div class="sec">
+          <div class="sec-title">Workspace</div>
+          <div class="branch">main · cameron/artificer</div>
+        </div>
+        <div class="sec">
+          <div class="sec-title">Agents</div>
+          <div class="item active">writer <span class="dot dot--accent" style="margin-left:auto"></span></div>
+          <div class="item">editor <span class="badge badge--attention">2</span></div>
+          <div class="item">reviewer</div>
+          <div class="item">shipper</div>
+        </div>
+        <div class="sec">
+          <div class="sec-title">Recent</div>
+          <div class="item">README.md</div>
+          <div class="item">artificer.css</div>
+          <div class="item">colors.html</div>
+        </div>
+      </aside>
+      <section class="main">
+        <div class="tabs">
+          <div class="tab active">writer <span class="dot dot--accent"></span></div>
+          <div class="tab">editor <span class="dot dot--attention"></span></div>
+          <div class="tab">reviewer</div>
+        </div>
+        <div class="t-headline-md">Draft ready for review.</div>
+        <div class="t-body-md" style="color:var(--fg-secondary);max-width:54ch">The <span class="anchor">writer agent</span> finished the section on tonal depth. Hand off to <span class="anchor">editor</span>, or review inline.</div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btn--primary">Send to editor <kbd>⌘ ↵</kbd></button>
+          <button class="btn btn--ghost">View diff</button>
+        </div>
+      </section>
+    </div>
+    <p class="note">Sidebar shows <span class="anchor">name, branch, badge count</span>. Not shown: file paths, PR states, port numbers. Active item gets a gold left bar. Inactive items are plain — no metadata clutter.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span> Tabs</h2>
+    <div style="background:var(--bg-raised);border-radius:var(--radius-md);padding:var(--s-lg)">
+      <div class="tabs">
+        <div class="tab active">writer.md <span class="dot dot--accent"></span></div>
+        <div class="tab">editor.md <span class="dot dot--attention"></span></div>
+        <div class="tab">reviewer.md</div>
+        <div class="tab" style="color:var(--fg-disabled)">shipper.md</div>
+      </div>
+    </div>
+    <p class="note"><span class="anchor">Active:</span> bold, gold underline. <span class="anchor">Attention-needed:</span> rose dot, nothing more. <span class="anchor">Close buttons</span> invisible until hover. Labels <span class="anchor">truncate at ~20 chars</span>.</p>
+  </section>
+</main>
+</body>
+</html>

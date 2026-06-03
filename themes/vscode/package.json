@@ -1,0 +1,33 @@
+{
+  "name": "artificer-theme",
+  "displayName": "Artificer",
+  "description": "Cameron's Artificer design system as a VS Code theme. Dark-first Jazz Age Deco palette with ivory-paper light variant.",
+  "version": "0.7.2",
+  "publisher": "cameron",
+  "license": "Apache-2.0",
+  "author": "Cameron Sjo",
+  "homepage": "https://github.com/cameronsjo/artificer-design-system#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cameronsjo/artificer-design-system.git",
+    "directory": "themes/vscode"
+  },
+  "bugs": { "url": "https://github.com/cameronsjo/artificer-design-system/issues" },
+  "keywords": ["theme", "color-theme", "dark", "light", "art-deco", "jazz-age", "artificer"],
+  "engines": { "vscode": "^1.70.0" },
+  "categories": ["Themes"],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Artificer Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/artificer-dark-color-theme.json"
+      },
+      {
+        "label": "Artificer Light",
+        "uiTheme": "vs",
+        "path": "./themes/artificer-light-color-theme.json"
+      }
+    ]
+  }
+}

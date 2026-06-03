@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<title>Artificer · Icons</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="artificer.css" />
+<link rel="stylesheet" href="print.css" media="print" />
+<script src="artificer-theme.js" defer></script>
+<script src="artificer-icons.js" defer></script>
+<style>
+  main { max-width: 920px; margin: 0 auto; padding: 48px 24px 96px; }
+  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  h1 { margin: 0 0 var(--s-sm); }
+  .lede { color: var(--fg-secondary); margin: 0 0 var(--s-2xl); max-width: 60ch; }
+  section { margin-bottom: var(--s-2xl); }
+  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s-sm); }
+  .cell { background: var(--bg-raised); border-radius: var(--radius-sm); padding: var(--s-md) var(--s-sm); display: flex; flex-direction: column; align-items: center; gap: var(--s-sm); transition: border-color var(--dur-fast) var(--ease); border: 1px solid transparent; }
+  .cell:hover { border-color: var(--accent); }
+  .cell .glyph { color: var(--fg); height: 24px; display: flex; align-items: center; }
+  .cell .glyph svg { width: 20px; height: 20px; }
+  .cell .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
+  .row-demo { display: flex; gap: var(--s-md); align-items: center; flex-wrap: wrap; }
+  .row-demo .btn .icon { width: 14px; height: 14px; }
+  .badge .icon { width: 12px; height: 12px; }
+  .a-icon { display: inline-flex; align-items: center; gap: 6px; }
+  .a-icon .icon { width: 14px; height: 14px; }
+  .usage { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .usage pre { margin: 0; padding: var(--s-md); background: var(--bg-inactive); border-radius: var(--radius-sm); overflow-x: auto; color: var(--fg-secondary); font-size: 12.5px; line-height: 1.6; }
+  .usage code { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+  <span class="dot"></span><span data-theme-label>Dark</span>
+</button>
+
+<main>
+  <p class="crumb">Foundations · Icons</p>
+  <h1 class="t-headline-lg">icons.</h1>
+  <p class="lede t-body-lg">A small, hand-tuned set rooted in <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>. <b class="anchor">16px viewBox</b>, <b class="anchor">1.5 stroke</b>, color via <code>currentColor</code>. Used sparingly — at most one per UI row.</p>
+
+  <section>
+    <h2>Usage</h2>
+    <div class="usage">
+      <p class="t-body-md" style="margin:0 0 var(--s-md)">Drop a placeholder anywhere in the DOM. The hydrator replaces it on load.</p>
+      <pre><code>&lt;script src="artificer-icons.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- in body --&gt;
+&lt;i data-icon="search"&gt;&lt;/i&gt;
+&lt;i data-icon="check" data-icon-size="20"&gt;&lt;/i&gt;
+&lt;i data-icon="alert" data-icon-stroke="2"&gt;&lt;/i&gt;</code></pre>
+      <p class="t-body-md meta" style="margin:var(--s-md) 0 0">Or build programmatically: <code>ArtificerIcons.build('search')</code> returns an <code>SVGElement</code>.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>In context</h2>
+    <div class="row-demo">
+      <button class="btn btn--primary"><i data-icon="send"></i>Send</button>
+      <button class="btn btn--secondary"><i data-icon="download"></i>Export</button>
+      <button class="btn btn--ghost"><i data-icon="settings"></i>Settings</button>
+      <button class="btn btn--destructive"><i data-icon="trash"></i>Delete</button>
+    </div>
+    <div class="row-demo" style="margin-top: var(--s-md)">
+      <span class="badge badge--accent"><i data-icon="check"></i>Done</span>
+      <span class="badge badge--attention"><i data-icon="circle-dot"></i>Review</span>
+      <span class="badge badge--urgent"><i data-icon="alert"></i>Failed</span>
+      <span class="badge badge--ghost"><i data-icon="info"></i>Note</span>
+    </div>
+    <p class="row-demo" style="margin-top: var(--s-md); color: var(--fg-secondary)">
+      <a class="a-icon" href="#"><i data-icon="external"></i>Open repo</a>
+      &nbsp;·&nbsp;
+      <a class="a-icon" href="#"><i data-icon="arrow-r"></i>Continue</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>Navigation</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="menu"></i></span><span class="name">menu</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="close"></i></span><span class="name">close</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-r"></i></span><span class="name">chevron-r</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-l"></i></span><span class="name">chevron-l</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-d"></i></span><span class="name">chevron-d</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-u"></i></span><span class="name">chevron-u</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="arrow-r"></i></span><span class="name">arrow-r</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="arrow-l"></i></span><span class="name">arrow-l</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="external"></i></span><span class="name">external</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="check"></i></span><span class="name">check</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="x"></i></span><span class="name">x</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="alert"></i></span><span class="name">alert</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="info"></i></span><span class="name">info</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="circle-dot"></i></span><span class="name">circle-dot</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="spinner"></i></span><span class="name">spinner</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Actions</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="plus"></i></span><span class="name">plus</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="minus"></i></span><span class="name">minus</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="search"></i></span><span class="name">search</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="edit"></i></span><span class="name">edit</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="trash"></i></span><span class="name">trash</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="copy"></i></span><span class="name">copy</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="download"></i></span><span class="name">download</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="upload"></i></span><span class="name">upload</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="send"></i></span><span class="name">send</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="refresh"></i></span><span class="name">refresh</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Files &amp; system</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="file"></i></span><span class="name">file</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="folder"></i></span><span class="name">folder</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="terminal"></i></span><span class="name">terminal</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="code"></i></span><span class="name">code</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="settings"></i></span><span class="name">settings</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="theme"></i></span><span class="name">theme</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="user"></i></span><span class="name">user</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="logout"></i></span><span class="name">logout</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rules</h2>
+    <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
+      <li><b class="anchor">One icon per row.</b> Two competing glyphs is one too many.</li>
+      <li><b class="anchor">Always paired with a text label</b> in primary navigation. Icon-only is reserved for tight chrome (close, expand).</li>
+      <li><b class="anchor">Inherit color via <code>currentColor</code>.</b> Never hardcode a hex.</li>
+      <li><b class="anchor">Don't tint semantically.</b> Color comes from the parent (e.g. <code>.btn--destructive</code>), not the icon.</li>
+    </ol>
+  </section>
+</main>
+
+</body>
+</html>

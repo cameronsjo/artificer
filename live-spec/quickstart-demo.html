@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+
+  <!-- Theme bootstrap — FIRST, before any CSS, so a dark page never flashes
+       light. Key 'artificer.theme' (dot); dark-first. See QUICKSTART.md. -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('artificer.theme');
+        var prefersLight = window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.setAttribute(
+          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="artificer.css" />
+  <link rel="stylesheet" href="print.css" media="print" />
+  <script src="artificer-theme.js" defer></script>
+  <script src="artificer-icons.js" defer></script>
+  <title>Artificer · quickstart demo</title>
+</head>
+<body>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <span class="dot"></span><span data-theme-label>Dark</span>
+  </button>
+  <main class="container container--md" style="padding:48px 24px">
+    <p class="crumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Quickstart demo</span></p>
+    <h1 class="t-headline-lg">it works.</h1>
+    <p class="t-body-md" style="color:var(--fg-secondary);max-width:60ch">The exact boilerplate from <code>QUICKSTART.md</code>, running. Dark on load (no flash), a gold primary button, a working theme toggle, a hydrated icon. If you see all four, your install is correct.</p>
+    <div class="cluster" style="margin-top:var(--s-lg);gap:var(--s-md);align-items:center">
+      <button class="btn btn--primary"><i data-icon="check"></i> Primary action</button>
+      <button class="btn btn--secondary">Secondary</button>
+      <span class="badge badge--success"><span class="dot dot--success"></span>themed</span>
+    </div>
+  </main>
+</body>
+</html>

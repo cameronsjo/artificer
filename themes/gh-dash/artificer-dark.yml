@@ -1,0 +1,22 @@
+# Artificer v0.12.0 · Dark — gh-dash theme block
+# gh-dash has no @import mechanism. Two install paths:
+#
+#   1. Paste this block under `theme:` in your ~/.config/gh-dash/config.yml
+#   2. Splice in via chezmoi templating — see themes/README.md
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+colors:
+  text:
+    primary:   "#c5c8c6"
+    secondary: "#666666"
+    inverted:  "#292c33"
+    faint:     "#666666"
+    warning:   "#dbbb6f"
+    success:   "#4a8a5e"
+  background:
+    selected:  "#3c4150"
+  border:
+    primary:   "#4a4f5c"
+    secondary: "#5a606e"
+    faint:     "#1d1f21"
