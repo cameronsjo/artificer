@@ -105,7 +105,9 @@ export function Notification({
   action?: { label: string; onClick: () => void };
 }) {
   return (
-    <div className={`notif notif--${tier}`} role={tier === 'urgent' ? 'alert' : 'status'}>
+    // Live-region contract: urgent → alert (assertive) · attention/info →
+    // status (polite) · background → NO role — a silent badge, never announced.
+    <div className={`notif notif--${tier}`} role={tier === 'urgent' ? 'alert' : tier === 'background' ? undefined : 'status'}>
       <span className={`dot dot--${tier}`} aria-hidden="true" />
       <div className="notif__body">
         <p className="notif__title">{title}</p>

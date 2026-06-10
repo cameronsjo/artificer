@@ -30,16 +30,16 @@ module.exports = {
         'accent-bright': colorVar('accent-bright'),
         'accent-fill': colorVar('accent-fill'),
         'on-accent':  colorVar('on-accent'),
-        brand:        colorVar('brand'),
-        'brand-bright': colorVar('brand-bright'),
+        'brand-purple':        colorVar('brand-purple'),
+        'brand-purple-bright': colorVar('brand-purple-bright'),
         success:      colorVar('success'),
         attention:    colorVar('attention'),
         urgent:       colorVar('urgent'),
         border:       colorVar('border'),
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Berkeley Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+        sans: ['iA Writer Quattro S', 'iA Writer Quattro V', 'iA Writer Quattro', 'Iowan Old Style', 'Charter', 'Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       // Spacing follows the 8px grid baked into Artificer.
       spacing: {

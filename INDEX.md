@@ -21,7 +21,7 @@ Cameron-first, unsupported. Read order:
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.12.0
+npm install @cameronsjo/artificer@0.18.0
 
 # or copy src/ into your project and link the CSS
 cp -r src/ <your-project>/public/artificer/
@@ -45,7 +45,7 @@ artificer/
 │   ├── artificer.css        ← all tokens + every component class
 │   ├── artificer-*.js       ← theme / focus-trap / tabs / icons / whimsy helpers
 │   ├── artificer-whimsy.css ← the sanctioned whimsy layer (opt-in)
-│   ├── artificer-editorial.css · print.css
+│   ├── artificer-texture.css · artificer-editorial.css · print.css
 │   └── tokens.json          ← machine-readable token export
 │
 ├── live-spec/           ← every HTML reference page (open in a browser)

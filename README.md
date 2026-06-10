@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.8.0 · 2026** — Whimsy layer added; syntax palette ratified at v0.7.2 (new `fgMuted` role). See `CHANGELOG.md` for what changed.
+**v0.18.0 · 2026** — the re-true: the root is never overridden (`html { font-size: 100% }`), so every `--t-*-size` token now renders at its labeled px and the whole system scales with the browser font-size preference (#211, owner-ruled). Token-bound type grows ~14.3% — body copy lands at a true 14px (it had double-applied to 12.25px); the owner optical pass is #214. The px-literal chrome rebinds to exact-match tokens as identity swaps, the `lint:tokens` font-size watch arms, the `.toast` ghost leaves print.css, and app-shell lands on canonical `.section-title`. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -19,7 +19,7 @@ A complete, self-contained design system you can drop into any project. Five fil
 
 Plus `src/print.css` (paper-mode for PDF/print) and two SVG assets (favicon, OG card).
 
-The optional **Whimsy** layer (`src/artificer-whimsy.css` + `src/artificer-whimsy.js`) is the *one sanctioned exception* to the no-looping-decoration / no-raw-color rules — a flowing burnished rainbow on text, for **user-defined fun elements** and whimsical operations only. Opt-in; load it after `artificer.css`. Full doctrine in `CLAUDE.md` § Whimsy; interactive reference + playground at `live-spec/whimsy.html`.
+The optional **Whimsy** layer (`src/artificer-whimsy.css` + `src/artificer-whimsy.js`) is the *one sanctioned exception* to the no-looping-decoration / no-raw-color rules — a flowing burnished rainbow on text, for **user-defined fun elements** and whimsical operations only. Opt-in; load it after `artificer.css`. It also ships `Whimsy.greeting()` — a seasonal footer line (`<span data-whimsy-greeting>`) that lights up for Pride every June. Full doctrine in `CLAUDE.md` § Whimsy; interactive reference + playground at `live-spec/whimsy.html`.
 
 The full live spec for every component lives at the project URL (the HTML pages — `colors.html`, `typography.html`, `components.html`, etc). This bundle ships the source; visit the live system for the visual reference.
 
@@ -72,13 +72,28 @@ cp -r src/ packages/artificer/
 
 ```ts
 // In your app entry (e.g. src/main.ts, app/layout.tsx)
-import 'artificer/artificer.css'
+import 'artificer/artificer.css'      // tokens + .tabs .appbar .crumb .sidenav .split-pane …
 import 'artificer/artificer-theme.js'
 import 'artificer/artificer-focus.js' // only if using modals
 import 'artificer/artificer-icons.js' // only if using <i data-icon>
+import 'artificer/artificer-tabs.js'  // only if using .tabs (ships the APG keyboard model)
+import 'artificer/artificer-options.js' // only if using .menu/.listbox/.palette (option navigation)
+import 'artificer/artificer-tree.js'  // only if using .tree (ships the APG tree keyboard)
 ```
 
 The CSS uses CSS custom properties (variables) and `data-theme` attribute — no preprocessing needed.
+
+**Nav primitives.** `.tabs`, `.appbar`, `.crumb`, `.sidenav`, and `.split-pane` ship in `artificer.css`. The `.tabs` CSS is style-only — load `artificer-tabs.js` for the WAI-ARIA keyboard behavior (roving tabindex, arrows, Home/End). Full reference: `live-spec/navigation.html`.
+
+```html
+<div class="tabs" data-tabs role="tablist">
+  <button class="tabs__tab" role="tab" aria-controls="p1">Overview</button>
+  <!-- … -->
+</div>
+```
+```ts
+ArtificerTabs.observe(document) // wires APG keyboard for every [data-tabs]
+```
 
 ### Path C · Tailwind / utility-first
 
@@ -175,7 +190,7 @@ You don't need to reinvent any of this. Just don't undo it.
 - Selection color (`::selection`) themed
 - Scrollbar styled to match (Webkit + Firefox)
 
-The `reference/a11y.html` page (in the live system) has the 12-point shipping checklist.
+The `live-spec/a11y.html` page (in the live system) has the 12-point shipping checklist.
 
 ---
 
@@ -238,6 +253,34 @@ indigo-ink, dramatic 0.55/0.6 inactive-pane recession). The palette
 tokens stay in sync manually.
 
 See `themes/README.md` for install instructions per surface.
+
+---
+
+## Quality gates — two test lanes
+
+Maintainer-facing. Both run in CI on every PR; consumers never need either.
+
+```bash
+# Lane 1 · data gates — zero dependencies, instant
+npm test               # unit tests (node --test scripts/*.test.mjs)
+npm run check:contrast # WCAG floors on $roles.syntax
+npm run lint:palette   # every CSS hex is a palette value
+npm run check:version  # all version stamps agree
+npm run check:livespec # src/ <-> live-spec/ mirror parity
+
+# Lane 2 · browser trust layer — Playwright (devDependencies only)
+npm install                             # once; then:
+npx playwright install chromium webkit  # once; downloads engines
+npm run test:browser                    # behavioral assertions on live-spec/
+npm run test:browser:headed             # watch it run
+npm run test:browser:ui                 # interactive debugging
+```
+
+The browser lane loads `live-spec/` pages in **Chromium** (Chrome class) and
+**WebKit as iPhone 13** (Safari class — on iOS every browser is WebKit) and
+asserts behavior: no horizontal overflow, touch-target floors, a11y, keyboard
+patterns. The data gates check what the system *says*; the browser lane checks
+what it *does*.
 
 ---
 

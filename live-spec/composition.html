@@ -10,13 +10,7 @@
 <script src="artificer-theme.js" defer></script>
 <style>
   /* page chrome — matches data-display.html */
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); border: 1px solid var(--border); }
-  .demo--frame { padding: 0; overflow: hidden; }
-  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); }
-  .num { font-variant-numeric: tabular-nums; }
 
   /* Dashboard frame — sits inside .demo to look like a real screen */
   .dash {
@@ -29,21 +23,9 @@
   .dash__title  { font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--fg); margin: 0; letter-spacing: .04em; }
   .dash__actions { display: flex; gap: var(--s-sm); align-items: center; }
 
-  /* stat used in this page (mirrors data-display) */
-  .stat { display: flex; flex-direction: column; gap: 4px; padding: var(--s-md); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); }
-  .stat__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); }
-  .stat__value { font-family: var(--font-mono); font-weight: 700; font-size: 24px; color: var(--fg); font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .stat__delta { font-family: var(--font-mono); font-size: 11px; color: var(--success); }
-  .stat__delta.down { color: var(--urgent); }
-  .stat__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-sm); }
+  /* .stat / .stat__* promoted to core artificer.css (v0.15.0) — inline removed */
 
   /* sidebar nav for split-pane example */
-  .sidenav { padding: var(--s-md); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; height: 100%; }
-  .sidenav__group { font-family: var(--font-sans); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); padding: var(--s-sm) var(--s-sm) 4px; }
-  .sidenav a { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); padding: 6px 10px; border-radius: var(--radius-sm); color: var(--fg-secondary); font-family: var(--font-mono); font-size: 13px; text-decoration: none; }
-  .sidenav a:hover { background: var(--bg); color: var(--fg); }
-  .sidenav a[aria-current="page"] { background: var(--bg); color: var(--accent); border-left: 2px solid var(--accent); padding-left: 8px; }
-  .sidenav a .count { font-size: 11px; color: var(--fg-disabled); font-variant-numeric: tabular-nums; }
 
   /* mini sparkline svg helper */
   .spark-cell { display: inline-flex; align-items: center; gap: var(--s-sm); }
@@ -56,10 +38,6 @@
   .console .warn { color: var(--attention); }
 
   /* notes column */
-  .notes { color: var(--fg-secondary); line-height: 1.6; }
-  .notes ul { padding-left: 1.4em; }
-  .notes li { margin: 4px 0; }
-  .notes b.anchor { color: var(--fg); }
 
   /* tweaks panel chrome */
   .tweaks {
@@ -97,13 +75,13 @@
     (last-updated stamp, live-tick, sticky table headers) that make a real product feel right.
   </p>
 
-  <h2>The four dashboard skeletons</h2>
+  <h2 class="section-title">The four dashboard skeletons</h2>
   <p class="meta">Pick by <b class="anchor">primary task</b>, not by aesthetic. Each skeleton has a job. If yours doesn't fit one of these, push back on the brief — usually two pages in a trench coat.</p>
 
   <!-- 1. KPI dashboard -->
   <h3>1 · KPI dashboard <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "what's the headline?"</span></h3>
   <p class="meta">Big numbers up top, supporting chart, recent activity. Use when the user came to <i>check status</i>, not investigate.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <section class="dash density-cozy" data-dash="kpi" aria-label="KPI dashboard example">
       <div class="dash__topbar">
         <h4 class="dash__title">Operations · today</h4>
@@ -157,7 +135,7 @@
   <!-- 2. Ops console -->
   <h3>2 · Ops console <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "something is wrong, where?"</span></h3>
   <p class="meta">Dense table of recent activity, filter row, log stream. Use when the user came to <i>investigate</i>. Compact density. Sticky table header.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <section class="dash density-compact" aria-label="Ops console example">
       <div class="dash__topbar">
         <h4 class="dash__title">Runs</h4>
@@ -216,7 +194,7 @@
   <!-- 3. Split-pane / browse-and-detail -->
   <h3>3 · Split pane <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "browse a list, look at one"</span></h3>
   <p class="meta">Sidebar = the list. Main = the detail. Settings, inbox, audit log, file browser. Cozy density.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <section class="dash density-cozy" style="grid-template-rows:auto 1fr" aria-label="Split-pane example">
       <div class="dash__topbar">
         <h4 class="dash__title">Settings</h4>
@@ -259,7 +237,7 @@
   <!-- 4. Table-first -->
   <h3>4 · Table-first <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "show me everything"</span></h3>
   <p class="meta">The table <i>is</i> the page. Filter row pinned, sticky headers, group rows, footer totals, comfortable on the eyes.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <section class="dash density-cozy" aria-label="Table-first example">
       <div class="dash__topbar">
         <h4 class="dash__title">Spend · April</h4>
@@ -277,7 +255,7 @@
         <span class="grow"></span>
         <input class="input" type="search" placeholder="search…" style="max-width:240px"/>
       </div>
-      <div style="overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+      <div style="overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:var(--radius-sm)" tabindex="0">
         <table class="table table--sticky-head">
           <thead>
             <tr><th>Item</th><th>Project</th><th>Category</th><th class="num">Hours</th><th class="num">Rate</th><th class="num">Total</th></tr>
@@ -304,12 +282,12 @@
   </div>
 
   <!-- Density modes -->
-  <h2>Density modes</h2>
+  <h2 class="section-title">Density modes</h2>
   <p class="meta">Same content, three densities. Pick by surface: <b class="anchor">compact</b> for ops/console, <b class="anchor">cozy</b> for default product, <b class="anchor">comfortable</b> for documents.</p>
 
   <h3>Compact <span style="color:var(--fg-disabled);font-weight:400">— 4px row, 10px gutter</span></h3>
-  <div class="demo">
-    <div class="density-compact">
+  <div class="figure">
+    <div class="density-compact" style="overflow-x:auto" tabindex="0">
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
@@ -322,8 +300,8 @@
   </div>
 
   <h3>Cozy <span style="color:var(--fg-disabled);font-weight:400">— 8px row, 16px gutter (default)</span></h3>
-  <div class="demo">
-    <div class="density-cozy">
+  <div class="figure">
+    <div class="density-cozy" style="overflow-x:auto" tabindex="0">
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
@@ -336,8 +314,8 @@
   </div>
 
   <h3>Comfortable <span style="color:var(--fg-disabled);font-weight:400">— 14px row, 20px gutter</span></h3>
-  <div class="demo">
-    <div class="density-comfortable">
+  <div class="figure">
+    <div class="density-comfortable" style="overflow-x:auto" tabindex="0">
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
@@ -350,9 +328,9 @@
   </div>
 
   <!-- Live atoms -->
-  <h2>Live-update atoms</h2>
+  <h2 class="section-title">Live-update atoms</h2>
   <p class="meta">The small chrome that signals real-time without overwhelming. <b class="anchor">Pulse on what's live, not on what's important.</b> Use one indicator per region — a page covered in pulsing dots reads as broken.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="cluster" style="--gap:var(--s-xl)">
       <div>
         <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live tick</div>
@@ -367,16 +345,16 @@
       </div>
       <div>
         <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live value</div>
-        <span class="t-mono-headline-lg num live-value" id="liveValue">42</span>
+        <span class="t-mono-headline-lg num live-value" id="liveValue" aria-live="polite" aria-atomic="true">42</span>
       </div>
     </div>
     <p class="meta" style="margin-top:var(--s-md);font-size:12px">The live value flashes the accent color momentarily on each change — a single perceptual "tick" so the user knows it moved without animating between states.</p>
   </div>
 
   <!-- Filters -->
-  <h2>Filters · time range · faceted browse</h2>
+  <h2 class="section-title">Filters · time range · faceted browse</h2>
   <p class="meta">Three patterns, in order of complexity. Start with chips. Add time-range when the data is temporal. Reach for a faceted sidebar only when the dataset has &gt;3 axes worth filtering on.</p>
-  <div class="demo stack stack--lg">
+  <div class="figure stack stack--lg">
     <div>
       <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Chips</div>
       <div class="cluster">
@@ -412,7 +390,7 @@
   </div>
 
   <!-- Rules -->
-  <h2>Rules</h2>
+  <h2 class="section-title">Rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
     <li><b class="anchor">Pick the skeleton from the user's task.</b> KPI for "what's the headline," ops for "where's the problem," split-pane for "browse-and-detail," table-first for "show me everything." Mixing skeletons on one page = confused users.</li>
     <li><b class="anchor">One density per surface</b>, set on the page-shell or section. Don't mix compact and comfortable in the same view — it reads as sloppy.</li>
@@ -426,7 +404,7 @@
     <li><b class="anchor">Empty toolbar &gt; clutter.</b> If there are no actions yet, leave the action area blank. Don't fill it with a "tip" or a logo.</li>
   </ol>
 
-  <h2>Anti-patterns</h2>
+  <h2 class="section-title">Anti-patterns</h2>
   <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
     <li><b class="anchor">12 KPI cards in two rows.</b> Reading suspended. Pick four. Promote the others to a "all metrics" page.</li>
     <li><b class="anchor">Both a sidebar nav and a top tab bar.</b> Pick one. Two navs = the page has no spine.</li>

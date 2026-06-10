@@ -4,12 +4,12 @@ User-visible changes to the Artificer web design system, published to npm as
 `@cameronsjo/artificer`. Cameron-first and unsupported — see `docs/UPGRADE.md`
 for the pin / versioning contract.
 
-## v0.12.0
+## v0.18.0
 
 First public release of the Artificer design system.
 
 - **`src/`** — every design token and component class in one stylesheet
-  (`artificer.css`), plus the optional Whimsy and editorial layers, the
+  (`artificer.css`), plus the optional Whimsy, texture, and editorial layers, the
   machine-readable token export (`tokens.json`), and the small a11y helpers
   (theme persistence, modal focus-trap, tabs keyboard model, icon hydration).
 - **`CLAUDE.md`** — the consumer rules for Claude Code: hard rules, token

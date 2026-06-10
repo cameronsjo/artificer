@@ -64,7 +64,7 @@
   [data-theme-toggle],
   .skip-link,
   nav[role="navigation"]:has(.theme-toggle),
-  .toast,
+  .toast-region,
   .tooltip,
   video,
   audio,

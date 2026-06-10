@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.12.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.18.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -129,6 +129,7 @@
   /* Foreground — bone, not chrome. Softer than #fff but still AAA. */
   --fg:              #e8e6e1;   /* warm off-white, 11.2:1 on --bg */
   --fg-secondary:    #c5c8c6;
+  --fg-muted:        #5a7a8a;   /* steel-blue muted — meta/comment text, between secondary and disabled */
   --fg-disabled:     #666666;
 
   /* Structure */
@@ -195,7 +196,7 @@
   --letter-spacing-body: 0.01em;
   --word-spacing-body:   0.16em;
 
-  --radius-sm: 4px;  --radius-md: 8px;  --radius-lg: 12px;
+  --radius-sm: 4px;  --radius-md: 8px;  --radius-lg: 12px;  --radius-pill: 999px; /* fully-rounded pills: toggle track, chip */
 
   --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-2xl: 48px; --s-3xl: 96px;
 
@@ -221,7 +222,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.12.0";
+  --art-version: "0.18.0";
 
   color-scheme: dark;
 }
@@ -235,6 +236,7 @@
 
   --fg:              #20203e;   /* midnight indigo */
   --fg-secondary:    #4a3f2a;   /* warm muted */
+  --fg-muted:        #5a7a8a;
   --fg-disabled:     #8a8070;
 
   --border:          #cbb88a;
@@ -284,6 +286,7 @@
     --bg-inactive:     #dcc99c;
     --fg:              #20203e;
     --fg-secondary:    #4a3f2a;
+    --fg-muted:        #5a7a8a;
     --fg-disabled:     #8a8070;
     --border:          #cbb88a;
     --border-lifted:   #b8a674;
@@ -322,11 +325,18 @@
 /* ═══ Base ══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* The root is NEVER overridden (#211). html stays at the browser preference
+   (100% of the user's setting; 16px by default) so every rem-bound --t-*-size
+   renders at its labeled px and the whole system scales with the preference.
+   The old shared `html, body` font-size silently made the root 14px (every
+   token rendered at 87.5% of its label) and double-applied on body (12.25px).
+   Body takes the body-md default exactly once, here. */
+html { font-size: 100%; }
+
 html, body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  font-size: var(--t-body-md-size);
   line-height: var(--t-body-md-lh);
   letter-spacing: var(--letter-spacing-body);
   margin: 0; padding: 0;
@@ -334,6 +344,8 @@ html, body {
   text-rendering: optimizeLegibility;
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
+
+body { font-size: var(--t-body-md-size); }
 
 /* Tool-surface override: dashboards, terminals, data tables, settings.
    Apply <body class="surface-tool"> (or to a top-level container) to flip the
@@ -363,7 +375,20 @@ html, body {
 .t-mono-body-md     { font-family: var(--font-mono); font-weight: 400; font-size: var(--t-body-md-size); line-height: var(--t-body-md-lh); }
 
 .anchor { font-weight: 700; color: var(--fg); }
-.meta { color: var(--fg-secondary); }
+.meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); max-width: 66ch; }
+.note { color: var(--fg-secondary); font-size: var(--t-label-sm-size); }   /* inherits body family — mono on tool surfaces, sans on doc surfaces. */
+.num  { font-variant-numeric: tabular-nums; }
+
+/* Doc-page chrome — section header convention promoted from live-spec
+   (10+ identical instances; same shape as the .crumb-at-14 promotion). */
+.section-title {
+  font-family: var(--font-mono); font-weight: 700; font-size: var(--t-headline-md-size);
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--fg-secondary);
+  margin: var(--s-2xl) 0 var(--s-md);
+  padding-bottom: var(--s-sm);
+  border-bottom: 1px solid var(--border);
+}
 
 code, .code {
   font-family: var(--font-mono);
@@ -440,6 +465,26 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .input:focus, .textarea:focus, .select:focus { outline: none; border-color: var(--accent); }
 .input::placeholder { color: var(--fg-disabled); }
 .input[aria-invalid="true"] { border-color: var(--urgent); }
+/* Custom indicator for .select — appearance:none lets iOS WebKit honour
+   author min-height (fixes the touch-target floor, #123). Two linear
+   gradients form a downward chevron using --fg-secondary only; no hex,
+   no SVG, no wrapper element.
+     Layer 1 (135deg): lower-right triangle = left arm of the ∨
+     Layer 2 ( 45deg): lower-left triangle  = right arm of the ∨
+   Together they tile into a ▽ at the element's right edge. */
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(135deg, transparent 50%, var(--fg-secondary) 50%),
+    linear-gradient(45deg, var(--fg-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 26px) center, calc(100% - 21px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat, no-repeat;
+  padding-right: var(--s-xl); /* 32px — clears the 10px indicator at 16px from right */
+  cursor: pointer;
+}
+.select:disabled { color: var(--fg-disabled); cursor: not-allowed; }
 
 .field { display: flex; flex-direction: column; gap: var(--s-sm); }
 .field > label { font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500; color: var(--fg); }
@@ -449,7 +494,7 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 /* ═══ Badges ════════════════════════════════════════════════════════════ */
 .badge {
   display: inline-flex; align-items: center; gap: var(--s-xs);
-  padding: 2px 8px;
+  padding: 2px var(--s-sm);
   font-family: var(--font-sans); font-size: var(--t-label-sm-size); font-weight: 500; line-height: 1.3;
   border-radius: var(--radius-sm); white-space: nowrap;
 }
@@ -465,9 +510,41 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .dot--urgent    { background: var(--urgent-fill); }
 .dot--success   { background: var(--success-fill); }
 
+/* ═══ Notification ══════════════════════════════════════════════════════ */
+/*
+ * Tier by ACTION REQUIRED, not severity.
+ *   --urgent      Blocking. Errors, failed builds. role="alert"; persists until dismissed.
+ *   --attention   Look when you can. Agent waiting, review needed. role="status"; persists.
+ *   --info        Task complete. Auto-dismiss after 5 s, subtle badge. role="status".
+ *   --background  Silent badge. Progress, status. NO role — never announced, never a toast.
+ *
+ * Anatomy: .notif > .dot.dot--{tier}  .notif__body > .notif__title + .notif__msg
+ * A11y: dot + text always — never color alone. Roles are the CONSUMER's job at
+ * insert time: urgent → "alert", attention/info → "status", background → none.
+ * One contract with .toast-region (see that block + notifications.html).
+ */
+.notif {
+  display: flex; align-items: flex-start; gap: var(--s-sm);
+  padding: 10px 14px; /* tuned */
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--bg);
+  font-family: var(--font-mono); font-size: var(--t-label-md-size); line-height: var(--t-body-md-lh);
+  color: var(--fg);
+}
+.notif--urgent    { border-color: var(--urgent); }
+.notif--attention { border-color: var(--attention); }
+.notif--info      { border-color: var(--accent); }
+.notif--background { color: var(--fg-secondary); }
+.notif--background .dot   { background: var(--border); }
+
+.notif__body  { display: flex; flex-direction: column; gap: var(--s-xs); flex: 1; min-width: 0; }
+.notif__title { margin: 0; font-weight: 700; color: var(--fg); }
+.notif--background .notif__title { color: var(--fg-secondary); }
+.notif__msg   { margin: 0; color: var(--fg-secondary); }
+
 /* ═══ Kbd ══════════════════════════════════════════════════════════════ */
 kbd, .kbd {
-  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  font-family: var(--font-mono); font-size: var(--t-label-xs-size); font-weight: 500;
   padding: 2px 6px; background: var(--bg); color: var(--fg-secondary);
   border: 1px solid var(--border); border-radius: 3px; line-height: 1.2; white-space: nowrap;
 }
@@ -489,21 +566,31 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+*::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-sm); border: 2px solid transparent; background-clip: padding-box; }
 *::-webkit-scrollbar-thumb:hover { background: var(--fg-disabled); background-clip: padding-box; border: 2px solid transparent; }
 
-/* ═══ Theme toggle — shared across pages ═══════════════════════════════ */
+/* ═══ Theme toggle — shared across pages ═══════════════════════════════
+   Pins to the top-right of the viewport on every page that drops the
+   button into the document. Sits on the overlay rung so it survives
+   over a sticky .appbar or sidenav. Opt out with .theme-toggle--inline
+   when a page wants the control to live in a specific row instead. */
 .theme-toggle {
+  position: fixed; top: var(--s-md); right: var(--s-md); z-index: var(--z-overlay);
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--bg-raised); color: var(--fg-secondary);
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 6px 10px; cursor: pointer;
-  font-family: var(--font-sans); font-size: 11px; font-weight: 500;
+  font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
-  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
 }
-.theme-toggle:hover { color: var(--fg); border-color: var(--accent); }
+.theme-toggle:hover { color: var(--fg); border-color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,.22); }
 .theme-toggle .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-fill); }
+.theme-toggle--inline { position: static; top: auto; right: auto; z-index: auto; box-shadow: none; }
+@media (max-width: 640px) {
+  .theme-toggle { top: var(--s-sm); right: var(--s-sm); }
+}
 
 /* ═══ Layout primitives ════════════════════════════════════════════════ */
 /* Stack: vertical rhythm. --gap defaults to --s-md. */
@@ -585,8 +672,8 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 .tooltip {
   position: absolute; z-index: var(--z-popover);
   background: var(--fg); color: var(--bg);
-  padding: 4px 8px; border-radius: var(--radius-sm);
-  font-family: var(--font-sans); font-size: 11px; line-height: 1.3;
+  padding: var(--s-xs) var(--s-sm); border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: var(--t-label-xs-size); line-height: 1.3;
   pointer-events: none; white-space: nowrap;
   box-shadow: var(--shadow-popover);
 }
@@ -614,7 +701,7 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 }
 .radio > input:checked::after {
   content: ""; display: block; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--on-accent); margin: 4px auto 0;
+  background: var(--on-accent); margin: var(--s-xs) auto 0;
 }
 .checkbox > input:focus-visible, .radio > input:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
 .checkbox > input:disabled + *, .radio > input:disabled + * { color: var(--fg-disabled); cursor: not-allowed; }
@@ -627,7 +714,7 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 }
 .toggle > input {
   appearance: none; -webkit-appearance: none;
-  width: 32px; height: 18px; border-radius: 999px;
+  width: 32px; height: 18px; border-radius: var(--radius-pill);
   background: var(--border); border: none; position: relative;
   cursor: pointer; transition: background var(--dur-fast) var(--ease);
   flex-shrink: 0;
@@ -671,10 +758,27 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   font-family: var(--font-sans); font-size: var(--t-label-md-size); color: var(--fg-secondary);
 }
 .file-field input[type="file"] { display: none; }
+/* Dropzone — the same field as a drag target. .file-field--drop makes it a
+   taller centered well; .is-dragover (consumer toggles on dragenter/dragover,
+   clears on dragleave/drop) lights the accent. Texture never encodes the drag
+   state — color does. v0.15.0. */
+.file-field--drop { flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: var(--s-xs); padding: var(--s-xl); min-height: 120px; }
+.file-field.is-dragover { border-color: var(--accent); color: var(--fg); background: color-mix(in oklch, var(--accent) 8%, var(--bg)); }
 
 /* ═══ Data display ═════════════════════════════════════════════════════ */
+/* Wide-content escape hatch — the content scrolls inside it, never the page.
+   Generalizes the .code-block precedent for tables, diffs, and any block whose
+   natural width can exceed the container (the #116 bug class). Wrap, don't fight:
+   <div class="scroll-x" tabindex="0"><table class="table">…</table></div>
+   The tabindex="0" is load-bearing: a scrollable region must be keyboard-
+   reachable so keyboard users can scroll it (axe scrollable-region-focusable). */
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll-x:focus-visible, .code-block:focus-visible {
+  outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset);
+}
+
 .code-block {
-  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  font-family: var(--font-mono); font-size: var(--t-label-md-size); line-height: 1.6;
   background: var(--bg-inactive); color: var(--fg);
   padding: var(--s-md) var(--s-lg);
   border-radius: var(--radius-md); border: 1px solid var(--border);
@@ -682,11 +786,41 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   white-space: pre;
   margin: 0;
 }
-.code-block .tok-comment { color: var(--fg-disabled); font-style: italic; }
-.code-block .tok-keyword { color: var(--brand-purple-bright); }
-.code-block .tok-string  { color: var(--success); }
-.code-block .tok-number  { color: var(--attention); }
-.code-block .tok-fn      { color: var(--accent); }
+/* Syntax — the full 12-role $roles.syntax map surfaced into the WEB layer
+   (the same map that drives the editor themes; this is the web bridge).
+   Existing class names (.tok-comment/keyword/string/number/fn) are kept as
+   aliases. Four roles bind to canonical tokens not yet surfaced as web vars
+   (successBright · attentionAlt · cyan · urgentBright) — they fall back to
+   the nearest existing token via var(…, …) until those 4 are minted (a
+   flagged palette-surface decision; values in _palette.json). No new tokens,
+   no hardcoded hex here. comment/operator = --fg-muted (v0.7.2 reroute). */
+.code-block .tok-comment,
+.code-block .tok-operator  { color: var(--fg-muted); }
+.code-block .tok-comment   { font-style: italic; }
+.code-block .tok-keyword   { color: var(--brand-purple-bright); }
+.code-block .tok-string    { color: var(--success-bright, var(--success)); }
+.code-block .tok-type      { color: var(--accent-bright); }
+.code-block .tok-number,
+.code-block .tok-constant  { color: var(--attention-alt, var(--attention)); }
+.code-block .tok-fn,
+.code-block .tok-function  { color: var(--accent); }
+.code-block .tok-namespace { color: var(--cyan, var(--steel)); }
+.code-block .tok-param     { color: var(--steel); }
+.code-block .tok-variable  { color: var(--fg); }
+.code-block .tok-tag       { color: var(--urgent-bright, var(--urgent)); }
+.code-block .tok-invalid   { color: var(--urgent-bright, var(--urgent)); text-decoration: wavy underline; } /* reinforced — AA-L floor */
+
+/* Doc-page example container — promoted from live-spec .demo (15 pages).
+   Pulls markup toward semantic <figure> + <figcaption class="meta">. */
+.figure {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--s-lg);
+  margin-top: var(--s-sm);
+}
+.figure--frame { padding: 0; overflow: hidden; position: relative; }
+.figure--flush { padding: 0; overflow: hidden; }
 
 .table {
   width: 100%; border-collapse: collapse;
@@ -748,7 +882,7 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 .skip-link {
   position: absolute; top: -40px; left: var(--s-md);
   background: var(--accent-fill); color: var(--on-accent);
-  padding: 8px 12px; border-radius: var(--radius-sm);
+  padding: var(--s-sm) 12px; border-radius: var(--radius-sm);
   font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500;
   text-decoration: none; z-index: var(--z-toast);
   transition: top var(--dur-fast) var(--ease);
@@ -865,8 +999,8 @@ select:focus-visible,
 
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-sans); font-size: 12px; font-weight: 500;
-  padding: 4px 10px; border-radius: 999px;
+  font-family: var(--font-sans); font-size: var(--t-label-sm-size); font-weight: 500;
+  padding: var(--s-xs) 10px; border-radius: var(--radius-pill);
   background: transparent; color: var(--fg-secondary);
   border: 1px solid var(--border);
   cursor: pointer; white-space: nowrap;
@@ -883,7 +1017,7 @@ select:focus-visible,
 .timerange { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .timerange button {
   background: transparent; color: var(--fg-secondary);
-  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  font-family: var(--font-mono); font-size: var(--t-label-sm-size); font-weight: 500;
   padding: 6px 12px; border: none; cursor: pointer;
   border-right: 1px solid var(--border);
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
@@ -900,7 +1034,7 @@ select:focus-visible,
 /* Pulsing dot — for "this is live" indicators */
 .live-tick {
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-sans); font-size: 11px; letter-spacing: .06em;
+  font-family: var(--font-sans); font-size: var(--t-label-xs-size); letter-spacing: .06em;
   text-transform: uppercase; color: var(--fg-secondary);
 }
 .live-tick::before {
@@ -916,13 +1050,36 @@ select:focus-visible,
 @media (prefers-reduced-motion: reduce) { .live-tick::before { animation: none; } }
 
 .last-updated {
-  font-family: var(--font-mono); font-size: 11px;
+  font-family: var(--font-mono); font-size: var(--t-label-xs-size);
   color: var(--fg-secondary); font-variant-numeric: tabular-nums;
 }
 
 /* Number that swaps in place — soft fade so changes are perceived */
 .live-value { transition: color var(--dur-max) var(--ease); }
 .live-value.flash { color: var(--accent); }
+
+/* Refreshing-value pattern (D1) — the re-fetch gap. A value already on screen
+   that you re-fetch sits static ~800ms while the user expects change. Skeleton
+   would blank it (flicker, lost context); .progress doesn't fit (nothing to
+   count); the disabled label sits on the button, not the value. Recede the
+   stale value — the same 55% instinct as .pane--inactive — and pulse a neutral
+   dot beside it; the fresh value fades in via .live-value's existing color
+   transition, the dot stops. Drive [data-refreshing] from the fetch lifecycle.
+   Give the consuming element aria-live="polite" (+ aria-atomic="true") — the
+   visual tick is otherwise silent to assistive tech (the dot is decoration;
+   the VALUE is the announcement). Zero new tokens; a mint, not a carve.
+   v0.15.0; ARIA guidance #193. */
+.live-value[data-refreshing] { opacity: .55; }
+.live-value__dot { display: none; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-secondary); vertical-align: baseline; flex: none; }
+.live-value[data-refreshing] + .live-value__dot {
+  display: inline-block;
+  animation: refresh-pulse 2s var(--ease) infinite;
+}
+@keyframes refresh-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--fg-secondary) 50%, transparent); }
+  50%      { box-shadow: 0 0 0 5px color-mix(in oklch, var(--fg-secondary) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .live-value[data-refreshing] + .live-value__dot { animation: none; } }
 
 /* ═══════════════════════════════════════════════════════════════════════
    CHARTS · tokens + primitives
@@ -971,16 +1128,16 @@ select:focus-visible,
   display: flex; flex-direction: column; gap: var(--s-sm);
 }
 .chart__header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-md); }
-.chart__title  { font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+.chart__title  { font-family: var(--font-mono); font-size: var(--t-label-sm-size); font-weight: 700;
                  letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); margin: 0; }
-.chart__value  { font-family: var(--font-mono); font-size: 28px; font-weight: 700;
+.chart__value  { font-family: var(--font-mono); font-size: var(--t-headline-lg-size); font-weight: 700;
                  color: var(--fg); font-variant-numeric: tabular-nums; line-height: 1; }
 .chart__plot   { width: 100%; aspect-ratio: 16 / 7; position: relative; }
 .chart__plot--tall { aspect-ratio: 16 / 9; }
 .chart__plot--square { aspect-ratio: 1 / 1; }
 .chart__legend {
   display: flex; flex-wrap: wrap; gap: var(--s-md);
-  font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary);
+  font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary);
 }
 .chart__legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .chart__legend i {
@@ -1011,7 +1168,7 @@ select:focus-visible,
 
 /* Annotation tag (for editorial mode) — text label + leader line */
 .chart-annotation {
-  font-family: var(--font-sans); font-size: 11px; line-height: 1.3;
+  font-family: var(--font-sans); font-size: var(--t-label-xs-size); line-height: 1.3;
   fill: var(--fg-secondary); font-weight: 500;
 }
 .chart-annotation.strong { fill: var(--fg); font-weight: 700; }
@@ -1043,20 +1200,20 @@ select:focus-visible,
 }
 .dia-node--accent { stroke: var(--accent); stroke-width: 1.5; }
 .dia-node--ghost  { fill: transparent; stroke-dasharray: 4 3; }
-.dia-node-label { fill: var(--dia-node-fg); font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
-.dia-node-meta  { fill: var(--fg-secondary); font-family: var(--font-mono); font-size: 10px; }
+.dia-node-label { fill: var(--dia-node-fg); font-family: var(--font-mono); font-size: var(--t-label-sm-size); font-weight: 500; }
+.dia-node-meta  { fill: var(--fg-secondary); font-family: var(--font-mono); font-size: 10px; /* tuned */ }
 
 .dia-edge {
   stroke: var(--dia-edge); stroke-width: 1.25; fill: none;
 }
 .dia-edge--strong { stroke: var(--dia-edge-strong); stroke-width: 1.5; }
 .dia-edge--dashed { stroke-dasharray: 4 3; }
-.dia-edge-label   { fill: var(--fg-secondary); font-family: var(--font-mono); font-size: 10px;
+.dia-edge-label   { fill: var(--fg-secondary); font-family: var(--font-mono); font-size: 10px; /* tuned */
                     paint-order: stroke; stroke: var(--bg); stroke-width: 4; }
 
 .dia-rail { stroke: var(--dia-rail); stroke-width: 1; stroke-dasharray: 2 4; }
 .dia-swimlane-label {
-  fill: var(--fg-secondary); font-family: var(--font-sans); font-size: 11px;
+  fill: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-label-xs-size);
   letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
 }
 
@@ -1198,6 +1355,10 @@ select:focus-visible,
 }
 .appbar__brand {
   display: flex; align-items: center; gap: var(--s-sm);
+  flex: 1; min-width: 0; /* allow brand to shrink on narrow viewports; without
+    min-width:0 a flex child cannot shrink below min-content, which causes long
+    wordmarks to push the appbar past the viewport edge (#127) */
+  overflow: hidden; /* clip any brand text that exceeds the shrunk container */
   font-family: var(--font-mono); font-weight: 700;
   font-size: var(--t-body-lg-size); letter-spacing: -0.01em;
   color: var(--fg); text-decoration: none;
@@ -1223,13 +1384,16 @@ select:focus-visible,
    aria-selected) or links (aria-current). Underline marks the active view.
    NOT for filtering one view's parameters — that's .timerange. */
 .tabs {
-  display: flex; gap: var(--s-md); align-items: stretch;
+  display: flex; flex-wrap: nowrap; gap: var(--s-md); align-items: stretch;
+  overflow-x: auto;
+  /* Thin, token-colored scrollbar — hidden until tabs overflow the container. */
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
   border-bottom: 1px solid var(--border);
 }
 .tabs button, .tabs a {
   appearance: none; background: none; border: none; cursor: pointer;
   display: inline-flex; align-items: center; min-height: 44px;
-  padding: var(--s-sm) 2px; margin-bottom: -1px;
+  padding: var(--s-sm) 2px; margin-bottom: -1px; flex-shrink: 0;
   font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500;
   color: var(--fg-secondary); text-decoration: none;
   border-bottom: 2px solid transparent;
@@ -1239,7 +1403,11 @@ select:focus-visible,
 .tabs [aria-selected="true"], .tabs [aria-current="page"] {
   color: var(--accent); border-bottom-color: var(--accent);
 }
-.tabs button:focus-visible, .tabs a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
+/* Inset focus ring (--focus-offset-inset: -2px) — the correct token for tabs
+   (see token cheatsheet "nav items, table rows, tabs"). Drawn inside the
+   button's border-box so it is never clipped by the overflow-x: auto scroll
+   container. Matches the pattern used by .sidenav and .table rows. */
+.tabs button:focus-visible, .tabs a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset-inset); }
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1257,6 +1425,10 @@ select:focus-visible,
   color: var(--fg); text-decoration: none; white-space: nowrap;
 }
 .wordmark::after { content: "."; color: var(--accent); }
+/* Period-bearing marks (e.g. "blog.") add the stop as real text and should
+   suppress the pseudo to avoid a double-stop. `.whimsy` in artificer-whimsy.css
+   also checks this modifier before re-establishing the gradient on ::after. */
+.wordmark--stop-none::after { content: none; }
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1293,21 +1465,34 @@ select:focus-visible,
 .nav-drawer { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
 
 /* Touch escalation — on coarse pointers (finger) interactive controls grow
-   to the 44px target. Fine-pointer (mouse) desktops keep Artificer density. */
+   to the 44×44px target (WCAG 2.5.5/2.5.8 — both dimensions).
+   Fine-pointer (mouse) desktops keep Artificer density. */
 @media (pointer: coarse) {
-  .btn { min-height: 44px; }
-  .input, .textarea, .select { min-height: 44px; }
-  .checkbox, .radio { min-height: 44px; align-items: center; }
+  /* Every button is a touch target, classed or not — demo buttons, page-local
+     buttons, and library buttons all get the floor. Both dimensions per WCAG 2.5.5. */
+  button, .btn, .theme-toggle { min-height: 44px; min-width: 44px; }
+  /* All text-like inputs (text/search/email/number/password/date/url/tel...).
+     Width left to the layout (inputs fill their container; min-width here
+     would fight flex/grid shrink and break compact search bars). */
+  .input, .textarea, .select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea { min-height: 44px; }
+  .checkbox, .radio { min-height: 44px; min-width: 44px; align-items: center; }
   .checkbox > input, .radio > input { width: 22px; height: 22px; }
   .checkbox > input:checked::after { width: 5px; height: 10px; margin-top: 2px; }
   .radio > input:checked::after { width: 8px; height: 8px; margin-top: 6px; }
+  .toggle { min-height: 44px; min-width: 44px; align-items: center; }
   .toggle > input { width: 44px; height: 26px; }
   .toggle > input::after { width: 22px; height: 22px; }
   .toggle > input:checked::after { transform: translateX(18px); }
   .slider { height: 6px; }
   .slider::-webkit-slider-thumb { width: 24px; height: 24px; }
   .slider::-moz-range-thumb { width: 24px; height: 24px; }
-  .chip { padding: 8px 14px; }
+  .chip { min-height: 44px; min-width: 44px; }
+  /* Nav targets are 44px always (a11y rule #8) — brand link + breadcrumbs get a
+     full-height touch area without changing their visual size. */
+  .appbar__brand { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
+  .crumb a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
 }
 
 /* Table -> cards reflow. Below --bp-mobile (640px) a wide data table
@@ -1383,8 +1568,15 @@ select:focus-visible,
    genuinely wide viewport (the single min-width step, == --bp-wide). Content
    track is minmax(0,1fr), never bare 1fr — overflow-safe (#116). */
 .split-pane--inspector { display: grid; gap: var(--s-lg); grid-template-columns: 280px minmax(0, 1fr); }
+/* The inspector (third) pane exists only at the wide tier — below it, the pane
+   is hidden, NOT re-gridded into an implicit row. "Reveals at --bp-wide" means
+   exactly that. (Caught by regressions/wide-screen.spec.mjs.) */
+.split-pane--inspector > :nth-child(3) { display: none; }
 @media (max-width: 800px)  { .split-pane--inspector { grid-template-columns: 1fr; } }
-@media (min-width: 1200px) { .split-pane--inspector { grid-template-columns: 280px minmax(0, 1fr) 320px; } }
+@media (min-width: 1200px) {
+  .split-pane--inspector { grid-template-columns: 280px minmax(0, 1fr) 320px; }
+  .split-pane--inspector > :nth-child(3) { display: block; }
+}
 
 /* App-shell — the responsive page scaffold (#116). Composes the existing chrome
    (.appbar / .sidenav / .nav-drawer) into a page that survives a phone: a
@@ -1435,7 +1627,7 @@ select:focus-visible,
   letter-spacing: 0.02em; user-select: none;
 }
 .avatar > img { width: 100%; height: 100%; object-fit: cover; }
-.avatar--sm     { width: 24px; height: 24px; font-size: 10px; }
+.avatar--sm     { width: 24px; height: 24px; font-size: 10px; /* tuned */ }
 .avatar--lg     { width: 48px; height: 48px; font-size: var(--t-label-md-size); }
 .avatar--xl     { width: 64px; height: 64px; font-size: var(--t-body-lg-size); }
 .avatar--square { border-radius: var(--radius-sm); }
@@ -1476,3 +1668,271 @@ select:focus-visible,
 }
 .input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
 .input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   v0.15.0 · component mints (Workstream E + D)
+   Adopted from Lane 1's v0.15.0 round, cherry-picked onto current repo CSS
+   (the sandbox base lagged the repo — additive only, never wholesale).
+   All mints, zero new tokens, zero hardcoded hex.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ═══ Option-popover — .menu (actions) / .listbox (selection) ═══════════
+   The ONE floating option list. Don't hand-roll a dropdown. Two roles share
+   one look:
+     .menu     = a command/action list   → role="menu",    children role="menuitem"
+     .listbox  = a selectable list        → role="listbox", children role="option" + aria-selected
+   Both use __option rows. Drop inside .popover (or .palette) for the floating
+   surface. Keyboard + ARIA ride artificer-options.js (enhance = roving
+   tabindex on a standalone list; combobox = aria-activedescendant for the
+   palette recipe); open/close stays consumer-side. Composes into: command
+   palette, enhanced select, combobox, multiselect, tag-input.
+   v0.15.0 (Workstream E keystone). */
+.menu, .listbox {
+  list-style: none; margin: 0; padding: var(--s-xs);
+  display: flex; flex-direction: column; gap: 2px;
+  font-family: var(--font-sans); font-size: var(--t-label-md-size);
+  max-height: 320px; overflow-y: auto;
+}
+.menu__option, .listbox__option {
+  display: flex; align-items: center; gap: var(--s-sm);
+  padding: var(--s-sm) 10px; border-radius: var(--radius-sm);
+  color: var(--fg); cursor: pointer; white-space: nowrap;
+  border: none; background: transparent; width: 100%; text-align: left;
+  font: inherit;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+/* hover AND the roving keyboard cursor are one visual — .is-active is the cursor */
+.menu__option:hover, .listbox__option:hover,
+.menu__option.is-active, .listbox__option.is-active { background: var(--bg-raised); }
+.menu__option:focus-visible, .listbox__option:focus-visible {
+  outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset-inset);
+}
+.listbox__option[aria-selected="true"] { color: var(--accent); }
+.listbox__option[aria-selected="true"]::after { content: "✓"; margin-left: auto; color: var(--accent); }
+.menu__option[aria-disabled="true"], .listbox__option[aria-disabled="true"] { color: var(--fg-disabled); cursor: not-allowed; }
+.menu__option[aria-disabled="true"]:hover, .listbox__option[aria-disabled="true"]:hover { background: transparent; }
+.menu__option--danger, .listbox__option--danger { color: var(--urgent); }
+.menu__option--danger:hover, .menu__option--danger.is-active,
+.listbox__option--danger:hover, .listbox__option--danger.is-active { background: color-mix(in oklch, var(--urgent) 14%, transparent); }
+.menu__option > .icon, .listbox__option > .icon { color: var(--fg-secondary); flex: none; }
+.menu__hint, .listbox__hint { margin-left: auto; color: var(--fg-secondary); font-family: var(--font-mono); font-size: var(--t-label-xs-size); }
+.menu__label, .listbox__label {
+  padding: 6px 10px 2px; font-size: var(--t-label-xs-size); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-secondary); font-weight: 500; font-family: var(--font-sans);
+}
+.menu__sep, .listbox__sep { height: 1px; background: var(--border); margin: var(--s-xs) 0; border: none; }
+
+/* ═══ Command palette — the signature tool surface (recipe) ═════════════
+   A centered overlay = .palette__search header + a .listbox body, focus-trapped
+   (ArtificerFocus.trap, Esc to close) on a .scrim. Opened on ⌘K. Surface is
+   --bg-overlay (the token reserved for "modals, command palette"). The body
+   is just the .listbox above — palette is composition, not a new primitive.
+   Why .listbox, not .menu: the search input is a combobox, and ARIA permits a
+   combobox popup of listbox / tree / grid / dialog — never menu (#174). */
+.palette {
+  position: fixed; top: 12vh; left: 50%; transform: translateX(-50%);
+  width: min(560px, 92vw); z-index: var(--z-modal);
+  background: var(--bg-overlay); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay);
+  overflow: hidden; animation: palette-in var(--dur-fast) var(--ease);
+}
+@keyframes palette-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (prefers-reduced-motion: reduce) { .palette { animation: none; } }
+.palette__search { display: flex; align-items: center; gap: var(--s-sm); padding: 2px 14px; border-bottom: 1px solid var(--border); }
+.palette__search > .icon { color: var(--fg-secondary); flex: none; }
+/* compensating focus ring (#175): the row's existing 1px bottom border flips to
+   accent — the .input border-color-flip model, sized to the composed control */
+.palette__search:focus-within { border-bottom-color: var(--accent); }
+.palette__search > input {
+  flex: 1; background: transparent; border: none; outline: none; padding: 13px 0;
+  color: var(--fg); font-family: var(--font-mono); font-size: var(--t-body-lg-size);
+}
+.palette__search > input::placeholder { color: var(--fg-disabled); }
+/* The bare input outline is suppressed AND compensated (#175): the
+   .palette__search:focus-within border-flip above carries the visible focus
+   signal for the composed control (out-specifies input:focus-visible). */
+.palette__search > input:focus-visible { outline: none; }
+.palette .menu, .palette .listbox { max-height: 52vh; padding: var(--s-sm); }
+.palette__empty { padding: var(--s-lg); color: var(--fg-secondary); font-family: var(--font-mono); font-size: var(--t-body-md-size); }
+
+/* ═══ Toast region — transient .notif placement layer ══════════════════
+   The fixed, corner-anchored, stacking host where .notif cards appear
+   TRANSIENTLY. Consumes --z-toast (the reserved top rung). The .notif is
+   the atom; this is only WHERE it appears. ARIA is the CONSUMER'S job at
+   insert time — CSS cannot set roles: urgent → role="alert" (assertive),
+   attention/info → role="status" (polite), background → NO role (silent
+   badge, never announced — it never enters the region). Lifecycle is
+   consumer-owned JS too: info auto-dismisses (5s, pause on hover/focus);
+   urgent + attention persist until acted on. Cap: 3 visible — overflow
+   collapses to .toast-region__more ("+N more"), which routes to
+   notification history; info is the only evictable tier.
+   Spec: the Lane 1 toast-region ruling (workshop). Live demo with
+   the correct role wiring: notifications.html. v0.15.0, contract issue 177. */
+.toast-region {
+  position: fixed; z-index: var(--z-toast);
+  display: flex; flex-direction: column; gap: var(--s-sm);
+  width: min(380px, calc(100vw - 2 * var(--s-lg)));
+  pointer-events: none;                       /* gaps don't eat clicks… */
+  /* default: bottom-right, clearing the notch (responsive doctrine) */
+  inset: auto max(var(--s-lg), env(safe-area-inset-right))
+         max(var(--s-lg), env(safe-area-inset-bottom)) auto;
+}
+.toast-region > * { pointer-events: auto; }   /* …the notifs do */
+.toast-region > .notif { box-shadow: var(--shadow-popover); }
+
+.toast-region--top-right {
+  inset: max(var(--s-lg), env(safe-area-inset-top))
+         max(var(--s-lg), env(safe-area-inset-right)) auto auto;
+}
+.toast-region--top-left {
+  inset: max(var(--s-lg), env(safe-area-inset-top)) auto auto
+         max(var(--s-lg), env(safe-area-inset-left));
+}
+.toast-region--bottom-left {
+  inset: auto auto max(var(--s-lg), env(safe-area-inset-bottom))
+         max(var(--s-lg), env(safe-area-inset-left));
+}
+.toast-region--top-center,
+.toast-region--bottom-center { left: 50%; transform: translateX(-50%); }
+.toast-region--top-center    { top: max(var(--s-lg), env(safe-area-inset-top)); bottom: auto; }
+.toast-region--bottom-center { bottom: max(var(--s-lg), env(safe-area-inset-bottom)); top: auto; }
+
+/* entry = modal-entry motion (pattern #05): slide 8px + fade, ≤160ms */
+.toast-region > .notif { animation: toast-in var(--dur-fast) var(--ease); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+
+/* overflow affordance — "+N more" routes to notification history */
+.toast-region__more {
+  pointer-events: auto; align-self: center;
+  font-family: var(--font-sans); font-size: var(--t-label-sm-size); font-weight: 500;
+  color: var(--fg-secondary); background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: var(--s-xs) 10px; cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.toast-region__more:hover { color: var(--fg); border-color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-region > .notif { animation: none; }
+}
+
+/* ═══ Pagination — jump within a counted range ═════════════════════════
+   For ranges you can count and jump; disable at the ends. For unbounded sets
+   prefer "load more" or cursor paging. v0.15.0. */
+.pagination { display: flex; align-items: center; gap: var(--s-xs); font-family: var(--font-mono); }
+.pagination button, .pagination a {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 32px; height: 32px; padding: 0 var(--s-sm);
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+  color: var(--fg-secondary); font: inherit; font-size: var(--t-label-md-size);
+  text-decoration: none; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.pagination button:hover, .pagination a:hover { color: var(--fg); background: var(--bg-raised); }
+.pagination button:focus-visible, .pagination a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
+.pagination [aria-current="page"] { color: var(--accent); border-color: var(--accent); }
+.pagination button[disabled] { color: var(--fg-disabled); cursor: not-allowed; background: transparent; }
+.pagination__gap { color: var(--fg-disabled); padding: 0 var(--s-xs); user-select: none; }   /* ellipsis between ranges */
+/* Pagination is nav (a11y #8): on a coarse pointer the cells take the 44px touch
+   floor. Declared here (after the 32px base) so it out-orders the generic button
+   escalation, which the page-earlier `.pagination button` base would otherwise win. */
+@media (pointer: coarse) {
+  .pagination button, .pagination a { min-width: 44px; min-height: 44px; }
+}
+
+/* ═══ Banner — persistent, page-level inline notice ═════════════════════
+   A full-width band pinned in the LAYOUT (top of a page/section), NOT the
+   transient toast-tier .notif. Use for standing conditions: "Read-only —
+   viewing a snapshot", "2 nodes degraded", a maintenance window. Persists
+   until the condition clears (or the user dismisses, if dismissible). Tiers
+   reuse the status quartet — COLOR encodes the tier; texture never does.
+   DELIBERATE divergence from the toast tier (#189): banner--info is STEEL
+   where notif--info is accent — a persistent structural state should read
+   calmer than a transient toast; "--info" does not imply accent here.
+   v0.15.0. */
+.banner {
+  display: flex; align-items: center; gap: var(--s-md);
+  padding: 10px var(--s-lg);
+  background: var(--bg-raised); border: 1px solid var(--border); border-left-width: 2px;
+  font-family: var(--font-mono); font-size: var(--t-label-md-size); color: var(--fg); line-height: 1.5;
+}
+.banner__body { flex: 1; min-width: 0; }
+.banner__actions { display: flex; align-items: center; gap: var(--s-sm); flex: none; }
+.banner--info      { border-left-color: var(--steel);     background: color-mix(in oklch, var(--steel) 8%, var(--bg-raised)); }
+.banner--attention { border-left-color: var(--attention); background: color-mix(in oklch, var(--attention) 8%, var(--bg-raised)); }
+.banner--urgent    { border-left-color: var(--urgent);    background: color-mix(in oklch, var(--urgent) 8%, var(--bg-raised)); }
+.banner--success   { border-left-color: var(--success);   background: color-mix(in oklch, var(--success) 8%, var(--bg-raised)); }
+
+/* ═══ Tree view — nested disclosure (file explorer / nested nav) ════════
+   For nested hierarchy that accordion (flat) and sidenav (one level) don't
+   cover. role="tree" > role="treeitem"; nested children in role="group".
+   Indent compounds via nested .tree__group. Twisty mirrors .accordion's
+   chevron. artificer-tree.js ships expand/collapse + arrow-key roving focus
+   (data-tree / ArtificerTree.enhance()). Leaves (.tree__leaf) hide the
+   twisty but keep alignment. v0.15.0. */
+.tree { list-style: none; margin: 0; padding: 0; font-family: var(--font-mono); font-size: var(--t-body-md-size); }
+.tree__group { list-style: none; margin: 0; padding-left: var(--s-md); }   /* one indent step per level */
+.tree__row {
+  display: flex; align-items: center; gap: var(--s-sm);
+  min-height: 28px; padding: 2px var(--s-sm); border-radius: var(--radius-sm);
+  color: var(--fg-secondary); cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.tree__row:hover { background: var(--bg-raised); color: var(--fg); }
+/* aria-expanded / aria-selected live on the parent [role="treeitem"] (APG tree
+   pattern), so reach the row through it — keying off .tree__row[aria-*] matches
+   nothing (the row is a roleless div, the attrs sit on the <li>). */
+[role="treeitem"][aria-selected="true"] > .tree__row { background: var(--bg-raised); color: var(--accent); }
+/* Focus rides the roving-tabindex HOST — the [role="treeitem"] li (APG tree) —
+   not the roleless row div, which is never focused. Suppress the host's own
+   ring (its box spans the whole subtree, children included) and draw it on the
+   item's first row instead. Tie-break: the global [tabindex]:focus-visible
+   opt-in earlier in this file is the same specificity (0,2,0) — this block
+   wins only by source order. Do not reorder. (#173) */
+[role="treeitem"]:focus-visible { outline: none; }
+[role="treeitem"]:focus-visible > .tree__row {
+  outline: var(--focus-width) solid var(--accent);
+  outline-offset: var(--focus-offset-inset);
+}
+.tree__twisty {
+  flex: none; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fg-secondary); transition: transform var(--dur-fast) var(--ease);
+}
+.tree__twisty::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+[role="treeitem"][aria-expanded="true"] > .tree__row > .tree__twisty { transform: rotate(90deg); }
+.tree__row > .icon { flex: none; color: var(--fg-secondary); }
+.tree__leaf > .tree__twisty { visibility: hidden; }   /* files have no twisty; keep alignment */
+
+/* ═══ Stat card — a single KPI: label + big number + optional delta ═════
+   The cell of a .kpi-strip. PROMOTED to core v0.15.0 (was demo-local). Delta
+   keeps the .stat__delta(.down) naming; the change-direction × polarity rework
+   (.delta--better/--worse) remains the separate staged value-polarity PR. */
+.stat { display: flex; flex-direction: column; gap: var(--s-xs); padding: var(--s-md); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); }
+.stat__label { font-family: var(--font-mono); font-size: var(--t-label-xs-size); letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); }
+.stat__value { font-family: var(--font-mono); font-weight: 700; font-size: var(--t-headline-md-size); color: var(--fg); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-sm); }
+.stat__delta { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--success); }
+.stat__delta.down { color: var(--urgent); }
+
+/* ═══ Indeterminate-but-long progress rung (D2) ════════════════════════
+   Deploy / slow query — long wait, nothing to count. NOT a bare indeterminate
+   bar (that's a horizontal spinner; the voice rule refuses content-free
+   "Loading…"). INSEPARABLE from concrete copy ("Deploying to us-east-1…",
+   never "Deploying…"): always pair with a label. ARIA: role="progressbar" +
+   aria-label carrying that concrete copy, and NO aria-valuenow/min/max —
+   the missing value is what marks it indeterminate (demo: states.html).
+   A contained burnished sweep (continuous translation, motion pattern
+   #02 → --ease-linear). Zero new tokens. v0.15.0. */
+.progress--indeterminate { position: relative; }
+.progress--indeterminate .progress__bar {
+  width: 35%; transition: none;
+  animation: progress-sweep 1.6s var(--ease-linear) infinite;
+}
+@keyframes progress-sweep {
+  from { transform: translateX(-120%); }
+  to   { transform: translateX(320%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* motion suppressed → static low-opacity full track; the copy carries meaning */
+  .progress--indeterminate .progress__bar { animation: none; width: 100%; opacity: .4; }
+}

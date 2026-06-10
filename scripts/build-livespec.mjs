@@ -25,8 +25,11 @@ const ROOT = new URL('../', import.meta.url);
 export const MIRROR = [
   'artificer-focus.js',
   'artificer-icons.js',
+  'artificer-options.js',
   'artificer-tabs.js',
+  'artificer-texture.css',
   'artificer-theme.js',
+  'artificer-tree.js',
   'artificer-whimsy.css',
   'artificer-whimsy.js',
   'artificer.css',

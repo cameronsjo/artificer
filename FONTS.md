@@ -9,7 +9,7 @@ Artificer uses two free, OFL-licensed typefaces. Both are commercial-use safe. T
 
 **Why this pair.** Quattro is humanist sans designed by Bold Monday for iA, tuned to share rhythm with monospace work. It pairs with JetBrains Mono more naturally than Inter or Source Sans because they were designed to live side-by-side in the same kind of writing/code surface. Quattro also has matching italics, which Inter lacks at lower weights.
 
-> Quattro is **not** on Google Fonts. You self-host it. The CSS fallback chain is `'iA Writer Quattro' → 'Iowan Old Style' → 'Charter' → 'Source Sans 3' → system-ui`, so the page still renders correctly if Quattro hasn't loaded.
+> Quattro is **not** on Google Fonts. You self-host it. The CSS fallback chain is `'iA Writer Quattro S' → 'iA Writer Quattro V' → 'iA Writer Quattro' → 'Iowan Old Style' → 'Charter' → 'Source Sans 3' → system-ui → -apple-system → sans-serif`, so the page still renders correctly if Quattro hasn't loaded.
 
 ---
 
@@ -118,7 +118,7 @@ export default function Layout({ children }) {
 `artificer.css` ships with a fallback chain that produces a near-correct render even if Quattro fails to load:
 
 ```
-'iA Writer Quattro', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui
+'iA Writer Quattro S', 'iA Writer Quattro V', 'iA Writer Quattro', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui, -apple-system, sans-serif
 ```
 
 You can ship without web fonts entirely; just don't override the variables. The system stays usable, just less distinctive.

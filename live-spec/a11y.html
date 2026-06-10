@@ -8,10 +8,6 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
   .check { display: grid; grid-template-columns: 24px 1fr; gap: var(--s-sm) var(--s-md); align-items: baseline; }
   .check b { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--success); }
   .ratio-card { padding: var(--s-md) var(--s-lg); border: 1px solid var(--border); border-radius: var(--radius-md); }
@@ -27,7 +23,7 @@
   <h1 class="t-headline-lg">accessibility.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Artificer targets <b class="anchor">WCAG 2.2 Level AA</b> as a floor and Level AAA on body text. Most of this is already wired into the CSS — this page is the audit and the rules you must not break.</p>
 
-  <h2>Contrast — what's already wired</h2>
+  <h2 class="section-title">Contrast — what's already wired</h2>
   <p class="meta">All values measured against the canonical <code>--bg</code> for that theme. AA = 4.5:1 normal text, 3:1 large/UI. AAA = 7:1 normal text.</p>
   <div class="grid-auto" style="--min:200px;margin-top:var(--s-md)">
     <div class="ratio-card"><div class="meta">Body on bg (dark)</div><b class="pass">12.8 : 1</b><div class="meta">AAA</div></div>
@@ -38,9 +34,9 @@
     <div class="ratio-card"><div class="meta">Border on bg</div><b class="pass">3.2 : 1</b><div class="meta">UI </div></div>
   </div>
 
-  <h2>Focus rings — already wired</h2>
+  <h2 class="section-title">Focus rings — already wired</h2>
   <p class="meta">Every focusable element gets a 2px <code>--accent</code> outline with 2px offset. Try tabbing through the page.</p>
-  <div class="demo cluster">
+  <div class="figure cluster">
     <button class="btn btn--primary">Tab to me</button>
     <button class="btn btn--secondary">Then me</button>
     <a href="#" class="btn btn--ghost">Then me</a>
@@ -53,15 +49,15 @@ button:focus-visible, input:focus-visible, select:focus-visible,
   outline-offset: 2px;
 }</pre>
 
-  <h2>Skip link</h2>
+  <h2 class="section-title">Skip link</h2>
   <p class="meta">Tab from a fresh page reload — the skip link appears in the top-left. Always include it as the first focusable element.</p>
   <pre class="code-block"><span class="tok-keyword">&lt;a</span> href=<span class="tok-string">"#main"</span> class=<span class="tok-string">"skip-link"</span><span class="tok-keyword">&gt;</span>Skip to content<span class="tok-keyword">&lt;/a&gt;</span>
 <span class="tok-comment">// …later</span>
 <span class="tok-keyword">&lt;main</span> id=<span class="tok-string">"main"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/main&gt;</span></pre>
 
-  <h2>Visible-to-screenreader text</h2>
+  <h2 class="section-title">Visible-to-screenreader text</h2>
   <p class="meta">For icon-only buttons. <code>.sr-only</code> hides text visually but keeps it readable by assistive tech.</p>
-  <div class="demo cluster">
+  <div class="figure cluster">
     <button class="btn btn--secondary" aria-label="Close">
       <span class="i-close" aria-hidden="true"></span>
       <span class="sr-only">Close</span>
@@ -69,7 +65,7 @@ button:focus-visible, input:focus-visible, select:focus-visible,
     <span class="meta">← Visually just an X. To a screen reader, it says "Close, button."</span>
   </div>
 
-  <h2>The audit checklist</h2>
+  <h2 class="section-title">The audit checklist</h2>
   <p class="meta">Run through this before shipping any new view. Most items map to existing utilities; a few require thought.</p>
   <div class="check" style="margin-top:var(--s-md)">
     <b></b><div><b class="anchor">One <code>&lt;h1&gt;</code> per page</b>; headings nest in order (no h2 → h4 jumps). Helps screen-reader users navigate by landmark.</div>
@@ -86,7 +82,7 @@ button:focus-visible, input:focus-visible, select:focus-visible,
     <b></b><div><b class="anchor">Page is usable without JavaScript</b> for content reading. Forms can require JS, but content shouldn't.</div>
   </div>
 
-  <h2>Common mistakes</h2>
+  <h2 class="section-title">Common mistakes</h2>
   <table class="table" style="margin-top:var(--s-md)">
     <thead><tr><th>Don't</th><th>Do</th></tr></thead>
     <tbody>
@@ -100,7 +96,7 @@ button:focus-visible, input:focus-visible, select:focus-visible,
     </tbody>
   </table>
 
-  <h2>Testing</h2>
+  <h2 class="section-title">Testing</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Tab through the page.</b> Can you reach everything? Is the order logical? Is the focus visible at all times?</li>
     <li><b class="anchor">Turn off your mouse.</b> Can you complete the primary task with just the keyboard?</li>

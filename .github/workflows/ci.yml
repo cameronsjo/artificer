@@ -1,11 +1,14 @@
 name: CI
 
 # Lint + test gate for PRs and pushes to main. Distinct from release-npm.yml
-# (tag-gated publish). Wires the prevention guardrails so the brandPurple class
-# of drift (#59) can't ship again: contrast (#62), palette drift (#61), version
-# sync (#66). The scripts use only Node built-ins (zero deps), so there is no
-# install step. (lint:tokens is intentionally NOT gated yet — it flags
-# pre-existing un-`/* tuned */`-marked padding; needs its own cleanup pass.)
+# (tag-gated publish). One lane:
+#
+#   check   — the dependency-free data gates (contrast #62, palette drift #61,
+#             version sync #66, mirror parity #78). Only Node built-ins; no
+#             install step. Stays fast.
+#
+# The workshop's browser trust layer (Playwright) and the A1 audit stay
+# private — the public package ships no tests/.
 
 on:
   pull_request:
@@ -28,6 +31,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Unit tests
         run: npm test

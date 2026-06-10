@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Whimsy helper · v0.12.0
+   ARTIFICER · Whimsy helper · v0.18.0
    ─────────────────────────────────────────────────────────────────────────
    Tiny, dependency-free. Pairs with artificer-whimsy.css. Exposes window.Whimsy.
 
@@ -12,6 +12,14 @@
      Whimsy.celebrate(el, ms?)      one-shot: light el up for ms (default 2600)
                                     then remove. For whimsical operations
                                     (deploy succeeded, streak hit, etc).
+     Whimsy.greeting(root?)         swap [data-whimsy-greeting] elements to the
+                                    seasonal footer line — June → "happy pride"
+                                    + vivid flow; off-season → the inline text
+                                    + glacial flow. Graceful without JS.
+     Whimsy.greetingFor(date?, opts) PURE — the greeting spec for a date
+                                    (date defaults to today when omitted):
+                                    { season, text, classes }. opts =
+                                    { default?, defaultClass? }. Unit-tested.
      Whimsy.run(el, opts)           ignite el, then settle after opts.loops
                                     hue-cycles. For long "thinking" states.
                                     opts = { loops?, settle? }
@@ -147,27 +155,91 @@
     window.setTimeout(function () { clearEl(el); }, dur);
   }
 
+  /* ── Seasonal greeting ── pure spec + DOM application ──────────────────── */
+
+  /* PURE — no DOM. Given a date, return the footer-greeting spec for its
+     season. June (getMonth() === 5) is Pride: "happy pride" (no trailing
+     period — explicit) with always-on vivid flow — intentionally the one view
+     that does NOT settle, the single logged exception to Whimsy doctrine #7
+     ("whimsy rests"); every other long-lived whimsy still settles. Off-season
+     returns the caller's own line + class so every consumer keeps its voice.
+     opts = { default?, defaultClass? }. */
+  function greetingFor(date, opts) {
+    opts = opts || {};
+    var month = (date || new Date()).getMonth(); // 5 === June
+    if (month === 5) {
+      // Pride wears the FULL-ATTENTION treatment, latched on (the "clementine"
+      // combo from Lane-1's whimsy exploration): a per-character faceted
+      // gradient (--wave + splitWave), the bob frozen so it reads as flow not
+      // bounce (--no-bob), vivid saturation (the "bloom"), and the rainbow
+      // underline drawn in permanently (--on). The one view that never settles
+      // — doctrine #7's single logged exception. greeting() runs splitWave.
+      return { season: "pride", text: "happy pride",
+               classes: ["whimsy", "whimsy--wave", "whimsy--no-bob",
+                         "whimsy--vivid", "whimsy-underline",
+                         "whimsy-underline--on"] };
+    }
+    // Off-season fallback. The line is the consumer's to set — via the
+    // element's inline text or opts.default. Lines that fit the calm glacial
+    // drift: "kindness is free" (default) or "abide no hatred".
+    // (Future idea: rotate one per day/month via a modulus on the date; for
+    // now it's a deliberately stable per-surface choice, not a slot machine.)
+    return { season: "default",
+             text: opts.default || "kindness is free",
+             classes: ["whimsy", opts.defaultClass || "whimsy--glacial"] };
+  }
+
+  /* DOM — scan [data-whimsy-greeting]; the element's inline text IS the
+     off-season line (so the markup renders gracefully with JS disabled). Swap
+     in the seasonal text + apply the whimsy classes. Idempotent: a done flag
+     keeps observe() re-scans from re-reading the swapped text. */
+  function greeting(root) {
+    root = root || document;
+    var els = root.querySelectorAll("[data-whimsy-greeting]");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.dataset.whimsyGreetingDone === "1") continue;
+      var spec = greetingFor(new Date(), {
+        default: el.textContent.trim(),
+        defaultClass: el.dataset.whimsyGreetingClass
+      });
+      el.textContent = spec.text;
+      for (var c = 0; c < spec.classes.length; c++) el.classList.add(spec.classes[c]);
+      // A --wave spec needs its text shattered into staggered .whimsy-char
+      // cells (per-char faceted gradient) — same hydration data-whimsy="wave"
+      // gets. Run AFTER the text is set so splitWave reads the seasonal line.
+      if (spec.classes.indexOf("whimsy--wave") !== -1) splitWave(el);
+      el.dataset.whimsyGreetingDone = "1";
+    }
+  }
+
   // SPA lifecycle — auto-hydrate nodes inserted after first paint. Returns a
   // disconnect fn. Idempotent guards make the re-scan cheap (done nodes skip).
   function observe(root) {
     root = root || document.body;
     hydrate(root);
+    greeting(root);
     if (typeof MutationObserver === 'undefined') return function () {};
+    var schedule = window.requestAnimationFrame
+      ? function (cb) { window.requestAnimationFrame(cb); }
+      : function (cb) { window.setTimeout(cb, 0); };
     var scheduled = false;
     var mo = new MutationObserver(function () {
       if (scheduled) return;
       scheduled = true;
-      (window.requestAnimationFrame || window.setTimeout)(function () { scheduled = false; hydrate(root); }, 0);
+      schedule(function () { scheduled = false; hydrate(root); greeting(root); });
     });
     mo.observe(root, { childList: true, subtree: true });
     return function () { mo.disconnect(); };
   }
 
-  window.Whimsy = {
+  var api = {
     hydrate: hydrate,
     observe: observe,
     watch: watch,
     celebrate: celebrate,
+    greeting: greeting,
+    greetingFor: greetingFor,
     run: run,
     settle: settle,
     unsettle: unsettle,
@@ -175,10 +247,19 @@
     ignite: igniteEl,
     clear: clearEl
   };
+  // globalThis === window in a browser (so window.Whimsy works); in Node it
+  // lets the unit test import this file and exercise greetingFor.
+  if (typeof window !== "undefined") window.Whimsy = api;
+  else if (typeof globalThis !== "undefined") globalThis.Whimsy = api;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () { hydrate(); });
-  } else {
-    hydrate();
+  // DOM auto-run — guarded so `import`ing the module in Node (the unit test)
+  // doesn't touch a document that isn't there.
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () { hydrate(); greeting(); });
+    } else {
+      hydrate();
+      greeting();
+    }
   }
 })();

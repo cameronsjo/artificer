@@ -1,9 +1,9 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.12.0",
+  "version": "0.18.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
-  "author": "Cameron Sjo <csjo00@gmail.com>",
+  "author": "Cameron Sjo",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cameronsjo/artificer.git"
@@ -16,11 +16,14 @@
   "exports": {
     "./artificer.css": "./src/artificer.css",
     "./whimsy.css": "./src/artificer-whimsy.css",
+    "./texture.css": "./src/artificer-texture.css",
     "./editorial.css": "./src/artificer-editorial.css",
     "./print.css": "./src/print.css",
     "./theme.js": "./src/artificer-theme.js",
     "./focus.js": "./src/artificer-focus.js",
     "./tabs.js": "./src/artificer-tabs.js",
+    "./options.js": "./src/artificer-options.js",
+    "./tree.js": "./src/artificer-tree.js",
     "./icons.js": "./src/artificer-icons.js",
     "./whimsy.js": "./src/artificer-whimsy.js",
     "./tokens.json": "./src/tokens.json",

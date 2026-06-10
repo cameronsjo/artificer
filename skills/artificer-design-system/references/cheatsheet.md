@@ -19,10 +19,10 @@ INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
 ATTENTION  --attention rose text (AAA) — "look when you can"
             --attention-fill rose background
 
-URGENT     --urgent vermillion text — errors, blocking
-            --urgent-fill vermillion background
+URGENT     --urgent terracotta red text — errors, blocking
+            --urgent-fill terracotta red background
 
-SUCCESS    --success olive — completed
+SUCCESS    --success apothecary green — completed
 META       --steel / --steel-fill — chrome, secondary UI
 
 BRAND      --brand-purple / --brand-purple-fill — wordmarks, masthead, NOT semantic

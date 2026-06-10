@@ -9,12 +9,7 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); border: 1px solid var(--border); }
-  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); }
-  .num { font-variant-numeric: tabular-nums; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
   @media (max-width: 720px) { .row2 { grid-template-columns: 1fr; } }
   svg.diagram { width: 100%; height: auto; display: block; background: var(--bg); border-radius: var(--radius-sm); }
@@ -34,7 +29,7 @@
     of SVG classes; you compose.
   </p>
 
-  <h2>SVG primitives</h2>
+  <h2 class="section-title">SVG primitives</h2>
   <p class="meta">Apply <code>.dia-node</code> / <code>.dia-edge</code> / <code>.dia-edge-label</code> classes to inline SVG and the diagram theme follows the rest of the system. Reusable arrow marker defined once at the top of the page.</p>
 
   <!-- Shared marker definitions used by all diagrams below -->
@@ -51,7 +46,7 @@
 
   <!-- Flow diagram -->
   <h3>1 · Flow <span style="color:var(--fg-disabled);font-weight:400">— "what happens?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <svg class="diagram" viewBox="0 0 720 200" aria-label="User → API → Worker → Database flow">
       <g>
         <!-- nodes -->
@@ -87,7 +82,7 @@
 
   <!-- Sequence diagram -->
   <h3>2 · Sequence <span style="color:var(--fg-disabled);font-weight:400">— "in what order?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <svg class="diagram" viewBox="0 0 720 280" aria-label="Authentication sequence">
       <!-- swimlane labels -->
       <g>
@@ -122,7 +117,7 @@
 
   <!-- System map -->
   <h3>3 · System map <span style="color:var(--fg-disabled);font-weight:400">— "what's connected to what?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <svg class="diagram" viewBox="0 0 720 320" aria-label="Plugin ecosystem map">
       <!-- center -->
       <rect class="dia-node dia-node--accent" x="290" y="130" width="140" height="60" rx="6"/>
@@ -159,7 +154,7 @@
 
   <!-- Architecture / layered -->
   <h3>4 · Layered architecture <span style="color:var(--fg-disabled);font-weight:400">— "what sits on what?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <svg class="diagram" viewBox="0 0 720 280" aria-label="Layered architecture">
       <g>
         <rect class="dia-node" x="40" y="20"  width="640" height="50" rx="6"/>
@@ -180,7 +175,7 @@
   </div>
 
   <!-- Color rules -->
-  <h2>Color rules</h2>
+  <h2 class="section-title">Color rules</h2>
   <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
     <li><b class="anchor">Default node = surface color.</b> Nodes are part of the page; only the type and border distinguish them.</li>
     <li><b class="anchor">One accent node per diagram.</b> The thing the diagram is <i>about</i>. If everything is highlighted, nothing is.</li>
@@ -191,7 +186,7 @@
   </ul>
 
   <!-- Mermaid -->
-  <h2>Mermaid theming</h2>
+  <h2 class="section-title">Mermaid theming</h2>
   <p class="meta">Mermaid in Markdown reads CSS variables when you provide a <code>themeVariables</code> initializer. Drop this once at app boot — every diagram inherits the system.</p>
   <pre class="code-block">mermaid.initialize({
   startOnLoad: true,
@@ -218,9 +213,9 @@ function getCss(v) {
   <p class="meta" style="font-size:12px">Re-init on theme toggle so cream mode picks up the right tokens. Single hard rule: don't override <code>fontFamily</code> per-diagram — set once globally.</p>
 
   <!-- Excalidraw -->
-  <h2>Excalidraw palette</h2>
+  <h2 class="section-title">Excalidraw palette</h2>
   <p class="meta">Excalidraw doesn't read CSS variables — paste these hex values into a custom palette so hand-drawn sketches match the rest of the system.</p>
-  <div class="demo" style="font-family:var(--font-mono);font-size:12px">
+  <div class="figure" style="font-family:var(--font-mono);font-size:12px">
     <div class="row2">
       <div>
         <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--s-sm)">Strokes</div>
@@ -244,7 +239,7 @@ function getCss(v) {
   </div>
 
   <!-- React Flow -->
-  <h2>React Flow theming</h2>
+  <h2 class="section-title">React Flow theming</h2>
   <p class="meta">For interactive diagrams (drag-to-arrange, click-through). Set CSS overrides at the wrapper level; React Flow inherits.</p>
   <pre class="code-block">/* Wrap your &lt;ReactFlow /&gt; in a div with this class */
 .rf-artificer .react-flow__node {
@@ -277,7 +272,7 @@ function getCss(v) {
 }</pre>
 
   <!-- Anti-patterns -->
-  <h2>Anti-patterns</h2>
+  <h2 class="section-title">Anti-patterns</h2>
   <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
     <li><b class="anchor">Rainbow boxes.</b> Every node a different color reads as decoration, not encoding. Stick to default + one accent + ghost.</li>
     <li><b class="anchor">Drop-shadow on every node.</b> Adds visual weight without information. Reserve for elevation in real UI, not in diagrams.</li>

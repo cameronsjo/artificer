@@ -92,26 +92,26 @@ if [[ "$mode" == "verify" ]]; then
   fails=0
 
   echo "==> VS Code"
-  verify_target "vscode" "$THEMES/vscode" "$VSCODE_EXT" || ((fails++))
+  verify_target "vscode" "$THEMES/vscode" "$VSCODE_EXT" || ((++fails))
 
   echo "==> Ghostty"
-  verify_target "ghostty-dark" "$THEMES/ghostty/artificer-dark" "$GHOSTTY_DIR/artificer-dark" || ((fails++))
-  verify_target "ghostty-light" "$THEMES/ghostty/artificer-light" "$GHOSTTY_DIR/artificer-light" || ((fails++))
+  verify_target "ghostty-dark" "$THEMES/ghostty/artificer-dark" "$GHOSTTY_DIR/artificer-dark" || ((++fails))
+  verify_target "ghostty-light" "$THEMES/ghostty/artificer-light" "$GHOSTTY_DIR/artificer-light" || ((++fails))
 
   echo "==> Claude Code"
-  verify_target "cc-dark" "$THEMES/claude-code/artificer-dark.json" "$CLAUDE_DIR/artificer-dark.json" || ((fails++))
-  verify_target "cc-light" "$THEMES/claude-code/artificer-light.json" "$CLAUDE_DIR/artificer-light.json" || ((fails++))
+  verify_target "cc-dark" "$THEMES/claude-code/artificer-dark.json" "$CLAUDE_DIR/artificer-dark.json" || ((++fails))
+  verify_target "cc-light" "$THEMES/claude-code/artificer-light.json" "$CLAUDE_DIR/artificer-light.json" || ((++fails))
 
   echo "==> tmux"
-  verify_target "tmux-dark" "$THEMES/tmux/artificer-dark.conf" "$TMUX_DIR/artificer-dark.conf" || ((fails++))
-  verify_target "tmux-light" "$THEMES/tmux/artificer-light.conf" "$TMUX_DIR/artificer-light.conf" || ((fails++))
+  verify_target "tmux-dark" "$THEMES/tmux/artificer-dark.conf" "$TMUX_DIR/artificer-dark.conf" || ((++fails))
+  verify_target "tmux-light" "$THEMES/tmux/artificer-light.conf" "$TMUX_DIR/artificer-light.conf" || ((++fails))
 
   echo "==> gitmux"
-  verify_target "gitmux" "$THEMES/gitmux/artificer.yml" "$GITMUX_DIR/gitmux.yml" || ((fails++))
+  verify_target "gitmux" "$THEMES/gitmux/artificer.yml" "$GITMUX_DIR/gitmux.yml" || ((++fails))
 
   echo "==> Obsidian"
   if [[ -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
-    verify_target "obsidian" "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer" || ((fails++))
+    verify_target "obsidian" "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer" || ((++fails))
   else
     echo "  skip    no vault at $OBSIDIAN_VAULT"
   fi

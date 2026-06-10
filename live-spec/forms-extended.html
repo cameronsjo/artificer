@@ -8,10 +8,6 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
   .field { display: flex; flex-direction: column; gap: 6px; }
   .field__label { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--fg); letter-spacing: .02em; }
   .field__hint { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
@@ -29,9 +25,9 @@
   <h1 class="t-headline-lg">forms.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Inputs, validation, fieldsets, helper text. The boring components that decide whether your app feels well-made.</p>
 
-  <h2>The .field anatomy</h2>
+  <h2 class="section-title">The .field anatomy</h2>
   <p class="meta">Always: <code>label</code> on top, control, optional hint or error. Never: placeholder-as-label.</p>
-  <div class="demo stack stack--lg" style="max-width:480px">
+  <div class="figure stack stack--lg" style="max-width:480px">
     <div class="field">
       <label class="field__label" for="name">Project name</label>
       <input class="input" id="name" type="text" placeholder="e.g. atlas-runner"/>
@@ -67,9 +63,9 @@
 
 <span class="tok-comment">// invalid: add .field--invalid + aria-invalid + aria-describedby</span></pre>
 
-  <h2>Choices — checkbox, radio, toggle</h2>
+  <h2 class="section-title">Choices — checkbox, radio, toggle</h2>
   <p class="meta"><b class="anchor">Checkbox</b> for many-of-many. <b class="anchor">Radio</b> for one-of-few (≤ 5). <b class="anchor">Select</b> for one-of-many. <b class="anchor">Toggle</b> for instant on/off (no Save needed).</p>
-  <div class="demo stack stack--lg" style="max-width:520px">
+  <div class="figure stack stack--lg" style="max-width:520px">
     <fieldset>
       <legend>Notify me when</legend>
       <div class="stack stack--sm" style="margin-top:var(--s-sm)">
@@ -94,26 +90,27 @@
         <p class="t-label-md" style="margin:0;font-weight:500">Auto-deploy on green</p>
         <p class="meta" style="margin:0">Push to <code>main</code> deploys automatically.</p>
       </div>
-      <label class="toggle"><input type="checkbox" checked/></label>
+      <label class="toggle"><input type="checkbox" checked aria-label="Auto-deploy on green"/></label>
     </div>
   </div>
 
-  <h2>Search input</h2>
-  <div class="demo">
+  <h2 class="section-title">Search input</h2>
+  <div class="figure">
     <div class="search" style="max-width:360px">
+      <label class="sr-only" for="search-demo">Search</label>
       <span style="color:var(--fg-secondary)" class="i-search" aria-hidden="true"></span>
-      <input class="input" type="search" placeholder="Search projects, runs, files…" style="border:none;padding:10px 0;background:transparent"/>
+      <input class="input" id="search-demo" type="search" placeholder="Search projects, runs, files…" style="border:none;padding:10px 0;background:transparent"/>
       <kbd>⌘K</kbd>
     </div>
   </div>
 
-  <h2>Slider</h2>
-  <div class="demo stack stack--sm" style="max-width:420px">
+  <h2 class="section-title">Slider</h2>
+  <div class="figure stack stack--sm" style="max-width:420px">
     <div class="cluster cluster--between"><span class="t-label-md">Concurrency</span><span class="meta num">8</span></div>
     <input class="slider" type="range" min="1" max="16" value="8" aria-label="Concurrency"/>
   </div>
 
-  <h2>Form rules</h2>
+  <h2 class="section-title">Form rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Label every field.</b> Placeholder is not a label — it disappears.</li>
     <li><b class="anchor">Hint text explains constraints</b> ("2–32 chars") <em>before</em> the user types, not after.</li>

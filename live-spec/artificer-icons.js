@@ -117,6 +117,9 @@
     root = root || document.body;
     hydrate(root);
     if (typeof MutationObserver === 'undefined') return function () {};
+    var schedule = window.requestAnimationFrame
+      ? function (cb) { window.requestAnimationFrame(cb); }
+      : function (cb) { window.setTimeout(cb, 0); };
     var scheduled = false;
     var mo = new MutationObserver(function (mutations) {
       // Clear the hydration lock on any node whose icon attrs changed so
@@ -128,7 +131,7 @@
       });
       if (scheduled) return;
       scheduled = true;
-      (window.requestAnimationFrame || window.setTimeout)(function () { scheduled = false; hydrate(root); }, 0);
+      schedule(function () { scheduled = false; hydrate(root); });
     });
     mo.observe(root, {
       childList: true,

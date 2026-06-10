@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · Components (extended)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<script src="artificer-icons.js" defer></script>
+<script src="artificer-focus.js" defer></script>
+<script src="artificer-options.js" defer></script>
+<script src="artificer-tree.js" defer></script>
+<style>
+  /* Page chrome is canonical (#192): .section-title for h2s, .figure for demo
+     wells, .meta/.crumb untouched (forms-extended.html is the model). Only the
+     two genuinely page-local rules remain, scoped to what they own. */
+  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: flex-start; justify-content: center; z-index: var(--z-modal); }
+  .scrim.is-open { display: flex; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="README.html">Artificer</a> · Components · Extended (v0.15.0)</p>
+  <h1 class="t-headline-lg">components, extended<span style="color:var(--accent)">.</span></h1>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The Workstream-E mints: the option-popover keystone and what it unlocks, plus pagination, the persistent banner, and the tree. Built from existing tokens — no carves.</p>
+
+  <!-- ───────────────────────── Option-popover ───────────────────────── -->
+  <h2 class="section-title">Option-popover — <code>.menu</code> / <code>.listbox</code></h2>
+  <p class="meta">The ONE floating option list. <code>.menu</code> = actions (role=menu); <code>.listbox</code> = selection (role=listbox + aria-selected). Both use <code>__option</code> rows. The keyboard cursor and hover are one visual (<code>.is-active</code>). Drop inside <code>.popover</code> to float it.</p>
+  <div class="figure" style="display:flex;gap:var(--s-2xl);flex-wrap:wrap">
+    <div>
+      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.menu</code> — actions</div>
+      <div class="popover" style="padding:0;max-width:260px">
+        <div class="menu" role="menu" aria-label="Edit" data-options>
+          <div class="menu__label" aria-hidden="true">Edit</div>
+          <button class="menu__option is-active" role="menuitem"><i data-icon="copy" aria-hidden="true" class="icon"></i> Duplicate <span class="menu__hint">⌘D</span></button>
+          <button class="menu__option" role="menuitem"><i data-icon="edit" aria-hidden="true" class="icon"></i> Rename <span class="menu__hint">⌘⏎</span></button>
+          <div class="menu__sep" role="separator"></div>
+          <button class="menu__option" role="menuitem" aria-disabled="true"><i data-icon="copy" aria-hidden="true" class="icon"></i> Paste</button>
+          <button class="menu__option menu__option--danger" role="menuitem"><i data-icon="trash" aria-hidden="true" class="icon"></i> Delete <span class="menu__hint">⌫</span></button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.listbox</code> — selection</div>
+      <div class="popover" style="padding:0;max-width:260px">
+        <ul class="listbox" role="listbox" aria-label="Branch" id="branchList" data-options>
+          <li class="listbox__option" role="option" aria-selected="true" tabindex="0">main</li>
+          <li class="listbox__option" role="option" tabindex="-1">develop</li>
+          <li class="listbox__option" role="option" tabindex="-1">release/0.14</li>
+          <li class="listbox__option" role="option" aria-disabled="true" tabindex="-1">archived/legacy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────── Command palette ───────────────────────── -->
+  <h2 class="section-title">Command palette</h2>
+  <p class="meta">The signature tool surface — a recipe, not a new primitive: <code>.palette</code> = a <code>.palette__search</code> header (a combobox input) + the <code>.listbox</code> body, focus-trapped (<code>ArtificerFocus.trap</code>, Esc to close) on a <code>.scrim</code>. Opens on ⌘K.</p>
+  <div class="figure">
+    <button class="btn btn--primary" id="paletteOpen">Open palette <span class="kbd">⌘K</span></button>
+  </div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"palette"</span> role=<span class="tok-string">"dialog"</span> aria-label=<span class="tok-string">"Command palette"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"palette__search"</span><span class="tok-keyword">&gt;</span>
+    <span class="tok-keyword">&lt;input</span> role=<span class="tok-string">"combobox"</span> aria-controls=<span class="tok-string">"list"</span> aria-expanded=<span class="tok-string">"true"</span>
+           aria-autocomplete=<span class="tok-string">"list"</span> aria-activedescendant=<span class="tok-string">"opt-new"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;/div&gt;</span>
+  <span class="tok-keyword">&lt;ul</span> class=<span class="tok-string">"listbox"</span> role=<span class="tok-string">"listbox"</span> id=<span class="tok-string">"list"</span><span class="tok-keyword">&gt;</span> … <span class="tok-keyword">&lt;/ul&gt;</span>
+<span class="tok-keyword">&lt;/div&gt;</span>  <span class="tok-comment">// const trap = ArtificerFocus.trap(el, { onEscape: close });</span></pre>
+
+  <!-- ───────────────────────── Pagination ───────────────────────── -->
+  <h2 class="section-title">Pagination</h2>
+  <p class="meta">Bounded, jumpable ranges. Mono/tabular numbers; current page is the one accent marker (<code>aria-current="page"</code>); prev/next disable at the ends. Unbounded sets → "load more" instead.</p>
+  <div class="figure">
+    <nav class="pagination" id="pager" aria-label="Pages">
+      <button data-step="-1" aria-label="Previous">‹</button>
+      <button data-page="1" aria-current="page">1</button>
+      <button data-page="2">2</button>
+      <button data-page="3">3</button>
+      <span class="pagination__gap">…</span>
+      <button data-page="12">12</button>
+      <button data-step="1" aria-label="Next">›</button>
+    </nav>
+  </div>
+
+  <!-- ───────────────────────── Banner ───────────────────────── -->
+  <h2 class="section-title">Banner — persistent inline notice</h2>
+  <p class="meta">A full-width band pinned in the layout — NOT the transient toast-tier <code>.notif</code>. For standing conditions. Tiers reuse the status quartet; <b class="anchor">color</b> encodes the tier, never texture.</p>
+  <div class="figure" style="display:flex;flex-direction:column;gap:var(--s-sm)">
+    <div class="banner banner--info" role="status"><span class="banner__body"><b>Read-only.</b> You're viewing a snapshot from 14:02 UTC.</span><span class="banner__actions"><button class="btn btn--secondary">Switch to live</button></span></div>
+    <div class="banner banner--attention" role="status"><span class="banner__body"><b>2 nodes degraded.</b> us-east-1 is serving at reduced capacity.</span><span class="banner__actions"><a href="#status">Status page ↗</a></span></div>
+    <div class="banner banner--urgent" role="alert"><span class="banner__body"><b>Billing failed.</b> Update your payment method to avoid suspension.</span><span class="banner__actions"><button class="btn btn--secondary">Fix now</button></span></div>
+  </div>
+
+  <!-- ───────────────────────── Tree ───────────────────────── -->
+  <h2 class="section-title">Tree view</h2>
+  <p class="meta">Nested disclosure for hierarchy that <code>.accordion</code> (flat) and <code>.sidenav</code> (one level) don't cover. Twisty mirrors the accordion chevron; leaves keep alignment. <code>artificer-tree.js</code> ships expand/collapse + arrow-key roving focus (<code>data-tree</code> / <code>ArtificerTree.enhance()</code>).</p>
+  <div class="figure">
+    <ul class="tree" role="tree" aria-label="Files" id="fileTree" data-tree style="max-width:320px">
+      <li role="treeitem" aria-expanded="true" tabindex="0">
+        <div class="tree__row"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="menu" aria-hidden="true" class="icon"></i> src</div>
+        <ul class="tree__group" role="group">
+          <li role="treeitem" aria-expanded="false" tabindex="-1">
+            <div class="tree__row"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="menu" aria-hidden="true" class="icon"></i> components</div>
+            <ul class="tree__group" role="group" hidden>
+              <li role="treeitem" aria-selected="true" tabindex="-1"><div class="tree__row tree__leaf"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="edit" aria-hidden="true" class="icon"></i> Button.tsx</div></li>
+              <li role="treeitem" tabindex="-1"><div class="tree__row tree__leaf"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="edit" aria-hidden="true" class="icon"></i> Menu.tsx</div></li>
+            </ul>
+          </li>
+          <li role="treeitem" tabindex="-1"><div class="tree__row tree__leaf"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="edit" aria-hidden="true" class="icon"></i> index.ts</div></li>
+        </ul>
+      </li>
+      <li role="treeitem" tabindex="-1"><div class="tree__row tree__leaf"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="edit" aria-hidden="true" class="icon"></i> README.md</div></li>
+    </ul>
+  </div>
+</main>
+
+<!-- Command palette overlay -->
+<div class="scrim" id="paletteScrim">
+  <div class="palette" role="dialog" aria-label="Command palette" aria-modal="true" id="palette">
+    <div class="palette__search">
+      <i data-icon="search" aria-hidden="true" class="icon"></i>
+      <input type="text" id="paletteInput" placeholder="Type a command or search…" aria-label="Command"
+             role="combobox" aria-controls="paletteList" aria-expanded="true"
+             aria-autocomplete="list" aria-activedescendant="pal-opt-new"/>
+      <span class="kbd">esc</span>
+    </div>
+    <!-- Combobox popup = LISTBOX (ARIA permits listbox/tree/grid/dialog — never
+         menu). Options are <li>, NOT <button>: activedescendant options must not
+         be tabbable (buttons would enter the focus trap's cycle). No aria-selected
+         on the cursor row — the palette highlights, it doesn't select (and
+         [aria-selected] renders the ✓). role="separator" is not a permitted
+         listbox child, hence the aria-hidden sep. (#174) -->
+    <ul class="listbox" role="listbox" aria-label="Commands" id="paletteList">
+      <li class="listbox__label" aria-hidden="true">Actions</li>
+      <li class="listbox__option is-active" role="option" id="pal-opt-new"><i data-icon="plus" aria-hidden="true" class="icon"></i> New run <span class="listbox__hint">⌘N</span></li>
+      <li class="listbox__option" role="option" id="pal-opt-search"><i data-icon="search" aria-hidden="true" class="icon"></i> Search files <span class="listbox__hint">⌘P</span></li>
+      <li class="listbox__option" role="option" id="pal-opt-rename"><i data-icon="edit" aria-hidden="true" class="icon"></i> Rename project</li>
+      <li class="listbox__sep" aria-hidden="true"></li>
+      <li class="listbox__label" aria-hidden="true">Danger</li>
+      <li class="listbox__option listbox__option--danger" role="option" id="pal-opt-delete"><i data-icon="trash" aria-hidden="true" class="icon"></i> Delete project</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Behavior modules + command palette. The modules load deferred (above), so
+  // wiring waits for DOMContentLoaded. Keyboard/ARIA mechanics come from
+  // artificer-options.js / artificer-tree.js; open/close, ⌘K, and the focus
+  // trap stay consumer-side (the modules' hard scope line).
+  document.addEventListener('DOMContentLoaded', function () {
+    // hydrate the standalone option-popovers + the tree (the PR-1 static
+    // tabindex markup stays in place as the no-JS fallback)
+    ArtificerOptions.observe(document);
+    ArtificerTree.observe(document);
+
+    // Command palette — open/close + focus trap (consumer-side)
+    var scrim = document.getElementById('paletteScrim');
+    var palette = document.getElementById('palette');
+    var input = document.getElementById('paletteInput');
+    var openBtn = document.getElementById('paletteOpen');
+    var trap = null;
+    function open() {
+      scrim.classList.add('is-open');
+      if (window.ArtificerFocus) trap = ArtificerFocus.trap(palette, { onEscape: close });
+      if (input) input.focus();
+    }
+    function close() {
+      scrim.classList.remove('is-open');
+      if (trap) { trap.release(); trap = null; }
+    }
+    if (openBtn) openBtn.addEventListener('click', open);
+    scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
+    document.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); scrim.classList.contains('is-open') ? close() : open(); }
+    });
+
+    // activedescendant cursor + Enter dispatch — the module's combobox mode;
+    // a real consumer would dispatch on the selected option, the demo closes
+    ArtificerOptions.combobox(input, document.getElementById('paletteList'), { onSelect: close });
+  });
+
+  // Pagination
+  (function () {
+    var pager = document.getElementById('pager');
+    var current = 1, max = 12;
+    pager.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.page) current = +b.dataset.page;
+      else if (b.dataset.step) current = Math.max(1, Math.min(max, current + (+b.dataset.step)));
+      pager.querySelectorAll('[data-page]').forEach(function (x) {
+        if (+x.dataset.page === current) x.setAttribute('aria-current', 'page'); else x.removeAttribute('aria-current');
+      });
+      pager.querySelector('[data-step="-1"]').disabled = current === 1;
+      pager.querySelector('[data-step="1"]').disabled = current === max;
+    });
+  })();
+
+</script>
+</body>
+</html>

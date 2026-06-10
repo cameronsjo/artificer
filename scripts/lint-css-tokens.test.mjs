@@ -15,6 +15,7 @@ const msgs = (css) => lintText(css).map((v) => v.msg);
 //   [x] Exclusion: custom-property definitions NOT flagged
 //   [x] Exclusion: values inside comments NOT flagged
 //   [x] Boundary: empty input → no violations
+//   [x] Scope: font-size is NOT watched (#187 deferred — root-font-size issue)
 
 test('on-scale spacing px is flagged with the spacing token', () => {
   assert.deepEqual(msgs('.a{ padding: 16px; }'), ['16px in padding → var(--s-md)']);
@@ -55,4 +56,31 @@ test('values inside comments are not flagged', () => {
 
 test('empty input yields no violations', () => {
   assert.deepEqual(lintText(''), []);
+});
+
+// font-size watch (#187, armed by the #211 root re-true)
+test('font-size: exact-token px is flagged with the token', () => {
+  assert.deepEqual(msgs('.a{ font-size: 12px; }'), ['12px in font-size → var(--t-label-sm-size)']);
+});
+
+test('font-size: near-scale px flags the nearest token with the offset', () => {
+  assert.deepEqual(msgs('.a{ font-size: 24px; }'), [
+    '24px in font-size → var(--t-headline-md-size) (22px scale, 2px off)',
+  ]);
+});
+
+test('font-size: px farther than 2 from every token is not flagged', () => {
+  assert.deepEqual(lintText('.a{ font-size: 25px; } .b{ font-size: 8px; }'), []);
+});
+
+test('font-size: /* tuned */ exempts the line', () => {
+  assert.deepEqual(lintText('.a{ font-size: 10px; /* tuned */ }'), []);
+});
+
+test('font-size: token-bound values are not flagged', () => {
+  assert.deepEqual(lintText('.a{ font-size: var(--t-label-sm-size); }'), []);
+});
+
+test('font-size: fontScale:false disables the watch (Lane 2 sister sheet)', () => {
+  assert.deepEqual(lintText('.a{ font-size: 12px; }', { fontScale: false }), []);
 });

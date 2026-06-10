@@ -9,12 +9,10 @@
 <script src="artificer-theme.js" defer></script>
 <script src="artificer-icons.js" defer></script>
 <style>
-  /* Page chrome only — .app-shell / .full-bleed / .bleed-grid / .media-fit are canonical. */
+  /* Page chrome only — .app-shell / .full-bleed / .bleed-grid / .media-fit are canonical.
+     Section heads use canonical .section-title (#138 — .demo-h was a stale
+     pre-mint shadow of it, 16px vs the canonical scale). */
   body { margin: 0; font-family: var(--font-mono); }
-  .demo-h { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em;
-            text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-xl) 0 var(--s-sm);
-            padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); max-width: 66ch; }
   .card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
   /* full-bleed demo strip — a horizontal scroll-snap filmstrip reaching the pane edge */
   .strip { display: flex; gap: var(--s-md); overflow-x: auto; scroll-snap-type: x mandatory;
@@ -26,7 +24,6 @@
   pre.wide { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
              padding: var(--s-md); overflow-x: auto; color: var(--fg-secondary); font-size: 12.5px; margin: 0; }
   .inspector-pane { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-md); }
-  .note { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); }
 </style>
 </head>
 <body>
@@ -58,21 +55,21 @@
     <p class="meta">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width.</p>
 
     <div class="card">
-      <h2 class="demo-h" style="margin-top:0">Normal content</h2>
+      <h2 class="section-title" style="margin-top:0">Normal content</h2>
       <p class="meta">Direct children of <code>.app-shell__content</code> sit in the content column with a gutter on each side — the page body.</p>
     </div>
 
-    <h2 class="demo-h">Full-bleed — reaches the pane edge</h2>
+    <h2 class="section-title">Full-bleed — reaches the pane edge</h2>
     <p class="meta">A <code>.full-bleed</code> child breaks the content gutter to span the whole pane (no <code>100vw</code>, no negative margins — the same grid-bleed mechanism as the document <code>.measure-grid</code>). A scroll-snap filmstrip is the canonical use:</p>
-    <div class="full-bleed strip" aria-label="Filmstrip">
+    <div class="full-bleed strip" aria-label="Filmstrip" role="region" tabindex="0">
       <div>01</div><div>02</div><div>03</div><div>04</div><div>05</div><div>06</div>
     </div>
 
-    <h2 class="demo-h">Overflow stress test</h2>
+    <h2 class="section-title">Overflow stress test</h2>
     <p class="meta">A <code>&lt;pre&gt;</code> with one very long unbroken line. With <code>minmax(0,1fr)</code> the content track shrinks to the viewport and the pre scrolls <em>within itself</em>; the <b class="anchor">page never scrolls sideways</b>. (Under bare <code>1fr</code> this exact element blew agentic-harnesses to ~2000px.)</p>
-    <pre class="wide">$ kubectl get pods --all-namespaces -o wide --field-selector=status.phase=Running --sort-by=.metadata.creationTimestamp | grep -E 'ingress|gateway|mesh' | awk '{print $1, $2, $7}' | column -t   # one long line</pre>
+    <pre class="wide" tabindex="0">$ kubectl get pods --all-namespaces -o wide --field-selector=status.phase=Running --sort-by=.metadata.creationTimestamp | grep -E 'ingress|gateway|mesh' | awk '{print $1, $2, $7}' | column -t   # one long line</pre>
 
-    <h2 class="demo-h">Media fit — diagrams shrink, not scroll</h2>
+    <h2 class="section-title">Media fit — diagrams shrink, not scroll</h2>
     <p class="meta">A fixed-size SVG inside <code>.media-fit</code> caps at its container instead of forcing sideways scroll.</p>
     <div class="media-fit">
       <svg width="900" height="120" viewBox="0 0 900 120" role="img" aria-label="Wide diagram that scales down">
@@ -81,7 +78,7 @@
       </svg>
     </div>
 
-    <h2 class="demo-h">Inspector split — reveals a third pane ≥ 1200px</h2>
+    <h2 class="section-title">Inspector split — reveals a third pane ≥ 1200px</h2>
     <p class="meta"><code>.split-pane--inspector</code> stacks below 800, is master/detail 800–1200, and reveals the inspector pane at <code>--bp-wide</code>. All tracks <code>minmax(0,1fr)</code> — overflow-safe.</p>
     <div class="split-pane--inspector">
       <div class="inspector-pane">List</div>

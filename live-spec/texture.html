@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<title>Artificer · Texture</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="artificer-whimsy.css"/>
+<link rel="stylesheet" href="artificer-texture.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<style>
+  /* Reference page — loads the REAL artificer-texture.css and shows each
+     minted token class. Page chrome only; all texture comes from the layer. */
+  .lede { max-width: 64ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s-md); margin-top: var(--s-md); }
+  .demo__stage { min-height: 124px; display: flex; flex-direction: column; gap: 4px; justify-content: center; padding: var(--s-lg) var(--s-md); border-bottom: 1px solid var(--border); }
+  .demo__stage.doc { font-family: var(--font-sans); }
+  .demo__stage.tool { font-family: var(--font-mono); }
+  .demo__cap { padding: var(--s-sm) var(--s-md); }
+  .demo__cap code { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .demo__cap p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--fg-secondary); }
+  .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); }
+  .tex-stat { font-family: var(--font-mono); font-size: 30px; font-weight: 700; color: var(--fg); }
+  .h { font-weight: 700; color: var(--fg); margin: 0 0 2px; }
+  .p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--fg-secondary); max-width: 38ch; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+
+<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <p class="crumb"><a href="index.html">Artificer</a> · Live spec · Texture</p>
+  <h1 class="t-headline-lg">texture<span style="color:var(--accent)">.</span></h1>
+  <p class="t-body-lg lede" style="color:var(--fg-secondary)">The third carve — the bounded relaxation of "surfaces are flat solid fills." Opt-in, <b style="color:var(--fg)">hueless and motionless</b>: a material layer keyed to surface kind. Every demo below is the real <code>artificer-texture.css</code> class. Doctrine in <code>CLAUDE.md § Texture</code>. Toggle the theme to see the paper retunes.</p>
+
+  <h2 class="section-title">Grain — tool &amp; document</h2>
+  <div class="grid">
+    <div class="figure">
+      <div class="demo__stage tool tex-dots">
+        <span class="k">throughput · 24h</span>
+        <span class="tex-stat">1,247</span>
+        <span class="k">runs · +3.2%</span>
+      </div>
+      <div class="demo__cap"><code>.tex-dots</code><p>Engineered lattice for <b>tool</b> surfaces. Pitch on <code>--tex-dot-gap</code> (14px; 12–16).</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage doc tex-grain">
+        <p class="h">On paper, literally</p>
+        <p class="p">Desaturated fiber blended into the surface — no hue added. The document-surface grain.</p>
+      </div>
+      <div class="demo__cap"><code>.tex-grain</code><p>Fiber for <b>document</b> surfaces. Strength on <code>--tex-fiber-strength</code>.</p></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Deco line-texture — token ink only</h2>
+  <div class="grid">
+    <div class="figure">
+      <div class="demo__stage tool tex-line tex-line--hatch"><span class="k">no runs yet</span></div>
+      <div class="demo__cap"><code>.tex-line--hatch</code><p>Diagonal tooth. Empty states, disabled regions.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage tool tex-line tex-line--cross"><span class="k">archived</span></div>
+      <div class="demo__cap"><code>.tex-line--cross</code><p>Both diagonals. A denser quiet fill.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage doc tex-line tex-line--flute"><p class="h">Speakeasy fluting</p><p class="p">Paired vertical hairlines.</p></div>
+      <div class="demo__cap"><code>.tex-line--flute</code><p>Section bands, sidebar spines.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage doc tex-line tex-line--pinstripe"><p class="h">Even pinstripe</p><p class="p">Single hairlines — tailoring.</p></div>
+      <div class="demo__cap"><code>.tex-line--pinstripe</code><p>Cards, asides. The quietest vertical.</p></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Depth — outer glow, flat interior</h2>
+  <div class="grid">
+    <div class="figure tex-raised">
+      <div class="demo__stage tool">
+        <span class="k">raised tile</span>
+        <span class="tex-stat">0.4%</span>
+        <span class="k">5xx · last hour</span>
+      </div>
+      <div class="demo__cap"><code>.tex-raised</code><p>Halo bleeds bottom-right, <b>outside</b> the border. Interior stays flat — uniform glow is a canonical no.</p></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Page-grain — optional substrate</h2>
+  <div class="tex-paper" style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--s-lg) var(--s-md)">
+    <p class="h" style="font-family:var(--font-mono)">Faint by default</p>
+    <p class="p" style="font-family:var(--font-mono);max-width:60ch">A whole-page substrate — put <code style="color:var(--accent)">.tex-paper</code> on a page wrapper and a speckle sits under everything and <b>scrolls with the page</b>. Two levels only: Faint (here) and <code style="color:var(--accent)">.tex-paper--whisper</code>. Capped there by intent — louder grain reads as dirt on a clean page.</p>
+  </div>
+  <div class="tex-paper tex-paper--whisper" style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--s-lg) var(--s-md);margin-top:var(--s-md)">
+    <p class="h" style="font-family:var(--font-mono)">Whisper</p>
+    <p class="p" style="font-family:var(--font-mono);max-width:60ch"><code style="color:var(--accent)">.tex-paper--whisper</code> — the ceiling. The flowing wordmark is a hero's texture; this is the one whole-page exception.</p>
+  </div>
+
+  <p class="note">One texture per surface · never on data, status, or errors · web-layer only.</p>
+</main>
+</body>
+</html>

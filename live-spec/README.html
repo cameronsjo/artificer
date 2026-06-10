@@ -28,7 +28,7 @@
   .brand-row img { width: 56px; height: 56px; border-radius: 6px; display: block; flex-shrink: 0; }
   .brand-row .bt { font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--fg); }
   .brand-row .bd { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.5; margin-top: 2px; max-width: 52ch; }
-  .brand-row .chips { display: flex; gap: 6px; margin-top: 8px; }
+  .brand-row .chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
   .brand-row .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--fg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .brand-row .chip .sw { width: 10px; height: 10px; border-radius: 2px; }
 
@@ -108,7 +108,7 @@
     <h1 class="wordmark" style="font-size:52px;letter-spacing:-0.02em">artificer</h1>
     <p class="lede">A <span class="anchor">dark-first</span>, <span class="anchor">monospace-first</span> design system for an AuDHD brain — built on Ghostty terminal defaults, wearing a Jazz Age Deco palette. Calm until something needs attention, then unmissable.</p>
     <div class="meta-row">
-      <span>v0.1</span><span>2026</span><span>WCAG AAA</span><span>keyboard-first</span><span>dark + light</span>
+      <span>v0.18.0</span><span>2026</span><span>WCAG AAA</span><span>keyboard-first</span><span>dark + light</span>
     </div>
     <div class="brand-row">
       <img src="assets/cameron-logo.jpg" alt="Cameron personal mark" />
@@ -174,7 +174,7 @@
       <a class="nav-card" href="typography.html">
         <span class="n">02 · FOUNDATIONS</span>
         <span class="t">Typography</span>
-        <span class="d">JetBrains Mono + Inter. Scan hierarchy via weight and color, not size.</span>
+        <span class="d">JetBrains Mono + iA Writer Quattro. Scan hierarchy via weight and color, not size.</span>
       </a>
       <a class="nav-card" href="spacing.html">
         <span class="n">03 · FOUNDATIONS</span>
@@ -260,6 +260,11 @@
         <span class="n">20 · PATTERNS</span>
         <span class="t">Navigation</span>
         <span class="d">Breadcrumb, sidebar (+ rail + drawer), app bar, tabs. The spine — one per page. Tabs switch the view; segmented switches a parameter.</span>
+      </a>
+      <a class="nav-card" href="components-extended.html">
+        <span class="n">21 · COMPONENTS</span>
+        <span class="t">Components, extended</span>
+        <span class="d">The Workstream-E mints: option-popover (menu/listbox), command palette, tree, pagination, banner. Keyboard ships via the behavior modules.</span>
       </a>
       <a class="nav-card" href="tokens.json">
         <span class="n">19 · REFERENCE</span>

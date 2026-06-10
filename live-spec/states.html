@@ -8,10 +8,6 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
   .frame { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-xl); }
   .timeline { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-md) var(--s-lg); align-items: baseline; }
   .timeline dt { font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); }
@@ -26,20 +22,20 @@
   <h1 class="t-headline-lg">states.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Empty, loading, error. The three states that make a UI feel <b class="anchor">finished</b> instead of <b class="anchor">unfinished</b>. Most apps ship without them; ours doesn't get to.</p>
 
-  <h2>Loading — by duration</h2>
+  <h2 class="section-title">Loading — by duration</h2>
   <p class="meta">Pick the right tool for how long the wait will actually be.</p>
 
-  <div class="timeline">
+  <dl class="timeline">
     <dt>&lt; 100ms</dt><dd><b class="anchor">Nothing.</b> Don't show a spinner that flashes on screen for 80ms.</dd>
     <dt>100–500ms</dt><dd>Disable the trigger, change its label (<code>"Save" → "Saving…"</code>). No skeleton.</dd>
     <dt>500ms–2s</dt><dd>Skeleton or progress bar. Match the shape of incoming content.</dd>
     <dt>&gt; 2s</dt><dd>Progress bar with concrete copy: <code>"Indexing 1,247 of 8,300 files."</code></dd>
     <dt>&gt; 10s</dt><dd>Background it. Send a notification when done. Don't make me wait.</dd>
-  </div>
+  </dl>
 
-  <h2>Skeleton</h2>
+  <h2 class="section-title">Skeleton</h2>
   <p class="meta">For 500ms–2s waits with predictable shape. Use <code>--text</code>, <code>--title</code>, or <code>--block</code> modifiers, or set inline width/height.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="frame stack">
       <div class="skeleton skeleton--title"></div>
       <div class="skeleton skeleton--text"></div>
@@ -52,9 +48,9 @@
 <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"skeleton skeleton--text"</span><span class="tok-keyword">&gt;&lt;/div&gt;</span>
 <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"skeleton skeleton--block"</span><span class="tok-keyword">&gt;&lt;/div&gt;</span></pre>
 
-  <h2>Progress</h2>
-  <p class="meta">Determinate only. With <code>aria-label</code> for screen readers; the percentage is read aloud.</p>
-  <div class="demo">
+  <h2 class="section-title">Progress</h2>
+  <p class="meta">Determinate when you can count. With <code>aria-label</code> for screen readers; <code>aria-valuenow</code> makes the percentage read aloud.</p>
+  <div class="figure">
     <div class="cluster cluster--between" style="margin-bottom:var(--s-xs)">
       <span class="meta">Indexing 1,247 of 8,300 files.</span>
       <span class="meta num">15%</span>
@@ -64,9 +60,24 @@
     </div>
   </div>
 
-  <h2>Empty state</h2>
+  <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">Indeterminate (long wait, nothing to count)</h3>
+  <p class="meta">Same <code>role="progressbar"</code> + <code>aria-label</code>, but <b class="anchor">no <code>aria-valuenow/min/max</code></b> — the missing value is what marks it indeterminate to assistive tech. Don't copy the determinate shape above. Concrete copy is inseparable: name the operation and the target.</p>
+  <div class="figure">
+    <div class="cluster cluster--between" style="margin-bottom:var(--s-xs)">
+      <span class="meta">Deploying to us-east-1…</span>
+    </div>
+    <div class="progress progress--indeterminate" role="progressbar" aria-label="Deploying to us-east-1">
+      <div class="progress__bar"></div>
+    </div>
+  </div>
+  <pre class="code-block"><span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"progress progress--indeterminate"</span> role=<span class="tok-string">"progressbar"</span>
+     aria-label=<span class="tok-string">"Deploying to us-east-1"</span><span class="tok-keyword">&gt;</span>  <span class="tok-comment">// NO aria-valuenow/min/max</span>
+  <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"progress__bar"</span><span class="tok-keyword">&gt;&lt;/div&gt;</span>
+<span class="tok-keyword">&lt;/div&gt;</span></pre>
+
+  <h2 class="section-title">Empty state</h2>
   <p class="meta">Three jobs: name what's missing, explain why (briefly), provide one action. Mono. No illustrations.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="frame">
       <div class="empty-state">
         <p class="empty-state__title">No runs yet.</p>
@@ -84,11 +95,11 @@
   <span class="tok-keyword">&lt;button</span> class=<span class="tok-string">"btn btn--primary"</span><span class="tok-keyword">&gt;</span>Start a run<span class="tok-keyword">&lt;/button&gt;</span>
 <span class="tok-keyword">&lt;/div&gt;</span></pre>
 
-  <h2>Error state</h2>
-  <p class="meta">Three rules: <b class="anchor">say what happened</b>, <b class="anchor">say what to do</b>, <b class="anchor">offer one action</b>. Inline > toast for state-bearing errors.</p>
+  <h2 class="section-title">Error state</h2>
+  <p class="meta">Three rules: <b class="anchor">say what happened</b>, <b class="anchor">say what to do</b>, <b class="anchor">offer one action</b>. Inline &gt; toast for state-bearing errors.</p>
 
   <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">Inline (recoverable)</h3>
-  <div class="demo">
+  <div class="figure">
     <div class="notif notif--urgent">
       <span class="dot dot--urgent"></span>
       <div class="notif__body">
@@ -100,7 +111,7 @@
   </div>
 
   <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">Full-screen (blocking)</h3>
-  <div class="demo">
+  <div class="figure">
     <div class="frame">
       <div class="empty-state">
         <p class="empty-state__title" style="color:var(--urgent)">Build failed at step 04 — typecheck.</p>
@@ -116,7 +127,7 @@
     </div>
   </div>
 
-  <h2>Voice — what to say</h2>
+  <h2 class="section-title">Voice — what to say</h2>
   <table class="table" style="margin-top:var(--s-md)">
     <thead><tr><th>Don't</th><th>Do</th></tr></thead>
     <tbody>

@@ -10,22 +10,14 @@
 <script src="artificer-icons.js" defer></script>
 <style>
   /* Page chrome only — the nav classes themselves are canonical (artificer.css). */
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin: var(--s-lg) 0 var(--s-sm); color: var(--fg); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); border: 1px solid var(--border); }
-  .demo--frame { padding: 0; overflow: hidden; position: relative; }
-  .demo--flush { padding: 0; overflow: hidden; }
-  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); max-width: 68ch; }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--s-md); overflow-x: auto; color: var(--fg-secondary); }
-  pre.code-block .c { color: var(--fg-disabled); }
   .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-lg); align-items: start; }
   @media (max-width: 760px) { .twocol { grid-template-columns: 1fr; } }
-  .note { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin-top: var(--s-sm); }
 
   /* Contain the off-canvas drawer DEMO inside its frame (canonical is position:fixed). */
-  .demo--drawer { height: 320px; }
-  .demo--drawer .nav-scrim  { position: absolute; }
-  .demo--drawer .nav-drawer { position: absolute; }
+  .figure--drawer { height: 320px; }
+  .figure--drawer .nav-scrim  { position: absolute; }
+  .figure--drawer .nav-drawer { position: absolute; }
   .demo-detail { padding: var(--s-lg); }
   .demo-detail h4 { font-family: var(--font-mono); font-size: 14px; margin: 0 0 var(--s-xs); color: var(--fg); }
 </style>
@@ -39,9 +31,9 @@
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:64ch">The spine. Four surfaces, four jobs — <b class="anchor">breadcrumb</b> for location, <b class="anchor">sidebar</b> for the between-section spine, <b class="anchor">app bar</b> for global chrome, <b class="anchor">tabs</b> for switching the view inside one surface. One spine per page: a sidebar <em>or</em> a top nav, never both.</p>
 
   <!-- ── Breadcrumb ─────────────────────────────────────────────── -->
-  <h2>Breadcrumb · <span style="color:var(--fg-disabled);font-weight:400">where am I</span></h2>
+  <h2 class="section-title">Breadcrumb · <span style="color:var(--fg-disabled);font-weight:400">where am I</span></h2>
   <p class="meta">Location in a hierarchy. Links are secondary; the last item is the current page (<code>aria-current="page"</code>) and reads at full strength. Separators are <code>.crumb__sep</code>. Promoted v0.10.0 — this exact pattern was copy-pasted into ~14 spec pages.</p>
-  <div class="demo">
+  <div class="figure">
     <nav class="crumb" aria-label="Breadcrumb"><a href="#">Artificer</a><span class="crumb__sep">·</span><a href="#">Patterns</a><span class="crumb__sep">·</span><span aria-current="page">Navigation</span></nav>
   </div>
   <pre class="code-block">&lt;nav class="crumb" aria-label="Breadcrumb"&gt;
@@ -51,9 +43,9 @@
 &lt;/nav&gt;</pre>
 
   <!-- ── App bar ─────────────────────────────────────────────────── -->
-  <h2>App bar · <span style="color:var(--fg-disabled);font-weight:400">global chrome</span></h2>
+  <h2 class="section-title">App bar · <span style="color:var(--fg-disabled);font-weight:400">global chrome</span></h2>
   <p class="meta">Brand · optional search · spacer · trailing actions. The wordmark is mono (and a sanctioned <code>.whimsy</code> home). At most one <code>.btn--primary</code> in the bar. The hamburger (<code>.appbar__menu-btn</code>) appears only below 800px to open the drawer. <b class="anchor">Apply <code>.wordmark</code> to an inline element inside <code>.appbar__brand</code></b>, not to the brand container itself — the container is a flex row and a <code>::after</code> period in flex becomes a separate flex item. <code>display:inline-block</code> on <code>.wordmark</code> guards against this.</p>
-  <div class="demo demo--flush">
+  <div class="figure figure--flush">
     <header class="appbar">
       <button class="btn btn--ghost btn--icon appbar__menu-btn" aria-label="Open menu"><i data-icon="menu"></i></button>
       <a class="appbar__brand wordmark" href="#">artificer</a>
@@ -72,7 +64,7 @@
 
   <h3>Appbar modifiers</h3>
   <p class="meta"><code>.appbar--contained</code> zeroes the bar's built-in inline padding so a surrounding <code>.container</code> owns the gutter — prevents double-inset when the bar lives inside a padded column. <code>.appbar--static</code> opts out of <code>position:sticky</code> for compact tool surfaces or layouts where stickiness conflicts with a second sticky plane (sidenav).</p>
-  <div class="demo demo--flush">
+  <div class="figure figure--flush">
     <!-- .appbar--contained: bar inside a padded container, brand aligns flush -->
     <div style="padding: 0 var(--s-md)">
       <header class="appbar appbar--contained appbar--static">
@@ -87,9 +79,9 @@
   <p class="note"><code>.appbar--contained</code> + <code>.appbar--static</code> — brand aligns flush with the container column. Combine modifiers freely.</p>
 
   <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
-  <h2>Sidebar nav · <span style="color:var(--fg-disabled);font-weight:400">the spine</span></h2>
+  <h2 class="section-title">Sidebar nav · <span style="color:var(--fg-disabled);font-weight:400">the spine</span></h2>
   <p class="meta">Sections of one product. Grouped with <code>.sidenav__group</code>; the active item carries <code>aria-current="page"</code> and an accent rail (inset shadow — no layout shift). Optional leading icon and trailing <code>.count</code>. Links are 44px tall (nav touch-target floor).</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <div class="split-pane" style="gap:0;min-height:360px">
       <nav class="sidenav" aria-label="Console sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
         <div class="sidenav__group">Workspace</div>
@@ -111,7 +103,7 @@
 
   <h3>Hierarchy at scale <span style="color:var(--fg-disabled);font-weight:400">— a long spine</span></h3>
   <p class="meta">Grouping alone isn't hierarchy: at ~15 uniform rows the group labels recede and the only anchor is the active row. The <code>.sidenav__group</code> header now <b class="anchor">sticks</b> as the spine scrolls and carries a <b class="anchor">divider</b> above each section — so you always know which group you're in without reading every row. <b class="anchor">Scroll this list</b>; the section label pins. No new tokens, and the treatment is inert on short, non-scrolling navs.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <div class="split-pane" style="gap:0;min-height:300px">
       <nav class="sidenav" aria-label="Platform sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0;max-height:300px;overflow-y:auto">
         <div class="sidenav__group">Workspace</div>
@@ -142,7 +134,7 @@
 
   <h3>SPA section-switch — <code>&lt;button&gt;</code> nav items</h3>
   <p class="meta">A single-page app switches sections without navigating between documents — that's a <code>&lt;button&gt;</code>, not an <code>&lt;a href&gt;</code>. <code>.sidenav button</code> now receives the full treatment: resting, hover, focus, and the <code>[aria-current]</code> accent rail. <b class="anchor">Close the <code>.nav-drawer</code> with <code>inert</code></b> when off-canvas — CSS alone cannot remove off-screen buttons from the tab order.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <div class="split-pane" style="gap:0;min-height:280px">
       <nav class="sidenav" aria-label="SPA sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
         <div class="sidenav__group">Views</div>
@@ -161,7 +153,7 @@
 
   <h3>Collapsed rail <span style="color:var(--fg-disabled);font-weight:400">— <code>.sidenav--rail</code></span></h3>
   <p class="meta">Icon-only, 56px. Labels move to screen-reader-only (kept in the a11y tree, not <code>display:none</code>); counts shrink to a dot. For dense apps where the spine should yield horizontal room.</p>
-  <div class="demo demo--frame">
+  <div class="figure figure--frame">
     <div class="split-pane" style="grid-template-columns:56px 1fr;gap:0;min-height:300px">
       <nav class="sidenav sidenav--rail" aria-label="Console sections (collapsed)" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
         <a href="#"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
@@ -178,9 +170,9 @@
   </div>
 
   <!-- ── Mobile drawer ───────────────────────────────────────────── -->
-  <h2>Mobile drawer · <span style="color:var(--fg-disabled);font-weight:400">off-canvas spine</span></h2>
+  <h2 class="section-title">Mobile drawer · <span style="color:var(--fg-disabled);font-weight:400">off-canvas spine</span></h2>
   <p class="meta">The sidebar, slid off-canvas for small screens. A trigger toggles <code>[data-nav-open]</code> on a shared ancestor and sets <code>aria-expanded</code>; the scrim or <kbd>Esc</kbd> closes it. The slide is modal-entry motion — it collapses to an instant cut under reduced-motion.</p>
-  <div class="demo demo--frame demo--drawer" id="drawer-demo">
+  <div class="figure figure--frame figure--drawer" id="drawer-demo">
     <div style="padding:var(--s-md);display:flex;align-items:center;gap:var(--s-md);border-bottom:1px solid var(--border)">
       <button class="btn btn--secondary" id="drawer-open" aria-controls="demo-drawer-nav" aria-expanded="false"><i data-icon="menu"></i> Menu</button>
       <span class="meta">Tap to open the drawer →</span>
@@ -190,7 +182,7 @@
       <p class="meta">On mobile the spine hides; this content gets the full width. The drawer overlays on demand.</p>
     </div>
     <div class="nav-scrim" id="drawer-scrim"></div>
-    <aside class="nav-drawer" id="demo-drawer-nav" aria-label="Console sections" aria-hidden="true">
+    <aside class="nav-drawer" id="demo-drawer-nav" aria-label="Console sections" aria-hidden="true" inert>
       <nav class="sidenav">
         <div class="sidenav__group">Workspace</div>
         <a href="#" aria-current="page"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
@@ -202,9 +194,9 @@
   </div>
 
   <!-- ── Tabs ────────────────────────────────────────────────────── -->
-  <h2>Tabs · <span style="color:var(--fg-disabled);font-weight:400">switch the view</span></h2>
+  <h2 class="section-title">Tabs · <span style="color:var(--fg-disabled);font-weight:400">switch the view</span></h2>
   <p class="meta">Switch which <em>view</em> you're looking at within one surface. Underline marks the active tab. Use <code>role="tablist"</code> + <code>aria-selected</code> for in-page panels, or links + <code>aria-current</code> for routed views.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="tabs" role="tablist" aria-label="Run detail" data-tabs>
       <button role="tab" aria-selected="true" id="tab-overview" aria-controls="panel-overview">Overview</button>
       <button role="tab" aria-selected="false" id="tab-logs" aria-controls="panel-logs">Logs</button>
@@ -223,14 +215,14 @@
   <h3>Tabs vs. segmented — not the same control</h3>
   <p class="meta">They look alike and do different jobs. <b class="anchor">Tabs switch the view</b> (different content). The <b class="anchor">segmented control switches a parameter</b> of one view — a time window, a density. If the content stays and only its shape changes, it's segmented (<code>.timerange</code>), not tabs.</p>
   <div class="twocol">
-    <div class="demo">
+    <div class="figure">
       <div class="note" style="margin-top:0;margin-bottom:var(--s-sm)">Tabs — different content</div>
       <div class="tabs" role="tablist" aria-label="example">
         <button role="tab" aria-selected="true">Logs</button>
         <button role="tab" aria-selected="false">Artifacts</button>
       </div>
     </div>
-    <div class="demo">
+    <div class="figure">
       <div class="note" style="margin-top:0;margin-bottom:var(--s-sm)">Segmented — same content, different window</div>
       <div class="timerange" role="group" aria-label="Time range">
         <button aria-pressed="false">1H</button>
@@ -242,7 +234,7 @@
   </div>
 
   <!-- ── Rules ───────────────────────────────────────────────────── -->
-  <h2>Rules</h2>
+  <h2 class="section-title">Rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:72ch">
     <li><b class="anchor">One spine per page.</b> A sidebar <em>or</em> a top nav as the primary spine — never both. Two navs and the page has no center.</li>
     <li><b class="anchor">Active state uses <code>aria-current="page"</code></b> (or <code>aria-selected</code> for tabs), not class alone — the accent rail/underline is the visual echo of a real attribute.</li>
@@ -266,6 +258,7 @@
       demo.toggleAttribute('data-nav-open', on);
       open.setAttribute('aria-expanded', String(on));
       panel.setAttribute('aria-hidden', String(!on));
+      panel.toggleAttribute('inert', !on);
       if (on && window.ArtificerFocus) {
         release = ArtificerFocus.trap(panel, { onEscape: function () { setOpen(false); } });
       } else if (release) { release(); release = null; open.focus(); }

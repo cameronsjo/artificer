@@ -9,12 +9,7 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); border: 1px solid var(--border); }
-  .meta { color: var(--fg-secondary); font-family: var(--font-sans); font-size: var(--t-body-md-size); }
-  .num { font-variant-numeric: tabular-nums; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
   @media (max-width: 720px) { .row2 { grid-template-columns: 1fr; } }
   .swatch { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); }
@@ -39,14 +34,14 @@
     templates if you're rendering by hand.
   </p>
 
-  <h2>Three modes</h2>
+  <h2 class="section-title">Three modes</h2>
   <p class="meta">Default to <b class="anchor">sparse</b>. Switch to <b class="anchor">editorial</b> when a single chart needs to make a point. Switch to <b class="anchor">console</b> when you're showing dense multi-series data to an operator.</p>
 
   <div class="row2">
     <!-- Sparse -->
     <div>
       <h3>Sparse <span style="color:var(--fg-disabled);font-weight:400">— default</span></h3>
-      <div class="demo">
+      <div class="figure">
         <div class="chart">
           <div class="chart__header"><h5 class="chart__title">Requests · 7d</h5><div class="chart__value">12.4k</div></div>
           <div class="chart__plot">
@@ -66,7 +61,7 @@
     <!-- Editorial -->
     <div>
       <h3>Editorial <span style="color:var(--fg-disabled);font-weight:400">— annotated</span></h3>
-      <div class="demo">
+      <div class="figure">
         <div class="chart">
           <div class="chart__header"><h5 class="chart__title">Active users</h5><div class="chart__value">8,420</div></div>
           <div class="chart__plot">
@@ -86,7 +81,7 @@
   </div>
 
   <h3>Console <span style="color:var(--fg-disabled);font-weight:400">— dense multi-series, ops</span></h3>
-  <div class="demo">
+  <div class="figure">
     <div class="chart">
       <div class="chart__header">
         <h5 class="chart__title">Latency by service · 1h</h5>
@@ -124,12 +119,12 @@
   </div>
 
   <!-- Color rules -->
-  <h2>Color rules</h2>
+  <h2 class="section-title">Color rules</h2>
   <p class="meta">Three modes, one rule for each. <b class="anchor">Don't blend modes in the same chart.</b></p>
 
   <h3>1 · Grayscale + accent <span style="color:var(--fg-disabled);font-weight:400">— hierarchy mode</span></h3>
   <p class="meta">Use when one series is the answer and the others are context. Series 1 is the accent; the rest are gray.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="palette">
       <span class="swatch"><i style="background:var(--accent)"></i> series 1 — answer</span>
       <span class="swatch"><i style="background:color-mix(in oklch, var(--fg-secondary) 80%, transparent)"></i> ctx</span>
@@ -140,7 +135,7 @@
 
   <h3>2 · Categorical 5 <span style="color:var(--fg-disabled);font-weight:400">— peer mode</span></h3>
   <p class="meta">Use when series are peers (services, regions, products). Cap at 5 — beyond that, regroup.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="palette">
       <span class="swatch series-1"><i style="background:currentColor"></i> series 1</span>
       <span class="swatch series-2"><i style="background:currentColor"></i> series 2</span>
@@ -152,7 +147,7 @@
 
   <h3>3 · Sequential ramp <span style="color:var(--fg-disabled);font-weight:400">— quantitative encoding</span></h3>
   <p class="meta">Use when color encodes a number (heatmap, choropleth, density). Single hue, 5 stops.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="ramp">
       <i style="background:var(--ramp-1)"></i>
       <i style="background:var(--ramp-2)"></i>
@@ -166,7 +161,7 @@
   </div>
 
   <h3>Diverging (signed deltas) <span style="color:var(--fg-disabled);font-weight:400">— bonus</span></h3>
-  <div class="demo">
+  <div class="figure">
     <div class="palette">
       <span class="swatch"><i style="background:var(--diverge-low)"></i> negative</span>
       <span class="swatch"><i style="background:var(--diverge-mid)"></i> neutral</span>
@@ -175,13 +170,13 @@
   </div>
 
   <!-- Catalog -->
-  <h2>Catalog · pick by question</h2>
+  <h2 class="section-title">Catalog · pick by question</h2>
 
   <div class="row2">
     <!-- Sparkline -->
     <div>
       <h3>Sparkline <span style="color:var(--fg-disabled);font-weight:400">— "is it trending?"</span></h3>
-      <div class="demo">
+      <div class="figure">
         <table class="table">
           <thead><tr><th>Service</th><th>P95</th><th>Trend (1h)</th></tr></thead>
           <tbody>
@@ -197,17 +192,17 @@
     <!-- Sparkbars -->
     <div>
       <h3>Sparkbars <span style="color:var(--fg-disabled);font-weight:400">— "is it spiky?"</span></h3>
-      <div class="demo">
+      <div class="figure">
         <div class="cluster" style="--gap:var(--s-lg)">
           <div>
             <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Hourly volume</div>
-            <span class="sparkbars" aria-label="hourly volume">
+            <span class="sparkbars" role="img" aria-label="hourly volume">
               <span style="height:8px"></span><span style="height:14px"></span><span style="height:10px"></span><span style="height:18px"></span><span style="height:6px"></span><span style="height:12px"></span><span style="height:20px"></span><span style="height:16px"></span><span style="height:9px"></span><span style="height:22px"></span><span style="height:11px"></span><span style="height:7px"></span>
             </span>
           </div>
           <div>
             <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Errors / min</div>
-            <span class="sparkbars" aria-label="errors per minute">
+            <span class="sparkbars" role="img" aria-label="errors per minute">
               <span style="height:2px"></span><span style="height:1px"></span><span style="height:3px"></span><span style="height:0px"></span><span style="height:1px"></span><span style="height:14px;background:var(--urgent)"></span><span style="height:6px;background:var(--urgent)"></span><span style="height:2px"></span><span style="height:1px"></span><span style="height:0px"></span><span style="height:0px"></span><span style="height:1px"></span>
             </span>
           </div>
@@ -218,7 +213,7 @@
 
   <h3>Bar — vertical <span style="color:var(--fg-disabled);font-weight:400">— "compare quantities"</span></h3>
   <p class="meta">The default chart. Reach for it before line, before pie, before anything fancy.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Builds by day</h5></div>
       <div class="chart__plot">
@@ -249,7 +244,7 @@
   </div>
 
   <h3>Bar — horizontal <span style="color:var(--fg-disabled);font-weight:400">— "compare with long labels"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Top failure reasons · 24h</h5></div>
       <div class="chart__plot">
@@ -279,7 +274,7 @@
   </div>
 
   <h3>Stacked bar <span style="color:var(--fg-disabled);font-weight:400">— "what's the mix?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <div class="chart">
       <div class="chart__header">
         <h5 class="chart__title">Spend by category · 6mo</h5>
@@ -311,7 +306,7 @@
   </div>
 
   <h3>Distribution <span style="color:var(--fg-disabled);font-weight:400">— "where's the spread?"</span></h3>
-  <div class="demo">
+  <div class="figure">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Latency distribution</h5><div class="chart__value">P95 <span class="num">312ms</span></div></div>
       <div class="chart__plot">
@@ -347,7 +342,7 @@
 
   <h3>Gauge <span style="color:var(--fg-disabled);font-weight:400">— "are we close to the cap?"</span></h3>
   <p class="meta">Used sparingly — only when there's a single bounded metric and a reference threshold matters. Cap usage at 1 per dashboard.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="cluster" style="--gap:var(--s-2xl)">
       <div style="text-align:center">
         <svg class="gauge" viewBox="0 0 120 66">
@@ -369,8 +364,8 @@
   </div>
 
   <!-- No-pie rule -->
-  <h2>The no-pie rule</h2>
-  <div class="demo" style="border-color:var(--urgent)">
+  <h2 class="section-title">The no-pie rule</h2>
+  <div class="figure" style="border-color:var(--urgent)">
     <p class="t-body-lg" style="margin:0 0 var(--s-md)"><b class="anchor" style="color:var(--urgent)">Pie/donut charts are permitted only at n ≤ 3 slices,</b> and only when "parts of a whole" is the entire point. For everything else — including parts-of-whole with 4+ slices — use a bar chart.</p>
     <div class="row2">
       <div>
@@ -406,9 +401,9 @@
   </div>
 
   <!-- Tooltip pattern -->
-  <h2>Tooltip pattern</h2>
+  <h2 class="section-title">Tooltip pattern</h2>
   <p class="meta">Tooltips on data points use the existing <code>.tooltip</code> token. Mono body, tabular numerals, label dimmed.</p>
-  <div class="demo" style="position:relative">
+  <div class="figure" style="position:relative">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Active runs · 24h</h5></div>
       <div class="chart__plot" style="position:relative">
@@ -428,7 +423,7 @@
   </div>
 
   <!-- Rules -->
-  <h2>Rules</h2>
+  <h2 class="section-title">Rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
     <li><b class="anchor">Bar before line before pie before anything else.</b> Nine times in ten, the chart you're reaching for should be a bar chart.</li>
     <li><b class="anchor">No pie/donut at n &gt; 3.</b> Bar chart instead. The exception is a single binary "used / remaining" — fine as a donut.</li>
@@ -443,7 +438,7 @@
     <li><b class="anchor">Honor reduced-motion.</b> Don't animate chart entry by default; the data is the point.</li>
   </ol>
 
-  <h2>Library mappings</h2>
+  <h2 class="section-title">Library mappings</h2>
   <p class="meta">If you're not drawing SVG by hand, forward Artificer tokens into your chart library's theme config.</p>
   <h3>ECharts</h3>
   <pre class="code-block">{

@@ -133,7 +133,7 @@ export function useTheme() {
   );
   watch(theme, (t) => {
     document.documentElement.setAttribute('data-theme', t);
-    try { localStorage.setItem('artificer-theme', t); } catch {}
+    try { localStorage.setItem('artificer.theme', t); } catch {}
   });
   return theme;
 }

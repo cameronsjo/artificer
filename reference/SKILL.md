@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.1
+# Artificer · v0.18.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -98,15 +98,22 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container--{sm\|md\|lg}` |
 | Stacking children | `layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
 | Card grid | `layout.html` — `.grid-auto` with `--min: 240px`, never hand-rolled flexbox |
-| "Search anything" UI | `patterns.html` command palette, 5–7 results visible |
+| "Search anything" / command palette / ⌘K | `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim` — `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible — `components-extended.html` |
+| Combobox / dropdown / menu | One option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor. Behavior: `data-options` / `ArtificerOptions.enhance()` — `components-extended.html` |
 | Toast / alert | `notifications.html` — pick tier by *action required*, not severity |
+| Transient toast placement | Mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`, `+N more` via `.toast-region__more`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none — `notifications.html` |
+| Tree / file explorer / nested nav | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree/treeitem/group`; keyboard ships via `data-tree` / `ArtificerTree.enhance()` — `components-extended.html` |
+| Pagination | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends; counted ranges only — `components-extended.html` |
+| Persistent page banner | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions` — a standing layout band, NOT the transient `.notif` — `components-extended.html` |
 | Status indicator | `.dot--{accent\|attention\|urgent\|success}`, no count |
 | Count indicator | `.badge--{accent\|attention\|urgent\|success}` with number |
 | Icon inside button/link | `<i data-icon="search"></i>` — see `icons.html` for full set |
 | Table of data | `data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums` |
-| Headline numbers (KPIs) | `data-display.html` — stat-card pattern, max 4 per row |
+| Headline numbers (KPIs) | `.stat` — `.stat__label` + `.stat__value` (mono, tabular) + `.stat__row` + `.stat__delta`(`.down`); the cell of a `.kpi-strip`, max 4 per row — `data-display.html` |
 | Empty state / error / loading copy | `voice-and-tone.html` — never improvise microcopy |
 | Loading UI | `states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
+| Long wait, nothing to count | `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` — `states.html` |
+| Refreshing a value in place | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses — NOT `.skeleton` (would blank it) — `composition.html` |
 | Animation / transition | `motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
 | z-index | `motion.html` / `overlay.html` — six rungs only: `--z-{base\|raised\|overlay\|popover\|modal\|toast}` |
 | Pre-ship a11y check | `a11y.html` — 12-point checklist before merging |
@@ -159,7 +166,7 @@ exposes the lifecycle API:
 
 ```
 SURFACES --bg / --bg-raised / --bg-overlay / --bg-inactive
-TEXT --fg / --fg-secondary / --fg-disabled / --border
+TEXT --fg / --fg-secondary / --fg-muted / --fg-disabled / --border
 
 INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
                 --accent-bright hover state
@@ -181,7 +188,7 @@ TYPE --font-mono JetBrains Mono
                                     terminals, data tables, settings panels)
                                   · ALWAYS for code, identifiers, file paths,
                                     numerals — including inside documents
-                --font-sans Inter
+                --font-sans iA Writer Quattro
                                   · BODY FACE for document surfaces (writeups,
                                     READMEs, reports, design docs)
                                   · On tool surfaces: labels, hints, microcopy
@@ -193,7 +200,7 @@ TYPE --font-mono JetBrains Mono
                 the body face is wrong — flip it.
 
 SPACING --s-xs(4) sm(8) md(16) lg(24) xl(32) 2xl(48)
-RADII --radius-sm(4 · buttons) md(8 · cards) lg(12 · overlays only)
+RADII --radius-sm(4 · buttons) md(8 · cards) lg(12 · overlays only) pill(999 · toggle/chip)
 MOTION --dur-instant(80) fast(160) max(300) · ease cubic-bezier(.2,.7,.3,1)
 ```
 

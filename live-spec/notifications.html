@@ -15,7 +15,6 @@
   .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
   h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
-  .note { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.6; max-width: 62ch; margin-top: var(--s-md); }
 
   .tier { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); display: grid; grid-template-columns: 160px 1fr; gap: var(--s-lg); align-items: start; }
   .tier .side { display: flex; flex-direction: column; gap: 4px; }
@@ -27,19 +26,6 @@
   .tier .t { font-family: var(--font-mono); font-weight: 700; font-size: 15px; }
   .tier .d { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.55; }
   .tier .body { display: flex; flex-direction: column; gap: var(--s-sm); }
-
-  .toast { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; border: 1px solid var(--border); }
-  .toast.urgent { border-color: var(--urgent); background: var(--bg); }
-  .toast.attention { border-color: var(--attention); background: var(--bg); }
-  .toast.info { border-color: var(--accent); background: var(--bg); }
-  .toast.bg { background: var(--bg); color: var(--fg-secondary); }
-  .toast .i { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
-  .toast.urgent .i { background: var(--urgent-fill); }
-  .toast.attention .i { background: var(--attention-fill); }
-  .toast.info .i { background: var(--accent-fill); }
-  .toast.bg .i { background: var(--border); }
-  .toast b { color: var(--fg); }
-  .toast .act { margin-left: auto; }
 
   @media (max-width:640px){.tier{grid-template-columns:1fr}}
 </style>
@@ -61,7 +47,14 @@
         <span class="d">Error, failed build, destructive confirmation. Persists until dismissed. Desktop notification permitted.</span>
       </div>
       <div class="body">
-        <div class="toast urgent"><span class="i"></span><span><b>Build failed.</b> <code>artificer.css</code> missing close brace at line 214. <a href="#">Jump to line ↗</a></span><button class="btn btn--ghost act">Dismiss</button></div>
+        <div class="notif notif--urgent">
+          <span class="dot dot--urgent" aria-hidden="true"></span>
+          <div class="notif__body">
+            <p class="notif__title">Build failed.</p>
+            <p class="notif__msg"><code>artificer.css</code> missing close brace at line 214. <a href="#">Jump to line ↗</a></p>
+          </div>
+          <button class="btn btn--ghost btn--sm">Dismiss</button>
+        </div>
       </div>
     </div>
 
@@ -72,7 +65,14 @@
         <span class="d">Agent waiting, review needed. Pane ring + sidebar badge. Persists until addressed. No desktop popup.</span>
       </div>
       <div class="body">
-        <div class="toast attention"><span class="i"></span><span><b>Editor agent waiting.</b> 2 inline comments on <code>writer.md</code> need a reply.</span><button class="btn btn--ghost act">Open</button></div>
+        <div class="notif notif--attention">
+          <span class="dot dot--attention" aria-hidden="true"></span>
+          <div class="notif__body">
+            <p class="notif__title">Editor agent waiting.</p>
+            <p class="notif__msg">2 inline comments on <code>writer.md</code> need a reply.</p>
+          </div>
+          <button class="btn btn--ghost btn--sm">Open</button>
+        </div>
       </div>
     </div>
 
@@ -83,7 +83,13 @@
         <span class="d">Subtle sidebar badge only. Auto-dismiss after 5 seconds. Pause timer on hover.</span>
       </div>
       <div class="body">
-        <div class="toast info"><span class="i"></span><span><b>Build shipped.</b> <code>v0.1.3</code> live on staging.</span></div>
+        <div class="notif notif--info">
+          <span class="dot dot--accent" aria-hidden="true"></span>
+          <div class="notif__body">
+            <p class="notif__title">Build shipped.</p>
+            <p class="notif__msg"><code>v0.1.3</code> live on staging.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -94,7 +100,12 @@
         <span class="d">Progress, status. Visible only in the status area if actively checked. Never announces itself.</span>
       </div>
       <div class="body">
-        <div class="toast bg"><span class="i"></span><span>Syncing <code>agents/</code> · 12 of 48 files.</span></div>
+        <div class="notif notif--background">
+          <span class="dot" aria-hidden="true"></span>
+          <div class="notif__body">
+            <p class="notif__msg">Syncing <code>agents/</code> · 12 of 48 files.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -104,7 +115,7 @@
     <div style="background:var(--bg-raised);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:var(--s-lg)">
       <ul style="margin:0;padding-left:18px;font-family:var(--font-mono);font-size:14px;line-height:1.7">
         <li><span class="anchor">3 visible max.</span> Overflow → count badge ("+4 more").</li>
-        <li><span class="anchor">Oldest auto-dismiss</span> first (info and background tiers only).</li>
+        <li><span class="anchor">Oldest auto-dismiss</span> first (info tier only — background never enters the stack).</li>
         <li><span class="anchor">Pause timers on hover/focus.</span> Don't punish the user for reading slowly.</li>
         <li><span class="anchor">Notification history</span> so missed items are recoverable.</li>
         <li><span class="anchor">Never role="alert"</span> for non-urgent messages.</li>
@@ -113,6 +124,69 @@
     </div>
     <p class="note">The guiding rule: if the user wouldn't take an action, don't show a toast. <span class="anchor">Badge it silently</span> and move on.</p>
   </section>
+
+  <section>
+    <h2><span class="num">03</span> Toast region — live demo</h2>
+    <p class="lede" style="font-size:13px">The <code>.toast-region</code> is the fixed placement layer (bottom-right, <code>--z-toast</code>); a toast IS a <code>.notif</code> mounted in it. <span class="anchor">ARIA is set at insert time</span> — CSS cannot set roles: urgent → <code>role="alert"</code>, attention/info → <code>role="status"</code>, background → <span class="anchor">no role</span> (the silent badge never enters the region). Info auto-dismisses after 5s; the timer <span class="anchor">pauses on hover/focus</span>.</p>
+    <div style="display:flex;gap:var(--s-sm);flex-wrap:wrap;margin-top:var(--s-md)">
+      <button class="btn btn--secondary" data-toast="urgent">Show urgent</button>
+      <button class="btn btn--secondary" data-toast="attention">Show attention</button>
+      <button class="btn btn--secondary" data-toast="info">Show info</button>
+    </div>
+  </section>
 </main>
+
+<!-- The placement layer. Empty at load (pointer-events: none) — toasts are
+     inserted on demand, so the page-load state carries no live regions. -->
+<div class="toast-region" id="toastRegion"></div>
+
+<script>
+  // Toast-region demo — the live-region contract (issue 177): the ROLE is the
+  // consumer's job at insert time, and the lifecycle is consumer-owned JS.
+  (function () {
+    var region = document.getElementById('toastRegion');
+    var COPY = {
+      urgent:    { title: 'Build failed.', msg: 'artificer.css missing close brace at line 214.' },
+      attention: { title: 'Editor agent waiting.', msg: '2 inline comments need a reply.' },
+      info:      { title: 'Build shipped.', msg: 'v0.1.3 live on staging.' }
+    };
+    // info's dot is .dot--accent — there is no .dot--info tier dot.
+    var DOT = { urgent: 'dot--urgent', attention: 'dot--attention', info: 'dot--accent' };
+    function insert(tier) {
+      var n = document.createElement('div');
+      n.className = 'notif notif--' + tier;
+      // urgent announces assertively; attention/info politely. (background
+      // would get NO role — but background never enters the region at all.)
+      n.setAttribute('role', tier === 'urgent' ? 'alert' : 'status');
+      n.innerHTML =
+        '<span class="dot ' + DOT[tier] + '" aria-hidden="true"></span>' +
+        '<div class="notif__body"><p class="notif__title">' + COPY[tier].title + '</p>' +
+        '<p class="notif__msg">' + COPY[tier].msg + '</p></div>' +
+        '<button class="btn btn--ghost btn--sm">Dismiss</button>';
+      n.querySelector('button').addEventListener('click', function () { n.remove(); });
+      region.appendChild(n);
+      // cap: 3 visible — info is the only evictable tier
+      var visible = region.children;
+      if (visible.length > 3) {
+        for (var i = 0; i < visible.length; i++) {
+          if (visible[i].className.indexOf('notif--info') !== -1) { visible[i].remove(); break; }
+        }
+      }
+      if (tier === 'info') autoDismiss(n);
+    }
+    function autoDismiss(n) {
+      var remaining = 5000, started = Date.now(), timer = setTimeout(function () { n.remove(); }, remaining);
+      function pause() { clearTimeout(timer); remaining -= Date.now() - started; }
+      function resume() { started = Date.now(); timer = setTimeout(function () { n.remove(); }, remaining); }
+      n.addEventListener('mouseenter', pause);
+      n.addEventListener('mouseleave', resume);
+      n.addEventListener('focusin', pause);
+      n.addEventListener('focusout', resume);
+    }
+    document.querySelectorAll('[data-toast]').forEach(function (b) {
+      b.addEventListener('click', function () { insert(b.getAttribute('data-toast')); });
+    });
+  })();
+</script>
 </body>
 </html>

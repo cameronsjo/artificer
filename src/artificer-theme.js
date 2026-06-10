@@ -43,11 +43,14 @@
     root = root || document.body;
     bind();
     if (typeof MutationObserver === 'undefined') return function () {};
+    var schedule = window.requestAnimationFrame
+      ? function (cb) { window.requestAnimationFrame(cb); }
+      : function (cb) { window.setTimeout(cb, 0); };
     var scheduled = false;
     var mo = new MutationObserver(function () {
       if (scheduled) return;
       scheduled = true;
-      (window.requestAnimationFrame || window.setTimeout)(function () { scheduled = false; bind(); }, 0);
+      schedule(function () { scheduled = false; bind(); });
     });
     mo.observe(root, { childList: true, subtree: true });
     return function () { mo.disconnect(); };

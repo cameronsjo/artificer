@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.4
+# Artificer · v0.18.0
 
 Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Every token and rule reduces cognitive load for a brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -95,7 +95,7 @@ Paths are relative to this SKILL.md. The skill lives at `skills/artificer-design
 | `../../FONTS.md` | Font loading recipes (Fontsource, CDN, Next.js, direct WOFF2). |
 | `../../INDEX.md` | Read-order guide for the bundle. |
 | `../../live-spec/` | HTML preview pages — open in a browser for the full visual reference. Start at `index.html` or `README.html`. |
-| `../../live-spec/{colors,typography,spacing,components,patterns,notifications,layout,motion,overlay,forms-extended,data-display,states,a11y,icons,voice-and-tone,charts,composition,diagrams}.html` | Foundations and component specs. |
+| `../../live-spec/{colors,typography,spacing,components,components-extended,patterns,notifications,layout,motion,overlay,forms-extended,data-display,states,a11y,icons,voice-and-tone,charts,composition,diagrams}.html` | Foundations and component specs. |
 | `../../framework-adapters/tailwind.config.js` | Tailwind v3+ config wired to `tokens.json`. |
 | `../../framework-adapters/react-components.tsx` | React 18 typed wrappers (Button, Field, Stack, Cluster, Modal, Notification). |
 | `../../framework-adapters/vue-components.md` | Vue 3 SFC patterns. |
@@ -170,18 +170,25 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Page layout (sidebar/main) | `../../live-spec/layout.html` — `.page-shell`, `.container--{sm\|md\|lg}` |
 | Stacking children | `../../live-spec/layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
 | Card grid | `../../live-spec/layout.html` — `.grid-auto` with `--min: 240px`, never hand-rolled flexbox |
-| "Search anything" UI | `../../live-spec/patterns.html` command palette, 5–7 results visible |
+| "Search anything" / command palette / ⌘K | `../../live-spec/components-extended.html` — `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim`; `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible |
+| Combobox / dropdown / menu | `../../live-spec/components-extended.html` — one option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor; behavior via `data-options` / `ArtificerOptions.enhance()` |
 | Toast / alert | `../../live-spec/notifications.html` — pick tier by *action required*, not severity |
+| Transient toast placement | `../../live-spec/notifications.html` — mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none |
+| Tree / file explorer / nested nav | `../../live-spec/components-extended.html` — `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); keyboard ships via `data-tree` / `ArtificerTree.enhance()` |
+| Pagination | `../../live-spec/components-extended.html` — `.pagination` + `.pagination__gap`; `[aria-current=page]`; prev/next disable at ends; counted ranges only |
+| Persistent page banner | `../../live-spec/components-extended.html` — `.banner` + `--info/attention/urgent/success`; a standing layout band, NOT the transient `.notif` |
 | Status indicator | `.dot--{accent\|attention\|urgent\|success}`, no count |
 | Count indicator | `.badge--{accent\|attention\|urgent\|success}` with number |
 | Icon inside button/link | `<i data-icon="search"></i>` — see `../../live-spec/icons.html` for full set |
 | Table of data | `../../live-spec/data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums` |
-| Headline numbers (KPIs) | `../../live-spec/data-display.html` — stat-card pattern, max 4 per row |
+| Headline numbers (KPIs) | `../../live-spec/data-display.html` — `.stat` (`.stat__label` + `.stat__value` + `.stat__row` + `.stat__delta`), the cell of a `.kpi-strip`, max 4 per row |
 | Charts | `../../live-spec/charts.html` — Artificer-styled chart patterns |
 | Diagrams | `../../live-spec/diagrams.html` — system/architecture diagrams in the palette |
 | Page composition | `../../live-spec/composition.html` — combining patterns into full pages |
 | Empty state / error / loading copy | `../../live-spec/voice-and-tone.html` — never improvise microcopy |
 | Loading UI | `../../live-spec/states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
+| Long wait, nothing to count | `../../live-spec/states.html` — `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` |
+| Refreshing a value in place | `../../live-spec/composition.html` — `.live-value[data-refreshing]` + `.live-value__dot`; NOT `.skeleton` (would blank it) |
 | Animation / transition | `../../live-spec/motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
 | z-index | `../../live-spec/overlay.html` — six rungs only: `--z-{base\|raised\|overlay\|popover\|modal\|toast}` |
 | Pre-ship a11y check | `../../live-spec/a11y.html` — 12-point checklist before merging |

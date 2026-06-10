@@ -99,7 +99,7 @@
   .spinner-text { font-size: var(--t-label-md-size); }
 
   /* Diff view mock */
-  .diff-view { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); font-size: 12px; }
+  .diff-view { border-radius: var(--radius-sm); overflow-x: auto; border: 1px solid var(--border); font-size: 12px; }
   .diff-line { display: flex; gap: 0; padding: 2px 8px; font-family: var(--font-mono); white-space: pre; }
   .diff-line .ln { min-width: 32px; color: var(--fg-disabled); user-select: none; margin-right: 8px; }
   .diff-line .sig { min-width: 14px; }
@@ -146,6 +146,8 @@
 
   /* loading placeholder */
   .loading-placeholder { color: var(--fg-disabled); font-size: 12px; padding: var(--s-md) 0; }
+
+  @media (max-width: 640px) { .tok { white-space: normal; } }
 </style>
 </head>
 <body>
@@ -360,7 +362,7 @@
   <section class="section">
     <h2><span class="num">07</span> Diff view</h2>
     <div class="mock-panel terminal-canvas">
-      <div class="diff-view">
+      <div class="diff-view" tabindex="0" role="region" aria-label="Diff view (scrollable)">
         <div class="diff-line" id="diff-ctx-top"><span class="ln">42</span><span class="sig"> </span><span>function parseTokens(src) {</span></div>
         <div class="diff-line" id="diff-removed"><span class="ln">43</span><span class="sig" id="diff-sig-r">−</span><span>  const tokens = src.split(' ');</span></div>
         <div class="diff-line" id="diff-removed-dim"><span class="ln">  </span><span class="sig" id="diff-sig-rd">−</span><span>  return tokens.filter(t =&gt; t.length &gt; 0);</span></div>

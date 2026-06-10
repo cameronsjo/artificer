@@ -5,7 +5,10 @@
 //   - src + live-spec tokens.json     : $version
 //   - themes/_palette.json            : $version
 //   - src + live-spec artificer-whimsy.js : header comment (#35)
+//   - README.md                           : masthead **vX.Y.Z · 2026** headline
 // CHANGELOG's top "## vX.Y.Z" heading is hand-authored — verified, never rewritten.
+// og-image.svg is deliberately NOT a stamp site — Lane 1 ruled the version OFF the OG
+// card (it's what kept going stale); the refreshed card drops it. Don't re-add it here.
 //
 // Usage:
 //   node scripts/sync-version.mjs           rewrite stamps to match package.json
@@ -46,6 +49,15 @@ export function STAMPS(version) {
     { file: 'themes/_palette.json', label: '$version', re: /("\$version":\s*")[^"]*(")/, repl: v },
     { file: 'src/artificer-whimsy.js', label: 'header', re: /(ARTIFICER · Whimsy helper · v)[0-9][\w.]*/, repl: v },
     { file: 'live-spec/artificer-whimsy.js', label: 'header', re: /(ARTIFICER · Whimsy helper · v)[0-9][\w.]*/, repl: v },
+    // README masthead: **vX.Y.Z · 2026** — the ` · 2026` sits INSIDE the bold, which
+    // is what distinguishes the version headline from the license line (`**v0.1** · 2026`,
+    // where ` · 2026` is OUTSIDE the bold). The suffix group keeps the license line untouched.
+    { file: 'README.md', label: 'masthead', re: /(\*\*v)[0-9][\w.]*( · 2026\*\*)/, repl: v },
+    // SKILL title headings: `# Artificer · vX.Y.Z` (the · is U+00B7 MIDDLE DOT, UTF-8 \xc2\xb7)
+    { file: 'reference/SKILL.md', label: 'title', re: /(# Artificer · v)[0-9][\w.]*/, repl: v },
+    { file: 'skills/artificer-design-system/SKILL.md', label: 'title', re: /(# Artificer · v)[0-9][\w.]*/, repl: v },
+    // live-spec README masthead version span (only one <span>v in the file)
+    { file: 'live-spec/README.html', label: 'masthead', re: /(<span>v)[0-9][\w.]*/, repl: v },
   ];
 }
 

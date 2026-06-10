@@ -8,16 +8,7 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
-  .num { font-variant-numeric: tabular-nums; }
-  .stat { display: flex; flex-direction: column; gap: 4px; padding: var(--s-md) var(--s-lg); background: var(--bg-raised); border-radius: var(--radius-md); border: 1px solid var(--border); }
-  .stat__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); }
-  .stat__value { font-family: var(--font-mono); font-weight: 700; font-size: 28px; color: var(--fg); font-variant-numeric: tabular-nums; }
-  .stat__delta { font-family: var(--font-mono); font-size: 12px; color: var(--success); }
-  .stat__delta.down { color: var(--urgent); }
+  /* .stat / .stat__* promoted to core artificer.css (v0.15.0) — inline removed */
 </style>
 </head>
 <body>
@@ -28,9 +19,9 @@
   <h1 class="t-headline-lg">data display.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Tables for rows, key-value lists for records, stat cards for headlines. <b class="anchor">Always tabular-nums</b> for numbers — alignment is information.</p>
 
-  <h2>Table</h2>
+  <h2 class="section-title">Table</h2>
   <p class="meta">Mono body, sans header, hover row. Add <code>.table--zebra</code> for striped rows on dense data. Add <code>.table--responsive</code> (+ <code>data-label</code> on each cell) and the rows reflow to cards below 640px — narrow this window to see it.</p>
-  <div class="demo">
+  <div class="figure">
     <table class="table table--responsive">
       <thead><tr><th>Run</th><th>Status</th><th>Duration</th><th class="num" style="text-align:right">Cost</th></tr></thead>
       <tbody>
@@ -43,7 +34,7 @@
   </div>
 
   <h3 style="font-family:var(--font-mono);font-size:14px;margin-top:var(--s-lg)">Zebra variant</h3>
-  <div class="demo">
+  <div class="figure">
     <table class="table table--zebra">
       <thead><tr><th>Pkg</th><th>Version</th><th class="num" style="text-align:right">Size</th></tr></thead>
       <tbody>
@@ -55,9 +46,9 @@
     </table>
   </div>
 
-  <h2>Key–value list</h2>
+  <h2 class="section-title">Key–value list</h2>
   <p class="meta">For metadata blocks. Two-column grid, mono throughout.</p>
-  <div class="demo">
+  <div class="figure">
     <dl class="kv">
       <dt>Build ID</dt><dd>build-1284</dd>
       <dt>Branch</dt><dd>main · 4f2a8c1</dd>
@@ -70,9 +61,9 @@
   <span class="tok-keyword">&lt;dt&gt;</span>Label<span class="tok-keyword">&lt;/dt&gt;&lt;dd&gt;</span>Value<span class="tok-keyword">&lt;/dd&gt;</span>
 <span class="tok-keyword">&lt;/dl&gt;</span></pre>
 
-  <h2>Stat cards</h2>
+  <h2 class="section-title">Stat cards</h2>
   <p class="meta">For headline numbers. Big mono number, label above, optional delta below. Don't put more than 4 in a row — it stops being scan-able.</p>
-  <div class="demo">
+  <div class="figure">
     <div class="grid-auto" style="--min:160px">
       <div class="stat">
         <div class="stat__label">Active runs</div>
@@ -97,9 +88,9 @@
     </div>
   </div>
 
-  <h2>Progress bar</h2>
+  <h2 class="section-title">Progress bar</h2>
   <p class="meta">Determinate only. For unknown durations, use a skeleton — see <a href="states.html">states</a>.</p>
-  <div class="demo stack">
+  <div class="figure stack">
     <div>
       <div class="cluster cluster--between" style="margin-bottom:var(--s-xs)">
         <span class="meta">Indexing</span><span class="meta num">68%</span>
@@ -114,7 +105,7 @@
     </div>
   </div>
 
-  <h2>Rules</h2>
+  <h2 class="section-title">Rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Numbers use <code>font-variant-numeric: tabular-nums</code></b>. Always. Add <code>.num</code> or set on parent.</li>
     <li><b class="anchor">Right-align numeric columns</b>, left-align text. Don't center either.</li>

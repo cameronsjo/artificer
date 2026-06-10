@@ -19,9 +19,9 @@
   h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
 
   .grid { display: grid; gap: var(--s-md); }
-  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
-  .grid.c4 { grid-template-columns: repeat(4, 1fr); }
-  @media (max-width: 720px) { .grid.c3, .grid.c4 { grid-template-columns: 1fr 1fr; } }
+  .grid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 720px) { .grid.c3, .grid.c4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
   .sw {
     background: var(--bg-raised); border-radius: var(--radius-md); overflow: hidden;
@@ -39,11 +39,10 @@
   .rule .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-xs); }
   .rule p { margin: 0; max-width: 68ch; }
 
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-md); }
   .demo-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); }
 
-  .squint-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  .squint { padding: var(--s-lg); border-radius: var(--radius-md); min-height: 140px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; }
+  .squint-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-md); }
+  .squint { padding: var(--s-lg); border-radius: var(--radius-md); min-height: 140px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
   .squint.active { border-left: 2px solid var(--accent); }
   .squint.inactive { opacity: 0.55; background: var(--bg-inactive); filter: saturate(0.6); }
 
@@ -168,7 +167,7 @@
   <section>
     <h2><span class="num">06</span> On-color combos</h2>
     <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Filled buttons and badges need the right foreground. Here's what passes.</p>
-    <div class="demo">
+    <div class="figure">
       <div class="demo-label">Dark mode · fills</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <span class="onbg" style="background:#c4932a;color:#0d1b2a">Gold fill · navy text · 6.26</span>

@@ -32,6 +32,10 @@ test('reconciled and new shared assets are mirror-protected', () => {
   assert.ok(MIRROR.includes('tokens.json'));
   // artificer-tabs.js shipped in v0.11.0 (#92), after the MIRROR list was authored.
   assert.ok(MIRROR.includes('artificer-tabs.js'));
+  // the option-navigation + tree behavior modules shipped in the v0.15.x
+  // hardening wave (#173/#174/#176 follow-up, the #92 precedent).
+  assert.ok(MIRROR.includes('artificer-options.js'));
+  assert.ok(MIRROR.includes('artificer-tree.js'));
 });
 
 test('syncMirror(--check) finds zero drift in the committed tree', () => {

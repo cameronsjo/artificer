@@ -133,6 +133,26 @@
   to   { background-position: 200% 50%; }   /* exactly one tile → seamless loop */
 }
 
+/* ─── Wordmark integration: carry the gradient through to the burnished stop ─
+   When .wordmark and .whimsy share one element, -webkit-text-fill-color:
+   transparent is inherited by ::after but background-image is not, so the
+   accent stop vanishes behind a transparent fill with no gradient to clip to.
+   Re-establish the same gradient plumbing on ::after here so the stop flows
+   with the mark. The :not(.wordmark--stop-none) guard ensures period-bearing
+   marks that suppress the pseudo are unaffected even when .whimsy is present.
+   animation-delay: 0 is implicit (matches the parent's start position) so
+   the stop hue stays continuous with the flowing mark. */
+.wordmark.whimsy:not(.wordmark--stop-none)::after {
+  background-image: var(--whimsy-gradient);
+  background-size: 200% 100%;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: whimsy-flow var(--whimsy-speed) linear infinite;
+}
+
 /* Vivid — for the rare moment you want full saturation. Dial consciously. */
 .whimsy--vivid { --whimsy-c: 0.21; }
 
@@ -314,4 +334,66 @@
 @media (prefers-reduced-motion: reduce) {
   .whimsy-focus:focus-visible::after,
   .whimsy-focus:hover::after { animation: none; opacity: 1; }
+}
+
+
+/* ═══ Word vs character gradient — granularity (v0.11.0) ══════════════════════
+   Flow has two granularities. DEFAULT = WORD gradient: one continuous ramp
+   across the whole element (bare .whimsy) — colour ramps through and between
+   letters. OPT-IN = CHARACTER gradient: the gradient is mapped per glyph
+   (Whimsy.hydrate() / data-whimsy="wave" → .whimsy-char cells, each painting its
+   own slice). Word is the default; character is the opt-in capability the
+   travelling wave/bob rides on. See CLAUDE.md § Whimsy. ════════════════════════════════════════════════════════ */
+
+/* Tiling sine for rainbow underlines — one clean period per 40px; start/end at
+   the same phase so repeat-x butts seamlessly. */
+:root { --whimsy-sine: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 Q 10 1.5 20 5 T 40 5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/></svg>"); }
+
+/* .whimsy--gold — a metal palette, cousin of .whimsy--silver. Slow (16s) so it
+   reads as near-static metal; add .whimsy--no-flow for a still gold fill. Metal
+   palettes pair best with a CHARACTER gradient (per-glyph metal = brushed/faceted). */
+.whimsy--gold {
+  --whimsy-speed: 16s;
+  --whimsy-gradient: linear-gradient(var(--whimsy-angle),
+    oklch(0.72 0.12 82), oklch(0.90 0.10 92), oklch(0.66 0.13 72),
+    oklch(0.95 0.06 96), oklch(0.72 0.12 82));
+}
+:root[data-theme="light"] .whimsy--gold {
+  --whimsy-gradient: linear-gradient(var(--whimsy-angle),
+    oklch(0.56 0.12 72), oklch(0.68 0.13 84), oklch(0.47 0.12 66),
+    oklch(0.73 0.11 88), oklch(0.56 0.12 72));
+}
+
+/* .whimsy-underline — a flowing rainbow sine that draws in under a link, in
+   lockstep with the mark's own flow. Contiguous tiling sine, faded ends,
+   travels; reveals L→R. Put it on the text element (made inline-block) so it
+   shares the mark's exact width + gradient. The sanctioned replacement for a
+   flat link underline on a .whimsy wordmark — see CLAUDE.md § Whimsy + § Brand. */
+.whimsy-underline { position: relative; display: inline-block; }
+.whimsy-underline::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -0.3em; height: 10px;
+  background-image: var(--whimsy-gradient); background-size: 200% 100%;
+  animation: whimsy-flow var(--whimsy-speed) linear infinite, whimsy-wave-travel 3.2s linear infinite;
+  -webkit-mask-image: var(--whimsy-sine), linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+          mask-image: var(--whimsy-sine), linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-repeat: repeat-x, no-repeat; mask-repeat: repeat-x, no-repeat;
+  -webkit-mask-size: 40px 10px, 100% 100%; mask-size: 40px 10px, 100% 100%;
+  -webkit-mask-position: left center, center; mask-position: left center, center;
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+  clip-path: inset(0 100% 0 0); opacity: 0;
+  transition: clip-path var(--dur-max) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+.whimsy-underline:hover::after,
+.whimsy-underline:focus-visible::after { clip-path: inset(0 0 0 0); opacity: 1; }
+/* --on — latch the underline drawn-in permanently (the standing ".poke"). For
+   whimsy that doesn't wait for a pointer: the Pride greeting wears it all month.
+   Same revealed end-state as :hover; reduced-motion still freezes the flow
+   (the rule below) while leaving it visible. */
+.whimsy-underline--on::after { clip-path: inset(0 0 0 0); opacity: 1; }
+@keyframes whimsy-wave-travel {
+  from { -webkit-mask-position: 0 center, center;     mask-position: 0 center, center; }
+  to   { -webkit-mask-position: -40px center, center; mask-position: -40px center, center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .whimsy-underline::after { animation: none !important; background-position: 30% 50% !important; }
 }

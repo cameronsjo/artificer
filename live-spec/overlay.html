@@ -9,10 +9,6 @@
 <script src="artificer-theme.js" defer></script>
 <script src="artificer-focus.js" defer></script>
 <style>
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
-  .crumb { font-family: var(--font-sans); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-top: var(--s-sm); display: flex; gap: var(--s-md); flex-wrap: wrap; }
-  pre.code-block { margin-top: var(--s-md); font-size: 12.5px; }
   .z-table td:first-child { color: var(--accent); }
 </style>
 </head>
@@ -24,7 +20,7 @@
   <h1 class="t-headline-lg">overlays.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Six z-index rungs, two component shapes, one focus-trap helper. Anything that floats over content lives here.</p>
 
-  <h2>Z-index scale</h2>
+  <h2 class="section-title">Z-index scale</h2>
   <p class="meta">No improvising. Pick one rung. The full ladder, low to high:</p>
   <table class="table z-table" style="margin-top:var(--s-md)">
     <thead><tr><th>Token</th><th>Value</th><th>Use for</th></tr></thead>
@@ -38,9 +34,9 @@
     </tbody>
   </table>
 
-  <h2>Modal</h2>
+  <h2 class="section-title">Modal</h2>
   <p class="meta">Centered card on a scrim. Auto focus-traps via <code>artificer-focus.js</code>. Esc closes; clicking the scrim closes; focus returns to the trigger.</p>
-  <div class="demo">
+  <div class="figure">
     <button class="btn btn--primary" id="open-modal">Open modal</button>
     <button class="btn btn--secondary" id="open-modal-destructive">Confirm destructive</button>
     <button class="btn btn--ghost" id="open-modal-xl">Open <code>.modal--xl</code></button>
@@ -59,9 +55,9 @@
 <span class="tok-comment">// JS</span>
 <span class="tok-keyword">const</span> trap = ArtificerFocus.<span class="tok-fn">trap</span>(modal, { onEscape: close });</pre>
 
-  <h2>Popover &amp; tooltip</h2>
+  <h2 class="section-title">Popover &amp; tooltip</h2>
   <p class="meta">Smaller, anchored. Tooltip = label-only (≤ 6 words). Popover = body content. Both use <code>--z-popover</code>.</p>
-  <div class="demo" style="position:relative">
+  <div class="figure" style="position:relative">
     <div class="popover">
       <b class="anchor">Heads up.</b><br>Your last save was 12 minutes ago. Auto-save resumes when you regain network.
     </div>
@@ -71,7 +67,7 @@
     </span>
   </div>
 
-  <h2>Modal size variants</h2>
+  <h2 class="section-title">Modal size variants</h2>
   <p class="meta">Three width tiers for dialogs vs. content viewers. All compose with <code>.scrim</code> and the standard focus-trap pattern.</p>
   <table class="table" style="margin-top:var(--s-md)">
     <thead><tr><th>Class</th><th>Max width</th><th>Use for</th></tr></thead>
@@ -83,7 +79,7 @@
     </tbody>
   </table>
 
-  <h2>Focus-trap rules</h2>
+  <h2 class="section-title">Focus-trap rules</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Trap focus</b> while a modal is open — Tab cycles inside.</li>
     <li><b class="anchor">Esc closes.</b> Always. No exceptions.</li>

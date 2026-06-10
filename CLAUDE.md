@@ -53,6 +53,7 @@ var(--bg-overlay) /* modals, palette */
 var(--bg-inactive) /* unfocused panes */
 var(--fg) /* primary text */
 var(--fg-secondary) /* secondary text — meta, hints */
+var(--fg-muted) /* muted meta/comment — steel-blue, between secondary and disabled */
 var(--fg-disabled) /* disabled text */
 var(--accent) /* primary interactive — gold (dark) / sienna (light) */
 var(--accent-bright) /* hover/focus accent */
@@ -77,16 +78,23 @@ var(--font-mono) /* JetBrains Mono — code, identifiers, file paths,
                           numerals, dense UI chrome (toolbars, status bars,
                           terminals). Default body face for TOOL surfaces:
                           dashboards, consoles, log views, data tables. */
-var(--font-sans) /* Inter — prose. Default body face for DOCUMENT
+var(--font-sans) /* iA Writer Quattro — prose. Default body face for DOCUMENT
                           surfaces: writeups, READMEs, reports, settings
                           explainers, marketing-adjacent content. Also: form
                           labels, hints, microcopy on tool surfaces. */
 /* Sizes via classes: .t-headline-lg/md, .t-body-lg/md, .t-label-md/sm */
+/* Prose / doc-chrome utilities: .meta (sans body-md, fg-secondary,
+                          max-width 66ch), .note (sister of .meta — label-sm
+                          fg-secondary; INHERITS the body face, so it's mono on
+                          tool surfaces and sans on document surfaces), .num
+                          (tabular-nums), .section-title (mono 22px/--t-headline-md-size uppercase
+                          fg-secondary border-bottom — doc-page h2 chrome). */
 
 /* Radius */
 var(--radius-sm) /* 4 — inputs, badges */
 var(--radius-md) /* 8 — cards, popovers */
 var(--radius-lg) /* 12 — modals */
+var(--radius-pill) /* 999 — fully-rounded pills: toggle track, chip */
 
 /* Motion */
 var(--dur-instant) /* 80ms — hover/focus */
@@ -141,21 +149,32 @@ core scale or tool UI.
 |---|---|
 | "Add a settings page" | `.page-shell` + `.container--md` + `<fieldset>` + `.field` blocks, 3–5 fields per group |
 | "Confirmation dialog" | `.scrim` + `.modal` + `ArtificerFocus.trap()` — see `overlay.html` in live system |
-| "Toast" | `.notif` + tier modifier; pick by action-required not severity |
+| "Toast" | `.notif` + tier modifier; pick by action-required not severity. For transient on-screen placement, mount the `.notif` in a `.toast-region` (fixed corner-anchored stack on `--z-toast`; `--top-right`/`--bottom-left`/… + `.toast-region__more`). A toast IS a `.notif` in the region — no separate toast class. |
 | "Status pill" | `.badge--{tier}` + `.dot--{tier}` inside |
-| "Loading state" | Pick by duration: <100ms nothing · 100–500ms disabled label · 500ms–2s `.skeleton` · >2s `.progress` with concrete copy · >10s background |
+| "Loading state" | Pick by duration: <100ms nothing · 100–500ms disabled label · 500ms–2s `.skeleton` · >2s `.progress` with concrete copy · >10s background. Long wait with nothing to count: `.progress--indeterminate` + concrete copy ("Deploying to us-east-1…", never bare "Deploying…"). |
+| "Refreshing a value in place" | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses; fresh value fades in on `.live-value`'s transition. NOT `.skeleton` (would blank it). |
 | "Empty state" | `.empty-state` — title + body + ONE primary action |
 | "Table" | `.table`, right-align numerics with `.num`, em-dash for empty cells. `.table--responsive` + `data-label` to reflow to cards <640px |
 | "Tabs / view switcher" | `.tabs` + `role=tablist`/`tab`/`tabpanel` + `aria-controls`; then `ArtificerTabs.enhance(el)` (or `data-tabs` + `observe()`) for the APG keyboard model — the CSS alone is style-only. NOT `.timerange`. |
 | "Segmented control / view-param switch" | `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) |
-| "Stat card" | Stat pattern: label (mono small caps) + value (mono large tabular) + delta (small) |
+| "Stat card" | `.stat` (core) — `.stat__label` (mono small caps) + `.stat__value` (mono large tabular) + `.stat__row` + `.stat__delta`(`.down`). The cell of a `.kpi-strip`. |
 | "Form field" | `<div class="field">` with label, input, and EITHER hint OR error (with `aria-describedby`) |
 | "Avatar" | `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`. Not `.dot` (8px status) or `.badge` (pill). |
 | "Accordion / disclosure" | `.accordion` wrapping native `<details><summary>` + `.accordion__body` — keyboard + a11y for free, no JS |
-| "Combobox / dropdown / palette" | One option-popover (`.menu`/`.listbox` + `__option`) — don't hand-roll a floating list |
+| "Combobox / dropdown / palette" | One option-popover (`.menu`/`.listbox` + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the roving cursor) — don't hand-roll a floating list. Behavior: `data-options` / `ArtificerOptions.enhance()` |
+| "Command palette / ⌘K" | `.palette` (= `.palette__search` header + a `.listbox` body) on a `.scrim`, focus-trapped via `ArtificerFocus.trap()`; Esc closes. Cursor + Enter dispatch: `ArtificerOptions.combobox(input, list, {onSelect})`. A recipe over the option-popover — see `components-extended.html`. |
+| "Tree / file explorer / nested nav" | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree`/`treeitem`/`group`. Nested disclosure beyond `.accordion` (flat) + `.sidenav` (one level). `artificer-tree.js` ships expand/collapse + arrow-key roving (`data-tree` / `ArtificerTree.enhance()`). |
+| "Pagination" | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends. Counted, jumpable ranges only — unbounded sets use "load more". |
+| "Persistent page banner" | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions`. A standing layout band (read-only mode, degraded nodes), NOT the transient toast-tier `.notif`. Color encodes tier; texture never does. |
+| "File upload / dropzone" | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events. Color marks the drag state, not texture. |
 | "Animation" | Only animate state changes. `transition: prop var(--dur-fast) var(--ease)`. Never invent durations. |
+| "Live-spec / doc-page example container" | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>`. Modifiers: `.figure--frame` (relative-positioned, padding 0), `.figure--flush` (padding 0, edge-to-edge). Captions reuse canonical `.meta`. |
+| "Doc-page section header" | `<h2 class="section-title">` — mono, `--t-headline-md-size` (22px), uppercase, `--fg-secondary`, border-bottom rule. Doc/spec chrome; on tool surfaces prefer the structural `h2` already styled. |
+| "Tabular number" | `.num` utility — sets `font-variant-numeric: tabular-nums`. Drop on the cell, or on the parent for a whole table. |
+| "Short hint paragraph under a figure or field" | `.note` — sister of `.meta`, smaller (label-sm). Inherits the body face — **mono on tool surfaces, sans on document surfaces** — so each surface's character carries through. Use for one-sentence asides; escalate to `.meta` when it grows past a sentence. |
 | "User-defined fun element / celebration / long 'thinking' state / brand wordmark" | `.whimsy` + `artificer-whimsy.css` & `.js` — the ONE sanctioned exception to the motion + raw-color rules. **See § Whimsy.** Never reach for it on chrome, status, data, or errors. |
 | "Make it fun / playful / celebratory / rainbow" | The **Whimsy** layer — see § Whimsy. `.whimsy` / `data-whimsy="wave"` / `Whimsy.celebrate()`. Don't hand-roll a one-off. |
+| "Make it feel like paper / give it grain / material / texture / depth" | The **Texture** layer (`artificer-texture.css`) — see § Texture. `.tex-grain` / `.tex-dots` / `.tex-line--hatch` / `.tex-paper` / `.tex-raised`. Hueless + motionless; never on data/status/errors. |
 
 ## Composition — dashboards, charts, diagrams
 
@@ -227,6 +246,9 @@ When you're past primitives and assembling product surfaces, three more rule-set
 5. Set OS to reduced-motion — does anything still animate?
 6. Squint test — can you tell what's active without color?
 7. Run axe DevTools — zero violations?
+8. New live-spec page? Wire its inbound links — `README.html` nav card,
+   `INDEX.md` tree, the skill file-map enumeration. A page nothing links to
+   ships unreachable (the components-extended lesson).
 
 ---
 
@@ -299,6 +321,8 @@ animation — point it here.
 | Artificer colors, not full spectrum | `.whimsy--brand` |
 | Metal sheen for a header (static) | `.whimsy--silver.whimsy--no-flow` |
 | Focus ring on a control (on explicit request) | `.whimsy-focus` — spins *over* the focus outline, never replaces it |
+| Flowing rainbow underline under a `.whimsy` link/wordmark | `.whimsy-underline` — tiling sine draws in on hover/focus, in lockstep with the mark's flow (the sanctioned replacement for a flat underline) |
+| Brushed-metal gold fill (cousin of silver) | `.whimsy--gold` — slow (16s) near-static metal; add `.whimsy--no-flow` for a still gold fill |
 | Your own palette | override `--whimsy-gradient` in one line |
 | Maximum saturation (rare) | `.whimsy--vivid` |
 
@@ -315,6 +339,7 @@ Toggle any layer off independently: `.whimsy--no-flow`, `.whimsy--no-bob`. Freez
 - **Spectrum** (default) — burnished full-spectrum, generated in oklch at the palette's own chroma; hue stops land on Artificer's brand colors.
 - **`.whimsy--brand`** — cycles the real semantic tokens (gold → rose → purple → steel → green); tracks light/dark for free.
 - **`.whimsy--silver`** — near-neutral metal sheen: silver/grey on dark, warm graphite on cream. The most restrained variant — the only one calm enough to consider for headers (and only as a **static fill**: `.whimsy--silver.whimsy--no-flow`).
+- **`.whimsy--gold`** — brushed-metal gold, silver's warm cousin. Slow (16s) so it reads as near-static metal; pairs best with a CHARACTER gradient (per-glyph = faceted). Add `.whimsy--no-flow` for a still gold fill.
 
 Knobs are all custom properties (`--whimsy-c` chroma, `--whimsy-speed`, `--whimsy-angle`, `--whimsy-gradient`, …). Override on any scope — no new tokens, no hex.
 
@@ -342,6 +367,48 @@ Whimsy.ignite(el) / .clear(el)   // manual toggle
 5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy.
 6. **Reduced-motion is sacred.** Flow stops, burnish stays. Already wired — don't undo it.
 7. **Whimsy rests.** Anything long-lived settles. A rainbow that never stops is just noise.
+
+---
+
+## Texture — the third (and ceiling) carve
+
+Artificer's surfaces are **flat solid fills by doctrine**. Texture is the one
+bounded place that relaxes that — **material honesty, not decoration**. It is the
+**third carve** (after Whimsy and Editorial) and the system's **ceiling: no
+fourth carve.** Lives in `src/artificer-texture.css` (+ `live-spec/` mirror);
+full interactive reference at `live-spec/texture.html`.
+
+**Load it (after `artificer.css`):**
+
+```html
+<link rel="stylesheet" href="artificer-texture.css" />
+```
+
+It adds **no hue** (grain is desaturated; lines are drawn from `--border`/`--fg`
+only) and **no motion** (texture is static; page-grain travels with the page, it
+does not animate). Opt-in only — **the class IS the switch**; a surface is flat
+until you reach for a texture.
+
+### The vocabulary
+
+| Ask | Use |
+|---|---|
+| Engineered dot lattice for a **tool** surface | `.tex-dots` (pitch on `--tex-dot-gap`) |
+| Irregular paper tooth for a **document** surface | `.tex-grain` (strength on `--tex-fiber-strength`) |
+| Whole-page "printed on something" substrate | `.tex-paper` on the page wrapper (+ `.tex-paper--whisper` — the loudest that ships) |
+| Deco line-texture (ink only, no color) | `.tex-line` + `--hatch` / `--cross` / `--flute` / `--pinstripe` |
+| Raised tile (outer-glow depth, flat face) | `.tex-raised` |
+
+### Bounds — do not break
+
+1. **Never on data, status, or errors** — the same load-bearing exclusion as Whimsy.
+2. **One texture per surface.** Don't stack grain + line + depth.
+3. **Heroes stay flat + type-led.** The flowing wordmark IS the hero's texture; a
+   grain/plate field behind a full-bleed hero fights it. (Page-grain is the one
+   exception — a whole-page substrate, opt-in, capped at "whisper".)
+4. **Web layer only.** The editor themes are generated from the palette and can't
+   carry CSS texture — `build.mjs` never emits this file, and the editor themes
+   don't consume it.
 
 ---
 
@@ -396,3 +463,4 @@ Whimsy.ignite(el) / .clear(el)   // manual toggle
 - `reference/SKILL.md` — exhaustive token cheatsheet, recipe table, anti-patterns
 - `live-spec/` — every HTML preview page, copied verbatim from the source project. Open any of them in a browser alongside `src/artificer.css`.
 - `themes/` — Artificer ported to Claude Code, Ghostty, and VS Code. Same palette across all three; install paths in `themes/README.md`.
+- `gradients/` — language-agnostic perceptual (OKLab) gradient primitive for terminal text. `SPEC.md` is the contract, `reference.mjs` the runnable proof + CLI (`npm run gradient -- --list`/`--swatch`), `presets.json` the data, `conformance.json` the cross-language test table. Repo-only — not part of the published `src/` bundle.

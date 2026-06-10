@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/><title>Artificer · A/B · .note mono vs sans</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+<link rel="stylesheet" href="../artificer.css"/>
+<script src="../artificer-theme.js" defer></script>
+<style>
+  /* A/B harness only — no system chrome here.
+     The two columns differ in ONE property: font-family. */
+  .ab { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-lg); margin-top: var(--s-md); }
+  .ab__col { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .ab__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-md); }
+  .ab__sample { margin: 0 0 var(--s-md); }
+
+  /* The two test variants — the canonical .note ships as sans by default;
+     this page proves whether mono reads better in context. */
+  .note--mono { font-family: var(--font-mono); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin-top: var(--s-sm); }
+  .note--sans { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin-top: var(--s-sm); }
+
+  /* Diagnostic — render the same content at multiple sizes to make
+     the typeface DNA visible. The real .note size collapses letterform
+     detail; Quattro S is intentionally close to JetBrains Mono. */
+  .diag { font-size: 28px; line-height: 1.35; color: var(--fg); margin: 0 0 var(--s-sm); letter-spacing: -0.005em; }
+  .diag--mono { font-family: var(--font-mono); }
+  .diag--sans { font-family: var(--font-sans); }
+  .diag-row { font-size: 38px; line-height: 1.1; color: var(--fg); margin: 0; letter-spacing: 0; }
+  .diag-row--mono { font-family: var(--font-mono); }
+  .diag-row--sans { font-family: var(--font-sans); }
+  .diag-mid { font-size: 18px; line-height: 1.45; color: var(--fg); margin: 0 0 var(--s-sm); }
+  .diag-mid--mono { font-family: var(--font-mono); }
+  .diag-mid--sans { font-family: var(--font-sans); }
+  .face-tag { font-family: var(--font-mono); font-size: 10px; color: var(--fg-disabled); margin-top: var(--s-sm); letter-spacing: .12em; text-transform: uppercase; }
+
+  @media (max-width: 760px) { .ab { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<main class="container container--md" style="padding-top:48px;padding-bottom:96px">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="../README.html">Artificer</a><span class="crumb__sep">·</span>A/B<span class="crumb__sep">·</span><span aria-current="page">.note mono vs sans</span></nav>
+  <h1 class="t-headline-lg">.note — mono or sans.</h1>
+  <p class="meta">Sister utility to <code>.meta</code>, smaller (label-sm size). Pick the body face. Toggle dark/cream with the button. The columns differ in <code>font-family</code> only; both share size + color + margin.</p>
+
+  <!-- ── Letterform diagnostic ─────────────────────────────────
+       The real .note renders at 10.5–12px, where letterform detail
+       collapses. Worse: the canonical sans (iA Writer Quattro S) is
+       intentionally near-monospace — it's the "harmonizes with mono"
+       face. So at .note's actual size the two are near-twins by
+       design. This pane upsizes the same content so you can see what
+       the typeface IS before deciding whether it MATTERS at note size. -->
+  <h2 class="section-title">Letterform diagnostic — same text, three sizes</h2>
+  <p class="meta">Both columns render the same words; only <code>font-family</code> differs. The 38px row shows full letterform DNA; the 18px row is closer to real prose; the small samples below are the actual <code>.note</code> render. If the small ones look the same to you, that's the finding — at <code>--t-label-sm-size</code> the two canonical faces converge.</p>
+
+  <div class="ab">
+    <div class="ab__col">
+      <p class="ab__label">A · Mono — JetBrains Mono</p>
+      <p class="diag-row diag-row--mono">Quattro &amp; JetBrains 0123</p>
+      <p class="diag diag--mono">The quick brown fox jumps over the lazy dog. 1234567890</p>
+      <p class="diag-mid diag-mid--mono">Quattro S is iA Writer's "harmonizes with mono" companion face — at small sizes the two are nearly indistinguishable by design.</p>
+      <p class="note--mono">And here is the actual <code>.note</code> render at <code>--t-label-sm-size</code> — what you'd ship.</p>
+      <p class="face-tag">font-family: var(--font-mono)</p>
+    </div>
+    <div class="ab__col">
+      <p class="ab__label">B · Sans — iA Writer Quattro S</p>
+      <p class="diag-row diag-row--sans">Quattro &amp; JetBrains 0123</p>
+      <p class="diag diag--sans">The quick brown fox jumps over the lazy dog. 1234567890</p>
+      <p class="diag-mid diag-mid--sans">Quattro S is iA Writer's "harmonizes with mono" companion face — at small sizes the two are nearly indistinguishable by design.</p>
+      <p class="note--sans">And here is the actual <code>.note</code> render at <code>--t-label-sm-size</code> — what you'd ship.</p>
+      <p class="face-tag">font-family: var(--font-sans)</p>
+    </div>
+  </div>
+
+  <!-- ── In context: under a primitive ───────────────────────── -->
+  <h2 class="section-title">In context — under a primitive</h2>
+  <p class="meta">This is the dominant usage: a small caption tucked under a <code>.figure</code> / <code>.demo</code> / table to add a per-instance hint.</p>
+  <div class="ab">
+    <div class="ab__col">
+      <p class="ab__label">A · Mono</p>
+      <figure class="figure">
+        <button class="btn btn--secondary">Save changes</button>
+      </figure>
+      <p class="note--mono">Pairs with <code>.btn--secondary</code> in dense settings panels. Avoid <code>.btn--primary</code> when more than one action is competing.</p>
+    </div>
+    <div class="ab__col">
+      <p class="ab__label">B · Sans</p>
+      <figure class="figure">
+        <button class="btn btn--secondary">Save changes</button>
+      </figure>
+      <p class="note--sans">Pairs with <code>.btn--secondary</code> in dense settings panels. Avoid <code>.btn--primary</code> when more than one action is competing.</p>
+    </div>
+  </div>
+
+  <!-- ── Standalone: short hint paragraph ────────────────────── -->
+  <h2 class="section-title">Standalone — a short hint</h2>
+  <p class="meta">Used as a standalone aside. Shorter than <code>.meta</code> intends, longer than a tooltip.</p>
+  <div class="ab">
+    <div class="ab__col">
+      <p class="ab__label">A · Mono</p>
+      <p class="note--mono">Heads-up — this surface goes mono on tool pages and sans on document pages. Decide once per page, not per element.</p>
+    </div>
+    <div class="ab__col">
+      <p class="ab__label">B · Sans</p>
+      <p class="note--sans">Heads-up — this surface goes mono on tool pages and sans on document pages. Decide once per page, not per element.</p>
+    </div>
+  </div>
+
+  <!-- ── Trailing inline-code reference ──────────────────────── -->
+  <h2 class="section-title">Trailing inline-code reference</h2>
+  <p class="meta">Notes often end with a token/class reference. The mono body resolves <code>inline code</code> at the same weight; the sans body lets it pop.</p>
+  <div class="ab">
+    <div class="ab__col">
+      <p class="ab__label">A · Mono</p>
+      <p class="note--mono">Reaches for <code>.btn--secondary</code> when the action repeats; otherwise <code>.btn--ghost</code>. Don't reach for <code>.btn--primary</code>.</p>
+    </div>
+    <div class="ab__col">
+      <p class="ab__label">B · Sans</p>
+      <p class="note--sans">Reaches for <code>.btn--secondary</code> when the action repeats; otherwise <code>.btn--ghost</code>. Don't reach for <code>.btn--primary</code>.</p>
+    </div>
+  </div>
+
+  <!-- ── Long-form note ──────────────────────────────────────── -->
+  <h2 class="section-title">Long-form — two sentences</h2>
+  <p class="meta">Once the note runs past one sentence, the body-face decision starts to matter for scan-ability — long mono is famously hard to skim.</p>
+  <div class="ab">
+    <div class="ab__col">
+      <p class="ab__label">A · Mono</p>
+      <p class="note--mono">Notes that run past one sentence start to fight the surface they're decorating — the note should stay terse. If you find it growing, escalate to <code>.meta</code> (body-md) and let the paragraph breathe.</p>
+    </div>
+    <div class="ab__col">
+      <p class="ab__label">B · Sans</p>
+      <p class="note--sans">Notes that run past one sentence start to fight the surface they're decorating — the note should stay terse. If you find it growing, escalate to <code>.meta</code> (body-md) and let the paragraph breathe.</p>
+    </div>
+  </div>
+
+  <h2 class="section-title">Verdict — resolved</h2>
+  <p class="meta">Cameron, 2026-06-06: canonical <code>.note</code> ships with <strong>no <code>font-family</code></strong> — it inherits the body face. That makes it mono on tool surfaces and sans on document surfaces, so each surface's character carries through. Rationale: he reads enough monospace that the usual "mono is hard to skim" objection doesn't apply; the surface should own the family decision in one place (the body), not get re-litigated per utility. Owner-first call, logged here.</p>
+  <p class="note">And this is the canonical <code>.note</code> rendering with inherit — on this page (no body-face override) it picks up whatever the surface stack defaults to.</p>
+</main>
+</body>
+</html>

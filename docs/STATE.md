@@ -5,7 +5,9 @@
 > Born from the 2026-05-31 reassessment after mobile and wide-screen bugs
 > shipped (`docs/plans/2026-05-31-trust-layer-and-maturity-baseline.md`).
 
-**Last assessed:** 2026-05-31 · v0.12.x · trust layer T1–T2 landed, T3–T4 in flight
+**Last assessed:** 2026-06-09 · v0.15.x · trust layer landed; A1 conformance
+gate + the Workstream-E mints shipped; the v0.15.0 review wave (#173–#197) is
+being paid down by the hardening train
 
 ## The scale
 
@@ -18,8 +20,8 @@ custom room, plus the clay to take to a platform that doesn't exist yet.**
 |---|---|---|
 | **The clay** — decisions | ★★★★★ at target | Palette with measured ratios + versioned reasoning, 12 syntax roles, motion/spacing/focus rules, 8-platform generator. A new platform (iOS, VS Code 2.0, next thing) ingests `_palette.json` + `tokens.json` + the principles and starts from decisions, not from scratch. |
 | **The materials** — tokens & utilities | ★★★★ | `.stack`/`.cluster`/`.grid-*`/`.container`, density modes, type scale, z-rungs, motion tokens. Solid; gaps are at the edges (no container queries — deliberate). |
-| **The rooms** — components | ★★★½ | ~165 class families. Tables/forms/modals/data-display at Bootstrap parity or beyond. Known absent: dropdown/combobox, pagination, alerts-as-CSS, button groups, list groups (see § Gaps). History of "facade" rooms — style without behavior — now closed by the trust layer. |
-| **The trust** — verification | ★★ → ★★★★ in flight | Was: 100% data gates, zero behavioral coverage (the root cause of every shipped mobile/wide-screen bug). Now: Playwright matrix (pages × viewports × themes × engines) + touch + axe gates landing as PRs #119/#121/T3/T4. |
+| **The rooms** — components | ★★★★ | ~275 classes in the canonical sheet. Tables/forms/modals/data-display at Bootstrap parity or beyond; the v0.15.0 Workstream-E mints closed the old absent-list (option-popover `.menu`/`.listbox`, command palette, tree, pagination, banner, toast-region, `.stat`, the loading-feedback pair). Still absent: `.alert` in CSS (React-only), button groups, list groups, carousel (deliberately never). "Facade" rooms — style without behavior — are closed structurally: interactive mints ship behavior modules (focus, tabs, options, tree) and the A1 phantom/orphan gate makes doc-vs-CSS drift a red X. |
+| **The trust** — verification | ★★★★ | Landed: Playwright matrix (pages × viewports × themes × engines), 44px touch floor, axe WCAG scan with a per-selector allowlist, keyboard behavior specs, named regression guards, the A1 conformance gate, and the export content gate. The named debt: rendered-contrast rulings beyond syntax roles (#122). |
 
 ## What the trust layer is
 
@@ -37,16 +39,18 @@ components, sub-44px targets, unowned wide screens) now has a named test.
 
 ## Known gaps (the honest list)
 
-**Component gaps (Bootstrap parity):** dropdown/combobox (deferred for the
-unified option-popover design), pagination, `.alert` in CSS (React-only),
-button groups, list groups, carousel (deliberately never).
+**Component gaps (Bootstrap parity):** `.alert` in CSS (React-only),
+button groups, list groups, carousel (deliberately never). *(Dropdown/
+combobox and pagination shipped in v0.15.0 — `.menu`/`.listbox` and
+`.pagination`.)*
 
-**Verification gaps (closing in T3/T4):** rendered-contrast coverage beyond
-syntax roles (#122 — first axe sweep found light-mode primary-CTA contrast
-failure), keyboard behavior on shipped JS, the 5 named regression guards.
+**Verification gaps:** rendered-contrast rulings beyond syntax roles (#122 —
+the axe sweep's palette findings await the palette ruling; tracked per-selector
+in `tests/axe-allowlist.mjs`, every entry owned by that issue).
 
-**Latent findings filed:** #120 (`.tabs` has no narrow-width overflow answer),
-#122 (palette contrast rulings).
+**Latent findings filed:** #122 (palette contrast rulings); the
+v0.15.0 six-lens review filed #173–#197 (2 P0 a11y, 9 P1), being paid down by
+the v0.15.x hardening train.
 
 **Portability gaps (acceptable):** component behavior specs are CSS-encoded,
 not platform-neutral; a native port re-implements components from the
@@ -54,14 +58,17 @@ live-spec reference (~70% of port effort, inherent to platform porting).
 
 ## Backlog policy
 
-The `triage:promote` backlog (~22 issues — rooms consumers asked for) is
-**paused behind the trust gate**: no new component ships until the suite can
-verify it (overflow, touch, axe, keyboard) on arrival. The owner may escalate
-specific items past the pause — that's his call, logged when it happens.
+The trust gate the old pause waited for is **operative** — this is now the
+shipping pathway, not a freeze: a new component arrives through
+the mint process, lands with the suite verifying it on arrival (overflow, touch,
+axe, keyboard), and the A1 conformance gate keeps its docs honest. The
+v0.15.0 Workstream-E mints (9 components) shipped through exactly this
+pathway. `triage:promote` items are worked through it in mint batches; the
+owner may still escalate specific items — his call, logged when it happens.
 
-Rationale: every paused issue is a room that would have shipped without
-verification, which is the exact pattern that produced the bugs that prompted
-this baseline.
+Rationale unchanged: a room that ships without verification is the exact
+pattern that produced the bugs that prompted this baseline. The gate didn't
+lift — it became the road.
 
 ## Update cadence
 
