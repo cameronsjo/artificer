@@ -21,7 +21,7 @@ Cameron-first, unsupported. Read order:
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.18.0
+npm install @cameronsjo/artificer@0.18.1
 
 # or copy src/ into your project and link the CSS
 cp -r src/ <your-project>/public/artificer/

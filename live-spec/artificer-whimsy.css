@@ -285,9 +285,19 @@
 }
 .whimsy--glacial .whimsy-char { transform: none !important; }
 
-/* ═══ Accessibility — flow stops, burnish stays ═══════════════════════════ */
+/* ═══ Accessibility — flow stops, burnish stays ═══════════════════════════
+   The glacial selectors are listed explicitly (#221): .whimsy--glacial.whimsy
+   re-establishes animation-* longhands !important at (0,2,0), which out-ranks
+   a bare .whimsy guard at (0,1,0) — among !important declarations, specificity
+   decides per property. Matching the compound here ties the specificity, and
+   this block's later source position wins the tie: under reduced motion,
+   glacial degrades to the --settled rest (static burnish), as doctrine #6
+   demands. Found in the field by a consumer on the 0.10.1→0.18.0 upgrade. */
 @media (prefers-reduced-motion: reduce) {
-  .whimsy, .whimsy-char, .whimsy-rule {
+  .whimsy, .whimsy-char, .whimsy-rule,
+  .whimsy--glacial.whimsy,
+  .whimsy--glacial.whimsy-rule,
+  .whimsy--glacial .whimsy-char {
     animation: none !important;
     background-position: 30% 50%;   /* hold a pleasant slice of spectrum */
   }

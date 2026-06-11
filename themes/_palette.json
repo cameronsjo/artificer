@@ -1,6 +1,6 @@
 {
   "$description": "Artificer · canonical palette source-of-truth. Edit a hex here and run `node themes/build.mjs` to regenerate Claude Code, Ghostty, and VS Code. Obsidian is hand-authored — manually re-check obsidian/Artificer/theme.css `--art-*` tokens after a palette change.",
-  "$version": "0.18.0",
+  "$version": "0.18.1",
   "$lockedDate": "2024-11",
   "$roles": {
     "syntax": {

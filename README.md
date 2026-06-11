@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.18.0 · 2026** — the re-true: the root is never overridden (`html { font-size: 100% }`), so every `--t-*-size` token now renders at its labeled px and the whole system scales with the browser font-size preference (#211, owner-ruled). Token-bound type grows ~14.3% — body copy lands at a true 14px (it had double-applied to 12.25px); the owner optical pass is #214. The px-literal chrome rebinds to exact-match tokens as identity swaps, the `lint:tokens` font-size watch arms, the `.toast` ghost leaves print.css, and app-shell lands on canonical `.section-title`. See `CHANGELOG.md` for what changed.
+**v0.18.1 · 2026** — the re-true: the root is never overridden (`html { font-size: 100% }`), so every `--t-*-size` token now renders at its labeled px and the whole system scales with the browser font-size preference (#211, owner-ruled). Token-bound type grows ~14.3% — body copy lands at a true 14px (it had double-applied to 12.25px); the owner optical pass is #214. The px-literal chrome rebinds to exact-match tokens as identity swaps, the `lint:tokens` font-size watch arms, the `.toast` ghost leaves print.css, and app-shell lands on canonical `.section-title`. (0.18.1: the glacial whimsy now truly stills under `prefers-reduced-motion` — #221, a field-filed floor fix — and the uniformity doctrine is codified in § One system, many applications.) See `CHANGELOG.md` for what changed.
 
 ---
 

@@ -151,6 +151,19 @@ How this project bends the Artificer design system, and why. Each entry mirrors 
 feedback issue filed upstream.
 ```
 
+**Per-divergence entry template** (the uniformity doctrine's "receipts" — every
+kept divergence carries one; a divergence not worth filing is not worth keeping):
+
+```markdown
+## A{N} — {short title}
+
+- **Dated:** YYYY-MM-DD · app @ {version} · Artificer @ {--art-version}
+- **What diverges:** {the custom implementation, one sentence}
+- **Why necessary:** {what the primitive/token couldn't do}
+- **Upstream issue:** #{NNN} (filed via this skill — required; no issue, no divergence)
+- **Retire when:** {the upstream change that obsoletes this entry}
+```
+
 This path is the **consumer's** working tree — not the design-system repo. It's a
 memory aid for the next person in *this* project, and a paper trail if the issue
 gets closed.

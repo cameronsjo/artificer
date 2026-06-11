@@ -24,6 +24,29 @@
 9. **Honor `prefers-reduced-motion`.** Already wired. Don't add hard-coded `transition: 600ms` that bypasses `--dur-*`.
 10. **WCAG 2.2 AA floor.** Every focusable element gets a `:focus-visible` outline (already wired). Every form field gets a `<label for>`. Every status uses dot+text, not color alone.
 
+## One system, many applications — the uniformity doctrine
+
+Artificer renders the **same** across every application that consumes it —
+same experience, same look, same everything. Consumption is
+**copy-paste-repeat**, not reinterpretation: identical vendoring, identical
+tokens, identical primitives, identical behavior-module patterns; only the
+application's content differs.
+
+- **Custom implementations only when absolutely necessary.** A primitive that
+  almost fits gets used, not forked. A missing primitive is a gap to report,
+  not an invitation to improvise.
+- **Necessity is feedback.** Every genuinely necessary divergence gets filed
+  upstream so the system can rule: codify it as canon, or close the gap that
+  forced it. A divergence that isn't worth filing isn't worth keeping.
+- **Divergences carry receipts.** Each kept divergence is documented in the
+  app's `docs/artificer-adaptations.md` with its rationale and its upstream
+  issue number — undocumented drift is a bug. The per-entry template lives in
+  the `artificer-feedback` skill (§ Downstream decision log).
+- **Behavior comes from the modules.** Framework apps take the pure state
+  machines (e.g. `ArtificerTabs.nextIndex`) and keep DOM ownership;
+  hand-rolling a keyboard model the module already ships is a custom
+  implementation, and the bar above applies.
+
 ## First decision — what surface is this?
 
 Before you write any CSS, decide: **is this a tool surface or a document surface?** The answer determines the body font and a couple of other defaults. If you skip this, you'll end up setting prose in monospace, which is the single fastest way to make Artificer feel wrong.
