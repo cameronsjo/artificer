@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.22.0
+# Artificer · v0.22.1
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 

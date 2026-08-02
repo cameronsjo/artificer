@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.22.0 · 2026** — the mint ledger: every shipped primitive now carries machine-readable provenance in `src/primitives.json` (vintage, classes, behavior module, recipe pointer, adoption signals), gated in CI by `check:primitives` — a mint can no longer ship invisible (#190) or unreachable (#191). The `artificer-upgrade` skill v0.3 walks the ledger instead of a hand-maintained matrix and sweeps consumers for hand-rolled equivalents of newer primitives; the vendor bin transports the ledger (`ARTIFICER-CHEATSHEET.md` ride-along retired); `docs/UPGRADE.md` gains the 0.11→0.20 migration rows under an existence-lockstep gate; `.masthead` and `.colophon` mint. See `CHANGELOG.md` for what changed.
+**v0.22.1 · 2026** — the mint ledger: every shipped primitive now carries machine-readable provenance in `src/primitives.json` (vintage, classes, behavior module, recipe pointer, adoption signals), gated in CI by `check:primitives` — a mint can no longer ship invisible (#190) or unreachable (#191). The `artificer-upgrade` skill v0.3 walks the ledger instead of a hand-maintained matrix and sweeps consumers for hand-rolled equivalents of newer primitives; the vendor bin transports the ledger (`ARTIFICER-CHEATSHEET.md` ride-along retired); `docs/UPGRADE.md` gains the 0.11→0.20 migration rows under an existence-lockstep gate; `.masthead` and `.colophon` mint. See `CHANGELOG.md` for what changed.
 
 ---
 

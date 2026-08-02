@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "1",
-  "$version": "0.22.0",
+  "$version": "0.22.1",
   "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage.",
   "primitives": {
     "stack": {
@@ -262,12 +262,12 @@
       "classes": [
         "glyph"
       ],
-      "recipe": "Dense table status / ✓✗~– cells",
+      "recipe": "Dense table status / \u2713\u2717~\u2013 cells",
       "adoption": {
         "supersedes": "raw emoji / hand-tinted spans in comparison grids",
         "signals": [
           {
-            "grep": "[✓✗~]</(td|span)",
+            "grep": "[\u2713\u2717~]</(td|span)",
             "note": "bare status marks without .glyph tinting or role=img"
           }
         ]
@@ -470,7 +470,7 @@
         "signals": [
           {
             "grep": "role=\"tablist\"",
-            "note": "ARIA tablist without ArtificerTabs.enhance() — the CSS alone is style-only"
+            "note": "ARIA tablist without ArtificerTabs.enhance() \u2014 the CSS alone is style-only"
           }
         ]
       }
@@ -584,7 +584,7 @@
         "api": "ArtificerOptions.combobox()",
         "hook": "input[data-combobox]"
       },
-      "recipe": "Command palette / ⌘K",
+      "recipe": "Command palette / \u2318K",
       "demo": "live-spec/components-extended.html"
     },
     "popover": {
@@ -897,7 +897,7 @@
   },
   "versions": {
     "0.10.1": {
-      "title": "v0.10.0 + v0.10.1 — navigation wave, SPA lifecycle, brandPurple ramp split (shipped as ONE commit; no consumer was ever on 0.10.0)",
+      "title": "v0.10.0 + v0.10.1 \u2014 navigation wave, SPA lifecycle, brandPurple ramp split (shipped as ONE commit; no consumer was ever on 0.10.0)",
       "minted": [
         "appbar",
         "sidenav",
@@ -967,7 +967,7 @@
       ]
     },
     "0.13.0": {
-      "title": "trust layer · texture carve · whimsy attention · greeting · brand refresh",
+      "title": "trust layer \u00b7 texture carve \u00b7 whimsy attention \u00b7 greeting \u00b7 brand refresh",
       "minted": [
         "figure",
         "note",
@@ -981,7 +981,7 @@
       ]
     },
     "0.14.0": {
-      "title": ".notif primitive · trust-layer follow-through · gradients · encapsulation doctrine",
+      "title": ".notif primitive \u00b7 trust-layer follow-through \u00b7 gradients \u00b7 encapsulation doctrine",
       "minted": [
         "notif"
       ],
@@ -991,7 +991,7 @@
       ]
     },
     "0.15.0": {
-      "title": "A1 conformance gate · the component mints (option-popover keystone + what it unlocks) · loading-feedback",
+      "title": "A1 conformance gate \u00b7 the component mints (option-popover keystone + what it unlocks) \u00b7 loading-feedback",
       "minted": [
         "banner",
         "listbox",
@@ -1015,7 +1015,7 @@
       ]
     },
     "0.16.0": {
-      "title": "behavior modules (ArtificerOptions / ArtificerTree) · a11y floor · export gate",
+      "title": "behavior modules (ArtificerOptions / ArtificerTree) \u00b7 a11y floor \u00b7 export gate",
       "minted": [],
       "breaking": [],
       "adoption": [
@@ -1026,7 +1026,7 @@
       ]
     },
     "0.17.0": {
-      "title": "the fix wave: gates grow contracts · --radius-pill · canonical chrome",
+      "title": "the fix wave: gates grow contracts \u00b7 --radius-pill \u00b7 canonical chrome",
       "minted": [],
       "breaking": [],
       "adoption": []
@@ -1039,7 +1039,7 @@
           "kind": "repurpose",
           "what": "root font-size + every --t-*-size binding",
           "from": "root silently 87.5% (labels rendered at ~0.875x)",
-          "to": "html { font-size: 100% } — labels true",
+          "to": "html { font-size: 100% } \u2014 labels true",
           "why": "everything token-bound grows ~14.3% (body 12.25 -> 14px); re-check dense layouts and any px assumptions",
           "ref": "#211"
         }
@@ -1053,7 +1053,7 @@
       "adoption": []
     },
     "0.19.0": {
-      "title": "Lane 2 unification (one version, one rhythm) · .glyph anti-emoji mint · terminalBg elevation (ADR 0036, terminal themes)",
+      "title": "Lane 2 unification (one version, one rhythm) \u00b7 .glyph anti-emoji mint \u00b7 terminalBg elevation (ADR 0036, terminal themes)",
       "minted": [
         "glyph"
       ],
@@ -1086,6 +1086,14 @@
       "breaking": [],
       "adoption": [
         "colophon"
+      ]
+    },
+    "0.22.1": {
+      "title": "btn--link: an action that reads as text \u2014 the missing way to render a <button> as a link, and the reason the colophon spine had to special-case buttons",
+      "minted": [],
+      "breaking": [],
+      "adoption": [
+        "btn"
       ]
     }
   },

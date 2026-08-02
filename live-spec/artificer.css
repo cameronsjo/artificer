@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.22.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.22.1 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -223,7 +223,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.22.0";
+  --art-version: "0.22.1";
 
   color-scheme: dark;
 }
@@ -424,6 +424,10 @@ a {
 a:hover, a:focus-visible { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
 /* Tool surfaces read links by position — underline only on hover/focus (the rule above). */
 .surface-tool a { text-decoration: none; }
+/* .btn--link follows `a` here rather than joining its selector: widening that
+   one to :is(a, .btn--link) would lift it from (0,1,1) to (0,2,0) and could
+   out-order a rule that deliberately re-underlines an anchor. */
+.surface-tool .btn--link { text-decoration: none; }
 a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); border-radius: 2px; }
 
 /* ═══ Buttons ═══════════════════════════════════════════════════════════ */
@@ -444,6 +448,24 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 
 .btn--ghost       { background: transparent; color: var(--fg-secondary); }
 .btn--ghost:hover { background: var(--bg-raised); color: var(--fg); }
+
+/* An action that READS as text. <button> is the correct element when a control
+   acts rather than navigates — an SPA switching views, a disclosure toggle,
+   "show more" — and this renders it as the link it reads as, instead of
+   dressing an <a> in a click handler and lying to the accessibility tree.
+   Parity with <a> is by CONSTRUCTION where it matters: this class joins `a` in
+   the two context rules (the tool-surface underline strip, the colophon's sans
+   escape), so a later retune of either carries here instead of drifting.
+   Sits after the .btn variants deliberately — it is (0,1,0) like .btn, so it
+   wins on source order alone. v0.22.1. */
+.btn--link {
+  padding: 0; border: 0; border-radius: 0; background: none;
+  font: inherit;                       /* undo .btn's face, size and weight */
+  color: var(--accent);
+  text-decoration: underline; text-underline-offset: 2px;
+  white-space: normal;                 /* .btn's nowrap is wrong for inline text */
+}
+.btn--link:hover { color: var(--accent-bright); }
 
 /* Icon-only button — square, meets the 44px nav touch floor (a11y #8).
    Compose with any variant (.btn.btn--icon.btn--ghost). Always needs an
@@ -692,7 +714,7 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   font-size: var(--t-label-sm-size);
   line-height: 1.6;
 }
-.colophon :where(p, ul, ol, li, a, small, dd, dt) { font-family: var(--font-sans); }
+.colophon :where(p, ul, ol, li, a, small, dd, dt, .btn--link) { font-family: var(--font-sans); }
 .colophon__label {
   display: block; margin-bottom: var(--s-xs);
   font-family: var(--font-mono); font-size: var(--t-label-xs-size);
@@ -1609,13 +1631,17 @@ select:focus-visible,
   /* Colophon spine links. Scoped to the spine, NOT to a <nav> inside it: the
      spine's contract is that slots are positional and their content is the
      consumer's choice, so a links slot written as <div class="cluster">, a
-     <nav>, or two bare <a>s are all conforming — and a floor that only fired
-     for one of them would advertise a guarantee it doesn't keep. Prose links
+     <nav>, bare <a>s, or an SPA's view-switching <button>s are all conforming
+     — and a floor that only fired for some of them would advertise a
+     guarantee it doesn't keep. Prose links
      in .colophon__fine are deliberately NOT covered: those are inline text
      links, exempt under WCAG 2.5.8.
      `justify-content` (not needed by the two rules above, whose content fills
      the box) centres a short label like "RSS" inside its square minimum. */
   .colophon__spine a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  /* .btn--link strips .btn's padding, so it needs the floor in its own right
+     — anywhere it is used, not only in a colophon. */
+  .btn--link { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 }
 
 /* Table -> cards reflow. Below --bp-mobile (640px) a wide data table
