@@ -83,14 +83,26 @@
             <p>Licensed under Apache-2.0.</p>
           </div>
         </div>
+        <div class="colophon__spine">
+          <span>v0.22.0</span>
+          <span data-whimsy-greeting data-whimsy-greeting-class="whimsy--glacial">kindness is a choice.</span>
+          <nav class="cluster"><a href="a11y.html">Accessibility</a></nav>
+        </div>
         <p class="colophon__fine">© 2026 Artificer. All trademarks are property of their respective owners.</p>
       </div>
     </footer>
   </div>
   <pre class="code-block"><span class="tok-keyword">&lt;footer</span> class=<span class="tok-string">"colophon"</span><span class="tok-keyword">&gt;</span>
   <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"grid-auto"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span>
+  <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"colophon__spine"</span><span class="tok-keyword">&gt;</span>
+    <span class="tok-keyword">&lt;span&gt;</span>© 2026 …<span class="tok-keyword">&lt;/span&gt;</span>
+    <span class="tok-keyword">&lt;span data-whimsy-greeting&gt;</span>kindness is a choice.<span class="tok-keyword">&lt;/span&gt;</span>
+    <span class="tok-keyword">&lt;nav</span> class=<span class="tok-string">"cluster"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/nav&gt;</span>
+  <span class="tok-keyword">&lt;/div&gt;</span>
   <span class="tok-keyword">&lt;p</span> class=<span class="tok-string">"colophon__fine"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/p&gt;</span>
 <span class="tok-keyword">&lt;/footer&gt;</span></pre>
+  <p class="meta" style="margin-top:var(--s-sm)">Three zones, in order: a <code>.grid-auto</code> of <code>.colophon__label</code> sections, the <b class="anchor">spine</b>, then <code>.colophon__fine</code>. Zones 1 and 3 are optional — a site with only a sign-off and a site with a full disclosure grid use the same primitive and differ only in which zones they fill.</p>
+  <p class="meta" style="margin-top:var(--s-sm)">The <b class="anchor">spine</b> is the colophon's one row, and its three slots are <b class="anchor">positional</b> — first child starts, last child ends, middle is centred <em>on the page</em>. That centring is why it is a grid: <code>1fr auto 1fr</code> keeps the side columns equal, so a long copyright can't shove the sign-off off-centre the way <code>space-between</code> does. Any slot may be empty — keep the element to hold its column. Below 640px it stacks and centres.</p>
   <p class="meta" style="margin-top:var(--s-sm)">Prose inside <code>.colophon</code> renders <code>--font-sans</code> even inside <code>.surface-tool</code>. For a prose island elsewhere in a tool surface, wrap it in <code>.surface-document</code> to flip the same escape on.</p>
 </main>
 </body>

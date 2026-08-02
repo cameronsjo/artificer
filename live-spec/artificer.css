@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.21.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.22.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -223,7 +223,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.21.0";
+  --art-version: "0.22.0";
 
   color-scheme: dark;
 }
@@ -704,6 +704,42 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   border-top: 1px solid var(--border);
   color: var(--fg-secondary);            /* NOT --fg-muted — 3.05:1, below AA floor */
   font-size: var(--t-label-xs-size); line-height: 1.5;
+}
+/* The spine — the colophon's one row: identity · sign-off · links. Three slots,
+   and the middle one is centred ON THE PAGE, not in whatever space the outer
+   two leave over. That is why this is a grid and not `space-between`: equal
+   `1fr` side columns mean a long copyright can't shove the sign-off sideways.
+   Slots are positional, not classed — first child starts, last child ends. Any
+   slot may be empty; leave the element in place to hold its column.
+   (Minting provenance — two consumers derived this independently — in
+   CHANGELOG v0.22.0. The touch floor lives with the other nav targets in
+   § Touch escalation, not here.) */
+.colophon__spine {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--gap, var(--s-md));       /* --gap: the same knob .stack/.cluster expose */
+}
+/* Above the stack breakpoint only: below it the container centres every slot,
+   and an `end` here would have to be countermanded. Declaring it in min-width
+   keeps the alignment rule in one place instead of two. */
+@media (min-width: 641px) {
+  .colophon__spine > :last-child { justify-self: end; }
+}
+/* Zone spacing: the spine only needs a gap above it when it follows sibling
+   colophon content (a .grid-auto of labeled sections). A spine-only colophon
+   gets its space from .colophon's own padding. */
+.colophon__spine:not(:first-child) { margin-top: var(--s-lg); }
+@media (max-width: 640px) {
+  /* Stack, and centre every slot — a left-aligned copyright above a centred
+     sign-off reads as a mistake at this width. text-align carries the wrapped
+     second line, which justify-items alone does not. */
+  .colophon__spine {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: var(--gap, var(--s-sm));
+  }
 }
 
 /* ═══ Overlays · modal & popover ═══════════════════════════════════════ */
@@ -1570,6 +1606,16 @@ select:focus-visible,
      full-height touch area without changing their visual size. */
   .appbar__brand { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
   .crumb a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; }
+  /* Colophon spine links. Scoped to the spine, NOT to a <nav> inside it: the
+     spine's contract is that slots are positional and their content is the
+     consumer's choice, so a links slot written as <div class="cluster">, a
+     <nav>, or two bare <a>s are all conforming — and a floor that only fired
+     for one of them would advertise a guarantee it doesn't keep. Prose links
+     in .colophon__fine are deliberately NOT covered: those are inline text
+     links, exempt under WCAG 2.5.8.
+     `justify-content` (not needed by the two rules above, whose content fills
+     the box) centres a short label like "RSS" inside its square minimum. */
+  .colophon__spine a { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 }
 
 /* Table -> cards reflow. Below --bp-mobile (640px) a wide data table

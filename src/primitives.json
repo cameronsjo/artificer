@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "1",
-  "$version": "0.21.0",
+  "$version": "0.22.0",
   "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage.",
   "primitives": {
     "stack": {
@@ -732,7 +732,8 @@
       "classes": [
         "colophon",
         "colophon__fine",
-        "colophon__label"
+        "colophon__label",
+        "colophon__spine"
       ],
       "recipe": "Footer / colophon / fine print / attribution"
     },
@@ -1078,6 +1079,14 @@
       "minted": [],
       "breaking": [],
       "adoption": []
+    },
+    "0.22.0": {
+      "title": "the spine: .colophon__spine extends the colophon primitive with the identity/sign-off/links row two consumer sites had each built themselves",
+      "minted": [],
+      "breaking": [],
+      "adoption": [
+        "colophon"
+      ]
     }
   },
   "$exempt": []
