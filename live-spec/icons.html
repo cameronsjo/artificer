@@ -32,14 +32,12 @@
 </head>
 <body>
 
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-  <span class="dot"></span><span data-theme-label>Dark</span>
-</button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main>
   <p class="crumb">Foundations · Icons</p>
   <h1 class="t-headline-lg">icons.</h1>
-  <p class="lede t-body-lg">A small, hand-tuned set rooted in <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>. <b class="anchor">16px viewBox</b>, <b class="anchor">1.5 stroke</b>, color via <code>currentColor</code>. Used sparingly — at most one per UI row.</p>
+  <p class="lede t-body-lg">A small, hand-tuned set rooted in <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>, keyed by <b class="anchor">Lucide's canonical names</b>. <b class="anchor">16px viewBox</b>, <b class="anchor">1.5 stroke</b>, color via <code>currentColor</code>. Used sparingly — at most one per UI row.</p>
 
   <section>
     <h2>Usage</h2>
@@ -50,8 +48,9 @@
 &lt;!-- in body --&gt;
 &lt;i data-icon="search"&gt;&lt;/i&gt;
 &lt;i data-icon="check" data-icon-size="20"&gt;&lt;/i&gt;
-&lt;i data-icon="alert" data-icon-stroke="2"&gt;&lt;/i&gt;</code></pre>
+&lt;i data-icon="triangle-alert" data-icon-stroke="2"&gt;&lt;/i&gt;</code></pre>
       <p class="t-body-md meta" style="margin:var(--s-md) 0 0">Or build programmatically: <code>ArtificerIcons.build('search')</code> returns an <code>SVGElement</code>.</p>
+      <p class="note" style="margin:var(--s-md) 0 0">Names are Lucide-canonical; legacy names (<code>close</code>, <code>chevron-r</code>, <code>edit</code>, <code>trash</code>, <code>alert</code>, <code>spinner</code>, <code>terminal</code>, <code>logout</code>, …) keep working as aliases. <code>theme</code> is the one Artificer-custom name. <code>ArtificerIcons.list()</code> reports canonical names only. An unknown name renders a dashed placeholder box (and a console warning) instead of a silent blank.</p>
     </div>
   </section>
 
@@ -61,18 +60,18 @@
       <button class="btn btn--primary"><i data-icon="send"></i>Send</button>
       <button class="btn btn--secondary"><i data-icon="download"></i>Export</button>
       <button class="btn btn--ghost"><i data-icon="settings"></i>Settings</button>
-      <button class="btn btn--destructive"><i data-icon="trash"></i>Delete</button>
+      <button class="btn btn--destructive"><i data-icon="trash-2"></i>Delete</button>
     </div>
     <div class="row-demo" style="margin-top: var(--s-md)">
       <span class="badge badge--accent"><i data-icon="check"></i>Done</span>
       <span class="badge badge--attention"><i data-icon="circle-dot"></i>Review</span>
-      <span class="badge badge--urgent"><i data-icon="alert"></i>Failed</span>
+      <span class="badge badge--urgent"><i data-icon="triangle-alert"></i>Failed</span>
       <span class="badge badge--ghost"><i data-icon="info"></i>Note</span>
     </div>
     <p class="row-demo" style="margin-top: var(--s-md); color: var(--fg-secondary)">
-      <a class="a-icon" href="#"><i data-icon="external"></i>Open repo</a>
+      <a class="a-icon" href="#"><i data-icon="external-link"></i>Open repo</a>
       &nbsp;·&nbsp;
-      <a class="a-icon" href="#"><i data-icon="arrow-r"></i>Continue</a>
+      <a class="a-icon" href="#"><i data-icon="arrow-right"></i>Continue</a>
     </p>
   </section>
 
@@ -80,14 +79,13 @@
     <h2>Navigation</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="menu"></i></span><span class="name">menu</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="close"></i></span><span class="name">close</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="chevron-r"></i></span><span class="name">chevron-r</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="chevron-l"></i></span><span class="name">chevron-l</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="chevron-d"></i></span><span class="name">chevron-d</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="chevron-u"></i></span><span class="name">chevron-u</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="arrow-r"></i></span><span class="name">arrow-r</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="arrow-l"></i></span><span class="name">arrow-l</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="external"></i></span><span class="name">external</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-right"></i></span><span class="name">chevron-right</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-left"></i></span><span class="name">chevron-left</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-down"></i></span><span class="name">chevron-down</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="chevron-up"></i></span><span class="name">chevron-up</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="arrow-right"></i></span><span class="name">arrow-right</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="arrow-left"></i></span><span class="name">arrow-left</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="external-link"></i></span><span class="name">external-link</span></div>
     </div>
   </section>
 
@@ -96,10 +94,10 @@
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="check"></i></span><span class="name">check</span></div>
       <div class="cell"><span class="glyph"><i data-icon="x"></i></span><span class="name">x</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="alert"></i></span><span class="name">alert</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="triangle-alert"></i></span><span class="name">triangle-alert</span></div>
       <div class="cell"><span class="glyph"><i data-icon="info"></i></span><span class="name">info</span></div>
       <div class="cell"><span class="glyph"><i data-icon="circle-dot"></i></span><span class="name">circle-dot</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="spinner"></i></span><span class="name">spinner</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="loader"></i></span><span class="name">loader</span></div>
     </div>
   </section>
 
@@ -109,13 +107,13 @@
       <div class="cell"><span class="glyph"><i data-icon="plus"></i></span><span class="name">plus</span></div>
       <div class="cell"><span class="glyph"><i data-icon="minus"></i></span><span class="name">minus</span></div>
       <div class="cell"><span class="glyph"><i data-icon="search"></i></span><span class="name">search</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="edit"></i></span><span class="name">edit</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="trash"></i></span><span class="name">trash</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="pencil"></i></span><span class="name">pencil</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="trash-2"></i></span><span class="name">trash-2</span></div>
       <div class="cell"><span class="glyph"><i data-icon="copy"></i></span><span class="name">copy</span></div>
       <div class="cell"><span class="glyph"><i data-icon="download"></i></span><span class="name">download</span></div>
       <div class="cell"><span class="glyph"><i data-icon="upload"></i></span><span class="name">upload</span></div>
       <div class="cell"><span class="glyph"><i data-icon="send"></i></span><span class="name">send</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="refresh"></i></span><span class="name">refresh</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="refresh-cw"></i></span><span class="name">refresh-cw</span></div>
     </div>
   </section>
 
@@ -124,13 +122,53 @@
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="file"></i></span><span class="name">file</span></div>
       <div class="cell"><span class="glyph"><i data-icon="folder"></i></span><span class="name">folder</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="terminal"></i></span><span class="name">terminal</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="square-terminal"></i></span><span class="name">square-terminal</span></div>
       <div class="cell"><span class="glyph"><i data-icon="code"></i></span><span class="name">code</span></div>
       <div class="cell"><span class="glyph"><i data-icon="settings"></i></span><span class="name">settings</span></div>
       <div class="cell"><span class="glyph"><i data-icon="theme"></i></span><span class="name">theme</span></div>
       <div class="cell"><span class="glyph"><i data-icon="user"></i></span><span class="name">user</span></div>
-      <div class="cell"><span class="glyph"><i data-icon="logout"></i></span><span class="name">logout</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="log-out"></i></span><span class="name">log-out</span></div>
     </div>
+  </section>
+
+  <section>
+    <h2>Common objects</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="lock"></i></span><span class="name">lock</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="lock-open"></i></span><span class="name">lock-open</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="layers"></i></span><span class="name">layers</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="droplet"></i></span><span class="name">droplet</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="eye"></i></span><span class="name">eye</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="eye-off"></i></span><span class="name">eye-off</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="clock"></i></span><span class="name">clock</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Observability &amp; app-nav</h2>
+    <div class="grid">
+      <div class="cell"><span class="glyph"><i data-icon="activity"></i></span><span class="name">activity</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="bell"></i></span><span class="name">bell</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="git-branch"></i></span><span class="name">git-branch</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="users"></i></span><span class="name">users</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="box"></i></span><span class="name">box</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="credit-card"></i></span><span class="name">credit-card</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="list"></i></span><span class="name">list</span></div>
+      <div class="cell"><span class="glyph"><i data-icon="layout"></i></span><span class="name">layout</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Beyond the set</h2>
+    <p class="t-body-md" style="color:var(--fg-secondary);max-width:66ch">The set is
+    deliberately small — it grows by curation, not accretion. When an app
+    genuinely needs a glyph that isn't here, use
+    <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>
+    directly (e.g. <code>lucide-react</code>, or a static SVG export) at
+    <b class="anchor">size 16, stroke 1.5</b> so it families with the tuned
+    set — and file the name upstream so it can be ruled into the canon or
+    closed. An unknown <code>data-icon</code> name renders a dashed
+    placeholder box, never a silent blank.</p>
   </section>
 
   <section>

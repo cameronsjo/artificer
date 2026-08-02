@@ -1,0 +1,178 @@
+# Artificer Dark — Helix theme
+# Ghostty-rooted spine, Jazz Age accents
+# Drop in: ~/.config/helix/themes/artificer-dark.toml
+# Then in config.toml:  theme = "artificer-dark"
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+#
+# Syntax resolves through $roles.syntax, the same editor-agnostic role layer VS
+# Code consumes — a keyword is the same hue in both editors by construction.
+
+# ── Syntax · $roles.syntax ────────────────────────────────────────────
+"attribute" = "urgentBright"  # attributes read as tag
+"type" = "accentBright"
+"type.enum.variant" = "attentionAlt"  # matches vscode enumMember
+"constructor" = "accentBright"  # names the type it yields
+"constant" = "attentionAlt"
+"string" = "successBright"
+"comment" = "fgMuted"
+"variable" = "fg"
+"variable.parameter" = { fg = "steel", modifiers = ["italic"] }
+"variable.builtin" = { fg = "brandPurpleBright", modifiers = ["italic"] }  # self/this
+"label" = "fg"
+"punctuation" = "fgMuted"
+"keyword" = "brandPurpleBright"
+"keyword.operator" = "fgMuted"  # `or`, `in` — operators, not keywords
+"keyword.storage.modifier" = { fg = "brandPurpleBright", modifiers = ["italic"] }
+"operator" = "fgMuted"
+"function" = "accent"
+"function.macro" = "brandPurpleBright"  # matches vscode macro
+"tag" = "urgentBright"
+"namespace" = "cyan"
+
+# ── Markup ────────────────────────────────────────────────────────────
+"markup.heading" = { fg = "accent", modifiers = ["bold"] }
+"markup.bold" = { fg = "fg", modifiers = ["bold"] }
+"markup.italic" = { fg = "fg", modifiers = ["italic"] }
+"markup.strikethrough" = { modifiers = ["crossed_out"] }
+"markup.link.url" = { fg = "accent", underline = { style = "line" } }
+"markup.link.text" = "accent"
+"markup.link.label" = "accent"
+"markup.quote" = { fg = "fgSecondary", modifiers = ["italic"] }
+"markup.raw" = "successBright"
+
+# ── Diff ──────────────────────────────────────────────────────────────
+"diff.plus" = "success"
+"diff.minus" = "urgent"
+"diff.delta" = "attention"
+"diff.delta.conflict" = "urgentBright"
+
+# ── Diagnostics ───────────────────────────────────────────────────────
+# Bare keys are the gutter indicators; diagnostic.* is the editing area, where
+# an undercurl carries severity without recoloring the code underneath.
+"error" = "urgent"
+"warning" = "attention"
+"info" = "cyan"
+"hint" = "fgMuted"
+"diagnostic" = { underline = { color = "fgMuted", style = "curl" } }
+"diagnostic.error" = { underline = { color = "urgent", style = "curl" } }
+"diagnostic.warning" = { underline = { color = "attention", style = "curl" } }
+"diagnostic.info" = { underline = { color = "cyan", style = "curl" } }
+"diagnostic.hint" = { underline = { color = "fgMuted", style = "curl" } }
+"diagnostic.unnecessary" = { fg = "fgDisabled", modifiers = ["dim"] }
+"diagnostic.deprecated" = { fg = "urgentBright", modifiers = ["crossed_out"] }
+
+# ── Editor plane ──────────────────────────────────────────────────────
+# ui.background is deliberately UNSET, so Helix inherits Ghostty's canvas
+# (terminalBg #313540) — a recorded exception (ADR 0038), not an oversight.
+# Three roles sit under the repo's 3.0 hard floor there: comment and operator at
+# 2.68, tag and invalid at 2.70; string is 3.95 against its 4.5 floor. The same
+# ratios already ship as Ghostty ANSI 9/10 on the same canvas, so this surfaces a
+# pre-existing terminal-wide condition rather than introducing one. Want the
+# floors back? `:theme artificer-dark-opaque` — generated from this same
+# source, differing only in this block.
+"ui.background.separator" = "border"
+"ui.text" = "fg"
+"ui.text.inactive" = "fgDisabled"
+"ui.text.info" = "accent"
+"ui.text.directory" = "steel"
+"ui.text.focus" = { fg = "ink", bg = "accentFill", modifiers = ["bold"] }
+
+"ui.cursor" = { fg = "bg", bg = "fgSecondary" }
+"ui.cursor.primary" = { fg = "bg", bg = "accent" }
+"ui.cursor.match" = { fg = "accentBright", modifiers = ["bold"], underline = { color = "accent", style = "line" } }
+
+# Selection is a neutral surface tint, not a saturated fill: Ghostty can force
+# selection-foreground (see ghosttyTheme above) but Helix cannot, so the dim
+# syntax roles keep whatever hue they had. selectionFill would swamp them —
+# comment on it measures 1.39 dark / 1.65 light, against 1.84 / 2.87 here.
+# No opaque fill clears a floor; this is the least bad, and it is the
+# convention every stock theme reaches for.
+"ui.selection" = { bg = "bgOverlay" }
+"ui.selection.primary" = { bg = "bgFloat" }
+"ui.cursorline.primary" = { bg = "bgRaised" }
+
+# Line numbers recede on purpose (fgDisabled: 2.43 dark / 3.25 light) — with
+# line-number = "relative" these are offsets you glance past, and the absolute
+# number you actually read is the selected one at full fg. Same binding VS Code
+# ships for editorLineNumber; ruleUsageSetsRatio.
+"ui.linenr" = "fgDisabled"
+"ui.linenr.selected" = { fg = "fg", modifiers = ["bold"] }
+
+# ── Floating plane ────────────────────────────────────────────────────
+# Popups need an opaque fill — text renders over whatever is behind them.
+# Caveat worth knowing before touching this: a code block inside a hover doc
+# paints syntax on bgOverlay, where comment measures 2.22 dark (3.13 light).
+# Not gated by check:contrast, which scopes SURFACE to bg/ivory.
+"ui.window" = "border"
+"ui.popup" = { fg = "fg", bg = "bgOverlay" }
+"ui.popup.info" = { fg = "fg", bg = "bgOverlay" }
+"ui.help" = { fg = "fg", bg = "bgOverlay" }
+"ui.menu" = { fg = "fg", bg = "bgOverlay" }
+"ui.menu.selected" = { fg = "ink", bg = "accentFill", modifiers = ["bold"] }
+"ui.menu.scroll" = { fg = "borderLifted", bg = "bgRaised" }
+"ui.picker.header" = { fg = "fgSecondary", bg = "bgOverlay" }
+"ui.picker.header.column" = "fgSecondary"
+# Gold rides the underline, not the label: accent as TEXT on bgOverlay is
+# 4.35 light, under AA. As a rule it carries no text obligation (ruleUsageSetsRatio).
+"ui.picker.header.column.active" = { fg = "fg", modifiers = ["bold"], underline = { color = "accent", style = "line" } }
+"ui.highlight" = { bg = "bgRaised" }
+"ui.highlight.frameline" = { bg = "bgFloat" }
+
+# ── Statusline ────────────────────────────────────────────────────────
+# bgOverlay so the bar reads as a band against the editor's bg, not a seam.
+# Mode chips reuse the hues tmux and yazi already established: brandPurple*
+# for the resting mode (tmux's colour13 accent), urgent-free so a red bar
+# always means something is wrong.
+"ui.statusline" = { fg = "fg", bg = "bgOverlay" }
+"ui.statusline.inactive" = { fg = "fgSecondary", bg = "bgRaised" }
+"ui.statusline.separator" = { fg = "border", bg = "bgOverlay" }
+"ui.statusline.normal" = { fg = "ink", bg = "brandPurpleBright", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "ivory", bg = "successFill", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "ink", bg = "accent", modifiers = ["bold"] }
+
+"ui.bufferline" = { fg = "fgSecondary", bg = "bgRaised" }
+"ui.bufferline.active" = { fg = "fg", bg = "bg", underline = { color = "accent", style = "line" } }
+"ui.bufferline.background" = { bg = "bgRaised" }
+
+# ── Virtual text & gutters ────────────────────────────────────────────
+"ui.virtual.ruler" = { bg = "bgRaised" }
+"ui.virtual.whitespace" = "fgDisabled"
+"ui.virtual.indent-guide" = "border"
+"ui.virtual.inlay-hint" = "fgMuted"
+"ui.virtual.inlay-hint.parameter" = "steel"
+"ui.virtual.inlay-hint.type" = "accentBright"
+"ui.virtual.wrap" = "fgDisabled"
+"ui.virtual.jump-label" = { fg = "urgentBright", modifiers = ["bold"] }
+
+"ui.debug.breakpoint" = "urgent"
+"ui.debug.active" = "attention"
+"tabstop" = { bg = "bgOverlay" }
+
+# ── Palette · verbatim _palette.json token names ──────────────────────
+[palette]
+accent = "#dbbb6f"
+accentBright = "#e3c885"
+accentFill = "#c4932a"
+attention = "#c4808a"
+attentionAlt = "#d6936a"
+bg = "#292c33"
+bgFloat = "#474d60"
+bgOverlay = "#3c4150"
+bgRaised = "#313540"
+border = "#4a4f5c"
+borderLifted = "#5a606e"
+brandPurpleBright = "#b095e0"
+cyan = "#7da6a4"
+fg = "#e8e6e1"
+fgDisabled = "#666666"
+fgMuted = "#5a7a8a"
+fgSecondary = "#c5c8c6"
+ink = "#20203e"
+ivory = "#f5ead0"
+steel = "#b8cad4"
+success = "#4a8a5e"
+successBright = "#5fa073"
+successFill = "#2d6644"
+urgent = "#a04540"
+urgentBright = "#b85a55"

@@ -17,7 +17,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Diagrams</p>
@@ -30,7 +30,7 @@
   </p>
 
   <h2 class="section-title">SVG primitives</h2>
-  <p class="meta">Apply <code>.dia-node</code> / <code>.dia-edge</code> / <code>.dia-edge-label</code> classes to inline SVG and the diagram theme follows the rest of the system. Reusable arrow marker defined once at the top of the page.</p>
+  <p class="meta">Apply <code>.dia-node</code> / <code>.dia-edge</code> / <code>.dia-edge-label</code> classes to inline SVG and the diagram theme follows the rest of the system. Reusable arrow marker defined once at the top of the page — see the id-scoping note below.</p>
 
   <!-- Shared marker definitions used by all diagrams below -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -43,6 +43,9 @@
       </marker>
     </defs>
   </svg>
+  <p class="note">SVG <code>&lt;defs&gt;</code> ids are document-scoped, not component-scoped. Define shared markers once at the app root (as above) — never hard-code an id inside a repeated component, or every instance after the first collides silently. Rendering N copies of one diagram component? Namespace per instance instead:</p>
+  <pre class="code-block">&lt;marker id="arrow-${id}" ...&gt;...&lt;/marker&gt;
+&lt;path marker-end="url(#arrow-${id})"/&gt;</pre>
 
   <!-- Flow diagram -->
   <h3>1 · Flow <span style="color:var(--fg-disabled);font-weight:400">— "what happens?"</span></h3>
@@ -271,6 +274,19 @@ function getCss(v) {
   color: var(--fg);
 }</pre>
 
+  <!-- Interactive nodes -->
+  <h2 class="section-title">Interactive nodes</h2>
+  <p class="meta">A node that responds to click needs the same keyboard contract as any other control — <code>tabindex="0"</code>, a role, a label, and Enter/Space handling.</p>
+  <pre class="code-block">&lt;g class="dia-node" tabindex="0" role="button"
+   aria-label="View worker details"&gt;
+  &lt;rect .../&gt;&lt;text ...&gt;Worker&lt;/text&gt;
+&lt;/g&gt;
+
+node.addEventListener('keydown', e =&gt; {
+  if (e.key === 'Enter' || e.key === ' ') activate(node);
+});</pre>
+  <p class="note">The focus ring comes free — <code>[role="button"]:focus-visible</code> is already in the global catch-all (<code>artificer.css</code>). Handle both <code>Enter</code> and <code>Space</code>; a click handler alone leaves keyboard users stuck.</p>
+
   <!-- Anti-patterns -->
   <h2 class="section-title">Anti-patterns</h2>
   <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">
@@ -278,7 +294,7 @@ function getCss(v) {
     <li><b class="anchor">Drop-shadow on every node.</b> Adds visual weight without information. Reserve for elevation in real UI, not in diagrams.</li>
     <li><b class="anchor">Sans labels in mono diagrams.</b> Mismatch reads as a pasted screenshot. Use mono for nodes; sans is fine for swimlane headers.</li>
     <li><b class="anchor">Auto-layout that re-flows on theme change.</b> Lock layout; only theme/colors react.</li>
-    <li><b class="anchor">"Click for details" with no visible affordance.</b> If a node is interactive, give it a hover lift or border-accent; don't make it look static.</li>
+    <li><b class="anchor">"Click for details" with no visible affordance.</b> If a node is interactive, give it a hover lift or border-accent — and the keyboard contract above (<code>tabindex</code> + role + Enter/Space); don't make it look static or mouse-only.</li>
   </ul>
 </main>
 </body>

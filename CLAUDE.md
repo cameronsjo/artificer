@@ -14,11 +14,11 @@
 ## Hard rules — do not break
 
 1. **Use existing tokens.** Never write hex codes, hardcoded `px` for spacing, or invented `cubic-bezier` curves. If the value isn't in `artificer.css` (search for `--`), don't use it. *(The sole exception is the **Whimsy** layer — see § Whimsy — which is opt-in, bounded, and the one place full-spectrum color and looping motion are sanctioned.)*
-2. **Use existing utility classes.** `.stack`, `.cluster`, `.grid-auto`, `.container`, `.btn`, `.card`, `.field`, `.notif`, etc. Don't recreate them with bespoke flexbox.
-3. **One primary CTA per view.** `.btn--primary` shows up at most once per visible screen. Secondary actions use `.btn--secondary` or `.btn--ghost`.
-4. **Lists cap at 7 visible items** (default 5). Beyond that: progressive disclosure, search, or grouping.
-5. **Anchor words bold** — 3–5 `<b class="anchor">` per paragraph in body content. This is the system's primary scan mechanism, not optional emphasis.
-6. **Notifications tier by action required**, not severity. See the four `.notif--*` modifiers.
+2. **Use existing utility classes.** `.stack`, `.cluster`, `.grid-auto`, `.container`, `.btn`, `.card`, `.field`, `.notif`, etc. Don't recreate them with bespoke flexbox. Size-modifier classes (e.g. `.container--*`) require their base class alongside them — the base carries the box (width, centering, padding); the modifier only tunes max-width.
+3. **One primary CTA per view.** `.btn--primary` shows up at most once per visible screen — zero is valid too; a read-only surface owes no CTA. Secondary actions use `.btn--secondary` or `.btn--ghost`.
+4. **Lists cap at 7 visible items** (default 5). Beyond that: progressive disclosure, search, or grouping. A primary data table isn't a "list" — it's governed by the table recipes, not this cap.
+5. **Anchor words bold** — 3–5 `<b class="anchor">` per paragraph in body content. This is the system's primary scan mechanism, not optional emphasis. When prose arrives as data rather than markup, mark anchors as `**…**` in the data and promote each marked span to `<b class="anchor">` at render — single-level only, never nested.
+6. **Notifications tier by action required**, not severity — and they are **silent by default**: visual-only, with audible escalation only as a carve-out that names its specific event class, is opt-in (or trivially disabled), and never carries the meaning alone. See the four `.notif--*` modifiers.
 7. **Numbers use `font-variant-numeric: tabular-nums`** — there's a `.num` utility, or set on parent.
 8. **z-index uses the six rungs only**: `--z-base | --z-raised | --z-overlay | --z-popover | --z-modal | --z-toast`. No improvising.
 9. **Honor `prefers-reduced-motion`.** Already wired. Don't add hard-coded `transition: 600ms` that bypasses `--dur-*`.
@@ -80,7 +80,7 @@ var(--fg-muted) /* muted meta/comment — steel-blue, between secondary and disa
 var(--fg-disabled) /* disabled text */
 var(--accent) /* primary interactive — gold (dark) / sienna (light) */
 var(--accent-bright) /* hover/focus accent */
-var(--accent-fill) /* button bg, filled badges */
+var(--accent-fill) /* button bg, filled badges — SMALL controls only; never a selected-card/surface bg (pair only with --on-accent) */
 var(--on-accent) /* text on accent-fill */
 var(--brand-purple) /* Cameron's purple — wordmark, brand surfaces; pair with --brand-purple-bright for hover */
 var(--success) /* sage green */
@@ -106,6 +106,8 @@ var(--font-sans) /* iA Writer Quattro — prose. Default body face for DOCUMENT
                           explainers, marketing-adjacent content. Also: form
                           labels, hints, microcopy on tool surfaces. */
 /* Sizes via classes: .t-headline-lg/md, .t-body-lg/md, .t-label-md/sm */
+/* Type utilities set size + line-height only; compose vertical rhythm
+                          with .stack (gap-owned), not margins. */
 /* Prose / doc-chrome utilities: .meta (sans body-md, fg-secondary,
                           max-width 66ch), .note (sister of .meta — label-sm
                           fg-secondary; INHERITS the body face, so it's mono on
@@ -153,7 +155,9 @@ var(--chart-grid|chart-grid-strong|chart-axis) /* chart chrome */
 ```
 
 **Responsive & touch.** The **44px target is a NAV rule** (a11y #8: "in
-nav") — desktop form controls stay dense on purpose. Touch devices escalate
+nav") — desktop form controls stay dense on purpose. Every other pointer
+target floors at **≥24×24px** or the WCAG spacing exception (SC 2.5.8);
+dense-table affordances are the audited exception below that. Touch devices escalate
 automatically via `@media (pointer: coarse)` (btn/inputs/checkbox/radio/
 toggle/slider grow to ≥44px on a finger; mouse desktops are untouched).
 Sticky/fixed chrome (`.appbar`, `.nav-drawer`) clears the notch with
@@ -170,31 +174,55 @@ core scale or tool UI.
 
 | Ask | Use |
 |---|---|
+| "App shell / full-viewport layout" | `.app-shell` + `.app-shell__content` — appbar + sidenav + content skeleton for tool surfaces; collapses to the drawer under `--bp-tablet`. |
+| "Top app bar" | `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer` — sticky tool chrome; clears the notch via `safe-area-inset`. |
+| "Side navigation" | `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots) — the section spine; one level deep, `.tree` for deeper. |
+| "Mobile nav drawer" | `.nav-drawer` + `.nav-scrim` — takes over below `--bp-tablet`. |
 | "Add a settings page" | `.page-shell` + `.container--md` + `<fieldset>` + `.field` blocks, 3–5 fields per group |
+| "Breadcrumb" | `.crumb` + `.crumb__sep` — where-am-I; nav's first rung. |
+| "Button" | `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon` — one primary per view (Hard rule #3). |
+| "Search input" | `.search` — the icon-slotted search box; `.appbar__search` in the bar. |
+| "Chip / facet tag" | `.chip` (+ `.chip__count`) — faceted filters in a `.filter-bar` or `.cluster`. |
 | "Confirmation dialog" | `.scrim` + `.modal` + `ArtificerFocus.trap()` — see `overlay.html` in live system |
+| "Tooltip" | `.tooltip` — label-tier hover aid; `.popover` for body content. |
 | "Toast" | `.notif` + tier modifier; pick by action-required not severity. For transient on-screen placement, mount the `.notif` in a `.toast-region` (fixed corner-anchored stack on `--z-toast`; `--top-right`/`--bottom-left`/… + `.toast-region__more`). A toast IS a `.notif` in the region — no separate toast class. |
-| "Status pill" | `.badge--{tier}` + `.dot--{tier}` inside |
+| "Status pill" | `.badge--{tier}` + `.dot--{tier}` inside. Coming from Bootstrap/Tailwind `warning`? That tier is `--attention` here (badge, dot, card, notif, banner) — one name per tier, no `warning` alias. |
+| "Dense table status / ✓✗~– cells" | `.glyph--{success\|muted\|attention\|na}` — the themeable anti-emoji for comparison grids (✓ `--success`, ✗ `--fg-muted`, ~ `--attention`, – `--fg-secondary`). Emoji are OS-rendered and ignore the theme; glyphs are real text tinted by a token. They're graphical objects (WCAG SC 1.4.11, 3:1 floor): each pairs with `role="img"` + `aria-label`, never the mark alone. Sparse/labeled status stays `.badge`+`.dot`. |
 | "Loading state" | Pick by duration: <100ms nothing · 100–500ms disabled label · 500ms–2s `.skeleton` · >2s `.progress` with concrete copy · >10s background. Long wait with nothing to count: `.progress--indeterminate` + concrete copy ("Deploying to us-east-1…", never bare "Deploying…"). |
 | "Refreshing a value in place" | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses; fresh value fades in on `.live-value`'s transition. NOT `.skeleton` (would blank it). |
+| "Live data indicator" | `.live-tick` (pulsing dot) + `.last-updated` (timestamp) — auto-updating regions still need an in-UI pause (a11y #13). |
 | "Empty state" | `.empty-state` — title + body + ONE primary action |
 | "Table" | `.table`, right-align numerics with `.num`, em-dash for empty cells. `.table--responsive` + `data-label` to reflow to cards <640px |
+| "Key-value list" | `.kv` — mono `<dl>` grid for metadata pairs; `.table` for real data. |
 | "Tabs / view switcher" | `.tabs` + `role=tablist`/`tab`/`tabpanel` + `aria-controls`; then `ArtificerTabs.enhance(el)` (or `data-tabs` + `observe()`) for the APG keyboard model — the CSS alone is style-only. NOT `.timerange`. |
 | "Segmented control / view-param switch" | `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) |
+| "Filter bar" | `.filter-bar` + `.grow` — ALL filters in one top bar, never sprinkled into panels. |
+| "Blog / editorial / document top nav / masthead" | `.masthead` (artificer-editorial.css) + `.masthead__brand`/`__nav`/`__meta` — non-sticky document counterpart to `.appbar`; compose brand with `.wordmark`, toggle with `.theme-toggle--inline`; `[aria-current="page"]` marks the page. |
+| "Brand wordmark" | `.wordmark` (renders `artificer.` — § Brand). |
+| "Theme toggle" | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph. |
 | "Stat card" | `.stat` (core) — `.stat__label` (mono small caps) + `.stat__value` (mono large tabular) + `.stat__row` + `.stat__delta`(`.down`). The cell of a `.kpi-strip`. |
+| "KPI strip" | `.kpi-strip` of `.stat` cells over a chart — the KPI dashboard recipe's top band. |
 | "Form field" | `<div class="field">` with label, input, and EITHER hint OR error (with `aria-describedby`) |
 | "Avatar" | `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`. Not `.dot` (8px status) or `.badge` (pill). |
 | "Accordion / disclosure" | `.accordion` wrapping native `<details><summary>` + `.accordion__body` — keyboard + a11y for free, no JS |
 | "Combobox / dropdown / palette" | One option-popover (`.menu`/`.listbox` + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the roving cursor) — don't hand-roll a floating list. Behavior: `data-options` / `ArtificerOptions.enhance()` |
 | "Command palette / ⌘K" | `.palette` (= `.palette__search` header + a `.listbox` body) on a `.scrim`, focus-trapped via `ArtificerFocus.trap()`; Esc closes. Cursor + Enter dispatch: `ArtificerOptions.combobox(input, list, {onSelect})`. A recipe over the option-popover — see `components-extended.html`. |
 | "Tree / file explorer / nested nav" | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree`/`treeitem`/`group`. Nested disclosure beyond `.accordion` (flat) + `.sidenav` (one level). `artificer-tree.js` ships expand/collapse + arrow-key roving (`data-tree` / `ArtificerTree.enhance()`). |
+| "Split pane / master-detail" | `.split-pane` + `.pane--active`/`.pane--inactive` — Rule #6 recession marks the unfocused pane. |
 | "Pagination" | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends. Counted, jumpable ranges only — unbounded sets use "load more". |
 | "Persistent page banner" | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions`. A standing layout band (read-only mode, degraded nodes), NOT the transient toast-tier `.notif`. Color encodes tier; texture never does. |
+| "Footer / colophon / fine print / attribution" | `.colophon` (band) + `.colophon__label` (column headers) + `.colophon__fine` (legal tier); columns via `.grid-auto`; prose auto-sans even inside `.surface-tool`. For a prose island elsewhere in a tool surface, `.surface-document` flips a region back to `--font-sans`. |
+| "Selected card / selected row / active choice" | Mark it on the edge, not as a fill: `.card--active` (`background: var(--bg)` + `border-left: 2px solid var(--accent)`) for a card, the option-list `.is-active` treatment (`background: var(--bg-raised)`) for a row. NEVER `--accent-fill` as a large surface background — its only rated text color is `--on-accent`, so default body text on it fails contrast. |
 | "File upload / dropzone" | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events. Color marks the drag state, not texture. |
 | "Animation" | Only animate state changes. `transition: prop var(--dur-fast) var(--ease)`. Never invent durations. |
 | "Live-spec / doc-page example container" | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>`. Modifiers: `.figure--frame` (relative-positioned, padding 0), `.figure--flush` (padding 0, edge-to-edge). Captions reuse canonical `.meta`. |
 | "Doc-page section header" | `<h2 class="section-title">` — mono, `--t-headline-md-size` (22px), uppercase, `--fg-secondary`, border-bottom rule. Doc/spec chrome; on tool surfaces prefer the structural `h2` already styled. |
+| "Syntax-highlighted code block" | `.code-block` + the `.tok-*` roles. |
 | "Tabular number" | `.num` utility — sets `font-variant-numeric: tabular-nums`. Drop on the cell, or on the parent for a whole table. |
 | "Short hint paragraph under a figure or field" | `.note` — sister of `.meta`, smaller (label-sm). Inherits the body face — **mono on tool surfaces, sans on document surfaces** — so each surface's character carries through. Use for one-sentence asides; escalate to `.meta` when it grows past a sentence. |
+| "Dashboard shell" | `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`) — one frame, five recipes (§ Composition). |
+| "Chart / sparkline / gauge" | `.chart` scaffold, `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge`; series via `--series-1..5` (§ Charts). |
+| "Architecture / flow diagram" | `.dia-node`/`.dia-edge` on inline SVG (§ Diagrams). |
 | "User-defined fun element / celebration / long 'thinking' state / brand wordmark" | `.whimsy` + `artificer-whimsy.css` & `.js` — the ONE sanctioned exception to the motion + raw-color rules. **See § Whimsy.** Never reach for it on chrome, status, data, or errors. |
 | "Make it fun / playful / celebratory / rainbow" | The **Whimsy** layer — see § Whimsy. `.whimsy` / `data-whimsy="wave"` / `Whimsy.celebrate()`. Don't hand-roll a one-off. |
 | "Make it feel like paper / give it grain / material / texture / depth" | The **Texture** layer (`artificer-texture.css`) — see § Texture. `.tex-grain` / `.tex-dots` / `.tex-line--hatch` / `.tex-paper` / `.tex-raised`. Hueless + motionless; never on data/status/errors. |
@@ -208,7 +236,7 @@ When you're past primitives and assembling product surfaces, three more rule-set
 - **One frame, five recipes — `.dash` + a density + a primitive body. Don't invent a sixth recipe.** The shell is `.dash` (framed surface) with `.dash__topbar` (`.dash__title` + `.dash__actions`); the body (1fr) is built from shipped primitives. The five: **KPI** = `.kpi-strip` over a chart · **ops console** = `.split-pane` + log + `.table` · **observability** = a chart grid (`.grid-2`/`.grid-auto`) · **table-first** = `.table` is the body · **split** = `.split-pane` (master/detail). They are recipes, **not** classes — there is no `.dash-kpi-strip`/`.dash-ops`/etc.
 - **Density is a container choice.** Set `.density-compact|cozy|comfortable` on the page or panel. Compact for ops/log views, cozy default, comfortable for docs.
 - **Filters live in one bar at the top — `.filter-bar`.** Time-range (`.timerange`), search, faceted chips (`.chip`), and the density toggle. Don't sprinkle filters into individual panels.
-- **Live data uses `.live-tick` (pulsing dot) + `.last-updated` (timestamp) atoms.** No spinning refresh icons; the dot pulses and the timestamp updates. (No `.streaming`/`.live-dot` class — those names were doc drift.)
+- **Live data uses `.live-tick` (pulsing dot) + `.last-updated` (timestamp) atoms.** No spinning refresh icons; the dot pulses and the timestamp updates. (No `.streaming`/`.live-dot` class — those names were doc drift.) Auto-updating regions still need an in-UI pause control — see the a11y checklist's pause rule; `prefers-reduced-motion` doesn't cover content updates.
 
 ### Charts (`charts.html`)
 
@@ -218,6 +246,9 @@ When you're past primitives and assembling product surfaces, three more rule-set
 - **Sparklines have no axes** and use `.sparkline` / `.sparkbars`. They live in tables, not standalone.
 - **Two gridlines max** — baseline and one mid. Bars start at zero; lines may use a fitted Y range.
 - **Don't animate chart entry by default.** Honor `prefers-reduced-motion`. The data is the point, not the reveal.
+- **The muted series palette is a stance, not an oversight.** Series slots stay aliases of semantic tokens — the system deliberately fails color-alone chroma/CVD validators. A **second channel** (direct label, shape, line style, or position) is mandatory on every multi-series categorical chart; color never carries series identity alone.
+- **Light mode has fewer distinguishable channels than dark** — attention collapses toward the gold family. A surface combining categorical series with an attention-tier marker must let a glyph or label carry that distinction across the theme flip, not color alone.
+- **Valenced scales with two charged ends use `--diverge-low|mid|high`.** `--ramp-*` is for magnitude, where one end is neutral — a 0–2 rubric where 0 is bad and 2 is good is a diverge, not a ramp.
 
 ### Diagrams (`diagrams.html`)
 
@@ -228,14 +259,18 @@ When you're past primitives and assembling product surfaces, three more rule-set
 - **No more than 9 nodes per diagram.** Group into sub-systems and link out.
 - **Mermaid:** call `mermaid.initialize({ theme: 'base', themeVariables })` once at boot, reading from CSS vars. Snippet in `diagrams.html`.
 - **React Flow:** wrap in `.rf-artificer` — class-scoped overrides forward all tokens.
+- **SVG `<defs>` ids are document-scoped, not component-scoped.** Define shared markers once at the app root, or namespace per instance (`arrow-<instance-id>`) when rendering N copies of one diagram component — never hard-code one id inside a repeated component.
+- **Interactive nodes carry the same keyboard contract as any control.** `tabindex="0"` + `role="button"` + `aria-label` + Enter/Space handling; the focus ring comes free from the global `[role="button"]:focus-visible` catch-all.
 
 ## Voice & microcopy
 
 - **Literal, not gestural.** "No runs yet" beats "Nothing to see here."
 - **Name what's missing**, **why** (briefly), **what to do.** Three sentences max for empty states.
+- **First-run empty states teach, not just describe.** State what the feature is *for*, not only that it's empty. When the system can infer the fix — a typo'd search, a filter that zeroed the results — surface it as a one-tap action above the prose, not buried in it.
 - **Errors say what to do**, not just what went wrong. "Add a digit" beats "Invalid."
 - **No loading verbs alone.** "Loading…" → "Indexing 1,247 of 8,300 files."
 - **Tabular > narrative for data.** Tables before paragraphs.
+- **Plain language, not average language.** Target a 6th–8th-grade reading level: short common words, subject-verb-object order, verbs over noun-piles ("delete the file" beats "perform file deletion"). Split any sentence that runs past ~25 words.
 
 ## Anti-patterns
 
@@ -348,6 +383,7 @@ animation — point it here.
 | Brushed-metal gold fill (cousin of silver) | `.whimsy--gold` — slow (16s) near-static metal; add `.whimsy--no-flow` for a still gold fill |
 | Your own palette | override `--whimsy-gradient` in one line |
 | Maximum saturation (rare) | `.whimsy--vivid` |
+| Whimsy in a static SVG (README card, OG image, email) | No DOM, no JS — `.whimsy--brand`'s CSS+JS mechanism doesn't port. See `docs/recipes/whimsy-static-svg.md` for the `<linearGradient>` + keyframed `stop-color` recipe. |
 
 ### The three effects (the whole motion vocabulary)
 
@@ -384,7 +420,7 @@ Whimsy.ignite(el) / .clear(el)   // manual toggle
 ### Doctrine — do not break
 
 1. **Opt-in only.** Never on chrome, nav, or anything automatic.
-2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper.
+2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper. The API doesn't coordinate flowing slots for you — exclusivity is the caller's responsibility, same as one-primary-CTA.
 3. **Never on load-bearing UI.** No whimsy on errors, destructive actions, status, or data. **One sanctioned exception:** the `.whimsy-focus` ring (artificer-whimsy.css) — a burnished ring that *augments* a control's standard `:focus-visible` outline on **hover or focus**, never replacing it (the outline still carries the WCAG focus signal). Opt-in, on explicit request only, one per view, reduced-motion holds it still-but-visible.
 4. **Burnished by default.** `.whimsy--vivid` is a conscious choice, not a reflex.
 5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy.
@@ -435,7 +471,11 @@ until you reach for a texture.
 
 ---
 
-## The 8 form rules
+## The 12 form rules
+
+Every task carries irreducible complexity (Tesler's Law). It moves into the
+component — smart defaults, auto-fill, behavior modules — never onto the
+person filling out the form.
 
 1. **Label every field.** Placeholder is not a label — it disappears.
 2. **Hint text explains constraints** ("2–32 chars") *before* the user types, not after.
@@ -445,23 +485,30 @@ until you reach for a texture.
 6. **One primary button per form.** If you need two, the secondary is "Cancel" or a ghost variant.
 7. **Submit on `Enter`** from any text input. Multi-line forms: `⌘ Enter`.
 8. **Don't reset the form on error.** Preserve everything the user typed.
+9. **Never ask for the same information twice in a flow.** Carry answers forward — auto-fill or pick-list from what the user already gave, never re-type it (WCAG 2.2 SC 3.3.7).
+10. **Authentication allows paste and passkeys.** Never demand puzzle-solving or memory gymnastics — no CAPTCHA, no cognitive-test gates (WCAG 2.2 SC 3.3.8).
+11. **Anything drag-based offers a single-pointer alternative.** Reorder, slider, swipe — ship a click/tap path too, for tremor, trackball, and eye-gaze users (WCAG 2.2 SC 2.5.7).
+12. **Destructive and committing actions prefer undo or a clearly-marked exit over confirm-alone.** This is a judgment call, not a mandate: where undo is genuinely impractical to implement, a confirm dialog naming the specific consequence is the documented fallback. Never demand what a backend can't feasibly support.
 
 ---
 
-## The 12-point a11y shipping checklist
+## The 13-point a11y shipping checklist
+
+Design for the most-constrained user first — that constraint anchors the best default for everyone.
 
 1. **One `<h1>` per page;** headings nest in order (no h2 → h4 jumps).
 2. **Every form input has a `<label for>`.** Placeholder is not a label.
 3. **Errors use `aria-invalid="true"` + `aria-describedby`** pointing to the error id.
 4. **Color is not the only signal.** Status badges include a dot AND text. Required fields say "required."
-5. **All interactive elements reachable by keyboard.** No `onclick` on bare divs.
+5. **All interactive elements reachable by keyboard.** No `onclick` on bare divs. Every actionable element carries a perceptible actionable cue — gesture-only or hover-only interactions are a violation.
 6. **Focus order matches visual order.** No CSS `order` tricks that desync Tab.
 7. **Modals trap focus** via `artificer-focus.js`; Esc closes; focus returns to trigger.
-8. **Touch targets ≥ 44 × 44 px** in nav; smaller OK only inside dense tables.
+8. **Touch targets ≥ 44 × 44 px in nav** — that rule stays as-is. Every other pointer target floors at ≥24 × 24 px or the WCAG spacing exception (SC 2.5.8); dense-table affordances are the audited exception below that. Sticky/fixed chrome must never cover the element that currently holds focus (SC 2.4.11).
 9. **Images have `alt`** — empty `alt=""` for decorative, descriptive otherwise. Icons-as-labels need `aria-label` on the parent.
 10. **Honor `prefers-reduced-motion`** — already wired; durations collapse to 0ms.
 11. **Page works at 200% zoom** without horizontal scroll.
 12. **Content readable without JavaScript.** Forms can require JS; content shouldn't.
+13. **Auto-updating regions offer an in-UI pause.** Live ticks, refreshing values, log tails — `prefers-reduced-motion` doesn't cover content updates (SC 2.2.2). Expiring sessions autosave and warn-and-extend before timeout; never drop work to a silent expiry (SC 2.2.1).
 
 **Test it.** Tab through. Turn off your mouse. Run axe DevTools (zero violations). VoiceOver/NVDA once per major view. Set OS reduced-motion, reload — nothing should jump.
 

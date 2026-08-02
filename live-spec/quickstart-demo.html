@@ -10,10 +10,11 @@
     (function () {
       try {
         var saved = localStorage.getItem('artificer.theme');
+        var pinned = saved === 'light' || saved === 'dark';
         var prefersLight = window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: light)').matches;
         document.documentElement.setAttribute(
-          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
+          'data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
@@ -27,9 +28,7 @@
   <title>Artificer · quickstart demo</title>
 </head>
 <body>
-  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-    <span class="dot"></span><span data-theme-label>Dark</span>
-  </button>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
   <main class="container container--md" style="padding:48px 24px">
     <p class="crumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Quickstart demo</span></p>
     <h1 class="t-headline-lg">it works.</h1>

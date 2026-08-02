@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.18.1
+# Artificer · v0.21.0
 
 Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Every token and rule reduces cognitive load for a brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -84,18 +84,20 @@ Paths are relative to this SKILL.md. The skill lives at `skills/artificer-design
 | File | Purpose |
 |---|---|
 | `../../src/artificer.css` | All tokens + utility classes. The only stylesheet you need. |
-| `../../src/artificer-theme.js` | Persistent dark/light toggle, reads `localStorage`. |
+| `../../src/artificer-theme.js` | Persistent theme control — dark / light / auto (auto follows the OS live); hydrates the empty canonical `.theme-toggle` button. |
 | `../../src/artificer-focus.js` | `ArtificerFocus.trap(el, {onEscape})` — focus-trap helper for modals. |
-| `../../src/artificer-icons.js` | Lucide-rooted icon set. Auto-hydrates `<i data-icon="…">` placeholders. |
+| `../../src/artificer-icons.js` | Lucide-rooted icon set, Lucide-canonical names (legacy names alias; unknown names render a dashed placeholder). Auto-hydrates `<i data-icon="…">` placeholders. |
 | `../../src/tokens.json` | Machine-readable token export (for Tailwind, Figma, non-CSS consumers). |
 | `../../src/print.css` | Print stylesheet. Forces ivory/navy paper mode, strips chrome. |
 | `../../src/assets/fonts/` | Self-hosted JetBrains Mono + iA Writer Quattro WOFF2 files. |
-| `../../CLAUDE.md` | Drop into target repo root. Includes the 5 motion patterns, 8 form rules, 12-point a11y checklist, 7-point voice & tone checklist in full. |
+| `../../CLAUDE.md` | Drop into target repo root. Includes the 5 motion patterns, 12 form rules, 13-point a11y checklist, 7-point voice & tone checklist in full. |
 | `../../README.md` | System overview, install paths, framework adapters. |
 | `../../FONTS.md` | Font loading recipes (Fontsource, CDN, Next.js, direct WOFF2). |
 | `../../INDEX.md` | Read-order guide for the bundle. |
 | `../../live-spec/` | HTML preview pages — open in a browser for the full visual reference. Start at `index.html` or `README.html`. |
 | `../../live-spec/{colors,typography,spacing,components,components-extended,patterns,notifications,layout,motion,overlay,forms-extended,data-display,states,a11y,icons,voice-and-tone,charts,composition,diagrams}.html` | Foundations and component specs. |
+| `../../live-spec/whimsy.html` | The whimsy carve — flowing-rainbow reference + playground. |
+| `../../live-spec/texture.html` | The texture carve — grain / deco line / page-grain / raised depth reference. |
 | `../../framework-adapters/tailwind.config.js` | Tailwind v3+ config wired to `tokens.json`. |
 | `../../framework-adapters/react-components.tsx` | React 18 typed wrappers (Button, Field, Stack, Cluster, Modal, Notification). |
 | `../../framework-adapters/vue-components.md` | Vue 3 SFC patterns. |
@@ -130,9 +132,10 @@ Paths are relative to this SKILL.md. The skill lives at `skills/artificer-design
     (function () {
       try {
         var saved = localStorage.getItem('artificer.theme');
-        var prefersDark = window.matchMedia &&
-          window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+        var pinned = saved === 'light' || saved === 'dark';
+        var prefersLight = window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: light)').matches;
+        document.documentElement.setAttribute('data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
@@ -144,9 +147,7 @@ Paths are relative to this SKILL.md. The skill lives at `skills/artificer-design
   <script src="artificer-icons.js" defer></script>
 </head>
 <body>
-  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-    <span class="dot"></span><span data-theme-label>Dark</span>
-  </button>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
   <main style="max-width:820px;margin:0 auto;padding:48px 24px">
     <!-- your content -->
   </main>
@@ -162,31 +163,62 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 
 | User asks for… | Reach for… |
 |---|---|
+| App shell / full-viewport layout | `../../live-spec/app-shell.html` — `.app-shell` + `.app-shell__content`; appbar + sidenav + content skeleton for tool surfaces, collapses to the drawer under `--bp-tablet` |
+| Top app bar | `../../live-spec/app-shell.html` — `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer`; sticky tool chrome, clears the notch via `safe-area-inset` |
+| Side navigation | `../../live-spec/app-shell.html` — `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots); the section spine, one level deep, `.tree` for deeper |
+| Mobile nav drawer | `../../live-spec/app-shell.html` — `.nav-drawer` + `.nav-scrim`; takes over below `--bp-tablet` |
+| Breadcrumb | `../../live-spec/navigation.html` — `.crumb` + `.crumb__sep`; where-am-I, nav's first rung |
 | Dashboard with file/agent list | `../../live-spec/patterns.html` sidebar + tabs + content pane |
-| Settings page | `../../live-spec/forms-extended.html` `.field` blocks + fieldsets, grouped 3–5 per section |
-| Form (any kind) | `../../live-spec/forms-extended.html` — label → input → hint/error, never placeholder-as-label |
-| Modal / dialog | `../../live-spec/overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` |
+| Add a settings page | `../../live-spec/forms-extended.html` `.field` blocks + fieldsets, grouped 3–5 per section |
+| Form field / form (any kind) | `../../live-spec/forms-extended.html` — label → input → hint/error, never placeholder-as-label |
+| Confirmation dialog / modal | `../../live-spec/overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` |
 | Tooltip / popover | `../../live-spec/overlay.html` — `.tooltip` (label) or `.popover` (body content) |
 | Page layout (sidebar/main) | `../../live-spec/layout.html` — `.page-shell`, `.container--{sm\|md\|lg}` |
+| Blog / editorial / document top nav / masthead | `../../live-spec/navigation.html` — `.masthead` (`artificer-editorial.css`), non-sticky document counterpart to `.appbar`; brand via `.wordmark`, toggle via `.theme-toggle--inline` |
 | Stacking children | `../../live-spec/layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
 | Card grid | `../../live-spec/layout.html` — `.grid-auto` with `--min: 240px`, never hand-rolled flexbox |
-| "Search anything" / command palette / ⌘K | `../../live-spec/components-extended.html` — `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim`; `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible |
-| Combobox / dropdown / menu | `../../live-spec/components-extended.html` — one option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor; behavior via `data-options` / `ArtificerOptions.enhance()` |
+| Command palette / ⌘K / "search anything" | `../../live-spec/components-extended.html` — `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim`; `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible |
+| Combobox / dropdown / palette | `../../live-spec/components-extended.html` — one option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor; behavior via `data-options` / `ArtificerOptions.enhance()` |
+| Tabs / view switcher | `../../live-spec/patterns.html` — `.tabs` + `role=tablist`/`tab`/`tabpanel`; keyboard model via `ArtificerTabs.enhance()` (or `data-tabs` + `observe()`) |
+| Segmented control / view-param switch | `../../live-spec/navigation.html` — `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) |
+| Accordion / disclosure | `../../live-spec/components.html` — `.accordion` wrapping native `<details><summary>` + `.accordion__body` — keyboard + a11y for free, no JS |
+| Chip / facet tag | `../../live-spec/composition.html` — `.chip` (+ `.chip__count`); faceted filters in a `.filter-bar` or `.cluster` |
+| Filter bar | `../../live-spec/composition.html` — `.filter-bar` + `.grow`; ALL filters in one top bar, never sprinkled into panels |
+| Search input | `../../live-spec/forms-extended.html` — `.search`; the icon-slotted search box, `.appbar__search` in the bar |
 | Toast / alert | `../../live-spec/notifications.html` — pick tier by *action required*, not severity |
 | Transient toast placement | `../../live-spec/notifications.html` — mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none |
 | Tree / file explorer / nested nav | `../../live-spec/components-extended.html` — `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); keyboard ships via `data-tree` / `ArtificerTree.enhance()` |
 | Pagination | `../../live-spec/components-extended.html` — `.pagination` + `.pagination__gap`; `[aria-current=page]`; prev/next disable at ends; counted ranges only |
 | Persistent page banner | `../../live-spec/components-extended.html` — `.banner` + `--info/attention/urgent/success`; a standing layout band, NOT the transient `.notif` |
-| Status indicator | `.dot--{accent\|attention\|urgent\|success}`, no count |
+| Split pane / master-detail | `../../live-spec/composition.html` — `.split-pane` + `.pane--active`/`.pane--inactive`; recession marks the unfocused pane |
+| Avatar | `../../live-spec/components.html` — `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`; not `.dot` (8px status) or `.badge` (pill) |
+| File upload / dropzone | `../../live-spec/components.html` — `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events |
+| Live data indicator | `../../live-spec/composition.html` — `.live-tick` (pulsing dot) + `.last-updated` (timestamp); auto-updating regions still need an in-UI pause |
+| Key-value list | `../../live-spec/data-display.html` — `.kv`; mono `<dl>` grid for metadata pairs, `.table` for real data |
+| Syntax-highlighted code block | `../../live-spec/components-extended.html` — `.code-block` + the `.tok-*` roles |
+| Brand wordmark | `../../live-spec/README.html` — `.wordmark` (renders `artificer.`) |
+| Theme toggle | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph |
+| Tabular number | `.num` utility — sets `font-variant-numeric: tabular-nums`; drop on the cell, or the parent for a whole table |
+| Short hint paragraph under a figure or field | `.note` — sister of `.meta`, smaller (label-sm); inherits the body face, mono on tool surfaces / sans on document surfaces |
+| Doc-page section header | `<h2 class="section-title">` — mono, uppercase, `--fg-secondary`, border-bottom rule; doc/spec chrome |
+| Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers |
+| Make it fun / playful / celebratory / rainbow | `../../live-spec/whimsy.html` — the sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors |
+| Make it feel like paper / give it grain / material / texture / depth | `../../live-spec/texture.html` — `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors |
+| Footer / colophon / fine print / attribution | `../../live-spec/layout.html` — `.colophon` + `.colophon__label` (column headers) + `.colophon__fine` (legal tier); columns via `.grid-auto`; prose auto-sans even inside `.surface-tool` — `.surface-document` flips any other prose island back |
+| Selected card / selected row / active choice | `../../live-spec/components.html` — `.card--active` (`background: var(--bg)` + accent left border) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row; never `--accent-fill` as a large surface bg — its only rated text color is `--on-accent` |
+| Button | `../../live-spec/components.html` — `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon`; one primary per view |
+| Status pill | `.badge--{tier}` with a `.dot--{tier}` inside — dot AND text, never color alone |
+| Status indicator (bare, no count) | `.dot--{accent\|attention\|urgent\|success}` |
 | Count indicator | `.badge--{accent\|attention\|urgent\|success}` with number |
+| Dense table status / ✓✗~– cells | `../../live-spec/data-display.html` — `.glyph--{success\|muted\|attention\|na}` tints ✓✗~– with a theme token; graphical (SC 1.4.11) so each pairs with `aria-label` — sparse/labeled status stays `.badge`+`.dot` |
 | Icon inside button/link | `<i data-icon="search"></i>` — see `../../live-spec/icons.html` for full set |
 | Table of data | `../../live-spec/data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums` |
-| Headline numbers (KPIs) | `../../live-spec/data-display.html` — `.stat` (`.stat__label` + `.stat__value` + `.stat__row` + `.stat__delta`), the cell of a `.kpi-strip`, max 4 per row |
-| Charts | `../../live-spec/charts.html` — Artificer-styled chart patterns |
-| Diagrams | `../../live-spec/diagrams.html` — system/architecture diagrams in the palette |
-| Page composition | `../../live-spec/composition.html` — combining patterns into full pages |
+| Stat card / KPI strip / headline numbers (KPIs) | `../../live-spec/data-display.html` — `.stat` (`.stat__label` + `.stat__value` + `.stat__row` + `.stat__delta`), the cell of a `.kpi-strip`, max 4 per row |
+| Chart / sparkline / gauge | `../../live-spec/charts.html` — Artificer-styled chart patterns; `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge` |
+| Architecture / flow diagram | `../../live-spec/diagrams.html` — system/architecture diagrams in the palette |
+| Dashboard shell / page composition | `../../live-spec/composition.html` — `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`); combining patterns into full pages |
 | Empty state / error / loading copy | `../../live-spec/voice-and-tone.html` — never improvise microcopy |
-| Loading UI | `../../live-spec/states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
+| Loading state / UI | `../../live-spec/states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
 | Long wait, nothing to count | `../../live-spec/states.html` — `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` |
 | Refreshing a value in place | `../../live-spec/composition.html` — `.live-value[data-refreshing]` + `.live-value__dot`; NOT `.skeleton` (would blank it) |
 | Animation / transition | `../../live-spec/motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
@@ -210,6 +242,27 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 8. **WCAG AAA** for body text (7:1). Text-safe accent variants already hit this.
 9. **Never mix rounded and sharp corners** in one view.
 10. **Voice is literal, direct, lightly deadpan.** No metaphor, sarcasm, or figurative copy. Autism demands clarity.
+
+### Status-density carve — budgets, not absolutes, on status-dense tool surfaces
+
+Rules 2, 4, and 5 read as absolutes. On a status-dense, read-only surface
+(monitoring, fleet dashboards) the colors and interaction load arrive with
+the data — they're facts, not decoration a designer chose. These are
+budgets-with-exemptions, not exceptions that swallow the rule:
+
+- **Color budget (rule 2).** A status-dense tool surface is exempt when the
+  colors ARE the data — a fleet-state table can legitimately show 5 tier
+  colors at once. Discipline: low-saturation dot+text chips, never filled
+  pills; filled treatment stays reserved for the urgent tier and the
+  connection-loss banner. Decoration still budgets at 2 — the exemption
+  doesn't extend to anything that isn't the data itself.
+- **List cap (rule 5).** A primary data table is not a "list" — it's
+  governed by the table recipes, not this cap. The cap still governs
+  panels, fact clusters, and menus: ≤5 items per labeled group in a detail
+  panel.
+- **Primary CTA (rule 4).** "At most one" includes zero. A read-only
+  surface with no CTA at all — only selection, tabs, toggles, external
+  links — is valid, not a violation.
 
 ---
 
@@ -295,7 +348,7 @@ Frameworks: see `../../framework-adapters/` for Tailwind config, React typed wra
 6. Squint test — can you tell what's active without color?
 7. axe DevTools: zero violations?
 
-Full 12-point a11y checklist + 5 motion patterns + 8 form rules + 7-point voice checklist: `../../CLAUDE.md`.
+Full 13-point a11y checklist + 5 motion patterns + 12 form rules + 7-point voice checklist: `../../CLAUDE.md`.
 
 ---
 

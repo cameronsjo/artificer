@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
 <link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="artificer-editorial.css"/>
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <script src="artificer-icons.js" defer></script>
@@ -24,7 +25,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
   <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span>Patterns<span class="crumb__sep">·</span><span aria-current="page">Navigation</span></nav>
   <h1 class="t-headline-lg">navigation.</h1>
@@ -44,10 +45,10 @@
 
   <!-- ── App bar ─────────────────────────────────────────────────── -->
   <h2 class="section-title">App bar · <span style="color:var(--fg-disabled);font-weight:400">global chrome</span></h2>
-  <p class="meta">Brand · optional search · spacer · trailing actions. The wordmark is mono (and a sanctioned <code>.whimsy</code> home). At most one <code>.btn--primary</code> in the bar. The hamburger (<code>.appbar__menu-btn</code>) appears only below 800px to open the drawer. <b class="anchor">Apply <code>.wordmark</code> to an inline element inside <code>.appbar__brand</code></b>, not to the brand container itself — the container is a flex row and a <code>::after</code> period in flex becomes a separate flex item. <code>display:inline-block</code> on <code>.wordmark</code> guards against this.</p>
+  <p class="meta">Brand · optional search · spacer · trailing actions. The wordmark is mono (and a sanctioned <code>.whimsy</code> home). At most one <code>.btn--primary</code> in the bar. The hamburger (<code>.appbar__menu-btn</code>) appears only below 800px to open the drawer — and carries <code>.btn--icon-prominent</code>: a <b class="anchor">lone primary icon control</b> rests at full <code>--fg</code>, because it has no row of neighbors to borrow prominence from (ghost's <code>--fg-secondary</code> is for icons in a cluster). <b class="anchor">Apply <code>.wordmark</code> to an inline element inside <code>.appbar__brand</code></b>, not to the brand container itself — the container is a flex row and a <code>::after</code> period in flex becomes a separate flex item. <code>display:inline-block</code> on <code>.wordmark</code> guards against this.</p>
   <div class="figure figure--flush">
     <header class="appbar">
-      <button class="btn btn--ghost btn--icon appbar__menu-btn" aria-label="Open menu"><i data-icon="menu"></i></button>
+      <button class="btn btn--ghost btn--icon btn--icon-prominent appbar__menu-btn" aria-label="Open menu"><i data-icon="menu"></i></button>
       <a class="appbar__brand wordmark" href="#">artificer</a>
       <div class="appbar__search">
         <input class="input" type="search" aria-label="Search" placeholder="Search runs, artifacts…"/>
@@ -78,6 +79,42 @@
   </div>
   <p class="note"><code>.appbar--contained</code> + <code>.appbar--static</code> — brand aligns flush with the container column. Combine modifiers freely.</p>
 
+  <!-- ── Masthead ────────────────────────────────────────────────── -->
+  <h2 class="section-title">Masthead · <span style="color:var(--fg-disabled);font-weight:400">document-surface top nav</span></h2>
+  <p class="meta">The document-surface counterpart to <code>.appbar</code> — non-sticky, no border, no chrome. A quiet single-row header for reading surfaces (blog, essays, release notes): brand, a few links, optional meta. It scrolls with the page rather than pinning, and carries no background or border of its own — it belongs to <code>artificer-editorial.css</code>, not the core tool-chrome file. Compose the brand with <code>.wordmark--stop-none</code> for a period-bearing mark, and a theme toggle with <code>.theme-toggle--inline</code> to opt it out of the fixed corner slot. On narrow viewports the brand holds row one; nav and meta wrap below it — no hamburger, that's <code>.appbar</code>'s tool territory.</p>
+  <div class="figure">
+    <header class="masthead surface-editorial">
+      <a class="masthead__brand wordmark wordmark--stop-none" href="#">blog.</a>
+      <nav class="masthead__nav" aria-label="Primary">
+        <a href="#" aria-current="page">Home</a>
+        <a href="#">Archive</a>
+        <a href="#">About</a>
+      </nav>
+      <div class="masthead__meta">
+        <button
+          class="theme-toggle theme-toggle--inline"
+          data-theme-toggle
+          aria-label="Toggle theme"
+        ></button>
+      </div>
+    </header>
+  </div>
+  <pre class="code-block">&lt;header class="masthead surface-editorial"&gt;
+  &lt;a class="masthead__brand wordmark wordmark--stop-none" href="/"&gt;blog.&lt;/a&gt;
+  &lt;nav class="masthead__nav" aria-label="Primary"&gt;
+    &lt;a href="/" aria-current="page"&gt;Home&lt;/a&gt;
+    &lt;a href="/archive/"&gt;Archive&lt;/a&gt;
+    &lt;a href="/about/"&gt;About&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;div class="masthead__meta"&gt;
+    &lt;button
+      class="theme-toggle theme-toggle--inline"
+      data-theme-toggle
+      aria-label="Toggle theme"
+    &gt;&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/header&gt;</pre>
+
   <!-- ── Sidebar nav ─────────────────────────────────────────────── -->
   <h2 class="section-title">Sidebar nav · <span style="color:var(--fg-disabled);font-weight:400">the spine</span></h2>
   <p class="meta">Sections of one product. Grouped with <code>.sidenav__group</code>; the active item carries <code>aria-current="page"</code> and an accent rail (inset shadow — no layout shift). Optional leading icon and trailing <code>.count</code>. Links are 44px tall (nav touch-target floor).</p>
@@ -85,14 +122,14 @@
     <div class="split-pane" style="gap:0;min-height:360px">
       <nav class="sidenav" aria-label="Console sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
         <div class="sidenav__group">Workspace</div>
-        <a href="#"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+        <a href="#"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
         <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
         <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
         <a href="#"><i data-icon="user"></i><span class="label">Members</span><span class="count">12</span></a>
         <div class="sidenav__group">Account</div>
         <a href="#" aria-current="page"><i data-icon="settings"></i><span class="label">Settings</span></a>
         <a href="#"><i data-icon="code"></i><span class="label">API tokens</span><span class="count">3</span></a>
-        <a href="#"><i data-icon="logout"></i><span class="label">Sign out</span></a>
+        <a href="#"><i data-icon="log-out"></i><span class="label">Sign out</span></a>
       </nav>
       <div class="demo-detail">
         <h4>Settings</h4>
@@ -107,7 +144,7 @@
     <div class="split-pane" style="gap:0;min-height:300px">
       <nav class="sidenav" aria-label="Platform sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0;max-height:300px;overflow-y:auto">
         <div class="sidenav__group">Workspace</div>
-        <a href="#"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+        <a href="#"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
         <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
         <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
         <a href="#"><i data-icon="user"></i><span class="label">Members</span><span class="count">12</span></a>
@@ -138,7 +175,7 @@
     <div class="split-pane" style="gap:0;min-height:280px">
       <nav class="sidenav" aria-label="SPA sections" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
         <div class="sidenav__group">Views</div>
-        <button aria-current="page"><i data-icon="terminal"></i><span class="label">Dashboard</span></button>
+        <button aria-current="page"><i data-icon="square-terminal"></i><span class="label">Dashboard</span></button>
         <button><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></button>
         <button><i data-icon="file"></i><span class="label">Artifacts</span></button>
         <div class="sidenav__group">Account</div>
@@ -156,7 +193,7 @@
   <div class="figure figure--frame">
     <div class="split-pane" style="grid-template-columns:56px 1fr;gap:0;min-height:300px">
       <nav class="sidenav sidenav--rail" aria-label="Console sections (collapsed)" style="border-radius:0;border-top:0;border-bottom:0;border-left:0">
-        <a href="#"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+        <a href="#"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
         <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
         <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
         <a href="#" aria-current="page"><i data-icon="settings"></i><span class="label">Settings</span></a>
@@ -185,7 +222,7 @@
     <aside class="nav-drawer" id="demo-drawer-nav" aria-label="Console sections" aria-hidden="true" inert>
       <nav class="sidenav">
         <div class="sidenav__group">Workspace</div>
-        <a href="#" aria-current="page"><i data-icon="terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+        <a href="#" aria-current="page"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
         <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
         <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
         <a href="#"><i data-icon="settings"></i><span class="label">Settings</span></a>
@@ -243,6 +280,7 @@
     <li><b class="anchor">The drawer traps focus and returns it</b> to the trigger on close; <kbd>Esc</kbd> and the scrim both dismiss. Reuse <code>ArtificerFocus.trap()</code>.</li>
     <li><b class="anchor">Breadcrumb links are secondary</b>; only the current page is full-strength. The crumb states location — it isn't the primary way to move.</li>
     <li><b class="anchor">Collapse to a rail, not to nothing.</b> When space is tight, <code>.sidenav--rail</code> keeps icons (and accessible names); the drawer is for genuinely small screens.</li>
+    <li><b class="anchor">Document surfaces use <code>.masthead</code>, not <code>.appbar</code></b> — no sticky, no border.</li>
   </ol>
 </main>
 

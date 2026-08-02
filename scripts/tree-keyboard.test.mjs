@@ -19,6 +19,14 @@ import assert from 'node:assert/strict';
 import '../src/artificer-tree.js';
 const { nextVisible, treeAction } = globalThis.ArtificerTree;
 
+// Export contract (#219 Phase 3): both pure state machines MUST stay exported —
+// a refactor that drops nextVisible/treeAction fails CI here, before a framework
+// consumer importing them breaks silently.
+test('export contract: ArtificerTree.nextVisible + treeAction are exported', () => {
+  assert.equal(typeof globalThis.ArtificerTree.nextVisible, 'function');
+  assert.equal(typeof globalThis.ArtificerTree.treeAction, 'function');
+});
+
 // ── nextVisible — clamped vertical movement ──────────────────────────────────
 
 test('ArrowDown advances by one and clamps at the last visible item', () => {

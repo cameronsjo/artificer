@@ -2,9 +2,8 @@
 // live-spec mirror sync (#78). `src/` is canonical; the gallery in `live-spec/`
 // renders against verbatim copies of the shipped assets. Nothing else keeps the
 // two in parity — before this, byte-for-byte match was held by manual discipline
-// alone, and two files had already drifted (tracked in #109, deliberately
-// EXCLUDED below until reconciled). The CSS-build research that surfaced this:
-// docs/research/css-build-systems.md.
+// alone, and two files had drifted (both reconciled in #109). The CSS-build
+// research that surfaced this: docs/research/css-build-systems.md.
 //
 // Usage:
 //   node scripts/build-livespec.mjs           copy src/ -> live-spec/ for the MIRROR set
@@ -12,9 +11,9 @@
 //
 // MIRROR is the set of files that are byte-identical between src/ and live-spec/.
 // Add a file here only once its two copies already match (run without --check to
-// make them match, then commit both). EXCLUDED files have drifted and need a
-// one-time reconciliation decision first (#109) — tokens.json carries palette
-// values, so that half is Lane 1.
+// make them match, then commit both). EXCLUDED is kept for future one-time
+// reconciliations; it is currently empty — all 9 originally-shared files are
+// now under the gate (#109).
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +22,7 @@ const ROOT = new URL('../', import.meta.url);
 
 // Copied verbatim src/ -> live-spec/. Keep alphabetized.
 export const MIRROR = [
+  'artificer-editorial.css',
   'artificer-focus.js',
   'artificer-icons.js',
   'artificer-options.js',
@@ -37,10 +37,10 @@ export const MIRROR = [
   'tokens.json',
 ];
 
-// Known-drifted, deliberately NOT mirrored yet — reconcile in #109, then move
-// each into MIRROR above. (tokens.json graduated to MIRROR when the v0.10.2-v0.12.0
-// merge wave reconciled it; editorial.css is the remaining #109 work.)
-export const EXCLUDED = ['artificer-editorial.css'];
+// All 9 originally-shared files are now reconciled and mirrored (#109).
+// This list is intentionally empty — keep it in case a future file needs
+// a one-time reconciliation pass before it can join MIRROR.
+export const EXCLUDED = [];
 
 // Returns the names whose live-spec copy differs from src. In write mode
 // (check=false) it also overwrites the live-spec copy from src.
@@ -81,7 +81,7 @@ function run({ check }) {
   } else {
     console.log(`✓ live-spec mirror: already in sync (${MIRROR.length} files)`);
   }
-  console.log(`  excluded (drifted — reconcile in #109): ${EXCLUDED.join(', ')}`);
+  if (EXCLUDED.length) console.log(`  excluded (pending reconciliation): ${EXCLUDED.join(', ')}`);
   return 0;
 }
 

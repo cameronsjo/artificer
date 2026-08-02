@@ -22,6 +22,14 @@ import assert from 'node:assert/strict';
 import '../src/artificer-options.js';
 const { nextOption, matchOption } = globalThis.ArtificerOptions;
 
+// Export contract (#219 Phase 3): both pure state machines MUST stay exported —
+// a refactor that drops nextOption/matchOption fails CI here, before a framework
+// consumer importing them breaks silently.
+test('export contract: ArtificerOptions.nextOption + matchOption are exported', () => {
+  assert.equal(typeof globalThis.ArtificerOptions.nextOption, 'function');
+  assert.equal(typeof globalThis.ArtificerOptions.matchOption, 'function');
+});
+
 // ── nextOption — clamp (default, APG listbox) ────────────────────────────────
 
 test('ArrowDown advances by one and clamps at the last option', () => {

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Whimsy helper · v0.18.1
+   ARTIFICER · Whimsy helper · v0.21.0
    ─────────────────────────────────────────────────────────────────────────
    Tiny, dependency-free. Pairs with artificer-whimsy.css. Exposes window.Whimsy.
 
@@ -9,9 +9,21 @@
                                     typed — the "ultrathink" gesture.
                                     opts = { triggers:[…], target?, onIgnite?,
                                              onClear?, loops?, settle? }
-     Whimsy.celebrate(el, ms?)      one-shot: light el up for ms (default 2600)
-                                    then remove. For whimsical operations
-                                    (deploy succeeded, streak hit, etc).
+     Whimsy.celebrate(el, ms?)      one-shot: light el up, hold for ms (default
+                                    2600), then dissolve out with a graceful
+                                    opacity fade (celebrate(el, {dissolve:false})
+                                    for the old hard clear). For whimsical
+                                    operations (deploy succeeded, streak hit).
+     Whimsy.dissolve(el, opts?)     graceful exit: hold (flowing) → opacity
+                                    fade-out → clear. Reduced-motion collapses
+                                    to an instant clear. opts = { hold?, fade? }
+                                    — omitted values read the element's live
+                                    --whimsy-dissolve-hold/-fade. Returns
+                                    cancel() — aborts the exit, leaving the
+                                    element lit (does not remove "whimsy").
+     Whimsy.parseMs(v)              PURE — parse a CSS <time> ("800ms" |
+                                    "1.5s") into ms; NaN if unparseable.
+                                    Internal utility, exposed for testing.
      Whimsy.greeting(root?)         swap [data-whimsy-greeting] elements to the
                                     seasonal footer line — June → "happy pride"
                                     + vivid flow; off-season → the inline text
@@ -36,7 +48,34 @@
   "use strict";
 
   function igniteEl(el) { if (el) el.classList.add("whimsy"); }
-  function clearEl(el)  { if (el) el.classList.remove("whimsy"); }
+
+  /* ── Dissolve bookkeeping ── el → in-flight { t1, t2 } timers ──────────────
+     One entry per element currently mid-exit. cancelDissolve() is the single
+     full-cleanup path: cancels both timers, drops the dissolving class and
+     any inline fade override, forgets the entry. Called by clearEl() (so an
+     external hard clear can never orphan a dissolve chain mid-fade) and by
+     dissolve()/celebrate() (both to implement the returned cancel(), and to
+     cancel any PRIOR chain before arming a new one — element reuse, e.g. a
+     double-celebrate, must not let an old timer clear the new run out from
+     under it). */
+  var dissolveTimers = new WeakMap();
+  function cancelDissolve(el) {
+    if (!el) return;
+    var timers = dissolveTimers.get(el);
+    if (timers) {
+      window.clearTimeout(timers.t1);
+      window.clearTimeout(timers.t2);
+      dissolveTimers.delete(el);
+    }
+    el.classList.remove("whimsy--dissolving");
+    el.style.removeProperty("--whimsy-dissolve-fade");
+  }
+
+  function clearEl(el) {
+    if (!el) return;
+    cancelDissolve(el);
+    el.classList.remove("whimsy");
+  }
 
   /* ── Settle ── flow for N hue-cycles, then come to rest ────────────────── */
 
@@ -147,12 +186,113 @@
     return function off() { input.removeEventListener("input", check); };
   }
 
-  /* One-shot whimsy for an operation that just succeeded. Auto-clears. */
-  function celebrate(el, ms) {
-    if (!el) return;
+  /* prefers-reduced-motion probe — safe in Node (no matchMedia → false). */
+  function prefersReducedMotion() {
+    return typeof window !== "undefined" && window.matchMedia
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
+  }
+
+  /* PURE — parse a CSS <time> value ("800ms" | "1.5s") into ms. NaN if
+     unparseable (caller supplies a fallback). Unit-tested. */
+  function parseMs(v) {
+    if (v == null) return NaN;
+    var s = String(v).trim();
+    var n = parseFloat(s);
+    if (isNaN(n)) return NaN;
+    if (/ms$/i.test(s)) return n;
+    return /s$/i.test(s) ? n * 1000 : n;
+  }
+
+  /* PURE — dissolve phase timeline in ms. reducedMotion collapses to instant.
+     opts = { hold?, fade? }. Unit-tested. */
+  function dissolveTimeline(opts, reducedMotion) {
+    opts = opts || {};
+    if (reducedMotion) return { hold: 0, fade: 0, total: 0 };
+    var hold = opts.hold != null ? opts.hold : 800;
+    var fade = opts.fade != null ? opts.fade : 2000;
+    return { hold: hold, fade: fade, total: hold + fade };
+  }
+
+  /* Graceful exit: hold (flowing) → opacity fade-out → clear. Reduced-motion
+     collapses to an instant clear. opts = { hold?, fade? } — an omitted value
+     reads the element's LIVE --whimsy-dissolve-hold / -fade (so a CSS-only
+     override on an ancestor scope works with no JS opts object), falling
+     back to dissolveTimeline's 800/2000 if that doesn't resolve either.
+
+     An explicit opts.fade pins an INLINE override so the CSS transition-
+     duration can never drift from what JS times the clear to. Any in-flight
+     chain on `el` is cancelled first (cancelDissolve — drops a stale inline
+     override along with the old timers), so a stale override from an
+     earlier explicit call can't survive into a later default-fade call and
+     let JS clear on 2000ms while CSS is still mid a 5000ms fade — a one-
+     frame snap back to solid (the original #85 defect, reintroduced on
+     element reuse).
+
+     Returns a cancel() fn. Cancelling ABORTS the exit — timers stop, the
+     dissolving class and inline override drop — but does NOT remove
+     "whimsy": the element stays/returns to fully lit, it just stops
+     counting down.
+
+     Reduced-motion is re-checked when the hold elapses, not just at call
+     time — the OS preference can flip mid-hold. Flipping to reduce clears
+     immediately instead of still waiting out the fade duration invisible
+     (opacity:0) but present in the DOM/a11y tree/layout. */
+  function dissolve(el, opts) {
+    if (!el) return function () {};
+    opts = opts || {};
+    cancelDissolve(el);
+    if (prefersReducedMotion()) { clearEl(el); return function () {}; }
+
+    var cs = getComputedStyle(el);
+    var fadeMs = opts.fade;
+    if (fadeMs != null) {
+      el.style.setProperty("--whimsy-dissolve-fade", fadeMs + "ms");
+    } else {
+      var parsedFade = parseMs(cs.getPropertyValue("--whimsy-dissolve-fade"));
+      fadeMs = isNaN(parsedFade) ? null : parsedFade;
+    }
+    var holdMs = opts.hold;
+    if (holdMs == null) {
+      var parsedHold = parseMs(cs.getPropertyValue("--whimsy-dissolve-hold"));
+      holdMs = isNaN(parsedHold) ? null : parsedHold;
+    }
+
+    var t = dissolveTimeline({ hold: holdMs, fade: fadeMs }, false);
+    var timers = { t1: null, t2: null };
+    dissolveTimers.set(el, timers);
+    timers.t1 = window.setTimeout(function () {
+      // Re-check: the OS preference can flip DURING the hold. If it's now
+      // reduce, the CSS media query already kills .whimsy--dissolving's
+      // transition (no motion plays either way) — but without this check
+      // t2 would still wait the FULL fade before clearing, leaving the
+      // element opacity:0 yet present (DOM/a11y tree/layout) for up to
+      // --whimsy-dissolve-fade. Clear immediately instead, matching what
+      // reduced-motion means everywhere else in this module: instant.
+      if (prefersReducedMotion()) { clearEl(el); return; }
+      el.classList.add("whimsy--dissolving");
+      timers.t2 = window.setTimeout(function () {
+        clearEl(el);
+      }, t.fade);
+    }, t.hold);
+
+    return function cancel() { cancelDissolve(el); };
+  }
+
+  /* One-shot whimsy for an operation that just succeeded — dissolves by default.
+     celebrate(el, ms)  — back-compat: number = fully-lit hold, then a graceful fade.
+     celebrate(el, { hold?, fade?, dissolve? }) — dissolve:false = the old hard clear. */
+  function celebrate(el, opts) {
+    if (!el) return function () {};
+    cancelDissolve(el); // starting fresh — any prior chain on this el is done
     igniteEl(el);
-    var dur = typeof ms === "number" ? ms : 2600;
-    window.setTimeout(function () { clearEl(el); }, dur);
+    if (typeof opts === "number") opts = { hold: opts };
+    opts = opts || {};
+    var hold = opts.hold != null ? opts.hold : 2600;
+    if (opts.dissolve === false) {
+      var id = window.setTimeout(function () { clearEl(el); }, hold);
+      return function () { window.clearTimeout(id); };
+    }
+    return dissolve(el, { hold: hold, fade: opts.fade });
   }
 
   /* ── Seasonal greeting ── pure spec + DOM application ──────────────────── */
@@ -181,11 +321,11 @@
     }
     // Off-season fallback. The line is the consumer's to set — via the
     // element's inline text or opts.default. Lines that fit the calm glacial
-    // drift: "kindness is free" (default) or "abide no hatred".
+    // drift: "kindness is a choice" (default) or "abide no hatred".
     // (Future idea: rotate one per day/month via a modulus on the date; for
     // now it's a deliberately stable per-surface choice, not a slot machine.)
     return { season: "default",
-             text: opts.default || "kindness is free",
+             text: opts.default || "kindness is a choice",
              classes: ["whimsy", opts.defaultClass || "whimsy--glacial"] };
   }
 
@@ -238,6 +378,9 @@
     observe: observe,
     watch: watch,
     celebrate: celebrate,
+    dissolve: dissolve,
+    dissolveTimeline: dissolveTimeline,
+    parseMs: parseMs,
     greeting: greeting,
     greetingFor: greetingFor,
     run: run,

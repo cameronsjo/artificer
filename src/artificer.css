@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.18.1 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.21.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -144,6 +144,7 @@
   --attention-fill:  #c4808a;   /* rose, fill-only */
   --urgent:          #a04540;   /* brick — destructive, errors */
   --urgent-fill:     #a04540;   /* brick fill, buttons */
+  --urgent-text:     #e6a8a2;   /* lifted error TEXT (.field>.error) — bg 6.98 AA · v0.19.0 #122-B */
   --success:         #4a8a5e;   /* apothecary green — completed, merged, autoAccept */
   --success-fill:    #2d6644;   /* deep apothecary fill — badges/dots, ivory-on 5.67 AA */
   --steel:           #b8cad4;   /* honest middle; meta / secondary UI */
@@ -222,7 +223,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.18.1";
+  --art-version: "0.21.0";
 
   color-scheme: dark;
 }
@@ -249,6 +250,7 @@
   --attention-fill:  #dbbb6f;
   --urgent:          #8a2418;   /* deep brick, AAA on ivory */
   --urgent-fill:     #a04540;   /* brick fill */
+  --urgent-text:     #8a2418;   /* = urgent · ivory 7.49 AAA · v0.19.0 #122-B */
   --success:         #2a5a3a;   /* deep apothecary green */
   --success-fill:    #2a5a3a;   /* fill == bare success in light; ivory-on 6.70 AA */
   --steel:           #2e4a5a;
@@ -266,7 +268,7 @@
   --ink:             #20203e;
   --navy:            #20203e;   /* alias */
 
-  --on-accent:       #f5ead0;   /* ivory on gold-fill button */
+  --on-accent:       #20203e;   /* ink on gold-fill button — ivory→ink v0.19.0 #122-A · 5.65 AA */
   --on-attention:    #20203e;
   --on-urgent:       #f5ead0;
   --on-success:      #f5ead0;
@@ -297,6 +299,7 @@
     --attention-fill:  #dbbb6f;
     --urgent:          #8a2418;
     --urgent-fill:     #a04540;
+    --urgent-text:     #8a2418;
     --success:         #2a5a3a;
     --success-fill:    #2a5a3a;
     --steel:           #2e4a5a;
@@ -308,7 +311,7 @@
     --diff-del-bg:     #ecd6d4;
     --ivory-raised:    #eddcc0;
     --ink:             #20203e;
-    --on-accent:       #f5ead0;
+    --on-accent:       #20203e;   /* ivory→ink v0.19.0 #122-A */
     --on-attention:    #20203e;
     --on-urgent:       #f5ead0;
     --on-success:      #f5ead0;
@@ -359,6 +362,18 @@ body { font-size: var(--t-body-md-size); }
   font-family: var(--font-sans);
 }
 
+/* Document island — inverse of .surface-tool. Marks a prose region inside a
+   tool surface that opts its body face back to --font-sans (colophons, legal
+   disclaimers, help prose). Sits after .surface-tool, so it wins at equal
+   specificity on source order; class-based components (.stat, .table cells)
+   self-declare mono and win there too. Bare-tag mono declarers (code, kbd)
+   sit at lower specificity than the universal-descendant rule above and lose
+   to it, so they're re-declared explicitly below. */
+.surface-document, .surface-document * { font-family: var(--font-sans); }
+/* code/kbd are bare-tag selectors ((0,0,1)) and lose to .surface-document *
+   ((0,1,0)) on specificity, not source order — re-declared here to hold mono. */
+.surface-document code, .surface-document kbd { font-family: var(--font-mono); }
+
 /* ═══ Type utilities ════════════════════════════════════════════════════
    Headlines and body run on --font-sans (Quattro) by default — document mode.
    On tool surfaces, wrap the surface in <… class="surface-tool"> to flip to mono.
@@ -399,10 +414,16 @@ code, .code {
 
 a {
   color: var(--accent);
-  text-decoration: none;
+  /* #122-E — document surface (default): prose links carry a persistent underline so
+     a link in a text block is distinguished by more than color (WCAG 1.4.1). Chrome
+     and components opt out below / via their own text-decoration:none. */
+  text-decoration: underline;
+  text-underline-offset: 2px;
   transition: color var(--dur-fast) var(--ease);
 }
 a:hover, a:focus-visible { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
+/* Tool surfaces read links by position — underline only on hover/focus (the rule above). */
+.surface-tool a { text-decoration: none; }
 a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); border-radius: 2px; }
 
 /* ═══ Buttons ═══════════════════════════════════════════════════════════ */
@@ -410,7 +431,7 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
   display: inline-flex; align-items: center; justify-content: center; gap: var(--s-sm);
   font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500; line-height: 1;
   padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid transparent;
-  cursor: pointer; white-space: nowrap;
+  cursor: pointer; white-space: nowrap; text-decoration: none;
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
 .btn:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
@@ -428,6 +449,11 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
    Compose with any variant (.btn.btn--icon.btn--ghost). Always needs an
    aria-label, since there's no text. v0.10.0. */
 .btn--icon { width: 44px; height: 44px; min-width: 44px; padding: 0; }
+/* A LONE primary icon control — mobile nav trigger, modal close — has no
+   row of neighbors to borrow prominence from, so the ghost resting color
+   (--fg-secondary) under-serves it (#114, two consumers independently).
+   Rests at full --fg; in a cluster of controls, stay on the ghost default. */
+.btn--icon-prominent { color: var(--fg); }
 
 .btn--destructive       { background: var(--urgent-fill); color: var(--on-urgent); }
 .btn--destructive:hover { filter: brightness(1.08); }
@@ -489,7 +515,7 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .field { display: flex; flex-direction: column; gap: var(--s-sm); }
 .field > label { font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500; color: var(--fg); }
 .field > .hint  { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); }
-.field > .error { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--urgent); }
+.field > .error { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--urgent-text); }
 
 /* ═══ Badges ════════════════════════════════════════════════════════════ */
 .badge {
@@ -509,6 +535,23 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .dot--attention { background: var(--attention-fill); }
 .dot--urgent    { background: var(--urgent-fill); }
 .dot--success   { background: var(--success-fill); }
+
+/* ═══ Cell glyphs ════════════════════════════════════════════════════════ */
+/*
+ * Themeable status marks for dense data cells — the anti-emoji. Emoji are
+ * OS-rendered: they ignore the theme and read loud in a grid. A .glyph is real
+ * text the author types (✓ ✗ ~ –), tinted by a semantic token so it tracks the
+ * theme. These are GRAPHICAL status objects (WCAG 2.2 SC 1.4.11, 3:1 floor) —
+ * each MUST carry an accessible name so meaning never rests on the mark alone:
+ *   <span class="glyph glyph--success" role="img" aria-label="Yes">✓</span>
+ * Reach for glyphs in dense comparison grids; keep .badge + .dot for sparse,
+ * labeled status. (✗ uses --fg-muted, not --fg-disabled, which fails 3:1 dark.)
+ */
+.glyph { display: inline-block; min-width: 1.25ch; text-align: center; font-style: normal; line-height: 1; }
+.glyph--success   { color: var(--success); }       /* ✓ */
+.glyph--muted     { color: var(--fg-muted); }       /* ✗ — recedes, clears 3:1 */
+.glyph--attention { color: var(--attention); }      /* ~ */
+.glyph--na        { color: var(--fg-secondary); }   /* – */
 
 /* ═══ Notification ══════════════════════════════════════════════════════ */
 /*
@@ -587,6 +630,13 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 }
 .theme-toggle:hover { color: var(--fg); border-color: var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,.22); }
 .theme-toggle .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-fill); }
+/* Canonical icon form — artificer-theme.js injects the half-circle glyph
+   into an empty [data-theme-toggle] button and adds this class. A pinned
+   mode (dark/light) renders the glyph in accent; auto stays quiet — the
+   gold is the "you overrode the OS" signal. */
+.theme-toggle--icon { padding: 6px; }
+.theme-toggle--icon .icon { display: block; }
+.theme-toggle--icon:not([data-theme-mode="auto"]) { color: var(--accent); }
 .theme-toggle--inline { position: static; top: auto; right: auto; z-index: auto; box-shadow: none; }
 @media (max-width: 640px) {
   .theme-toggle { top: var(--s-sm); right: var(--s-sm); }
@@ -628,6 +678,33 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 /* Page shell: sticky masthead + scrolling main. */
 .page-shell      { display: grid; grid-template-rows: auto 1fr; min-height: 100vh; }
 .page-shell > header { position: sticky; top: 0; z-index: var(--z-overlay); background: var(--bg); border-bottom: 1px solid var(--border); }
+
+/* Colophon — page-foot document seam (#97). The band at a page's bottom for
+   attribution, links, and fine print — the one place a tool surface routinely
+   speaks in sentences, so its prose opts back into --font-sans even inside
+   .surface-tool (this rule sits after .surface-tool, winning on source order).
+   Columns compose from .grid-auto / .stack; wrap inner content in a .container. */
+.colophon {
+  border-top: 1px solid var(--border);
+  padding: var(--s-xl) 0;
+  color: var(--fg-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--t-label-sm-size);
+  line-height: 1.6;
+}
+.colophon :where(p, ul, ol, li, a, small, dd, dt) { font-family: var(--font-sans); }
+.colophon__label {
+  display: block; margin-bottom: var(--s-xs);
+  font-family: var(--font-mono); font-size: var(--t-label-xs-size);
+  font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--fg-secondary);
+}
+.colophon__fine {
+  margin-top: var(--s-lg); padding-top: var(--s-md);
+  border-top: 1px solid var(--border);
+  color: var(--fg-secondary);            /* NOT --fg-muted — 3.05:1, below AA floor */
+  font-size: var(--t-label-xs-size); line-height: 1.5;
+}
 
 /* ═══ Overlays · modal & popover ═══════════════════════════════════════ */
 .scrim {
@@ -1849,7 +1926,7 @@ select:focus-visible,
    DELIBERATE divergence from the toast tier (#189): banner--info is STEEL
    where notif--info is accent — a persistent structural state should read
    calmer than a transient toast; "--info" does not imply accent here.
-   v0.15.0. */
+   v0.15.0. (ADR 0017) */
 .banner {
   display: flex; align-items: center; gap: var(--s-md);
   padding: 10px var(--s-lg);

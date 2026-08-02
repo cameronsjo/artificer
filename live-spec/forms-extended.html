@@ -11,7 +11,7 @@
   .field { display: flex; flex-direction: column; gap: 6px; }
   .field__label { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--fg); letter-spacing: .02em; }
   .field__hint { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
-  .field__error { font-family: var(--font-mono); font-size: 11px; color: var(--urgent); }
+  .field__error { font-family: var(--font-mono); font-size: 11px; color: var(--urgent-text); }
   .field--invalid .input, .field--invalid .textarea, .field--invalid .select { border-color: var(--urgent); }
   fieldset { border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
   legend { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); padding: 0 var(--s-sm); }
@@ -19,7 +19,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Forms</p>
   <h1 class="t-headline-lg">forms.</h1>
@@ -111,6 +111,7 @@
   </div>
 
   <h2 class="section-title">Form rules</h2>
+  <p class="meta">Every task carries irreducible complexity (Tesler's Law) — it moves into the component, never onto the person filling out the form.</p>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Label every field.</b> Placeholder is not a label — it disappears.</li>
     <li><b class="anchor">Hint text explains constraints</b> ("2–32 chars") <em>before</em> the user types, not after.</li>
@@ -120,6 +121,10 @@
     <li><b class="anchor">One primary button per form.</b> If you need two, the secondary is "Cancel" or a ghost variant.</li>
     <li><b class="anchor">Submit on <kbd>Enter</kbd></b> from any text input. Multi-line forms: <kbd>⌘ Enter</kbd>.</li>
     <li><b class="anchor">Don't reset the form on error.</b> Preserve everything the user typed.</li>
+    <li><b class="anchor">Never ask for the same information twice</b> in a flow. Carry answers forward — auto-fill or pick-list from what the user already gave (WCAG 2.2 SC 3.3.7).</li>
+    <li><b class="anchor">Authentication allows paste and passkeys.</b> Never demand puzzle-solving or memory gymnastics — no CAPTCHA, no cognitive-test gates (WCAG 2.2 SC 3.3.8).</li>
+    <li><b class="anchor">Anything drag-based offers a single-pointer alternative.</b> Reorder, slider, swipe — ship a click/tap path too (WCAG 2.2 SC 2.5.7).</li>
+    <li><b class="anchor">Destructive and committing actions prefer undo</b> or a clearly-marked exit over confirm-alone — where undo is genuinely impractical, a confirm naming the specific consequence is the documented fallback.</li>
   </ol>
 </main>
 </body>

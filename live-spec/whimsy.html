@@ -28,7 +28,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Whimsy</p>
   <h1 class="t-headline-lg whimsy">whimsy.</h1>
@@ -145,7 +145,7 @@
   </div>
 
   <h3>05 · Celebrate (whimsical operation)</h3>
-  <p class="meta">One-shot whimsy for an operation that just succeeded — then it clears itself. <code>Whimsy.celebrate(el)</code>. A receipt with a little joy, not a parade.</p>
+  <p class="meta">One-shot whimsy for an operation that just succeeded — it lights up, holds, then recedes with a soft fade instead of snapping off. <code>Whimsy.celebrate(el)</code>. A receipt with a little joy, not a parade — under reduced motion it clears instantly instead.</p>
   <div class="figure figure--center">
     <button class="btn btn--secondary" id="celebrate-btn">Ship it</button>
     <span id="celebrate-target" style="font-family:var(--font-mono);font-weight:700;font-size:20px">deploy complete</span>
@@ -202,11 +202,11 @@
   <p class="meta">June is the <b class="anchor">one exception</b> to "whimsy rests" (doctrine #7): the pride line flows <b class="anchor">all month, no settle</b> — a deliberate, logged one-view exception, not a precedent. Reduced-motion still freezes the flow; the gradient stays.</p>
   <div class="figure figure--center">
     <footer style="text-align:center">
-      <span data-whimsy-greeting class="t-headline-md">kindness is free</span>
+      <span data-whimsy-greeting class="t-headline-md">kindness is a choice</span>
     </footer>
   </div>
-  <pre class="code-block"><span class="tok-comment">&lt;!-- off-season: "kindness is free"; June: "happy pride" full-attention --&gt;</span>
-&lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-whimsy-greeting</span>&gt;kindness is free&lt;/<span class="tok-keyword">span</span>&gt;
+  <pre class="code-block"><span class="tok-comment">&lt;!-- off-season: "kindness is a choice"; June: "happy pride" full-attention --&gt;</span>
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-whimsy-greeting</span>&gt;kindness is a choice&lt;/<span class="tok-keyword">span</span>&gt;
 
 <span class="tok-comment">/* the off-season line is yours — any short motto */</span>
 &lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-whimsy-greeting</span>&gt;abide no hatred&lt;/<span class="tok-keyword">span</span>&gt;
@@ -218,7 +218,7 @@ Whimsy.<span class="tok-fn">greetingFor</span>(<span class="tok-keyword">new</sp
   <h2 class="section-title">The doctrine</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Opt-in only.</b> Never on page chrome, nav, or anything automatic. Whimsy is something a person chose to light up.</li>
-    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper.</li>
+    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper. The API doesn't coordinate flowing slots for you — <b class="anchor">exclusivity is the caller's responsibility</b>, same as one-primary-CTA.</li>
     <li><b class="anchor">Never on load-bearing UI.</b> No whimsy on errors, destructive actions, status, or data. It decorates delight, never function. <b class="anchor">One sanctioned exception:</b> the <code>.whimsy-focus</code> ring (pattern 08), which <em>augments</em> the standard focus outline rather than replacing it — the outline still carries the a11y signal. Reach for it only on explicit request.</li>
     <li><b class="anchor">Burnished by default.</b> It's tuned to the palette. Reach for <code>.whimsy--vivid</code> consciously, not by reflex.</li>
     <li><b class="anchor">Display + bold only.</b> Gradient text drops contrast — keep it large. Never set body copy in whimsy.</li>
@@ -239,7 +239,8 @@ Whimsy.<span class="tok-fn">greetingFor</span>(<span class="tok-keyword">new</sp
 
 <span class="tok-comment">/* the ultrathink gesture + a whimsical operation */</span>
 Whimsy.<span class="tok-fn">watch</span>(input, { triggers: [<span class="tok-string">"ultrathink"</span>] });
-Whimsy.<span class="tok-fn">celebrate</span>(el);  <span class="tok-comment">// one-shot, auto-clears</span>
+Whimsy.<span class="tok-fn">celebrate</span>(el);  <span class="tok-comment">// one-shot, dissolves out</span>
+Whimsy.<span class="tok-fn">dissolve</span>(el, { hold: <span class="tok-string">800</span>, fade: <span class="tok-string">2000</span> });
 
 <span class="tok-comment">/* flow, then come to rest — for long "thinking" states */</span>
 Whimsy.<span class="tok-fn">run</span>(el, { loops: <span class="tok-string">4</span>, settle: <span class="tok-string">"glacial"</span> });

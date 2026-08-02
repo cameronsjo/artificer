@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "sidebarAppearance": {
+    "matchTerminalBackground": false,
+    "darkModeTintColor": "#292c33",
+    "tintOpacity": 1
+  },
+  "workspaceColors": {
+    "indicatorStyle": "leftRail",
+    "selectionColor": "#b8cad4",
+    "notificationBadgeColor": "#b85a55",
+    "colors": {
+      "Artificer Gold": "#dbbb6f",
+      "Artificer Steel": "#b8cad4",
+      "Artificer Purple": "#9070d0",
+      "Artificer Sage": "#4a8a5e",
+      "Artificer Rose": "#c4808a"
+    }
+  }
+}

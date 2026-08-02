@@ -35,7 +35,7 @@ Not yet submitted.
 
 ## Pair with Style Settings (recommended)
 
-The theme exposes ~30 controls via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) community plugin. Install it from the community plugins picker, then **Settings → Style Settings → Artificer** for live controls over:
+The theme exposes ~40 controls via the [Style Settings](https://github.com/mgmeyers/obsidian-style-settings) community plugin. Install it from the community plugins picker, then **Settings → Style Settings → Artificer** for live controls over:
 
 - Heading style (pure mono / gold rule / source-mode markers)
 - Body, mono, and UI fonts
@@ -45,7 +45,9 @@ The theme exposes ~30 controls via the [Style Settings](https://github.com/mgmey
 - All eight accent colors with separate dark / light defaults
 - Code-block colors, line numbers, radius
 - Frontmatter density, callout radius, blockquote style
-- Parts-of-speech highlighting
+- Prose highlighting — five-category reading lens (palette, intensity, cues)
+- Texture — paper / fiber grain, sidebar dots, callout hatch, raised depth
+- Whimsy — flowing vault name & empty-pane title (silver / spectrum / gold)
 
 Without Style Settings everything still works — you just get the defaults.
 
@@ -77,9 +79,10 @@ The theme is written against six rules:
 A  Pure mono            Default. All headings JetBrains Mono 700, body color.
 B  Gold rule + steel    H1 has a gold underline; H3-H6 in steel.
 C  Source-mode markers  '#', '##', '###' prefix in muted gold.
+D  All gold             Every heading H1-H6 in the burnished accent ("OG gold").
 ```
 
-Switch in Style Settings → Typography → Heading style, or apply `theme-heading-{a,b,c}` to `<body>` directly.
+Switch in Style Settings → Typography → Heading style, or apply `theme-heading-{a,b,c,d}` to `<body>` directly.
 
 ## Cream mode
 
@@ -104,6 +107,7 @@ If you only want to tweak a couple of things, do it from Style Settings. If you 
 Out-of-the-box styled:
 
 - Style Settings (full integration)
+- yaae (parts-of-speech reading lens — `.yaae-pos-*` painted in-palette)
 - Kanban
 - Excalidraw
 - Dataview

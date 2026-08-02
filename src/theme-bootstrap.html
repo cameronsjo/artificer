@@ -7,15 +7,18 @@
      This is part of the Artificer v0.9.0 Baseline contract — see CLAUDE.md
      § Baseline contract. The localStorage key 'artificer.theme' MUST match
      the key artificer-theme.js reads/writes; do not rename without aligning.
+     Only a pinned 'dark'/'light' applies verbatim — 'auto' (or anything
+     else) follows the OS preference, matching the module's mode model.
      Fail-safe defaults to dark (the system's primary surface), never light. -->
 <script>
   (function () {
     try {
       var saved = localStorage.getItem('artificer.theme');
-      var prefersDark = window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var pinned = saved === 'light' || saved === 'dark';
+      var prefersLight = window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: light)').matches;
       document.documentElement.setAttribute(
-        'data-theme', saved || (prefersDark ? 'dark' : 'light'));
+        'data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark'); /* fail-safe to brand surface, never light */
     }

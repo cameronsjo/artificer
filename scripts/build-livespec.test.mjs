@@ -6,7 +6,7 @@ import { MIRROR, EXCLUDED, syncMirror } from './build-livespec.mjs';
 // Mirrors src/ -> live-spec/ for byte-identical assets; --check mode for CI (#78).
 //   [x] MIRROR and EXCLUDED are disjoint (a file is either mirrored or parked, never both)
 //   [x] MIRROR is non-empty and alphabetized (stable diffs, no dupes)
-//   [x] the still-drifted file (#109: editorial.css) stays OUT of the mirror set
+//   [x] editorial.css is now IN the mirror set (#109 reconciled)
 //   [x] reconciled files (tokens.json, v0.10.2-v0.12.0 wave) and new shared assets
 //       (artificer-tabs.js, v0.11.0) are IN the mirror set
 //   [x] syncMirror({check:true}) reports zero drift against the committed tree (live parity)
@@ -22,8 +22,10 @@ test('MIRROR is non-empty, unique, and alphabetized', () => {
   assert.deepEqual(MIRROR, [...MIRROR].sort(), 'keep MIRROR alphabetized');
 });
 
-test('editorial.css remains excluded until #109 reconciles it', () => {
-  assert.ok(EXCLUDED.includes('artificer-editorial.css'));
+test('editorial.css is now mirror-protected (#109 reconciled)', () => {
+  // #109 reconciled artificer-editorial.css from src/ — it graduates to MIRROR.
+  assert.ok(MIRROR.includes('artificer-editorial.css'));
+  assert.ok(!EXCLUDED.includes('artificer-editorial.css'));
 });
 
 test('reconciled and new shared assets are mirror-protected', () => {

@@ -45,6 +45,9 @@ test('STAMPS covers every stamp site and bakes in the version', () => {
     'themes/_palette.json',
     'src/artificer-whimsy.js',
     'live-spec/artificer-whimsy.js',
+    // Obsidian stamp sites — unified version track (v0.7.0 adoption train).
+    'themes/obsidian/Artificer/manifest.json',
+    'themes/obsidian/Artificer/theme.src.css',
   ]) {
     assert.ok(files.has(f), `missing stamp site for ${f}`);
   }
@@ -52,4 +55,19 @@ test('STAMPS covers every stamp site and bakes in the version', () => {
   const banner = sites.find((s) => s.file === 'src/artificer.css' && /Design tokens/.test(s.re.source));
   const out = restamp('   ARTIFICER · Design tokens · v0.6 (apothecary)', banner.re, banner.repl);
   assert.equal(out.text, '   ARTIFICER · Design tokens · v1.2.3 (apothecary)');
+});
+
+test('Obsidian manifest stamp rewrites only "version", never "minAppVersion"', () => {
+  const manifest = STAMPS('1.2.3').find((s) => s.file === 'themes/obsidian/Artificer/manifest.json');
+  const out = restamp('  "version": "0.6.6",\n  "minAppVersion": "1.5.0",', manifest.re, manifest.repl);
+  assert.equal(out.text, '  "version": "1.2.3",\n  "minAppVersion": "1.5.0",');
+  assert.ok(out.changed);
+});
+
+test('Obsidian src banner stamp is anchored by the " · 2026" suffix', () => {
+  const banner = STAMPS('1.2.3').find((s) => s.file === 'themes/obsidian/Artificer/theme.src.css');
+  // the version-comment inline refs (`v0.19.0 #122-E`) carry no ` · 2026`, so they stay untouched
+  const src = 'Artificer · v0.7.0 · 2026 */\n  --link: underline; /* v0.19.0 #122-E */';
+  const out = restamp(src, banner.re, banner.repl);
+  assert.equal(out.text, 'Artificer · v1.2.3 · 2026 */\n  --link: underline; /* v0.19.0 #122-E */');
 });

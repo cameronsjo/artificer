@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.18.1
+# Artificer · v0.21.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -30,7 +30,7 @@ Don't use Artificer for:
 | File | Purpose |
 |---|---|
 | `artificer.css` | All tokens + utility classes. The only stylesheet you need. |
-| `artificer-theme.js` | Persistent dark/light toggle, reads `localStorage`. |
+| `artificer-theme.js` | Persistent theme control — dark / light / auto (auto follows the OS live); hydrates the empty canonical `.theme-toggle` button. |
 | `assets/cameron-logo.jpg` | Personal mark — only used on Cameron-branded surfaces. |
 | `README.html` | System overview, principles, do/don't. |
 | `colors.html` · `typography.html` · `spacing.html` | Foundations specs. |
@@ -38,11 +38,11 @@ Don't use Artificer for:
 | `layout.html` | Layout primitives: `.stack`, `.cluster`, `.grid-auto`, `.container`, `.page-shell`. |
 | `motion.html` | Duration/easing tokens, the five motion patterns, reduced-motion rules. |
 | `overlay.html` | Modal, popover, tooltip, scrim. Six-rung z-index scale. Pairs with `artificer-focus.js`. |
-| `forms-extended.html` | Field anatomy, validation, fieldsets, helper/error text. The eight non-negotiable rules. |
+| `forms-extended.html` | Field anatomy, validation, fieldsets, helper/error text. The twelve non-negotiable rules. |
 | `data-display.html` | Tables, key-value lists, stat cards, progress. Tabular-nums everywhere. |
 | `states.html` | Empty, loading, error — by duration. Skeleton sizing rules. |
 | `a11y.html` | WCAG 2.2 audit, contrast ratios, focus rings, the 12-point shipping checklist. |
-| `artificer-icons.js` | Lucide-rooted icon set. Auto-hydrates `<i data-icon="…">` placeholders. |
+| `artificer-icons.js` | Lucide-rooted icon set, Lucide-canonical names (legacy names alias; unknown names render a dashed placeholder). Auto-hydrates `<i data-icon="…">` placeholders. |
 | `artificer-focus.js` | `ArtificerFocus.trap(el, {onEscape})` — focus-trap helper for modals/dialogs. |
 | `icons.html` | Icon catalog + usage rules (16px viewBox, 1.5 stroke, inherit color). |
 | `voice-and-tone.html` | Microcopy spec — empty states, errors, success, loading. 7-point checklist. |
@@ -63,7 +63,7 @@ Don't use Artificer for:
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <!-- Theme bootstrap — FIRST, before any CSS, so a dark page never flashes
        light. Key 'artificer.theme' (dot); dark-first. See QUICKSTART.md. -->
-  <script>(function(){try{var s=localStorage.getItem('artificer.theme');var l=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches;document.documentElement.setAttribute('data-theme',s||(l?'light':'dark'));}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+  <script>(function(){try{var s=localStorage.getItem('artificer.theme');var p=s==='light'||s==='dark';var l=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches;document.documentElement.setAttribute('data-theme',p?s:(l?'light':'dark'));}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <meta property="og:image" content="assets/og-image.svg" />
   <link rel="stylesheet" href="artificer.css" />
@@ -72,9 +72,7 @@ Don't use Artificer for:
   <script src="artificer-icons.js" defer></script>
 </head>
 <body>
-  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-    <span class="dot"></span><span data-theme-label>Dark</span>
-  </button>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
   <main style="max-width:820px;margin:0 auto;padding:48px 24px">
     <!-- your content -->
   </main>
@@ -90,28 +88,62 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 
 | User asks for… | Reach for… |
 |---|---|
+| App shell / full-viewport layout | `app-shell.html` — `.app-shell` + `.app-shell__content`; appbar + sidenav + content skeleton for tool surfaces, collapses to the drawer under `--bp-tablet` |
+| Top app bar | `app-shell.html` — `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer`; sticky tool chrome, clears the notch via `safe-area-inset` |
+| Side navigation | `app-shell.html` — `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots); the section spine, one level deep, `.tree` for deeper |
+| Mobile nav drawer | `app-shell.html` — `.nav-drawer` + `.nav-scrim`; takes over below `--bp-tablet` |
+| Breadcrumb | `navigation.html` — `.crumb` + `.crumb__sep`; where-am-I, nav's first rung |
+| Button | `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon` — one primary per view — `components.html` |
 | Dashboard with file/agent list | `patterns.html` sidebar + tabs + content pane |
-| Settings page | `forms-extended.html` `.field` blocks + fieldsets, grouped 3–5 per section |
-| Form (any kind) | `forms-extended.html` — label → input → hint/error, never placeholder-as-label |
-| Modal / dialog | `overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` for focus-trap |
+| Add a settings page | `forms-extended.html` `.field` blocks + fieldsets, grouped 3–5 per section |
+| Form field / form (any kind) | `forms-extended.html` — label → input → hint/error, never placeholder-as-label |
+| Confirmation dialog / modal | `overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` for focus-trap |
 | Tooltip / popover | `overlay.html` — `.tooltip` (label) or `.popover` (body content) |
-| Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container--{sm\|md\|lg}` |
+| Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container` + `.container--{sm\|md\|lg}` (the base class is required — it carries width, centering, and inline padding; the size modifier only sets max-width) |
+| Blog / editorial / document top nav / masthead | `.masthead` (`artificer-editorial.css`) — non-sticky, no border; document counterpart to `.appbar`. Brand via `.wordmark`, toggle via `.theme-toggle--inline` — `navigation.html` |
 | Stacking children | `layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
 | Card grid | `layout.html` — `.grid-auto` with `--min: 240px`, never hand-rolled flexbox |
-| "Search anything" / command palette / ⌘K | `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim` — `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible — `components-extended.html` |
-| Combobox / dropdown / menu | One option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor. Behavior: `data-options` / `ArtificerOptions.enhance()` — `components-extended.html` |
-| Toast / alert | `notifications.html` — pick tier by *action required*, not severity |
+| Command palette / ⌘K / "search anything" | `.palette` (= `.palette__search` combobox input + `.listbox` body) on a `.scrim` — `ArtificerOptions.combobox(input, list)` + `ArtificerFocus.trap()`, Esc closes; 5–7 results visible — `components-extended.html` |
+| Combobox / dropdown / palette | One option-popover: `.menu` (actions) / `.listbox` (selection) + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the cursor. Behavior: `data-options` / `ArtificerOptions.enhance()` — `components-extended.html` |
+| Tabs / view switcher | `.tabs` + `role=tablist`/`tab`/`tabpanel`; keyboard model via `ArtificerTabs.enhance()` (or `data-tabs` + `observe()`) — `patterns.html` |
+| Segmented control / view-param switch | `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) — `navigation.html` |
+| Accordion / disclosure | `.accordion` wrapping native `<details><summary>` + `.accordion__body` — keyboard + a11y for free, no JS — `components.html` |
+| Chip / facet tag | `.chip` (+ `.chip__count`); faceted filters in a `.filter-bar` or `.cluster` — `composition.html` |
+| Filter bar | `.filter-bar` + `.grow`; ALL filters in one top bar, never sprinkled into panels — `composition.html` |
+| Search input | `.search`; the icon-slotted search box, `.appbar__search` in the bar — `forms-extended.html` |
+| Toast / alert | `notifications.html` — pick tier by *action required*, not severity; silent by default — audible escalation only as a named, opt-in carve-out |
 | Transient toast placement | Mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`, `+N more` via `.toast-region__more`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none — `notifications.html` |
 | Tree / file explorer / nested nav | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree/treeitem/group`; keyboard ships via `data-tree` / `ArtificerTree.enhance()` — `components-extended.html` |
 | Pagination | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends; counted ranges only — `components-extended.html` |
 | Persistent page banner | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions` — a standing layout band, NOT the transient `.notif` — `components-extended.html` |
-| Status indicator | `.dot--{accent\|attention\|urgent\|success}`, no count |
+| Footer / colophon / fine print / attribution | `.colophon` + `.colophon__label` (column headers) + `.colophon__fine` (legal tier); columns via `.grid-auto`; prose auto-sans even inside `.surface-tool` — `.surface-document` flips any other prose island back — `layout.html` |
+| Selected card / selected row / active choice | `.card--active` (`background: var(--bg)` + accent left border) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row — never `--accent-fill` as a large surface bg, its only rated text color is `--on-accent` — `components.html` |
+| Split pane / master-detail | `.split-pane` + `.pane--active`/`.pane--inactive`; recession marks the unfocused pane — `composition.html` |
+| Status pill | `.badge--{tier}` with a `.dot--{tier}` inside — dot AND text, never color alone |
+| Status indicator (bare, no count) | `.dot--{accent\|attention\|urgent\|success}` |
 | Count indicator | `.badge--{accent\|attention\|urgent\|success}` with number |
+| Avatar | `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`; not `.dot` (8px status) or `.badge` (pill) — `components.html` |
+| File upload / dropzone | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events — `components.html` |
+| Dense table status / ✓✗~– cells | `.glyph--{success\|muted\|attention\|na}` tints ✓✗~– with a theme token; graphical (SC 1.4.11) so each pairs with `aria-label` — sparse/labeled status stays `.badge`+`.dot` — `data-display.html` |
 | Icon inside button/link | `<i data-icon="search"></i>` — see `icons.html` for full set |
 | Table of data | `data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums` |
-| Headline numbers (KPIs) | `.stat` — `.stat__label` + `.stat__value` (mono, tabular) + `.stat__row` + `.stat__delta`(`.down`); the cell of a `.kpi-strip`, max 4 per row — `data-display.html` |
+| Key-value list | `.kv`; mono `<dl>` grid for metadata pairs, `.table` for real data — `data-display.html` |
+| Live data indicator | `.live-tick` (pulsing dot) + `.last-updated` (timestamp); auto-updating regions still need an in-UI pause — `composition.html` |
+| Stat card / KPI strip / headline numbers (KPIs) | `.stat` — `.stat__label` + `.stat__value` (mono, tabular) + `.stat__row` + `.stat__delta`(`.down`); the cell of a `.kpi-strip`, max 4 per row — `data-display.html` |
+| Dashboard shell | `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`) — one frame, five recipes — `composition.html` |
+| Chart / sparkline / gauge | `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge`; series via `--series-1..5` — `charts.html` |
+| Architecture / flow diagram | `.dia-node`/`.dia-edge` on inline SVG — `diagrams.html` |
+| Syntax-highlighted code block | `.code-block` + the `.tok-*` roles — `components-extended.html` |
+| Brand wordmark | `.wordmark` (renders `artificer.`) — `README.html` |
+| Theme toggle | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph |
+| Tabular number | `.num` utility — sets `font-variant-numeric: tabular-nums`; drop on the cell, or the parent for a whole table — `data-display.html` |
+| Short hint paragraph under a figure or field | `.note` — sister of `.meta`, smaller (label-sm); inherits the body face, mono on tool surfaces / sans on document surfaces |
+| Doc-page section header | `<h2 class="section-title">` — mono, uppercase, `--fg-secondary`, border-bottom rule; doc/spec chrome — `data-display.html` |
+| Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers — `data-display.html` |
+| Make it fun / playful / celebratory / rainbow | The sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors — `whimsy.html` |
+| Make it feel like paper / give it grain / material / texture / depth | `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors — `texture.html` |
 | Empty state / error / loading copy | `voice-and-tone.html` — never improvise microcopy |
-| Loading UI | `states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
+| Loading state / UI | `states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
 | Long wait, nothing to count | `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` — `states.html` |
 | Refreshing a value in place | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses — NOT `.skeleton` (would blank it) — `composition.html` |
 | Animation / transition | `motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
@@ -123,9 +155,11 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 
 ### SPA lifecycle (icons / whimsy / theme + modal re-trap)
 
-The vanilla JS modules hydrate once on `DOMContentLoaded` — fine for a page
-load, a footgun in a SPA where nodes mount after first paint. Each module now
-exposes the lifecycle API:
+Icons and theme arm their own `MutationObserver` on DOM ready — SPA-mounted
+`[data-icon]` / `[data-theme-toggle]` nodes hydrate and bind automatically.
+Whimsy hydrates once on `DOMContentLoaded`; tabs, options, and tree enhance
+on explicit calls. For nodes that mount after first paint in those modules,
+use the lifecycle API:
 
 - **`ArtificerIcons.observe(root?)` / `Whimsy.observe(root?)` /
   `ArtificerTheme.observe(root?)`** — framework-agnostic. Hydrates `root` now,
@@ -151,7 +185,7 @@ exposes the lifecycle API:
 
 1. **Dark is default.** Light mode is a paper alternative, not the primary.
 2. **Max 2 semantic colors on screen at once.** Brand purple + gold = one "Cameron" signal, doesn't count.
-3. **Bold 3–5 anchor words per paragraph.** Use `class="anchor"` or `<b>`. Primary scanning mechanism.
+3. **Bold 3–5 anchor words per paragraph.** Use `class="anchor"` or `<b>`. Primary scanning mechanism. When prose arrives as data, mark anchors as `**…**` in the source and promote each marked span to `<b class="anchor">` at render — single-level only, never nested.
 4. **One primary CTA per screen.** Always. Everything else is `.btn--secondary` or `.btn--ghost`.
 5. **5–7 items max** in any list/palette/menu before progressive disclosure.
 6. **No pure black.** `#1D1F21` is the darkest value in the system.
@@ -159,6 +193,27 @@ exposes the lifecycle API:
 8. **WCAG AAA** for body text (7:1). Text-safe accent variants already hit this.
 9. **Never mix rounded and sharp corners** in one view.
 10. **Voice is literal, direct, lightly deadpan.** No metaphor, sarcasm, or figurative copy. Autism demands clarity.
+
+### Status-density carve — budgets, not absolutes, on status-dense tool surfaces
+
+Rules 2, 4, and 5 read as absolutes. On a status-dense, read-only surface
+(monitoring, fleet dashboards) the colors and interaction load arrive with
+the data — they're facts, not decoration a designer chose. These are
+budgets-with-exemptions, not exceptions that swallow the rule:
+
+- **Color budget (rule 2).** A status-dense tool surface is exempt when the
+  colors ARE the data — a fleet-state table can legitimately show 5 tier
+  colors at once. Discipline: low-saturation dot+text chips, never filled
+  pills; filled treatment stays reserved for the urgent tier and the
+  connection-loss banner. Decoration still budgets at 2 — the exemption
+  doesn't extend to anything that isn't the data itself.
+- **List cap (rule 5).** A primary data table is not a "list" — it's
+  governed by the table recipes, not this cap. The cap still governs
+  panels, fact clusters, and menus: ≤5 items per labeled group in a detail
+  panel.
+- **Primary CTA (rule 4).** "At most one" includes zero. A read-only
+  surface with no CTA at all — only selection, tabs, toggles, external
+  links — is valid, not a violation.
 
 ---
 
@@ -170,7 +225,8 @@ TEXT --fg / --fg-secondary / --fg-muted / --fg-disabled / --border
 
 INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
                 --accent-bright hover state
-                --accent-fill gold background — primary buttons, badges
+                --accent-fill gold background — SMALL controls only (buttons, badges);
+                    never a selected-card/surface bg, pairs only with --on-accent
 
 ATTENTION --attention rose text (AAA) — "look when you can"
                 --attention-fill rose background
@@ -198,6 +254,8 @@ TYPE --font-mono JetBrains Mono
                 Anti-pattern: setting prose in mono and then overriding `.meta`,
                 headings, tables back to sans. If you're escaping the body face,
                 the body face is wrong — flip it.
+                Type utilities set size + line-height only — compose vertical
+                rhythm with `.stack` (gap-owned), not margins.
 
 SPACING --s-xs(4) sm(8) md(16) lg(24) xl(32) 2xl(48)
 RADII --radius-sm(4 · buttons) md(8 · cards) lg(12 · overlays only) pill(999 · toggle/chip)
@@ -215,6 +273,8 @@ TYPE .t-headline-lg .t-headline-md .t-body-lg .t-body-md
 
 BUTTONS .btn + .btn--primary | --secondary | --ghost | --destructive
            [disabled] for inactive
+           .btn--icon (square 44px, needs aria-label) + .btn--icon-prominent
+           when it stands ALONE as a primary control (hamburger, modal close)
 
 CARDS .card + .card--active | --attention | --urgent
 
@@ -226,8 +286,13 @@ DOTS .dot + .dot--accent | --attention | --urgent | --success
 PANES .pane--active (gold left border) · .pane--inactive (55% opacity, desaturated)
 
 KBD <kbd>⌘ ↵</kbd>
-THEME <button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+THEME <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
+        (empty — the module injects the glyph; cycles dark → light → auto)
 ```
+
+Coming from Bootstrap/Tailwind `warning`? That tier is **`--attention`** here —
+across badge, dot, card, notif, and banner. One name per tier; there is no
+`warning` alias.
 
 ---
 
@@ -305,6 +370,9 @@ there is no `.dash-*` class):
 - **Bars start at zero.** Lines may fit Y-range.
 - **Tabular numerals** wherever a number renders. Already wired via `--font-mono`.
 - **No entry animation by default.** Honor `prefers-reduced-motion`.
+- **Muted series is a stance.** Series slots alias semantic tokens on purpose — color alone fails CVD validators. A second channel (label, shape, line style, position) is mandatory on every multi-series categorical chart.
+- **Light mode has fewer channels than dark** — attention collapses toward gold. Categorical series + an attention marker together need a glyph or label to carry the distinction, not color alone.
+- **Diverge vs. ramp.** `--diverge-low|mid|high` for valenced scales with two charged ends; `--ramp-1..5` for magnitude where one end is neutral.
 
 ### Diagrams — non-negotiable
 
@@ -316,6 +384,8 @@ there is no `.dash-*` class):
 - **Mermaid:** initialize with `theme:'base'` + `themeVariables` reading CSS vars (snippet in `live-spec/diagrams.html`).
 - **React Flow:** wrap in `.rf-artificer`.
 - **Excalidraw palette:** strokes `#ffffff #c5c8c6 #e0b558 #e8836f` · fills `#292c33 #313540 #3c4150`. "Architect" roughness for system maps; "artist" for sketches.
+- **`<defs>` ids are document-scoped.** Namespace per instance (`arrow-<id>`) when repeating a diagram component; never hard-code one inside it.
+- **Interactive nodes:** `tabindex="0"` + `role="button"` + `aria-label` + Enter/Space. Focus ring free from the global catch-all.
 
 ---
 

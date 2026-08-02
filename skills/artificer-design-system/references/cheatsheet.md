@@ -14,7 +14,8 @@ TEXT       --fg / --fg-secondary / --fg-disabled / --border
 
 INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
             --accent-bright hover state
-            --accent-fill gold background — primary buttons, badges
+            --accent-fill gold background — SMALL controls only (buttons, badges);
+                 never a selected-card/surface bg, pairs only with --on-accent
 
 ATTENTION  --attention rose text (AAA) — "look when you can"
             --attention-fill rose background
@@ -118,6 +119,20 @@ THEME      <button class="theme-toggle" data-theme-toggle><span class="dot"></sp
   <label for="k">API key</label>
   <input id="k" class="input" aria-invalid="true" />
   <span class="error">Missing <code>sk-</code> prefix. Paste the full key from console.</span>
+</div>
+```
+
+### Selected card — border, not fill
+
+```html
+<!-- ANTI: --accent-fill as a large surface bg; default-colored body text fails contrast -->
+<div class="card" style="background: var(--accent-fill)">
+  <p>Pro: fast. Con: pricier.</p>
+</div>
+
+<!-- PATTERN: .card--active — background stays put, accent marks the edge -->
+<div class="card card--active">
+  <p>Pro: fast. Con: pricier.</p>
 </div>
 ```
 

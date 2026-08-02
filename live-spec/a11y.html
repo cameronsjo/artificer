@@ -17,7 +17,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Accessibility</p>
   <h1 class="t-headline-lg">accessibility.</h1>
@@ -73,6 +73,7 @@ button:focus-visible, input:focus-visible, select:focus-visible,
     <b></b><div><b class="anchor">Errors use <code>aria-invalid="true"</code> + <code>aria-describedby</code></b> pointing to the error message id.</div>
     <b></b><div><b class="anchor">Color is not the only signal.</b> Status badges include a dot AND text. Required fields say "required," not just a red asterisk.</div>
     <b></b><div><b class="anchor">All interactive elements are reachable by keyboard.</b> No <code>onclick</code> on plain divs without <code>tabindex="0"</code> + <code>role</code> + <code>Enter</code>/<code>Space</code> handlers.</div>
+    <b></b><div><b class="anchor">Interactive SVG nodes get the same contract.</b> <code>tabindex="0"</code> + <code>role="button"</code> + <code>aria-label</code> + <code>Enter</code>/<code>Space</code>, with a visible <code>:focus-visible</code> ring. See <a href="diagrams.html">Diagrams</a> § Interactive nodes.</div>
     <b></b><div><b class="anchor">Focus order matches visual order.</b> No CSS <code>order</code> tricks that put Tab out of sequence.</div>
     <b></b><div><b class="anchor">Modals trap focus</b> via <code>artificer-focus.js</code>; Esc closes; focus returns to the trigger.</div>
     <b></b><div><b class="anchor">Touch targets ≥ 44 × 44 px.</b> Buttons, toggles, links in nav. Smaller is OK in dense tables.</div>

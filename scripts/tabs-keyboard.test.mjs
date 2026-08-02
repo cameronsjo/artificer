@@ -18,6 +18,15 @@ import assert from 'node:assert/strict';
 import '../src/artificer-tabs.js';
 const { nextIndex } = globalThis.ArtificerTabs;
 
+// Export contract (#219 Phase 3): the state machine MUST stay exported — a
+// refactor that drops nextIndex fails CI here, before a framework consumer that
+// imports it breaks silently. (The keyboard cases below cover behavior; this
+// pins the export and return-determinism for one input.)
+test('export contract: ArtificerTabs.nextIndex is exported and return-deterministic', () => {
+  assert.equal(typeof globalThis.ArtificerTabs.nextIndex, 'function');
+  assert.equal(nextIndex('ArrowRight', 0, 3), nextIndex('ArrowRight', 0, 3));
+});
+
 test('ArrowRight advances by one (horizontal default)', () => {
   assert.equal(nextIndex('ArrowRight', 0, 3), 1);
 });

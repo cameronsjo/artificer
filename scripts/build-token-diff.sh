@@ -5,6 +5,13 @@ set -euo pipefail
 
 hd=$1 cd=$2 hl=$3 cl=$4 out=$5
 
+for f in "$hd" "$cd" "$hl" "$cl"; do
+  if [[ ! -f "$f" ]]; then
+    echo "error: input TSV not found: $f" >&2
+    exit 1
+  fi
+done
+
 emit_section() {
   local title=$1 hist=$2 curr=$3
 
@@ -53,13 +60,13 @@ emit_section() {
 }
 
 {
-  echo "# Token diff — historical (v0.1) vs current (v0.6.0 + Lane 3 patches)"
+  echo "# Token diff — historical vs current"
   echo ""
   echo "Generated: $(date '+%Y-%m-%d %H:%M %Z')"
   echo ""
-  echo "**Source files:**"
-  echo "- Historical: \`HISTORICAL\` from main branch (v0.1, 2259 lines)"
-  echo "- Current: \`themes/obsidian/Artificer/theme.css\` (v0.6.0 + Lane 3 patches, 1947 lines)"
+  echo "**Source files (token<TAB>value TSVs):**"
+  echo "- Historical dark: \`$hd\` ($(wc -l < "$hd" | tr -d ' ') tokens) · light: \`$hl\` ($(wc -l < "$hl" | tr -d ' ') tokens)"
+  echo "- Current dark: \`$cd\` ($(wc -l < "$cd" | tr -d ' ') tokens) · light: \`$cl\` ($(wc -l < "$cl" | tr -d ' ') tokens)"
   echo ""
   echo "**Scope:** \`.theme-dark\` and \`.theme-light\` token blocks only."
   echo ""

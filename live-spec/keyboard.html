@@ -14,7 +14,7 @@
   h1 .amp { color: var(--accent); }
   .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 62ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .sec-num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
   /* Keep multi-key combos on one line with even spacing */
   .combo { white-space: nowrap; }
   .combo kbd + kbd { margin-left: var(--s-xs); }
@@ -23,14 +23,14 @@
 </style>
 </head>
 <body>
-<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main class="page">
   <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Keyboard</div>
   <h1>Keyboard<span class="amp">.</span></h1>
   <p class="lede">Artificer is <b class="anchor">keyboard-first</b>: every command reachable <b class="anchor">without the mouse</b>, the <b class="anchor">same gesture</b> meaning the same thing everywhere. This is the <b class="anchor">canonical keymap</b> — the muscle memory the whole system shares.</p>
 
   <section>
-    <h2><span class="num">01</span> The canonical keymap</h2>
+    <h2><span class="sec-num">01</span> The canonical keymap</h2>
     <p class="note">Every Artificer UI adopts these. <b class="anchor">⌘ K opens the command palette</b> — never rebind it to a command; the palette is how you reach commands. On macOS the modifier is ⌘; see <a href="#mods">platform modifiers</a> for Linux/Windows.</p>
     <div class="scroll-x" tabindex="0"><table class="table">
       <thead>
@@ -83,7 +83,7 @@
   </section>
 
   <section>
-    <h2><span class="num">02</span> Cross-app convention</h2>
+    <h2><span class="sec-num">02</span> Cross-app convention</h2>
     <p class="note">The same intent earns the <b class="anchor">same gesture</b> across Cameron's themed apps, so muscle memory carries between them. This table is the <b class="anchor">standard</b> — the actual keybind configs live in dotfiles (chezmoi), not here. Where an app's model can't honor a gesture (terminal emulators have no command palette; multiplexers route through a prefix), the divergence is documented, not papered over.</p>
     <div class="scroll-x" tabindex="0"><table class="table">
       <thead>
@@ -128,7 +128,7 @@
   </section>
 
   <section id="mods">
-    <h2><span class="num">03</span> Platform modifiers</h2>
+    <h2><span class="sec-num">03</span> Platform modifiers</h2>
     <p class="note">The keymap is written for macOS. On Linux and Windows, swap the modifier — the <b class="anchor">gesture stays identical</b>, only the key changes.</p>
     <div class="scroll-x" tabindex="0"><table class="table">
       <thead>

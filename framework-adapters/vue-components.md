@@ -133,7 +133,11 @@ export function useTheme() {
   );
   watch(theme, (t) => {
     document.documentElement.setAttribute('data-theme', t);
-    try { localStorage.setItem('artificer.theme', t); } catch {}
+    // Read the canonical key from the vanilla runtime — window.ArtificerTheme.KEY
+    // is the ONE source of truth. The 'artificer.theme' fallback (a DOT) covers
+    // SSR / before artificer-theme.js has loaded.
+    const KEY = (typeof window !== 'undefined' && (window as any).ArtificerTheme?.KEY) || 'artificer.theme';
+    try { localStorage.setItem(KEY, t); } catch {}
   });
   return theme;
 }

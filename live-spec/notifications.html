@@ -14,13 +14,13 @@
   h1 .amp { color: var(--accent); }
   .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .sec-num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
 
   .tier { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); display: grid; grid-template-columns: 160px 1fr; gap: var(--s-lg); align-items: start; }
   .tier .side { display: flex; flex-direction: column; gap: 4px; }
   .tier .n { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; }
   .tier.urgent .n { color: var(--urgent); }
-  .tier.attention .n { color: var(--attention); }
+  .tier.attention .n { color: var(--fg); }
   .tier.info .n { color: var(--accent); }
   .tier.bg .n { color: var(--fg-secondary); }
   .tier .t { font-family: var(--font-mono); font-weight: 700; font-size: 15px; }
@@ -31,14 +31,14 @@
 </style>
 </head>
 <body>
-<button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main class="page">
   <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Notifications</div>
   <h1>notifications<span class="amp">.</span></h1>
   <p class="lede">Four tiers, sorted by <span class="anchor">action required</span>. If a message doesn't need action, it <span class="anchor">never interrupts</span> — badge it silently instead.</p>
 
   <section>
-    <h2><span class="num">01</span> The four tiers</h2>
+    <h2><span class="sec-num">01</span> The four tiers</h2>
 
     <div class="tier urgent">
       <div class="side">
@@ -111,7 +111,7 @@
   </section>
 
   <section>
-    <h2><span class="num">02</span> Stack rules</h2>
+    <h2><span class="sec-num">02</span> Stack rules</h2>
     <div style="background:var(--bg-raised);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:var(--s-lg)">
       <ul style="margin:0;padding-left:18px;font-family:var(--font-mono);font-size:14px;line-height:1.7">
         <li><span class="anchor">3 visible max.</span> Overflow → count badge ("+4 more").</li>
@@ -126,7 +126,7 @@
   </section>
 
   <section>
-    <h2><span class="num">03</span> Toast region — live demo</h2>
+    <h2><span class="sec-num">03</span> Toast region — live demo</h2>
     <p class="lede" style="font-size:13px">The <code>.toast-region</code> is the fixed placement layer (bottom-right, <code>--z-toast</code>); a toast IS a <code>.notif</code> mounted in it. <span class="anchor">ARIA is set at insert time</span> — CSS cannot set roles: urgent → <code>role="alert"</code>, attention/info → <code>role="status"</code>, background → <span class="anchor">no role</span> (the silent badge never enters the region). Info auto-dismisses after 5s; the timer <span class="anchor">pauses on hover/focus</span>.</p>
     <div style="display:flex;gap:var(--s-sm);flex-wrap:wrap;margin-top:var(--s-md)">
       <button class="btn btn--secondary" data-toast="urgent">Show urgent</button>

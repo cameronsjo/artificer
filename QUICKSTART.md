@@ -39,10 +39,11 @@ You need, at minimum: **`artificer.css`**. Add `artificer-theme.js` (toggle),
     (function () {
       try {
         var saved = localStorage.getItem('artificer.theme');
+        var pinned = saved === 'light' || saved === 'dark';
         var prefersLight = window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: light)').matches;
         document.documentElement.setAttribute(
-          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
+          'data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark'); /* fail-safe to dark, never light */
       }
@@ -56,9 +57,9 @@ You need, at minimum: **`artificer.css`**. Add `artificer-theme.js` (toggle),
   <title>My Artificer page</title>
 </head>
 <body>
-  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-    <span class="dot"></span><span data-theme-label>Dark</span>
-  </button>
+  <!-- Leave the button EMPTY — artificer-theme.js injects the glyph and
+       narrates state (dark → light → auto) on aria-label/title. -->
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
   <main class="container container--md" style="padding:48px 24px">
     <h1 class="t-headline-lg">It works.</h1>
     <p class="t-body-md" style="color:var(--fg-secondary)">A first surface, themed.</p>
@@ -76,7 +77,8 @@ You should see, with **zero flash on load**:
 
 - [ ] **Dark, slightly-warm background** (`#292c33`) — not pure black, not white.
 - [ ] A **burnished-gold** primary button (`.btn--primary`).
-- [ ] The **theme toggle** (top-left) flips dark ⇄ cream and **persists on reload**.
+- [ ] The **theme toggle** (top-right) cycles **dark → cream → auto** (auto
+      follows the OS; gold glyph = pinned) and **persists on reload**.
 - [ ] If you added icons: `<i data-icon="search"></i>` renders an inline SVG.
 
 If all four pass, you're set.
@@ -88,8 +90,9 @@ If all four pass, you're set.
 - **SSR / no-FOUC:** the bootstrap above is the whole trick — it runs
   synchronously in `<head>` before paint. On a server-rendered page, either
   inline it (as shown) or set `data-theme` on `<html>` from a cookie during
-  SSR. **Never** ship the page with no `data-theme` — it resolves to light and
-  a dark page flashes. The persistence key is **`'artificer.theme'`** (a dot) —
+  SSR. **Never** ship the page with no `data-theme` — the module corrects it
+  only after first paint, so the wrong-theme frame flashes. The persistence
+  key is **`'artificer.theme'`** (a dot, values `dark`/`light`/`auto`) —
   vanilla JS and any React `useTheme` must agree on it.
 - **SPA (nodes mount after first paint):** the JS modules hydrate once on load.
   For dynamically-mounted content call `ArtificerIcons.observe(root)` /
@@ -117,6 +120,6 @@ If all four pass, you're set.
 |---|---|
 | **Flash of light on load** | The bootstrap script isn't **first** in `<head>`, or runs after the CSS. Move it above every `<link>`. |
 | **Theme doesn't persist** | The key must be **`'artificer.theme'`** (dot) everywhere — bootstrap, `useTheme`, vanilla. |
-| **Icons don't render** | Load `artificer-icons.js`. In a SPA, icons mounted after load need `ArtificerIcons.observe()` or `useIcons()`. |
+| **Icons don't render** | Load `artificer-icons.js` (it arms its own observer — SPA-mounted icons hydrate automatically). A dashed box means the name is unknown: check it against `icons.html` or `ArtificerIcons.list()` (names are Lucide-canonical). |
 | **Everything is monospace** | You're on a tool surface by default. For prose, use sans (`var(--font-sans)`) — see § "First decision". |
 | **Colors look off / invented** | You hardcoded a hex. Use the semantic tokens (`var(--accent)`, etc.); never raw hex. |

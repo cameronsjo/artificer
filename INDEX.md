@@ -21,7 +21,7 @@ Cameron-first, unsupported. Read order:
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.18.1
+npm install @cameronsjo/artificer@0.21.0
 
 # or copy src/ into your project and link the CSS
 cp -r src/ <your-project>/public/artificer/
@@ -51,7 +51,7 @@ artificer/
 ├── live-spec/           ← every HTML reference page (open in a browser)
 ├── framework-adapters/  ← Tailwind config · React wrappers · Vue patterns
 ├── themes/              ← same palette ported to editors + terminals
-│   ├── claude-code/ · ghostty/ · vscode/ · tmux/ · gitmux/ · lazygit/ · gh-dash/
+│   ├── claude-code/ · ghostty/ · cmux/ · vscode/ · tmux/ · gitmux/ · lazygit/ · gh-dash/
 │   ├── obsidian/Artificer/  ← Obsidian theme snapshot
 │   ├── _palette.json        ← single source of truth
 │   └── build.mjs            ← regenerator

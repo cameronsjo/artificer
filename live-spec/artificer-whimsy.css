@@ -39,6 +39,8 @@
   --whimsy-bob:    2.6s;    /* sine-wave bob period (wave variant)     */
   --whimsy-rise:   0.16em;  /* sine-wave bob amplitude                 */
   --whimsy-settle-speed: 150s; /* glacial rest cycle — ~2.5min, sub-perceptual */
+  --whimsy-dissolve-hold: 800ms;   /* graceful exit: fully-lit before receding */
+  --whimsy-dissolve-fade: 2000ms;  /* graceful exit: opacity fade-out duration  */
 
   /* Burnished spectrum — hue stops walk Artificer's own brand hues and loop
      (first == last so the flow is seamless). Built lazily from the knobs,
@@ -304,6 +306,18 @@
   .whimsy--wave > .whimsy-char { transform: none !important; }
 }
 
+/* ─── Dissolve — the graceful one-shot exit (Whimsy.dissolve / .celebrate) ──
+   The gradient is clipped to text (color:transparent), so it can't transition
+   to a solid — opacity is the only animatable handle. Fade the whole element
+   out (flow keeps shimmering as it recedes), then JS clears it. */
+.whimsy--dissolving {
+  transition: opacity var(--whimsy-dissolve-fade) var(--ease);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .whimsy--dissolving { transition: none; } /* JS also collapses to instant clear */
+}
+
 
 /* ─── Whimsy focus ring (opt-in · explicit request only) ───────────────────
    A burnished ring that circles a focused control — delight layered OVER
@@ -379,7 +393,7 @@
    travels; reveals L→R. Put it on the text element (made inline-block) so it
    shares the mark's exact width + gradient. The sanctioned replacement for a
    flat link underline on a .whimsy wordmark — see CLAUDE.md § Whimsy + § Brand. */
-.whimsy-underline { position: relative; display: inline-block; }
+.whimsy-underline { position: relative; display: inline-block; width: fit-content; }
 .whimsy-underline::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -0.3em; height: 10px;
   background-image: var(--whimsy-gradient); background-size: 200% 100%;

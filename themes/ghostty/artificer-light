@@ -5,6 +5,9 @@
 #
 # Generated from themes/_palette.json — edit there + re-run build.mjs.
 
+# background is terminalBg, NOT bg. The terminal is a RAISED surface — an app
+# running on the desktop, not the desktop itself (ADR 0036). Do not "fix" this
+# to P.bg; bg is the substrate (VS Code's editor, Obsidian's note surface).
 background = f5ead0
 foreground = 20203e
 
@@ -12,7 +15,7 @@ cursor-color = 7a5a10
 cursor-text  = f5ead0
 
 selection-background = c4932a
-selection-foreground = f5ead0
+selection-foreground = 20203e
 
 # ANSI 0–7 (normal)
 # Invariant: positions 4 (normal blue) and 12 (bright blue) must be a
@@ -29,6 +32,9 @@ palette = 6=3a6a68
 palette = 7=20203e
 
 # ANSI 8–15 (bright)
+# Invariant (ADR 0001, re-derived ADR 0036): slot 0 must read DIMMER than slot 8.
+# Slot 8 is ansiBrightBlack, not fgDisabled — the lifted canvas compressed both
+# ends, and fgDisabled is shared with VS Code + the web, so it can't move.
 palette = 8=8a8070
 palette = 9=a04540
 palette = 10=3a7050

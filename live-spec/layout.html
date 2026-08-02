@@ -14,7 +14,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Layout</p>
   <h1 class="t-headline-lg">layout primitives.</h1>
@@ -49,6 +49,7 @@
       <tr><td><code>.container--lg</code></td><td>1120px</td><td>Dashboards, tables, multi-column layouts.</td></tr>
     </tbody>
   </table>
+  <p class="meta" style="margin-top:var(--s-sm)">Size modifiers set only max-width. Always pair one with the base <code>.container</code>, which carries width, centering, and inline padding.</p>
 
   <h2 class="section-title">.page-shell — sticky masthead</h2>
   <p class="meta">Two-row grid: header sticks, main scrolls. Header gets <code>z-index: var(--z-overlay)</code> automatically.</p>
@@ -59,6 +60,38 @@
 
   <h2 class="section-title">Composition recipe</h2>
   <p class="meta">Most pages: <code>page-shell &gt; container--md &gt; stack</code>. That's it. Resist nesting deeper without a reason.</p>
+
+  <h2 class="section-title">.colophon — page-foot document seam</h2>
+  <p class="meta">The band at a page's bottom for attribution, links, and fine print — the one place a tool surface routinely speaks in sentences. Demoed here inside <code>.surface-tool</code> to show the sans-prose escape; columns compose from <code>.grid-auto</code>.</p>
+  <div class="surface-tool">
+    <footer class="colophon">
+      <div class="container container--md">
+        <div class="grid-auto" style="--min:180px">
+          <div>
+            <span class="colophon__label">Artificer</span>
+            <p>The design system for tools that feel considered.</p>
+          </div>
+          <div>
+            <span class="colophon__label">Resources</span>
+            <ul style="padding-left:1.2em;margin:0">
+              <li><a href="README.html">Documentation</a></li>
+              <li><a href="https://github.com/cameronsjo/artificer">GitHub</a></li>
+            </ul>
+          </div>
+          <div>
+            <span class="colophon__label">Legal</span>
+            <p>Licensed under Apache-2.0.</p>
+          </div>
+        </div>
+        <p class="colophon__fine">© 2026 Artificer. All trademarks are property of their respective owners.</p>
+      </div>
+    </footer>
+  </div>
+  <pre class="code-block"><span class="tok-keyword">&lt;footer</span> class=<span class="tok-string">"colophon"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;div</span> class=<span class="tok-string">"grid-auto"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/div&gt;</span>
+  <span class="tok-keyword">&lt;p</span> class=<span class="tok-string">"colophon__fine"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/p&gt;</span>
+<span class="tok-keyword">&lt;/footer&gt;</span></pre>
+  <p class="meta" style="margin-top:var(--s-sm)">Prose inside <code>.colophon</code> renders <code>--font-sans</code> even inside <code>.surface-tool</code>. For a prose island elsewhere in a tool surface, wrap it in <code>.surface-document</code> to flip the same escape on.</p>
 </main>
 </body>
 </html>

@@ -1,150 +1,176 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Editorial — the document surface's expressive tier (v0.9.0)
-   Long-form reading surfaces: blog, essays, release notes. The counterpart
-   to .surface-tool. Opt-in — load AFTER artificer.css.
+   ARTIFICER · Editorial — the document surface's expressive tier      v0.9.0
+   ───────────────────────────────────────────────────────────────────────────
+   Opt-in. Load AFTER artificer.css. Canonical home for long-form reading
+   surfaces (blog, essays, release notes) — the expressive counterpart to
+   .surface-tool. Promoted v0.9.0 from blog/homepage's copied global.css.
 
-   Mints exactly one token: --editorial-measure (66ch prose cap). Everything
-   else reuses the canonical --t-* / --s-* scales. The .reveal animation is
-   the one sanctioned arrival motion — see CLAUDE.md § Motion carve.
+   Baseline contract: requires the core palette (--bg, --fg, --fg-secondary,
+   --border, --accent) + --ease. See CLAUDE.md § Baseline contract.
 
-   Lane 1 ratification (workshop decision).
+   Reuses the canonical --t-* type ramp and --s-* spacing scale. The ONLY new
+   token is --editorial-measure. Nothing here re-declares a color, size, or
+   duration the core already owns.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --editorial-measure: 66ch;
+  --editorial-measure: 66ch;   /* prose line-length cap — the one mint */
 }
 
-/* ─── Surface scope ────────────────────────────────────────────────────── */
-
+/* ─── Surface scope ────────────────────────────────────────────────────────
+   The document default is already sans; editorial adds measure + reading
+   rhythm. Wrap a long-form page in <body class="surface-editorial"> (or any
+   container). It is the inverse of .surface-tool — never combine the two. */
 .surface-editorial {
   font-family: var(--font-sans);
   color: var(--fg);
-  background: var(--bg);
-}
-.surface-editorial.surface-tool { /* mutual exclusion is doctrine — last-write-wins is a bug */
-  outline: 2px dashed var(--urgent);
+  line-height: var(--t-body-lg-lh);
 }
 
-/* ─── Prose — long-form body rhythm ────────────────────────────────────── */
+/* ─── Masthead — the document-surface top nav ──────────────────────────────
+   The document counterpart to the tool-surface .appbar (artificer.css). Quiet,
+   NON-sticky, single-row site header for reading surfaces: brand + a few links
+   + optional meta (theme toggle). No border, no sticky chrome — it scrolls with
+   the page (the .appbar traits #131 called wrong over prose). Sans face; the
+   .wordmark brand keeps mono by its own rule. Compose the brand with
+   .wordmark--stop-none for a period-bearing mark, and the toggle with
+   .theme-toggle--inline. One <nav aria-label> landmark. Fixes #131. */
+.masthead {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: var(--s-md) var(--s-lg);
+  padding: var(--s-lg) 0;
+  font-family: var(--font-sans);
+}
+.masthead__brand { margin-right: auto; }   /* pushes nav + meta to the right */
+.masthead__nav {
+  display: flex; align-items: center; gap: var(--s-lg);
+  font-size: var(--t-label-md-size);
+}
+.masthead__nav a {
+  color: var(--fg-secondary); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+.masthead__nav a:hover { color: var(--fg); }
+.masthead__nav a[aria-current="page"] {
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);   /* active band — mirrors .sidenav's rail, rotated for a horizontal nav */
+}
+.masthead__meta { display: flex; align-items: center; gap: var(--s-sm); }
 
+/* Nav targets are 44px always (a11y rule #8) — same treatment as .crumb a /
+   .appbar__brand in artificer.css, applied to the masthead's own links. */
+@media (pointer: coarse) {
+  .masthead__brand,
+  .masthead__nav a {
+    min-height: 44px; min-width: 44px;
+    display: inline-flex; align-items: center;
+  }
+}
+
+/* ─── Prose — long-form vertical rhythm ────────────────────────────────────
+   Block flow with a measured column and generous, even spacing. Drop .prose
+   on the article body; children inherit the rhythm without per-element margins. */
 .prose {
   max-width: var(--editorial-measure);
-  font-family: var(--font-sans);
-  font-size: var(--t-body-md-size);
-  line-height: var(--t-body-md-lh);
-  color: var(--fg);
+  font-size: var(--t-body-lg-size);
+  line-height: var(--t-body-lg-lh);
+  text-wrap: pretty;
 }
-.prose > * + * { margin-top: var(--s-md); }
-.prose h2 { margin-top: var(--s-xl); margin-bottom: var(--s-sm); font-family: var(--font-mono); font-weight: 700; font-size: var(--t-headline-md-size); line-height: var(--t-headline-md-lh); }
-.prose h3 { margin-top: var(--s-lg); margin-bottom: var(--s-xs); font-family: var(--font-mono); font-weight: 700; font-size: var(--t-headline-md-size); line-height: var(--t-headline-md-lh); }
-.prose code { font-family: var(--font-mono); font-size: var(--t-code-size); }
-.prose pre { font-family: var(--font-mono); font-size: var(--t-code-size); line-height: var(--t-code-lh); }
-.prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose > * + * { margin-top: var(--s-lg); }
+.prose h2, .prose h3 { margin-top: var(--s-2xl); line-height: var(--t-headline-md-lh); color: var(--fg); }
+.prose h2 { font-size: var(--t-headline-md-size); font-weight: 700; }
+.prose h3 { font-size: var(--t-body-lg-size); font-weight: 700; letter-spacing: .01em; }
+.prose a { color: var(--accent); text-underline-offset: 2px; text-decoration-thickness: 1px; }
 .prose a:hover { color: var(--accent-bright); }
-.prose blockquote { border-left: 2px solid var(--accent); padding-left: var(--s-md); color: var(--fg-secondary); }
+.prose strong, .prose b { color: var(--fg); font-weight: 700; }
+.prose blockquote {
+  margin-left: 0; padding-left: var(--s-lg);
+  border-left: 2px solid var(--border);
+  color: var(--fg-secondary); font-style: italic;
+}
+.prose code {
+  font-family: var(--font-mono); font-size: 0.92em;
+  color: var(--accent); background: var(--bg-raised);
+  padding: 1px 5px; border-radius: var(--radius-sm);
+}
+.prose hr { border: none; border-top: 1px solid var(--border); margin: var(--s-2xl) 0; }
+.prose ul, .prose ol { padding-left: var(--s-lg); }
+.prose li + li { margin-top: var(--s-sm); }
 
-/* ─── Editorial hero — standfirst block ────────────────────────────────── */
-
+/* ─── Editorial hero — the standfirst block at the top of a piece ───────────
+   Namespaced so it never collides with a product .hero. Big display title +
+   a secondary standfirst line. */
 .editorial-hero {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-md);
-  padding-bottom: var(--s-2xl);
-  border-bottom: 1px solid var(--border);
+  max-width: var(--editorial-measure);
   margin-bottom: var(--s-2xl);
 }
 .editorial-hero__kicker {
-  font-family: var(--font-sans);
-  font-size: var(--t-label-xs-size);
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--t-label-xs-size);   /* from v0.9.0 micro tier */
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-secondary);
+  margin-bottom: var(--s-md);
 }
 .editorial-hero__title {
-  font-family: var(--font-mono);
-  font-weight: 700;
+  font-family: var(--font-sans); font-weight: 700;
   font-size: var(--t-headline-lg-size);
   line-height: var(--t-headline-lg-lh);
   letter-spacing: var(--t-headline-lg-ls);
-  margin: 0;
+  color: var(--fg); margin: 0;
 }
 .editorial-hero__standfirst {
-  font-family: var(--font-sans);
   font-size: var(--t-body-lg-size);
   line-height: var(--t-body-lg-lh);
   color: var(--fg-secondary);
-  max-width: var(--editorial-measure);
-  margin: 0;
+  margin-top: var(--s-md);
 }
 
-/* ─── Entries — article-index list (the broadsheet pattern) ────────────── */
-
-.entries {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-xl);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.entry {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-sm);
-  padding-bottom: var(--s-lg);
-  border-bottom: 1px solid var(--border);
-}
-.entry:last-child { border-bottom: 0; padding-bottom: 0; }
+/* ─── Entry index — the article list (blog/essays archive) ─────────────────
+   A stack of linked entries: title, meta row (date · reading time), excerpt. */
+.entries { display: flex; flex-direction: column; gap: var(--s-2xl); max-width: var(--editorial-measure); }
+.entry { display: flex; flex-direction: column; gap: var(--s-sm); }
 .entry__title {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: var(--t-headline-md-size);
-  line-height: var(--t-headline-md-lh);
-  margin: 0;
+  font-family: var(--font-sans); font-weight: 700;
+  font-size: var(--t-headline-md-size); line-height: var(--t-headline-md-lh);
+  color: var(--fg); margin: 0; text-decoration: none;
 }
-.entry__title a { color: var(--fg); text-decoration: none; }
-.entry__title a:hover { color: var(--accent-bright); }
+a.entry__title:hover { color: var(--accent); }
 .entry__meta {
-  font-family: var(--font-mono);
-  font-size: var(--t-label-xs-size);
-  font-variant-numeric: tabular-nums;
-  color: var(--fg-secondary);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--font-mono); font-size: var(--t-label-xs-size);
+  letter-spacing: .04em; color: var(--fg-secondary);
+  display: flex; gap: var(--s-sm); align-items: center;
 }
-.entry__excerpt {
-  font-family: var(--font-sans);
-  font-size: var(--t-body-md-size);
-  line-height: var(--t-body-md-lh);
-  color: var(--fg-secondary);
-  max-width: var(--editorial-measure);
-  margin: 0;
-}
+.entry__excerpt { color: var(--fg-secondary); line-height: var(--t-body-md-lh); margin: 0; }
 
-/* ─── Grain — faint procedural paper texture (utility, tuned overlay) ──── */
-
+/* ─── Grain — a faint paper texture overlay ────────────────────────────────
+   Utility, not a token: a tuned fractal-noise wash at very low opacity. Apply
+   .grain to a positioned container; it lays a non-interactive layer on top.
+   The texture is procedural (feTurbulence), not imagery. */
 .grain { position: relative; }
 .grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.05; /* tuned */
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; opacity: .035; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+:root[data-theme="dark"] .grain::after { mix-blend-mode: screen; opacity: .025; }
 
-/* ─── Reveal — the carved arrival animation (CLAUDE.md § Motion carve) ─── */
-
+/* ─── Reveal — the ONE sanctioned arrival animation ────────────────────────
+   CARVE: breaks the global "never animate arrival" rule, scoped to editorial.
+   Doctrine in CLAUDE.md § Motion. Bounds: opacity + ≤8px rise, --dur-max
+   ceiling, single --ease curve, one per view, suppressed under reduced-motion,
+   NEVER on .surface-tool / errors / status / data. */
 @keyframes editorial-reveal {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: none; }
 }
-.reveal {
-  animation: editorial-reveal var(--dur-max) var(--ease) both;
-}
+.reveal { animation: editorial-reveal var(--dur-max) var(--ease) both; }
+
+/* Sunset condition for the carve: if a second arrival-animation need appears,
+   do not add a second keyframe — revisit whether editorial arrival motion
+   earns its exception at all. One reveal, or none. */
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { animation: none; }
 }
+/* Belt-and-braces: arrival motion never runs on tool surfaces. */
 .surface-tool .reveal { animation: none; }

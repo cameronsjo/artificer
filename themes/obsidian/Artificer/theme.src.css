@@ -2,7 +2,7 @@
    ARTIFICER · An Obsidian theme
    Cameron's personal design system, ported to Obsidian.
    AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
-   v0.1 · 2026
+   v0.21.0 · 2026
    ═══════════════════════════════════════════════════════════════════════════
 
    How this is structured:
@@ -117,14 +117,18 @@
   --art-attention-fill:  #c4808a;
   --art-urgent:          #c08070;          /* v0.6: softened from #e8836f          */
   --art-urgent-fill:     #a04540;          /* v0.6: brick, locked w/ system        */
+  --art-urgent-text:     #e6a8a2;          /* v0.19.0 #122-B: error-text mint. Bare
+                                              urgent #c08070 = 4.37:1 (sub-AA as text);
+                                              this = 6.98:1 on bg. — packet §B */
   --art-success:         #5fa073;          /* v0.6: apothecary, locked w/ system   */
+  --art-success-fill:    #2d6644;          /* v0.10.2 #80: AA success fill, ivory-on 5.67:1 */
   --art-steel:           #9fb6c4;
   --art-steel-fill:      #5a7a8a;
   --art-brand-purple:        #c9b5e8;
   --art-brand-purple-fill:   #3d1f7a;
   --art-ivory:           #f5ead0;
   --art-navy:            #0d1b2a;
-  --art-on-accent:       #0d1b2a;
+  --art-on-accent:       #20203e;          /* v0.6.6: canonical ink (was navy #0d1b2a) */
   --art-on-urgent:       #f5ead0;
 
   /* ─── Obsidian → Artificer mapping ────────────────────────────────── */
@@ -150,7 +154,7 @@
   --text-muted:                   var(--art-fg-secondary);
   --text-faint:                   var(--art-fg-disabled);
   --text-on-accent:               var(--art-on-accent);
-  --text-error:                   var(--art-urgent);
+  --text-error:                   var(--art-urgent-text);  /* v0.19.0 #122-B */
   --text-success:                 var(--art-success);
   --text-warning:                 var(--art-attention);
   --text-accent:                  var(--art-accent);
@@ -164,38 +168,23 @@
   --interactive-accent:           var(--art-accent-fill);
   --interactive-accent-hover:     var(--art-accent-bright);
 
-  /* Headings */
-  --h1-color: var(--art-fg);
-  --h2-color: var(--art-fg);
-  --h3-color: var(--art-fg);
-  --h4-color: var(--art-fg-secondary);
-  --h5-color: var(--art-fg-secondary);
-  --h6-color: var(--art-fg-secondary);
-
   /* Tags */
   --tag-color:        var(--art-accent);
   --tag-color-hover:  var(--art-on-accent);
   --tag-background:   color-mix(in oklch, var(--art-accent-fill) 14%, transparent);
   --tag-background-hover: var(--art-accent-fill);
-  --tag-border-color: transparent;
-  --tag-border-color-hover: var(--art-accent);
-  --tag-border-width: 1px;
-  --tag-padding-x:    8px;
-  --tag-padding-y:    2px;
-  --tag-radius:       4px;
-  --tag-weight:       500;
 
   /* Links */
   --link-color:               var(--art-accent);
   --link-color-hover:         var(--art-accent-bright);
-  --link-decoration:          none;
+  --link-decoration:          underline; /* v0.19.0 #122-E: persistent on this document
+                                            surface. Link-vs-body contrast is 1.54:1 dark /
+                                            2.56:1 light — below the 3:1 WCAG 1.4.1 needs
+                                            for colour-alone links; the underline carries
+                                            the non-colour cue. ADR 0004. */
   --link-decoration-hover:    underline;
   --link-decoration-thickness: 1px;
-  --link-external-color:        var(--art-accent);
-  --link-external-color-hover:  var(--art-accent-bright);
   --link-unresolved-color:      var(--art-attention);
-  --link-unresolved-opacity:    0.85;
-  --link-unresolved-decoration: underline dashed;
 
   /* Code */
   --code-background:  var(--art-bg-inactive);
@@ -207,12 +196,223 @@
   --code-function:    var(--art-accent);
   --code-property:    var(--art-steel);
   --code-tag:         var(--art-brand-purple);
+  --code-important:   var(--art-urgent);
+
+  /* Modals + overlays */
+  --modal-shadow:         0 4px 12px rgba(0, 0, 0, 0.35);
+
+  /* Status bar */
+
+  /* Callout — Obsidian colors them via --callout-color (RGB triplet) */
+
+  --callout-info:      159, 182, 196;     /* steel  */
+  --callout-todo:      159, 182, 196;     /* steel  */
+  --callout-summary:   159, 182, 196;
+  --callout-quote:     201, 181, 232;     /* purple */
+  --callout-tip:       183, 189, 115;     /* olive  */
+  --callout-success:   183, 189, 115;
+  --callout-question:  224, 181, 88;      /* gold   */
+  --callout-warning:   229, 175, 183;     /* rose   */
+  --callout-important: 229, 175, 183;
+  --callout-failure:   232, 131, 111;     /* vermillion */
+  --callout-error:     232, 131, 111;
+  --callout-bug:       232, 131, 111;
+  --callout-example:   201, 181, 232;
+  --callout-abstract:  159, 182, 196;
+  --callout-note:      224, 181, 88;
+  /* Standard-type aliases → primary colour. Obsidian gives each alias its own
+     per-type default; without these, an alias reads Obsidian's colour, not
+     Artificer's. (The base --callout-color fallback below catches unrecognised
+     / plugin types.) */
+  --callout-tldr:      159, 182, 196;   /* = abstract/summary (steel)     */
+  --callout-hint:      183, 189, 115;   /* = tip (olive)                  */
+  --callout-check:     183, 189, 115;   /* = success (olive)              */
+  --callout-done:      183, 189, 115;
+  --callout-help:      224, 181, 88;    /* = question (gold)              */
+  --callout-faq:       224, 181, 88;
+  --callout-caution:   229, 175, 183;   /* = warning (rose)               */
+  --callout-attention: 229, 175, 183;
+  --callout-fail:      232, 131, 111;   /* = failure (vermillion)         */
+  --callout-missing:   232, 131, 111;
+  --callout-danger:    232, 131, 111;   /* = error (vermillion)           */
+  --callout-cite:      201, 181, 232;   /* = quote (purple)               */
+
+  color-scheme: dark;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOKENS — LIGHT (cream paper)
+   ═══════════════════════════════════════════════════════════════════════ */
+.theme-light {
+  /* Cream paper alternative. The dark theme is the canonical face; this
+     mode trades drama for readability — paper-quiet, navy ink, with the
+     same gold accent used sparingly as ribbon. Surfaces step down (not up)
+     because cream is a paper metaphor; raised/overlay are deeper cream. */
+  --art-bg:              #f5ead0;   /* ivory, the paper                  */
+  --art-bg-raised:       #ebdfc0;   /* slightly deeper cream             */
+  --art-bg-overlay:      #e4d4b0;   /* recessed well, deep cream (v0.6.4: was #fdf6e3) */
+  --art-bg-inactive:     #e0d3a8;   /* code blocks, sunken               */
+  --art-fg:              #1a1410;   /* near-black, AAA on cream          */
+  --art-fg-secondary:    #5a4f3e;   /* warm grey-brown                   */
+  --art-fg-disabled:     #9a8d72;   /* muted                              */
+  --art-border:          #c9b888;   /* warm tan border                    */
+
+  --art-accent:          #7a4f08;   /* burnished gold, deep enough for AAA on cream */
+  --art-accent-bright:   #8a5a10;
+  --art-accent-fill:     #b07820;   /* solid gold for primary fills       */
+  --art-attention:       #8a4818;   /* warm burnt-sienna                  */
+  --art-attention-fill:  #c4808a;
+  --art-urgent:          #7a1810;   /* deep oxblood                       */
+  --art-urgent-fill:     #a02018;
+  --art-urgent-text:     #7a1810;   /* v0.19.0 #122-B: error-text role. Keeps the
+                                       oxblood (8.93:1 on cream, already AAA) rather
+                                       than canonical mint #8a2418 (7.49) — a documented
+                                       Obsidian divergence; both clear AA. — packet §B */
+  --art-success:         #3a6b48;   /* v0.6: deep apothecary, locked      */
+  --art-success-fill:    #2a5a3a;   /* v0.10.2 #80: AA success fill, ivory-on 6.70:1 */
+  --art-steel:           #1d3a4a;   /* deep teal-navy                     */
+  --art-steel-fill:      #4a6878;
+  --art-brand-purple:        #3a1880;
+  --art-brand-purple-fill:   #2a1060;
+  --art-ivory:           #f5ead0;
+  --art-navy:            #0d1b2a;
+  --art-on-accent:       #20203e;   /* v0.19.0 #122-A: ivory → canonical ink; ivory
+                                       failed on the gold CTA fill (3.16:1). ADR 0003. */
+  --art-on-urgent:       #f5ead0;
+
+  --background-primary:           var(--art-bg);
+  --background-primary-alt:       var(--art-bg-inactive);
+  --background-secondary:         var(--art-bg-raised);
+  --background-secondary-alt:     var(--art-bg-overlay);
+  --background-modifier-hover:    color-mix(in oklch, var(--art-fg) 6%, transparent);
+  --background-modifier-active-hover: color-mix(in oklch, var(--art-accent) 14%, transparent);
+  --background-modifier-border:         var(--art-border);
+  --background-modifier-border-hover:   var(--art-fg-secondary);
+  --background-modifier-border-focus:   var(--art-accent);
+  --background-modifier-form-field:     var(--art-bg);
+  --background-modifier-error:          color-mix(in oklch, var(--art-urgent-fill) 22%, transparent);
+  --background-modifier-error-hover:    color-mix(in oklch, var(--art-urgent-fill) 32%, transparent);
+  --background-modifier-success:        color-mix(in oklch, var(--art-success) 24%, transparent);
+  --background-modifier-message:        var(--art-bg-overlay);
+
+  --text-normal:    var(--art-fg);
+  --text-muted:     var(--art-fg-secondary);
+  --text-faint:     var(--art-fg-disabled);
+  --text-on-accent: var(--art-on-accent);
+  --text-error:     var(--art-urgent-text);  /* v0.19.0 #122-B */
+  --text-success:   var(--art-success);
+  --text-warning:   var(--art-attention);
+  --text-accent:    var(--art-accent);
+  --text-accent-hover: var(--art-accent-bright);
+  --text-selection: color-mix(in oklch, var(--art-accent-fill) 32%, transparent);
+  --text-highlight-bg: color-mix(in oklch, var(--art-accent-fill) 28%, transparent);
+
+  --interactive-normal:       var(--art-bg-raised);
+  --interactive-hover:        color-mix(in oklch, var(--art-fg) 8%, var(--art-bg-raised));
+  --interactive-accent:       var(--art-accent-fill);
+  --interactive-accent-hover: var(--art-accent-bright);
+
+  --link-color: var(--art-accent);
+  --link-color-hover: var(--art-accent-bright);
+  --link-decoration:           underline; /* v0.19.0 #122-E: persistent on light too —
+                                             link-vs-body is 2.56:1 here, below the 3:1
+                                             WCAG 1.4.1 floor, so the underline carries the
+                                             non-colour cue. Blocks are independent; dark's
+                                             copy (L195) does not cascade. ADR 0004. */
+  --link-decoration-hover:     underline;
+  --link-decoration-thickness: 1px;
+  --link-unresolved-color: var(--art-attention);
+
+  --code-background: color-mix(in oklch, var(--art-bg-inactive) 90%, var(--art-bg));
+  --code-normal:     var(--art-fg);
+  --code-comment:    var(--art-fg-disabled);
+  --code-keyword:    var(--art-brand-purple);
+  --code-string:     var(--art-success);
+  --code-value:      var(--art-urgent);
+  --code-function:   var(--art-accent);
+  --code-property:   var(--art-steel);
+  --code-tag:        var(--art-brand-purple);
+  --code-important:  var(--art-urgent);
+
+  --tag-color:        var(--art-accent);
+  --tag-background:   color-mix(in oklch, var(--art-accent-fill) 18%, transparent);
+  --tag-background-hover: var(--art-accent-fill);
+  --tag-color-hover:  var(--art-on-accent);
+
+  --modal-shadow: 0 4px 12px rgba(13, 27, 42, 0.18);
+
+  --callout-info:      29, 58, 74;
+  --callout-todo:      29, 58, 74;
+  --callout-summary:   29, 58, 74;
+  --callout-quote:     58, 24, 128;
+  --callout-tip:       58, 74, 20;
+  --callout-success:   58, 74, 20;
+  --callout-question:  122, 79, 8;
+  --callout-warning:   138, 72, 24;
+  --callout-important: 138, 72, 24;
+  --callout-failure:   122, 24, 16;
+  --callout-error:     122, 24, 16;
+  --callout-bug:       122, 24, 16;
+  --callout-example:   58, 24, 128;
+  --callout-abstract:  29, 58, 74;
+  --callout-note:      122, 79, 8;
+  /* Standard-type aliases → primary colour (see dark block for rationale). */
+  --callout-tldr:      29, 58, 74;      /* = abstract/summary (steel)     */
+  --callout-hint:      58, 74, 20;      /* = tip (olive)                  */
+  --callout-check:     58, 74, 20;      /* = success (olive)              */
+  --callout-done:      58, 74, 20;
+  --callout-help:      122, 79, 8;      /* = question (gold)              */
+  --callout-faq:       122, 79, 8;
+  --callout-caution:   138, 72, 24;     /* = warning (rose)               */
+  --callout-attention: 138, 72, 24;
+  --callout-fail:      122, 24, 16;     /* = failure (vermillion)         */
+  --callout-missing:   122, 24, 16;
+  --callout-danger:    122, 24, 16;     /* = error (vermillion)           */
+  --callout-cite:      58, 24, 128;     /* = quote (purple)               */
+
+  /* Translucent frame backing — when Obsidian's "Translucent window" is
+     enabled, .titlebar and .app-container read this. Without a mapping,
+     the default kicks in and reads wrong against cream. Match the
+     opaque .app-container value from v0.6.2 so the frame stays
+     consistent across translucent / opaque modes. */
+  --workspace-background-translucent: var(--art-bg-inactive);
+
+  color-scheme: light;
+}
+
+
+/* ── Face-shared Obsidian mappings (parity #261) ── */
+.theme-dark, .theme-light {
+  /* Headings */
+  --h1-color: var(--art-fg);
+  --h2-color: var(--art-fg);
+  --h3-color: var(--art-fg);
+  --h4-color: var(--art-fg-secondary);
+  --h5-color: var(--art-fg-secondary);
+  --h6-color: var(--art-fg-secondary);
+
+  /* Tags — structural (color roles stay per-face) */
+  --tag-border-color: transparent;
+  --tag-border-color-hover: var(--art-accent);
+  --tag-border-width: 1px;
+  --tag-padding-x:    8px;
+  --tag-padding-y:    2px;
+  --tag-radius:       4px;
+  --tag-weight:       500;
+
+  /* Links — external / unresolved (structural) */
+  --link-external-color:        var(--art-accent);
+  --link-external-color-hover:  var(--art-accent-bright);
+  --link-unresolved-opacity:    0.85;
+  --link-unresolved-decoration: underline dashed;
+
+  /* Code — structural (colors stay per-face) */
   --code-operator:    var(--art-fg-secondary);
   --code-punctuation: var(--art-fg-secondary);
-  --code-important:   var(--art-urgent);
   --code-size:        14px;
   --code-radius:      var(--art-radius-md, 8px);
-  --code-padding:     var(--art-s-md, 16px) var(--art-s-lg, 24px);
+  --code-padding:     var(--size-4-4) var(--size-4-6);
 
   /* Bold / italic / highlight */
   --bold-color:      var(--art-fg);
@@ -266,7 +466,7 @@
   --input-shadow:           none;
   --input-shadow-hover:     none;
 
-  /* Modals + overlays */
+  /* Modals + overlays — structural (shadow stays per-face) */
   --modal-background: var(--art-bg-overlay);
   --modal-border-width: 1px;
   --modal-border-color: var(--art-border);
@@ -277,7 +477,6 @@
   --prompt-border-radius: 12px;
   --prompt-border-color:  var(--art-border);
   --prompt-border-width:  1px;
-  --modal-shadow:         0 4px 12px rgba(0, 0, 0, 0.35);
 
   /* Scrollbar */
   --scrollbar-active-thumb-bg: var(--art-fg-disabled);
@@ -317,18 +516,9 @@
   --titlebar-text-color:        var(--art-fg-secondary);
   --titlebar-text-color-focused: var(--art-fg);
   --titlebar-text-weight:       500;
-
   --ribbon-background:          var(--art-bg);
   --ribbon-background-collapsed: var(--art-bg);
   --ribbon-width:               44px;
-
-  /* Status bar */
-  --status-bar-background:      var(--art-bg);
-  --status-bar-border-color:    var(--art-border);
-  --status-bar-border-width:    1px 0 0 0;
-  --status-bar-font-size:       11px;
-  --status-bar-text-color:      var(--art-fg-secondary);
-  --status-bar-position:        relative;
 
   /* Calendar / accent for active items */
   --nav-item-color-active:      var(--art-accent);
@@ -343,7 +533,7 @@
   --graph-node-focused:    var(--art-accent);
   --graph-text:      var(--art-fg);
 
-  /* Callout — Obsidian colors them via --callout-color (RGB triplet) */
+  /* Callout — structural (color values stay per-face) */
   --callout-radius:        8px;
   --callout-border-width:  0 0 0 2px;
   --callout-border-opacity: 1;
@@ -355,139 +545,6 @@
   --callout-title-size:    var(--font-text-size);
   --callout-content-padding: 8px 0 0 0;
   --callout-content-background: transparent;
-
-  --callout-info:      159, 182, 196;     /* steel  */
-  --callout-todo:      159, 182, 196;     /* steel  */
-  --callout-summary:   159, 182, 196;
-  --callout-quote:     201, 181, 232;     /* purple */
-  --callout-tip:       183, 189, 115;     /* olive  */
-  --callout-success:   183, 189, 115;
-  --callout-question:  224, 181, 88;      /* gold   */
-  --callout-warning:   229, 175, 183;     /* rose   */
-  --callout-important: 229, 175, 183;
-  --callout-failure:   232, 131, 111;     /* vermillion */
-  --callout-error:     232, 131, 111;
-  --callout-bug:       232, 131, 111;
-  --callout-example:   201, 181, 232;
-  --callout-abstract:  159, 182, 196;
-  --callout-note:      224, 181, 88;
-
-  color-scheme: dark;
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════
-   TOKENS — LIGHT (cream paper)
-   ═══════════════════════════════════════════════════════════════════════ */
-.theme-light {
-  /* Cream paper alternative. The dark theme is the canonical face; this
-     mode trades drama for readability — paper-quiet, navy ink, with the
-     same gold accent used sparingly as ribbon. Surfaces step down (not up)
-     because cream is a paper metaphor; raised/overlay are deeper cream. */
-  --art-bg:              #f5ead0;   /* ivory, the paper                  */
-  --art-bg-raised:       #ebdfc0;   /* slightly deeper cream             */
-  --art-bg-overlay:      #e4d4b0;   /* recessed well, deep cream (v0.6.4: was #fdf6e3) */
-  --art-bg-inactive:     #e0d3a8;   /* code blocks, sunken               */
-  --art-fg:              #1a1410;   /* near-black, AAA on cream          */
-  --art-fg-secondary:    #5a4f3e;   /* warm grey-brown                   */
-  --art-fg-disabled:     #9a8d72;   /* muted                              */
-  --art-border:          #c9b888;   /* warm tan border                    */
-
-  --art-accent:          #7a4f08;   /* burnished gold, deep enough for AAA on cream */
-  --art-accent-bright:   #8a5a10;
-  --art-accent-fill:     #b07820;   /* solid gold for primary fills       */
-  --art-attention:       #8a4818;   /* warm burnt-sienna                  */
-  --art-attention-fill:  #c4808a;
-  --art-urgent:          #7a1810;   /* deep oxblood                       */
-  --art-urgent-fill:     #a02018;
-  --art-success:         #3a6b48;   /* v0.6: deep apothecary, locked      */
-  --art-steel:           #1d3a4a;   /* deep teal-navy                     */
-  --art-steel-fill:      #4a6878;
-  --art-brand-purple:        #3a1880;
-  --art-brand-purple-fill:   #2a1060;
-  --art-ivory:           #f5ead0;
-  --art-navy:            #0d1b2a;
-  --art-on-accent:       #f5ead0;
-  --art-on-urgent:       #f5ead0;
-
-  --background-primary:           var(--art-bg);
-  --background-primary-alt:       var(--art-bg-inactive);
-  --background-secondary:         var(--art-bg-raised);
-  --background-secondary-alt:     var(--art-bg-overlay);
-  --background-modifier-hover:    color-mix(in oklch, var(--art-fg) 6%, transparent);
-  --background-modifier-active-hover: color-mix(in oklch, var(--art-accent) 14%, transparent);
-  --background-modifier-border:         var(--art-border);
-  --background-modifier-border-hover:   var(--art-fg-secondary);
-  --background-modifier-border-focus:   var(--art-accent);
-  --background-modifier-form-field:     var(--art-bg);
-  --background-modifier-error:          color-mix(in oklch, var(--art-urgent-fill) 22%, transparent);
-  --background-modifier-error-hover:    color-mix(in oklch, var(--art-urgent-fill) 32%, transparent);
-  --background-modifier-success:        color-mix(in oklch, var(--art-success) 24%, transparent);
-  --background-modifier-message:        var(--art-bg-overlay);
-
-  --text-normal:    var(--art-fg);
-  --text-muted:     var(--art-fg-secondary);
-  --text-faint:     var(--art-fg-disabled);
-  --text-on-accent: var(--art-on-accent);
-  --text-error:     var(--art-urgent);
-  --text-success:   var(--art-success);
-  --text-warning:   var(--art-attention);
-  --text-accent:    var(--art-accent);
-  --text-accent-hover: var(--art-accent-bright);
-  --text-selection: color-mix(in oklch, var(--art-accent-fill) 32%, transparent);
-  --text-highlight-bg: color-mix(in oklch, var(--art-accent-fill) 28%, transparent);
-
-  --interactive-normal:       var(--art-bg-raised);
-  --interactive-hover:        color-mix(in oklch, var(--art-fg) 8%, var(--art-bg-raised));
-  --interactive-accent:       var(--art-accent-fill);
-  --interactive-accent-hover: var(--art-accent-bright);
-
-  --link-color: var(--art-accent);
-  --link-color-hover: var(--art-accent-bright);
-  --link-unresolved-color: var(--art-attention);
-
-  --code-background: color-mix(in oklch, var(--art-bg-inactive) 90%, var(--art-bg));
-  --code-normal:     var(--art-fg);
-  --code-comment:    var(--art-fg-disabled);
-  --code-keyword:    var(--art-brand-purple);
-  --code-string:     var(--art-success);
-  --code-value:      var(--art-urgent);
-  --code-function:   var(--art-accent);
-  --code-property:   var(--art-steel);
-  --code-tag:        var(--art-brand-purple);
-  --code-important:  var(--art-urgent);
-
-  --tag-color:        var(--art-accent);
-  --tag-background:   color-mix(in oklch, var(--art-accent-fill) 18%, transparent);
-  --tag-background-hover: var(--art-accent-fill);
-  --tag-color-hover:  var(--art-on-accent);
-
-  --modal-shadow: 0 4px 12px rgba(13, 27, 42, 0.18);
-
-  --callout-info:      29, 58, 74;
-  --callout-todo:      29, 58, 74;
-  --callout-summary:   29, 58, 74;
-  --callout-quote:     58, 24, 128;
-  --callout-tip:       58, 74, 20;
-  --callout-success:   58, 74, 20;
-  --callout-question:  122, 79, 8;
-  --callout-warning:   138, 72, 24;
-  --callout-important: 138, 72, 24;
-  --callout-failure:   122, 24, 16;
-  --callout-error:     122, 24, 16;
-  --callout-bug:       122, 24, 16;
-  --callout-example:   58, 24, 128;
-  --callout-abstract:  29, 58, 74;
-  --callout-note:      122, 79, 8;
-
-  /* Translucent frame backing — when Obsidian's "Translucent window" is
-     enabled, .titlebar and .app-container read this. Without a mapping,
-     the default kicks in and reads wrong against cream. Match the
-     opaque .app-container value from v0.6.2 so the frame stays
-     consistent across translucent / opaque modes. */
-  --workspace-background-translucent: var(--art-bg-inactive);
-
-  color-scheme: light;
 }
 
 
@@ -753,6 +810,20 @@ body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h4::before 
 body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h5::before { content: "##### "; color: var(--art-fg-disabled); font-weight: 400; }
 body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h6::before { content: "######"; color: var(--art-fg-disabled); font-weight: 400; }
 
+/* D · all headings in the burnished accent — the "OG gold" look (ADR 0006's
+   canonical form, folded in from the owner's vault snippet). Obsidian paints
+   headings in reading view AND Live Preview from --h1..--h6-color, so
+   remapping the six vars covers both without selector fights; the A-style
+   mono/700 base still applies underneath. */
+body.theme-heading-d {
+  --h1-color: var(--art-accent);
+  --h2-color: var(--art-accent);
+  --h3-color: var(--art-accent);
+  --h4-color: var(--art-accent);
+  --h5-color: var(--art-accent);
+  --h6-color: var(--art-accent);
+}
+
 /* Bold anchor words — Artificer rule #4. Slightly heavier and inherits fg */
 .markdown-rendered strong, .markdown-preview-view strong,
 .cm-strong {
@@ -834,16 +905,10 @@ body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h6::before 
   }
 }
 
-/* v0.6.4: --art-bg-overlay default is now #e4d4b0 (the recessed well).
-   The .art-cascade-deep class-toggle is now a no-op — setting it makes no
-   change since the default already matches. Kept here so users who opted
-   in during v0.6.1–v0.6.3 don't get a console reference error. Removed in
-   v0.7.0. Style Settings entry below is updated to reflect deprecation. */
-.theme-light.art-cascade-deep .workspace,
-.theme-light .workspace.art-cascade-deep,
-body.art-cascade-deep .theme-light {
-  --art-bg-overlay: #e4d4b0;
-}
+/* v0.7.0: the .art-cascade-deep no-op and its Style Settings control were
+   dropped at the planned v0.7.0 boundary (the recessed #e4d4b0 overlay has
+   been the default since v0.6.4). Opted-in v0.6.1–v0.6.3 users see no change
+   — the value they toggled is already the default. */
 
 /* Blockquote — gold left rail.
    Structure (rail + padding) lives on the block-level element. The
@@ -925,7 +990,9 @@ body.art-cascade-deep .theme-light {
 .markdown-preview-view a.internal-link {
   color: var(--art-accent);
   text-decoration: none;
-  border-bottom: 1px solid color-mix(in oklch, var(--art-accent) 40%, transparent);
+  /* v0.19.0 #122-E: legible persistent underline (was 40% accent — too faint to
+     carry the non-colour cue on a document surface). ADR 0004. */
+  border-bottom: 1px solid color-mix(in oklch, var(--art-accent) 65%, transparent);
 }
 .markdown-rendered a.internal-link:hover {
   color: var(--art-accent-bright);
@@ -1051,6 +1118,20 @@ button.mod-warning:focus-visible,
 /* ═══════════════════════════════════════════════════════════════════════
    STATUS BAR — bottom strip
    ═══════════════════════════════════════════════════════════════════════ */
+/* Status-bar vars are FACE-SHARED (they reference --art-* tokens that
+   already resolve per face). They lived only in the dark block through
+   v0.19.0, so the light face fell back to Obsidian's floating-pill default
+   while dark ran the docked full-width bar — the owner-reported asymmetry.
+   The wider dark-only-vars parity gap is tracked as its own issue. */
+.theme-dark, .theme-light {
+  --status-bar-background:      var(--art-bg);
+  --status-bar-border-color:    var(--art-border);
+  --status-bar-border-width:    1px 0 0 0;
+  --status-bar-font-size:       11px;
+  --status-bar-text-color:      var(--art-fg-secondary);
+  --status-bar-position:        relative;
+}
+
 .status-bar {
   font-family: var(--font-interface, var(--art-font-mono));
   font-variant-numeric: tabular-nums;
@@ -1136,49 +1217,406 @@ body.artificer-translucent .status-bar { background: transparent; }
 
 
 /* ═══════════════════════════════════════════════════════════════════════
-   POS (parts-of-speech) HIGHLIGHTING
-   Mirrors the mock's "semantic highlighting" plugin look. Wrap any inline
-   span in your notes with .pos-v / .pos-adj / .pos-adv to opt in. Toggled
-   globally by adding the 'pos-on' class to <body> (Style Settings exposes
-   this as a toggle so it's persistent across sessions).
+   PROSE HIGHLIGHTING (parts-of-speech)                          v0.7.0
+   The editorial "reading lens": colour every word by its part of speech so
+   structural habits (limp verbs, adjective pile-ups, run-on conjunctions)
+   surface visually. Replaces the v0.6 three-category POS (verb/adj/adv).
 
-   The colors are pulled from Artificer's accent ramp deliberately — verbs
-   ride the gold accent (you're DOING something), adjectives ride steel
-   (description, calm), adverbs ride attention (modifiers, secondary).
+   Driven by the yaae POS-tagging plugin (.yaae-pos-{adjective|noun|adverb|
+   verb|conjunction} + custom lists .yaae-list-{name}); no-op without it.
+   Colour is one intensity-aware OKLCH ramp (hue per category + shared L/C
+   from --art-prose-intensity). Default palette = Cameron ★. See PALETTE.md.
+   Lane-2 origination / do-not-auto-sync boundary: ADR 0023.
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* v0.6.1: art-pos-on is canonical; pos-on retained for one version for migration. */
-body.pos-on .markdown-rendered .pos-v,
-body.pos-on .markdown-preview-view .pos-v,
-body.pos-on .cm-pos-v,
+.theme-dark, .theme-light {
+  --art-prose-intensity: 1;          /* 0 = ink · 1 = full chroma (Style Settings).
+                                        Full chroma by intention — prose highlighting
+                                        exists to be visually different, and muting it
+                                        undercuts the feature. The dark face clears AA
+                                        for all five categories at 1.0; on the cream
+                                        face verb (4.20:1) and conjunction (4.28:1) sit
+                                        just under the 4.5 AA floor by deliberate design
+                                        (both clear AA-large 3.0) — dial this slider
+                                        down for a higher ratio. */
+
+  /* Cameron ★ — per-category OKLCH hue (deg). Palette presets remap these. */
+  --art-prose-adjective-h:    78;
+  --art-prose-noun-h:         32;
+  --art-prose-adverb-h:      300;
+  --art-prose-verb-h:        223;
+  --art-prose-conjunction-h: 155;
+
+  --yaae-list-default-color:    var(--art-fg-secondary);
+}
+/* Knob supply — ADR 0035. The theme writes yaae's MODE-SUFFIXED knob layer
+   (-dark / -light), never the bare --yaae-pos-*-color names: the bare name is
+   yaae's public composition surface, and its own body.theme-dark rule outranks
+   a theme's .theme-dark for it — a bare-var supply silently loses in dark mode
+   (the v0.19.0 wiring bug). The ladder falls out of the cascade:
+     plugin fallback hexes < these knobs < Style Settings user overrides.
+   Lightness/chroma differ by face: dark fades up toward near-white, light
+   down to ink. Chroma shared (0.150 at full intensity). Swatches recompose on
+   intensity / hue / theme change; yaae resolves the active mode. */
+.theme-dark {
+  --art-prose-l: calc(0.905 - 0.135 * var(--art-prose-intensity));
+  --art-prose-c: calc(0.150 * var(--art-prose-intensity));
+  --yaae-pos-adjective-color-dark:   oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-adjective-h));
+  --yaae-pos-noun-color-dark:        oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-noun-h));
+  --yaae-pos-adverb-color-dark:      oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-adverb-h));
+  --yaae-pos-verb-color-dark:        oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-verb-h));
+  --yaae-pos-conjunction-color-dark: oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-conjunction-h));
+  --yaae-dimmed-color-dark:          var(--art-fg-disabled);
+}
+.theme-light {
+  --art-prose-l: calc(0.300 + 0.215 * var(--art-prose-intensity));
+  --art-prose-c: calc(0.150 * var(--art-prose-intensity));
+  --yaae-pos-adjective-color-light:   oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-adjective-h));
+  --yaae-pos-noun-color-light:        oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-noun-h));
+  --yaae-pos-adverb-color-light:      oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-adverb-h));
+  --yaae-pos-verb-color-light:        oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-verb-h));
+  --yaae-pos-conjunction-color-light: oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-conjunction-h));
+  --yaae-dimmed-color-light:          var(--art-fg-disabled);
+}
+
+/* Palette presets — one class remaps all five hues (Style Settings select). */
+body.art-prose-cameron    { --art-prose-adjective-h: 78; --art-prose-noun-h: 32; --art-prose-adverb-h: 300; --art-prose-verb-h: 223; --art-prose-conjunction-h: 155; }
+body.art-prose-apothecary { --art-prose-adjective-h: 78; --art-prose-noun-h: 45; --art-prose-adverb-h:   0; --art-prose-verb-h: 245; --art-prose-conjunction-h: 155; }
+body.art-prose-spectral   { --art-prose-adjective-h: 95; --art-prose-noun-h: 32; --art-prose-adverb-h: 330; --art-prose-verb-h: 255; --art-prose-conjunction-h: 178; }
+body.art-prose-dusk       { --art-prose-adjective-h: 70; --art-prose-noun-h: 25; --art-prose-adverb-h: 300; --art-prose-verb-h: 262; --art-prose-conjunction-h: 188; }
+body.art-prose-botanical  { --art-prose-adjective-h: 85; --art-prose-noun-h: 38; --art-prose-adverb-h: 350; --art-prose-verb-h: 222; --art-prose-conjunction-h: 160; }
+
+/* Paint — reading view + live preview both carry .yaae-pos-* . */
+.yaae-pos-adjective   { color: var(--yaae-pos-adjective-color); }
+.yaae-pos-noun        { color: var(--yaae-pos-noun-color); }
+.yaae-pos-adverb      { color: var(--yaae-pos-adverb-color); }
+.yaae-pos-verb        { color: var(--yaae-pos-verb-color); }
+.yaae-pos-conjunction { color: var(--yaae-pos-conjunction-color); }
+[class*="yaae-list-"]  { color: var(--yaae-list-default-color); }
+
+/* Headings are chrome, not prose — the POS lens stops at h1–h6 (ADR 0005,
+   folded in from the owner's vault snippet; a plugin-side default is asked
+   of yaae in the coordination packet). Covers rendered headings and the
+   CodeMirror header lines; !important is deliberate — this is a terminal
+   rule that must beat both the plugin's span paint and the higher-specificity
+   art-prose-cues italic/weight signals (the cues leaked italics into
+   headings when only color was reset — caught in the live dogfood). */
+:is(h1, h2, h3, h4, h5, h6) [class*="yaae-pos-"],
+:is(.HyperMD-header, .cm-header) [class*="yaae-pos-"],
+:is(.HyperMD-header, .cm-header)[class*="yaae-pos-"] {
+  color: inherit !important;
+  font-style: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* Reading cues — Cameron's italic/weight signals (Style Settings, default on):
+   adj italic · adv italic · verb italic+strong · conj strong · noun plain. */
+body.art-prose-cues .yaae-pos-adjective   { font-style: italic; }
+body.art-prose-cues .yaae-pos-adverb      { font-style: italic; }
+body.art-prose-cues .yaae-pos-verb        { font-style: italic; font-weight: 500; }
+body.art-prose-cues .yaae-pos-conjunction { font-weight: 500; }
+
+/* Legacy aliases — the v0.6 .pos-v / .pos-adj / .pos-adv element classes still
+   resolve (verb / adjective / adverb) so old notes keep their colour. Gated on
+   the canonical art-pos-on body class. (The bare pos-on alias was dropped in
+   v0.7.0 per the migration window opened in v0.6.1.) */
 body.art-pos-on .markdown-rendered .pos-v,
 body.art-pos-on .markdown-preview-view .pos-v,
-body.art-pos-on .cm-pos-v {
-  color: var(--art-accent);
-  font-weight: 500;
-}
-body.pos-on .markdown-rendered .pos-adj,
-body.pos-on .markdown-preview-view .pos-adj,
-body.pos-on .cm-pos-adj,
+body.art-pos-on .cm-pos-v   { color: var(--yaae-pos-verb-color); font-weight: 500; }
 body.art-pos-on .markdown-rendered .pos-adj,
 body.art-pos-on .markdown-preview-view .pos-adj,
-body.art-pos-on .cm-pos-adj {
-  color: var(--art-steel);
-  font-style: italic;
-}
-body.pos-on .markdown-rendered .pos-adv,
-body.pos-on .markdown-preview-view .pos-adv,
-body.pos-on .cm-pos-adv,
+body.art-pos-on .cm-pos-adj { color: var(--yaae-pos-adjective-color); font-style: italic; }
 body.art-pos-on .markdown-rendered .pos-adv,
 body.art-pos-on .markdown-preview-view .pos-adv,
-body.art-pos-on .cm-pos-adv {
-  color: var(--art-attention);
-  font-style: italic;
+body.art-pos-on .cm-pos-adv { color: var(--yaae-pos-adverb-color); font-style: italic; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TEXTURE — material honesty (the third sanctioned carve)        v0.7.0
+   Surfaces are flat by doctrine; these opt-in layers relax that WITHOUT
+   adding hue (grain is desaturated; lines are token ink) and WITHOUT
+   motion. One texture per surface — never stack. The body class IS the
+   switch. Ported from artificer-texture.css (web layer); the generated
+   editor themes never see this.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.theme-dark, .theme-light {
+  --tex-dot-gap:     14px;
+  --tex-paper-grain: 0.22;          /* Faint. Whisper = 0.45. Nothing louder ships. */
+  --tex-noise-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-speckle:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
 }
-body.pos-on.theme-light .markdown-rendered .pos-v,
-body.art-pos-on.theme-light .markdown-rendered .pos-v {
-  color: var(--art-accent-bright); font-weight: 600;
+/* Light face: ink grains on paper instead of light grains on ink. */
+body.theme-light {
+  --tex-speckle:     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.20 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
 }
+
+/* 1 · DOCUMENT SURFACE — grain rides the SIZER (content-height, scrolls with
+   the text) not the scroller (which reads as dirt on glass). class-select:
+   paper-faint / paper-whisper / fiber. */
+body.art-tex-paper .markdown-preview-sizer,
+body.art-tex-paper .cm-sizer,
+body.art-tex-paper-whisper .markdown-preview-sizer,
+body.art-tex-paper-whisper .cm-sizer,
+body.art-tex-fiber .markdown-preview-sizer,
+body.art-tex-fiber .cm-sizer {
+  position: relative; isolation: isolate;
+  /* Floor the sizer at the pane height so grain covers the whole reading
+     pane on short notes — the sizer is content-height by default, which left
+     the area below the last block bare. min-height only grows; long notes
+     keep their natural (scrolling) grain. */
+  min-height: 100%;
+}
+
+/* The sizer is clamped to the readable line width, so grain anchored to it
+   covered only the text column — the pane margins sat bare (owner-reported).
+   Bleed the pseudo 50vw past each side so grain reaches the pane edges while
+   still living in the scrolling layer; the scroller clips the overshoot
+   (verified live: no scrollbar, no user panning, both views). */
+body.art-tex-paper .markdown-preview-sizer::before,
+body.art-tex-paper .cm-sizer::before,
+body.art-tex-paper-whisper .markdown-preview-sizer::before,
+body.art-tex-paper-whisper .cm-sizer::before {
+  /* Top bleed covers the scroller's padding strip above the sizer
+     (--file-margins, 32px; 64px leaves headroom — overflow clips the rest).
+     Bottom bleed is EXACTLY the padding (32px): that band already sits inside
+     the scroll bounds, but any bleed past it would extend scrollHeight and
+     mint phantom scroll space — bottom overflow scrolls, top overflow clips. */
+  content: ""; position: absolute; inset: -64px -50vw -32px; z-index: -1; pointer-events: none;
+  background-image: var(--tex-speckle); background-size: 150px 150px;
+  opacity: var(--tex-paper-grain);
+}
+body.art-tex-paper-whisper { --tex-paper-grain: 0.45; }
+
+body.art-tex-fiber .markdown-preview-sizer::before,
+body.art-tex-fiber .cm-sizer::before {
+  content: ""; position: absolute; inset: -64px -50vw -32px; z-index: -1; pointer-events: none;
+  background-image: var(--tex-noise-fiber); background-size: 160px 160px;
+  mix-blend-mode: overlay; opacity: 0.22;
+}
+
+/* Contain the horizontal overshoot. `clip` (with `hidden` as the fallback)
+   removes the phantom scroll region the bleed would otherwise create. A
+   texture'd editor pane thereby gives up horizontal panning of non-wrapped
+   long lines — texture is an opt-in document-surface layer, so prose wrap is
+   the expected mode; code blocks keep their own internal scrollers. */
+body.art-tex-paper .markdown-preview-view,
+body.art-tex-paper .cm-scroller,
+body.art-tex-paper-whisper .markdown-preview-view,
+body.art-tex-paper-whisper .cm-scroller,
+body.art-tex-fiber .markdown-preview-view,
+body.art-tex-fiber .cm-scroller {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+body.theme-light.art-tex-fiber .markdown-preview-sizer::before,
+body.theme-light.art-tex-fiber .cm-sizer::before { mix-blend-mode: soft-light; opacity: 0.38; }
+
+/* 1b · PANE CHROME — its own switch (body.art-tex-chrome, Style Settings
+   "Chrome grain"), DECOUPLED from the document surface: texture shifts
+   perceived luminance (white grain lifts the dark face, ink grain sinks the
+   cream face), and the content surface must keep the luminance lead — the
+   owner runs chrome grain with the document surface flat. Chrome is one
+   substrate, always the speckle tile at --tex-paper-grain.
+   The view header, scrollbar gutter, and status bar are
+   static strips around the document surface; left bare they break the
+   substrate illusion (owner-reported). Nothing scrolls in them, so static
+   grain is honest — the scrolls-with-text rule only binds the text layer.
+   The gutter needs its own strip painted from OUTSIDE the scroller: the
+   scroller's overflow clip ends at its padding box, so the scrolling grain
+   can never reach the gutter; the thumb stays legible through the veil.
+   The status bar keeps its own `position` (it may be fixed) — isolation
+   alone is enough because a positioned element anchors its ::before. */
+body.art-tex-chrome .view-header { position: relative; isolation: isolate; }
+body.art-tex-chrome .status-bar { isolation: isolate; }
+body.art-tex-paper .view-content,
+body.art-tex-paper-whisper .view-content,
+body.art-tex-fiber .view-content { position: relative; }
+
+body.art-tex-chrome .view-header::before,
+body.art-tex-chrome .status-bar::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: var(--tex-speckle); background-size: 150px 150px;
+  opacity: var(--tex-paper-grain);
+}
+body.art-tex-paper .view-content::after,
+body.art-tex-paper-whisper .view-content::after {
+  content: ""; position: absolute; top: 0; bottom: 0; right: 0;
+  width: var(--scrollbar-width, 12px); z-index: 1; pointer-events: none;
+  background-image: var(--tex-speckle); background-size: 150px 150px;
+  opacity: var(--tex-paper-grain);
+}
+/* The gutter strip continues the DOCUMENT field, so it keys to the surface
+   classes (fiber keeps its tile); everything else in 1b/1c is chrome. */
+body.art-tex-fiber .view-content::after {
+  content: ""; position: absolute; top: 0; bottom: 0; right: 0;
+  width: var(--scrollbar-width, 12px); z-index: 1; pointer-events: none;
+  background-image: var(--tex-noise-fiber); background-size: 160px 160px;
+  mix-blend-mode: overlay; opacity: 0.22;
+}
+body.theme-light.art-tex-fiber .view-content::after {
+  mix-blend-mode: soft-light; opacity: 0.38;
+}
+
+/* 1c · WINDOW CHROME — tab bars, ribbon, and the frameless titlebar filler
+   join the substrate (owner round 5: "the rest of the window chrome").
+   Tab-header containers are already positioned, so they take the standard
+   pseudo. The ribbon MUST NOT be given a position: Obsidian's own
+   .workspace-ribbon.mod-left::before is the frameless titlebar filler,
+   absolutely positioned against the viewport — positioning the ribbon
+   re-anchors (displaces) it and breaks the drag region. Rail and filler
+   instead layer the tile into background-image, dimmed by a gradient of
+   the rail's own token derived from the same grain knob. */
+body.art-tex-chrome .workspace-tab-header-container {
+  position: relative; isolation: isolate;
+}
+body.art-tex-chrome .workspace-tab-header-container::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: var(--tex-speckle); background-size: 150px 150px;
+  opacity: var(--tex-paper-grain);
+}
+body.art-tex-chrome .workspace-ribbon,
+body.art-tex-chrome .workspace-ribbon.mod-left::before {
+  background-image:
+    linear-gradient(
+      color-mix(in oklab, var(--art-bg) calc(100% - var(--tex-paper-grain) * 100%), transparent),
+      color-mix(in oklab, var(--art-bg) calc(100% - var(--tex-paper-grain) * 100%), transparent)),
+    var(--tex-speckle);
+  background-size: auto, 150px 150px;
+}
+/* 2 · DOT LATTICE — engineered tool-surface texture on the sidebars. */
+body.art-tex-dots .workspace-split.mod-left-split,
+body.art-tex-dots .workspace-split.mod-right-split { position: relative; isolation: isolate; }
+body.art-tex-dots .workspace-split.mod-left-split::after,
+body.art-tex-dots .workspace-split.mod-right-split::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(circle at center,
+    color-mix(in oklab, var(--art-fg) 52%, transparent) 0.5px, transparent 1.1px);
+  background-size: var(--tex-dot-gap) var(--tex-dot-gap);
+  opacity: 0.5;
+}
+
+/* 3 · DECO LINE — a faint apothecary hatch behind callout bodies, drawn from
+   token ink only (no raw colour). */
+body.art-tex-callout-line .callout { position: relative; isolation: isolate; }
+body.art-tex-callout-line .callout::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background-image: repeating-linear-gradient(45deg,
+    transparent 0 7px,
+    color-mix(in oklab, var(--art-fg) 6%, transparent) 7px 8px);
+}
+body.theme-light.art-tex-callout-line .callout::after { opacity: 0.7; }
+
+/* 4 · RAISED — the one sanctioned elevation beyond the functional shadow: a
+   soft outer halo. Face stays flat. On callouts and embeds. */
+body.art-tex-raised .callout,
+body.art-tex-raised .markdown-embed,
+body.art-tex-raised .internal-embed.media-embed {
+  box-shadow: 4px 6px 14px 1px rgba(0,0,0,.20), 9px 12px 30px 2px rgba(0,0,0,.14);
+}
+body.theme-light.art-tex-raised .callout,
+body.theme-light.art-tex-raised .markdown-embed,
+body.theme-light.art-tex-raised .internal-embed.media-embed {
+  box-shadow: 4px 6px 14px 1px rgba(32,32,62,.13), 9px 12px 30px 2px rgba(32,32,62,.09);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHIMSY — the sanctioned exception                             v0.7.0
+   The one place the "no looping decoration / no raw colour" rules relax: a
+   flowing burnished spectrum for delight, never on load-bearing chrome.
+   Ported from artificer-whimsy.css. In a notes app the honest homes are
+   few and ALL opt-in — the vault name and the empty-pane title (both pure
+   display) — plus the bundled .whimsy / .whimsy-rule utilities for note
+   HTML. Long-lived surfaces settle to a GLACIAL drift (~2.5min) by default.
+   Palettes: Spectrum (burnished) · Silver (header-safe) · Gold.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.theme-dark, .theme-light {
+  --whimsy-angle: 100deg;
+  --whimsy-speed: 7s;
+  --whimsy-settle-speed: 150s;       /* glacial rest — sub-perceptual drift */
+  --whimsy-l: 0.80;
+  --whimsy-c: 0.115;
+  --whimsy-gradient: linear-gradient(var(--whimsy-angle),
+    oklch(var(--whimsy-l) var(--whimsy-c)  85), oklch(var(--whimsy-l) var(--whimsy-c) 150),
+    oklch(var(--whimsy-l) var(--whimsy-c) 200), oklch(var(--whimsy-l) var(--whimsy-c) 235),
+    oklch(var(--whimsy-l) var(--whimsy-c) 290), oklch(var(--whimsy-l) var(--whimsy-c) 340),
+    oklch(var(--whimsy-l) var(--whimsy-c)  30), oklch(var(--whimsy-l) var(--whimsy-c)  85));
+  --whimsy-gradient-silver: linear-gradient(var(--whimsy-angle),
+    oklch(0.66 0.006 255), oklch(0.88 0.005 255), oklch(0.74 0.006 255),
+    oklch(0.96 0.004 255), oklch(0.66 0.006 255));
+  --whimsy-gradient-gold: linear-gradient(var(--whimsy-angle),
+    oklch(0.72 0.12 82), oklch(0.90 0.10 92), oklch(0.66 0.13 72),
+    oklch(0.95 0.06 96), oklch(0.72 0.12 82));
+  /* The wired homes default to silver + glacial. Palette select overrides. */
+  --whimsy-home-gradient: var(--whimsy-gradient-silver);
+  --whimsy-home-speed:    var(--whimsy-settle-speed);
+  --whimsy-wave-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='22' viewBox='0 0 64 22'><path d='M0 11 Q 8 2 16 11 T 32 11 T 48 11 T 64 11' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
+}
+/* Light face: the spectrum darkens to read on cream; silver inverts to ink. */
+body.theme-light {
+  --whimsy-l: 0.52; --whimsy-c: 0.135;
+  --whimsy-gradient-silver: linear-gradient(var(--whimsy-angle),
+    oklch(0.42 0.012 75), oklch(0.26 0.012 75), oklch(0.46 0.012 75),
+    oklch(0.22 0.012 75), oklch(0.42 0.012 75));
+  --whimsy-gradient-gold: linear-gradient(var(--whimsy-angle),
+    oklch(0.56 0.12 72), oklch(0.68 0.13 84), oklch(0.47 0.12 66),
+    oklch(0.73 0.11 88), oklch(0.56 0.12 72));
+}
+
+@keyframes whimsy-flow { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
+
+/* Utility — flowing burnished text. Use on bold display words in note HTML. */
+.whimsy {
+  background-image: var(--whimsy-gradient); background-size: 200% 100%; background-repeat: repeat;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: whimsy-flow var(--whimsy-speed) linear infinite; font-weight: 700;
+}
+.whimsy--silver  { --whimsy-gradient: var(--whimsy-gradient-silver); --whimsy-speed: 16s; }
+.whimsy--gold    { --whimsy-gradient: var(--whimsy-gradient-gold);   --whimsy-speed: 16s; }
+.whimsy--vivid   { --whimsy-c: 0.21; }
+.whimsy--glacial { animation-duration: var(--whimsy-settle-speed); }
+.whimsy--no-flow { animation: none; background-position: 30% 50%; }
+
+/* Rainbow rule — a divider flourish for note HTML. */
+.whimsy-rule {
+  display: block; width: 100%; height: 22px; border: 0; margin: var(--size-4-6) 0;
+  background-image: var(--whimsy-gradient); background-size: 200% 100%; background-repeat: repeat;
+  animation: whimsy-flow var(--whimsy-speed) linear infinite;
+  -webkit-mask-image: var(--whimsy-wave-mask); mask-image: var(--whimsy-wave-mask);
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+  -webkit-mask-size: 64px 22px; mask-size: 64px 22px;
+  -webkit-mask-position: center; mask-position: center;
+}
+
+/* WIRED HOME 1 — vault name (display text, not load-bearing). */
+body.art-whimsy-vault .workspace-drawer-vault-name,
+body.art-whimsy-vault .workspace-sidedock-vault-profile .workspace-drawer-vault-name {
+  background-image: var(--whimsy-home-gradient); background-size: 200% 100%; background-repeat: repeat;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: whimsy-flow var(--whimsy-home-speed) linear infinite; font-weight: 700;
+}
+/* WIRED HOME 2 — empty-pane title (a genuinely decorative, blank moment). */
+body.art-whimsy-empty .empty-state-title {
+  background-image: var(--whimsy-home-gradient); background-size: 200% 100%; background-repeat: repeat;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  animation: whimsy-flow var(--whimsy-home-speed) linear infinite; font-weight: 700;
+}
+/* Palette select for the wired homes. */
+body.art-whimsy-spectrum { --whimsy-home-gradient: var(--whimsy-gradient); }
+body.art-whimsy-silver   { --whimsy-home-gradient: var(--whimsy-gradient-silver); }
+body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .whimsy, .whimsy-rule,
+  body.art-whimsy-vault .workspace-drawer-vault-name,
+  body.art-whimsy-empty .empty-state-title { animation: none !important; background-position: 30% 50%; }
+}
+
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1622,6 +2060,12 @@ body.code-line-numbers .markdown-rendered pre > code .line::before {
 
 /* Honor --callout-radius and --callout-border-opacity at the callout root */
 .callout {
+  /* Catch-all colour fallback: any callout type Obsidian doesn't recognise (a
+     plugin's custom type, or an alias we haven't mapped) otherwise reads
+     Obsidian's default BLUE. Steel keeps it in-palette. Known types override
+     this via their higher-specificity [data-callout="…"] rule; the theme loads
+     after Obsidian's app.css, so this wins the base default. (v0.19.0) */
+  --callout-color: 159, 182, 196;
   --callout-border-opacity: 0.18;
   border-radius: var(--callout-radius) !important;
 }
@@ -1707,6 +2151,7 @@ settings:
       A — pure mono, 700 weight (default).
       B — gold rule under H1, steel hierarchy for H3-H6.
       C — source-mode markers (#, ##, ###) prepended in muted gold.
+      D — every heading in the burnished accent (the "OG gold" look).
     type: class-select
     default: theme-heading-a
     allowEmpty: false
@@ -1717,6 +2162,8 @@ settings:
         value: theme-heading-b
       - label: C · Source-mode prefix markers
         value: theme-heading-c
+      - label: D · All gold
+        value: theme-heading-d
   -
     id: h1-size
     title: H1 size
@@ -2029,25 +2476,155 @@ settings:
       - italic
       - normal
 
-  # ─── POS highlighting ────────────────────────────────────────────
+  # ─── Prose highlighting ──────────────────────────────────────────
   -
-    id: art-pos
-    title: Parts-of-speech highlighting
+    id: art-prose
+    title: Prose highlighting
     type: heading
     level: 2
     collapsed: true
   -
+    id: art-prose-info
+    title: Reading lens (yaae)
+    type: info-text
+    description: |
+      Colours every word by its part of speech so structural habits surface as
+      you read. Needs the yaae POS-tagging plugin (wraps tokens in .yaae-pos-*);
+      no-op without it. Five categories on one intensity-aware OKLCH ramp.
+  -
+    id: art-prose-palette
+    title: Palette
+    description: Hue assignment per category. Cameron ★ is the house default.
+    type: class-select
+    default: art-prose-cameron
+    allowEmpty: false
+    options:
+      - label: Cameron ★
+        value: art-prose-cameron
+      - label: Apothecary
+        value: art-prose-apothecary
+      - label: Spectral (CVD-aware)
+        value: art-prose-spectral
+      - label: Dusk (cool jewel)
+        value: art-prose-dusk
+      - label: Botanical (earthy + teal)
+        value: art-prose-botanical
+  -
+    id: art-prose-intensity
+    title: Intensity
+    description: 0 = words fade to normal ink · 1 = full chroma. Retunes saturation and contrast together.
+    type: variable-number-slider
+    default: 1
+    min: 0
+    max: 1
+    step: 0.05
+  -
+    id: art-prose-cues
+    title: Reading cues (italic / weight)
+    description: Cameron's secondary signals — adjectives & adverbs italic, verbs italic + medium, conjunctions medium, nouns plain. Turn off for colour only.
+    type: class-toggle
+    default: true
+  -
     id: art-pos-on
-    title: Enable POS highlighting
-    description: Verbs in gold, adjectives in italic steel, adverbs in italic attention rose. Pairs with a POS-tagging plugin that wraps tokens in .pos-v / .pos-adj / .pos-adv. No-op without that plugin. (v0.6.0 used `pos-on`; both selectors still work in v0.6.1 — re-toggle here to migrate.)
+    title: Legacy .pos-* classes
+    description: Keeps the v0.6 .pos-v / .pos-adj / .pos-adv element classes painting (verb / adjective / adverb) for older notes. Independent of the yaae plugin.
     type: class-toggle
     default: false
 
-  # ─── Light-mode cascade ────────────────────────────────
+  # ─── Texture ─────────────────────────────────────────────────────
   -
-    id: art-cascade-deep
-    title: Deep overlay (light mode) — deprecated
-    description: As of v0.6.4, the recessed overlay (#e4d4b0) is the default. This toggle is a no-op kept for one version so v0.6.1–v0.6.3 users who opted in don't break. Removed in v0.7.0.
+    id: art-texture
+    title: Texture
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: art-texture-info
+    title: Material honesty
+    type: info-text
+    description: |
+      Opt-in surface texture — no hue, no motion. One texture per surface;
+      don't stack. The dark floor is ink, the light floor is paper.
+  -
+    id: art-tex-surface
+    title: Document surface
+    description: Grain under the note page — paper speckle (Faint / Whisper) or a desaturated fiber tooth. Rides the page so it scrolls with your text.
+    type: class-select
+    default: ''
+    allowEmpty: true
+    options:
+      - label: Flat (default)
+        value: ''
+      - label: Paper · Faint
+        value: art-tex-paper
+      - label: Paper · Whisper
+        value: art-tex-paper-whisper
+      - label: Fiber tooth
+        value: art-tex-fiber
+  -
+    id: art-tex-chrome
+    title: Chrome grain
+    description: Paper grain on the window chrome — view header, tab bars, ribbon, titlebar filler, status bar. Independent of the document surface, so content can stay flat while chrome carries the material.
+    type: class-toggle
+    default: false
+  -
+    id: art-tex-dots
+    title: Dot lattice on sidebars
+    description: An engineered dot-matrix on the left / right sidebars — tool-surface texture.
+    type: class-toggle
+    default: false
+  -
+    id: art-tex-callout-line
+    title: Hatch texture on callouts
+    description: A faint diagonal apothecary hatch behind callout bodies, drawn from token ink only.
+    type: class-toggle
+    default: false
+  -
+    id: art-tex-raised
+    title: Raised depth on callouts & embeds
+    description: A soft outer halo lifting callouts and embeds off the page — the one sanctioned elevation beyond the functional shadow.
+    type: class-toggle
+    default: false
+
+  # ─── Whimsy ──────────────────────────────────────────────────────
+  -
+    id: art-whimsy
+    title: Whimsy
+    type: heading
+    level: 2
+    collapsed: true
+  -
+    id: art-whimsy-info
+    title: The sanctioned exception
+    type: info-text
+    description: |
+      A flowing burnished spectrum — opt-in delight, never on load-bearing
+      chrome. The wired homes settle to a glacial (~2.5min) drift. The .whimsy
+      and .whimsy-rule utility classes are also available inside note HTML.
+  -
+    id: art-whimsy-palette
+    title: Palette
+    description: Used by the wired homes below. Silver is the calmest (header-safe); Spectrum is the full burnished rainbow; Gold is brushed metal.
+    type: class-select
+    default: art-whimsy-silver
+    allowEmpty: false
+    options:
+      - label: Silver
+        value: art-whimsy-silver
+      - label: Spectrum
+        value: art-whimsy-spectrum
+      - label: Gold
+        value: art-whimsy-gold
+  -
+    id: art-whimsy-vault
+    title: Flowing vault name
+    description: The vault name in the sidebar header carries the whimsy gradient, drifting glacially.
+    type: class-toggle
+    default: false
+  -
+    id: art-whimsy-empty
+    title: Flowing empty-pane title
+    description: The "No file is open" empty-state heading flows — a decorative, blank moment.
     type: class-toggle
     default: false
 

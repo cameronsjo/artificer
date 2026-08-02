@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.18.1 · 2026** — the re-true: the root is never overridden (`html { font-size: 100% }`), so every `--t-*-size` token now renders at its labeled px and the whole system scales with the browser font-size preference (#211, owner-ruled). Token-bound type grows ~14.3% — body copy lands at a true 14px (it had double-applied to 12.25px); the owner optical pass is #214. The px-literal chrome rebinds to exact-match tokens as identity swaps, the `lint:tokens` font-size watch arms, the `.toast` ghost leaves print.css, and app-shell lands on canonical `.section-title`. (0.18.1: the glacial whimsy now truly stills under `prefers-reduced-motion` — #221, a field-filed floor fix — and the uniformity doctrine is codified in § One system, many applications.) See `CHANGELOG.md` for what changed.
+**v0.21.0 · 2026** — the mint ledger: every shipped primitive now carries machine-readable provenance in `src/primitives.json` (vintage, classes, behavior module, recipe pointer, adoption signals), gated in CI by `check:primitives` — a mint can no longer ship invisible (#190) or unreachable (#191). The `artificer-upgrade` skill v0.3 walks the ledger instead of a hand-maintained matrix and sweeps consumers for hand-rolled equivalents of newer primitives; the vendor bin transports the ledger (`ARTIFICER-CHEATSHEET.md` ride-along retired); `docs/UPGRADE.md` gains the 0.11→0.20 migration rows under an existence-lockstep gate; `.masthead` and `.colophon` mint. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -12,9 +12,9 @@ A complete, self-contained design system you can drop into any project. Five fil
 | File | What it gives you |
 |---|---|
 | `src/artificer.css` | All tokens (color, type, space, radius, motion, z) + every component class. **Just add this stylesheet and you have the system.** |
-| `src/artificer-theme.js` | Persistent dark/cream theme toggle, reads `localStorage`, respects `prefers-color-scheme` on first load. |
+| `src/artificer-theme.js` | Persistent theme control — three modes (`dark` / `light` / `auto`), `auto` follows `prefers-color-scheme` live. Hydrates the empty canonical `.theme-toggle` button with the half-circle glyph. |
 | `src/artificer-focus.js` | `ArtificerFocus.trap(el, {onEscape})` — focus-trap helper for modals, dialogs, command palettes. |
-| `src/artificer-icons.js` | Lucide-rooted icon set. Hydrates `<i data-icon="search">` placeholders into inline SVG. |
+| `src/artificer-icons.js` | Lucide-rooted icon set, keyed by Lucide's canonical names (legacy names alias). Hydrates `<i data-icon="search">` placeholders into inline SVG; unknown names render a dashed placeholder box. |
 | `src/tokens.json` | Machine-readable token export. For Tailwind, Figma, Style Dictionary, anything non-CSS. |
 
 Plus `src/print.css` (paper-mode for PDF/print) and two SVG assets (favicon, OG card).
@@ -53,15 +53,72 @@ Copy the `src/` folder into your project, then:
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
-  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-    <span class="dot"></span><span data-theme-label>Dark</span>
-  </button>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
   <main id="main" class="container container--md">…</main>
 </body>
 </html>
 ```
 
 That's it. Use the utility classes (`.btn`, `.card`, `.stack`, `.cluster`, etc.).
+
+**Vendor it with one command.** Instead of copying `src/` by hand, run the
+bundled `vendor` bin — it globs the runtime (including `primitives.json`,
+the machine-readable mint ledger) and stamps a provenance sidecar so you can
+tell later what version you're on and whether anything drifted:
+
+```bash
+npx @cameronsjo/artificer vendor            # → public/artificer/
+npx @cameronsjo/artificer vendor --dest static/artificer --fonts
+```
+
+It copies `artificer*.css`, `artificer*.js`, `print.css`, `tokens.json`, and
+`primitives.json` (the mint ledger the upgrade skill consumes) into the dest,
+plus a `provenance.json` recording the source, the version, and a `sha256` for
+each file. (The interim `ARTIFICER-CHEATSHEET.md` ride-along is retired; an old
+vendored copy can be deleted.) Fonts are opt-in (`--fonts`) — off by default, since a bundler resolves
+them for you. Re-run to update; a vendored file you hand-edited (or an untracked
+file already sitting in the dest) is flagged, and `--strict` turns that into a
+non-zero exit that refuses to overwrite. Re-vendoring adds and overwrites but
+never removes — if a version bump relocates a file, delete the dest and re-run
+for a clean tree. Bundler consumers on **Path B** don't need this — they import
+from `node_modules` directly.
+
+> The bin vendors the published `src/`. A minified `dist/` channel
+> (`--channel=min`) is a documented extension point, not yet shipped.
+
+**Keep your own CSS honest — `artificer lint`.** The same bin lints Hard rule #1
+(raw hex, on-scale spacing/radius px, near-scale `font-size` px that map to a
+token) over *your* CSS, so consumers hold the line the workshop holds:
+
+```bash
+npx @cameronsjo/artificer lint "src/**/*.css"              # strict: exit 2 on a violation
+npx @cameronsjo/artificer lint "src/**/*.css" --advisory   # report only, exit 0
+```
+
+It reads the token inventory — the exact scale a violation is measured against —
+from the first of: `--tokens <path>`, then your vendored
+`public/artificer/tokens.json`, then the installed package's own
+`src/tokens.json` (version-locked to what you pinned), then a built-in fallback.
+The chosen source is printed on every run, so the lint stays in lockstep with
+your version. Custom-property definitions and lines marked `/* tuned */` are
+skipped. There is deliberately **no config file** — the discipline is the
+system's, not per-consumer.
+
+`lint` only reads files **within** the project — a glob whose base resolves
+outside the working directory is refused. Don't feed it attacker-controlled
+globs in privileged CI.
+
+Wire it into CI so drift can't merge. Add a script and a step:
+
+```jsonc
+// package.json
+"scripts": { "lint:artificer": "artificer lint \"src/**/*.css\"" }
+```
+
+```yaml
+# .github/workflows/ci.yml
+- run: npx @cameronsjo/artificer lint "src/**/*.css"
+```
 
 ### Path B · Modern bundler (Vite / Webpack / Next / Nuxt)
 
@@ -157,6 +214,8 @@ The `framework-adapters/` folder has minimal starting points:
 - `vue-components.vue` — same, for Vue 3 SFC.
 
 These are starters, not the whole system. They cover the 80% case; for new patterns, write the markup directly and use the CSS classes.
+
+**Read [`framework-adapters/README.md`](framework-adapters/README.md) first** — the one rule for using Artificer's interactive behavior from a framework: the pure keyboard state machines (`ArtificerTabs.nextIndex`, `ArtificerOptions.nextOption`, `ArtificerTree.nextVisible`, …) are *imported* and you drive your own DOM; `enhance()`/`observe()` are for non-framework DOM. It also covers the SPA lifecycle (what auto-hydrates, and the imperative-vs-declarative Whimsy pattern) and the shared theme key (`window.ArtificerTheme.KEY`).
 
 ---
 

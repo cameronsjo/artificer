@@ -1,6 +1,6 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.18.1",
+  "version": "0.21.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
   "author": "Cameron Sjo",
@@ -10,8 +10,12 @@
   },
   "type": "module",
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "src/artificer-*.js"
   ],
+  "bin": {
+    "artificer": "./bin/artificer.mjs"
+  },
   "style": "./src/artificer.css",
   "exports": {
     "./artificer.css": "./src/artificer.css",
@@ -30,7 +34,9 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "src"
+    "src",
+    "bin",
+    "reference/SKILL.md"
   ],
   "publishConfig": {
     "access": "public"
@@ -43,6 +49,8 @@
     "lint:palette": "node scripts/lint-css-palette.mjs",
     "check:version": "node scripts/sync-version.mjs --check",
     "sync:version": "node scripts/sync-version.mjs",
+    "check:tokens": "node scripts/sync-tokens.mjs --check",
+    "sync:tokens": "node scripts/sync-tokens.mjs",
     "sri": "node scripts/gen-sri.mjs",
     "test": "node --test scripts/*.test.mjs"
   }

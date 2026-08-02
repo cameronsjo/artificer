@@ -1,0 +1,145 @@
+/* Artificer · flux — daisyUI override sheet
+ *
+ * Generated from themes/_palette.json — edit there + re-run build.mjs.
+ *
+ * flux is upstream code we don't own and can't push to, so this reskins a
+ * RUNNING board without editing a tracked file in it. Install writes only into
+ * packages/web/dist, which is gitignored upstream: symlink this sheet in, then
+ * add a <link> to dist/index.html AFTER the hashed /assets/index-*.css so it
+ * wins on cascade order. ~/bin/flux-skin does both idempotently.
+ *
+ * TWO FAILURE MODES THAT LOOK LIKE THIS FILE NOT WORKING:
+ *   1. A rebuild un-themes the board and exits 0. Vite's emptyOutDir defaults
+ *      true, so any `bun run build` in packages/web empties dist/ and
+ *      regenerates index.html with new asset hashes, taking both edits with it.
+ *      The board keeps serving, just unthemed. Nothing surfaces the loss.
+ *   2. flux caches index.html at boot. Static assets are re-read per request;
+ *      index.html is read ONCE at daemon start and served from memory. A fresh
+ *      symlink lands on reload, a fresh <link> does NOT until the daemon is
+ *      kicked — indistinguishable from broken CSS.
+ *
+ * The dot rules match the CSSOM's serialization of Preact's inline styles,
+ * INCLUDING the property name, so a rule can never fire on an element that
+ * merely uses the same colour for text or a border. !important is load-bearing:
+ * an inline style beats any selector on specificity, so an author declaration
+ * wins only by being important.
+ *
+ * Dots are held to the 3:1 graphical floor (WCAG SC 1.4.11), not text-AA — each
+ * sits beside its own text label. The binding surface is bgRaised, not the
+ * page: urgentBright (2.70), fgMuted (2.68) and ansiBrightBlack (2.86) all pass
+ * on bg and FAIL on a card.
+ */
+
+[data-theme=dark] {
+  --color-base-100: #313540;
+  --color-base-200: #292c33;
+  --color-base-300: #4a4f5c;
+  --color-primary: #dbbb6f;
+  --color-primary-content: #20203e;
+  --color-secondary: #b095e0;
+  --color-secondary-content: #20203e;
+  --color-accent: #7da6a4;
+  --color-accent-content: #20203e;
+  --color-neutral: #474d60;
+  --color-neutral-content: #e8e6e1;
+  --color-info: #b8cad4;
+  --color-info-content: #20203e;
+  --color-success: #5fa073;
+  --color-success-content: #20203e;
+  --color-warning: #d6936a;
+  --color-warning-content: #20203e;
+  --color-error: #e6a8a2;
+  --color-error-content: #20203e;
+  --color-base-content: #e8e6e1;
+}
+
+[data-theme=dark] [style*="background-color: rgb(168, 85, 247)"] {
+  background-color: #b095e0 !important;  /* status planning */
+}
+[data-theme=dark] [style*="background-color: rgb(107, 114, 128)"] {
+  background-color: #6f8a97 !important;  /* status todo / prio low */
+}
+[data-theme=dark] [style*="background-color: rgb(59, 130, 246)"] {
+  background-color: #b8cad4 !important;  /* status in_progress + epic 1 */
+}
+[data-theme=dark] [style*="background-color: rgb(34, 197, 94)"] {
+  background-color: #5fa073 !important;  /* status done + epic 2 */
+}
+[data-theme=dark] [style*="background-color: rgb(245, 158, 11)"] {
+  background-color: #dbbb6f !important;  /* epic 3 / prio medium */
+}
+[data-theme=dark] [style*="background-color: rgb(139, 92, 246)"] {
+  background-color: #9070d0 !important;  /* epic 4 */
+}
+[data-theme=dark] [style*="background-color: rgb(239, 68, 68)"] {
+  background-color: #e6a8a2 !important;  /* epic 5 / prio high */
+}
+[data-theme=dark] [style*="background-color: rgb(6, 182, 212)"] {
+  background-color: #7da6a4 !important;  /* epic 6 */
+}
+[data-theme=dark] [style*="background-color: rgb(236, 72, 153)"] {
+  background-color: #b7748e !important;  /* epic 7 */
+}
+[data-theme=dark] [style*="background-color: rgb(132, 204, 22)"] {
+  background-color: #a1ae72 !important;  /* epic 8 */
+}
+[data-theme=dark] [style*="background-color: rgb(156, 163, 175)"] {
+  background-color: #6f8a97 !important;  /* epic unassigned */
+}
+
+[data-theme=light] {
+  --color-base-100: #eddcc0;
+  --color-base-200: #f5ead0;
+  --color-base-300: #cbb88a;
+  --color-primary: #7a5a10;
+  --color-primary-content: #f5ead0;
+  --color-secondary: #4a25a0;
+  --color-secondary-content: #f5ead0;
+  --color-accent: #3a6a68;
+  --color-accent-content: #f5ead0;
+  --color-neutral: #dbcca0;
+  --color-neutral-content: #20203e;
+  --color-info: #2e4a5a;
+  --color-info-content: #f5ead0;
+  --color-success: #2a5a3a;
+  --color-success-content: #f5ead0;
+  --color-warning: #a04500;
+  --color-warning-content: #f5ead0;
+  --color-error: #8a2418;
+  --color-error-content: #f5ead0;
+  --color-base-content: #20203e;
+}
+
+[data-theme=light] [style*="background-color: rgb(168, 85, 247)"] {
+  background-color: #4a25a0 !important;  /* status planning */
+}
+[data-theme=light] [style*="background-color: rgb(107, 114, 128)"] {
+  background-color: #516c7e !important;  /* status todo / prio low */
+}
+[data-theme=light] [style*="background-color: rgb(59, 130, 246)"] {
+  background-color: #2e4a5a !important;  /* status in_progress + epic 1 */
+}
+[data-theme=light] [style*="background-color: rgb(34, 197, 94)"] {
+  background-color: #2a5a3a !important;  /* status done + epic 2 */
+}
+[data-theme=light] [style*="background-color: rgb(245, 158, 11)"] {
+  background-color: #7a5a10 !important;  /* epic 3 / prio medium */
+}
+[data-theme=light] [style*="background-color: rgb(139, 92, 246)"] {
+  background-color: #5a35b0 !important;  /* epic 4 */
+}
+[data-theme=light] [style*="background-color: rgb(239, 68, 68)"] {
+  background-color: #8a2418 !important;  /* epic 5 / prio high */
+}
+[data-theme=light] [style*="background-color: rgb(6, 182, 212)"] {
+  background-color: #3a6a68 !important;  /* epic 6 */
+}
+[data-theme=light] [style*="background-color: rgb(236, 72, 153)"] {
+  background-color: #824772 !important;  /* epic 7 */
+}
+[data-theme=light] [style*="background-color: rgb(132, 204, 22)"] {
+  background-color: #606637 !important;  /* epic 8 */
+}
+[data-theme=light] [style*="background-color: rgb(156, 163, 175)"] {
+  background-color: #516c7e !important;  /* epic unassigned */
+}

@@ -4,8 +4,8 @@ name: CI
 # (tag-gated publish). One lane:
 #
 #   check   — the dependency-free data gates (contrast #62, palette drift #61,
-#             version sync #66, mirror parity #78). Only Node built-ins; no
-#             install step. Stays fast.
+#             version sync #66, tokens sync #60, mirror parity #78). Only Node
+#             built-ins; no install step. Stays fast.
 #
 # The workshop's browser trust layer (Playwright) and the A1 audit stay
 # private — the public package ships no tests/.
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +43,9 @@ jobs:
 
       - name: Version sync check (#66)
         run: npm run check:version
+
+      - name: Tokens sync check (#60)
+        run: npm run check:tokens
 
       - name: live-spec mirror parity (#78)
         run: npm run check:livespec

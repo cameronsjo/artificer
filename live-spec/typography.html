@@ -115,9 +115,7 @@
 </head>
 <body>
 
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-  <span class="dot"></span><span data-theme-label>Dark</span>
-</button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main class="page">
   <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Typography</div>
@@ -227,6 +225,7 @@
   <section>
     <h2><span class="num">03</span> The scale</h2>
     <p class="section-intro">Scale entries pick their face from <code>var(--font-mono)</code> or <code>var(--font-sans)</code>, so wrapping a region in <code>.surface-tool</code> swaps the body face without touching individual rules. Sizes below show the dark-mode rendering at typical desktop.</p>
+    <p class="section-intro"><code>.surface-document</code> is the inverse escape: a prose island — a colophon, a legal notice, a help panel — dropped inside a <code>.surface-tool</code> region opts back to <code>--font-sans</code> with <code>&lt;div class="surface-document"&gt;…&lt;/div&gt;</code>, no per-element overrides.</p>
 
     <div class="spec">
       <div class="meta">
@@ -379,6 +378,7 @@
         <li><span class="anchor">Headings are informative.</span> Scanning only the headings should convey page structure.</li>
         <li><span class="anchor">Italics</span> are fine for emphasis or citations in document prose; avoid in dense tool body where rhythm matters most.</li>
       </ul>
+      <p class="section-intro" style="margin-top:var(--s-md)"><b>Anchor words in data-driven prose.</b> When copy arrives as data rather than markup, mark anchors as <code>**…**</code> in the source, then promote each marked span to <code>&lt;b class="anchor"&gt;</code> at render — single-level only, never nested.</p>
     </div>
   </section>
 

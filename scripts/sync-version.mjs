@@ -3,6 +3,7 @@
 // truth; this propagates it to every stamp site so they can't drift:
 //   - src + live-spec artificer.css   : banner comment (#77) + --art-version
 //   - src + live-spec tokens.json     : $version
+//   - src/primitives.json             : $version (#199 — ledger, not mirrored)
 //   - themes/_palette.json            : $version
 //   - src + live-spec artificer-whimsy.js : header comment (#35)
 //   - README.md                           : masthead **vX.Y.Z · 2026** headline
@@ -46,6 +47,7 @@ export function STAMPS(version) {
     { file: 'live-spec/artificer.css', label: '--art-version', re: /(--art-version:\s*")[^"]*(")/, repl: v },
     { file: 'src/tokens.json', label: '$version', re: /("\$version":\s*")[^"]*(")/, repl: v },
     { file: 'live-spec/tokens.json', label: '$version', re: /("\$version":\s*")[^"]*(")/, repl: v },
+    { file: 'src/primitives.json', label: '$version', re: /("\$version":\s*")[^"]*(")/, repl: v },
     { file: 'themes/_palette.json', label: '$version', re: /("\$version":\s*")[^"]*(")/, repl: v },
     { file: 'src/artificer-whimsy.js', label: 'header', re: /(ARTIFICER · Whimsy helper · v)[0-9][\w.]*/, repl: v },
     { file: 'live-spec/artificer-whimsy.js', label: 'header', re: /(ARTIFICER · Whimsy helper · v)[0-9][\w.]*/, repl: v },
@@ -58,6 +60,14 @@ export function STAMPS(version) {
     { file: 'skills/artificer-design-system/SKILL.md', label: 'title', re: /(# Artificer · v)[0-9][\w.]*/, repl: v },
     // live-spec README masthead version span (only one <span>v in the file)
     { file: 'live-spec/README.html', label: 'masthead', re: /(<span>v)[0-9][\w.]*/, repl: v },
+    // Obsidian theme — unified version track as of the v0.7.0 adoption train. Stamp
+    // the manifest and the src banner ONLY; NEVER the generated theme.css (build.mjs
+    // carries the banner through from src on rebuild — registering it would double-stamp).
+    // manifest: "version" is safe vs "minAppVersion" (the latter has no `"` before Version).
+    { file: 'themes/obsidian/Artificer/manifest.json', label: 'manifest', re: /("version":\s*")[^"]*(")/, repl: v },
+    // banner: `v0.1 · 2026` at the file head. The ` · 2026` suffix anchors it — the
+    // v0.19.0 #NNN inline comments have no such suffix, so they're never touched.
+    { file: 'themes/obsidian/Artificer/theme.src.css', label: 'banner', re: /(v)[0-9][\w.]*( · 2026)/, repl: v },
   ];
 }
 

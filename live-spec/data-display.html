@@ -13,7 +13,7 @@
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
-<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"><span class="dot"></span><span data-theme-label>Dark</span></button>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Data display</p>
   <h1 class="t-headline-lg">data display.</h1>
@@ -42,6 +42,20 @@
         <tr><td>react-dom</td><td>18.3.1</td><td class="num" style="text-align:right">132.6 KB</td></tr>
         <tr><td>tokens-cli</td><td>0.4.0</td><td class="num" style="text-align:right">8.3 KB</td></tr>
         <tr><td>artificer</td><td>0.1.0</td><td class="num" style="text-align:right">6.9 KB</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section-title">Cell glyphs</h2>
+  <p class="meta">Dense comparison grids reach for emoji (<code>✅ ⚠️ ❌</code>) — but emoji are OS-rendered: they ignore the theme and read loud in a grid. The <code>.glyph</code> set is the anti-emoji — real text the author types, tinted by a semantic token, so it tracks dark/cream. Four states: <b class="anchor"><code>--success</code> ✓ yes</b>, <b class="anchor"><code>--muted</code> ✗ no</b> (recedes, steel-blue), <b class="anchor"><code>--attention</code> ~ partial</b>, <b class="anchor"><code>--na</code> – not applicable</b>. Each glyph is a graphical object (WCAG 2.2 SC 1.4.11), so it carries an <code>aria-label</code> — meaning never rests on the mark alone.</p>
+  <div class="figure">
+    <table class="table">
+      <thead><tr><th>Capability</th><th style="text-align:center">spec-alpha</th><th style="text-align:center">spec-beta</th><th style="text-align:center">spec-gamma</th></tr></thead>
+      <tbody>
+        <tr><td>Live preview</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td></tr>
+        <tr><td>Token export</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td></tr>
+        <tr><td>Figma plugin</td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td><td style="text-align:center"><span class="glyph glyph--na" role="img" aria-label="Not applicable">–</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
+        <tr><td>Dark theme</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -113,6 +127,7 @@
     <li><b class="anchor">Cap stat rows at 4</b>. More than 4 means people stop reading.</li>
     <li><b class="anchor">Empty cells get <code>—</code></b> (em dash), not "N/A" or 0.</li>
     <li><b class="anchor">Status uses badge + dot</b>, not color alone — color-blind users.</li>
+    <li><b class="anchor">Dense grids use cell glyphs</b>, not emoji — <code>.glyph--{success|muted|attention|na}</code> tints ✓✗~– with a theme token. Each is graphical: pair it with <code>aria-label</code>, never the mark alone. Sparse, labeled status stays <code>.badge</code> + <code>.dot</code>.</li>
   </ol>
 </main>
 </body>

@@ -198,9 +198,12 @@ export function useTheme(): ['dark' | 'light', (t: 'dark' | 'light') => void] {
   );
   React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    // Key MUST match vanilla artificer-theme.js ('artificer.theme', a DOT) or
-    // theme won't persist across the SPA <-> first-paint-script boundary.
-    try { localStorage.setItem('artificer.theme', theme); } catch {}
+    // Read the canonical key from the vanilla runtime — window.ArtificerTheme.KEY
+    // is the ONE source of truth. The 'artificer.theme' fallback (a DOT) covers
+    // SSR / before artificer-theme.js has loaded; both agree by construction, so
+    // the key can't drift across the SPA <-> first-paint-script boundary.
+    const KEY = (typeof window !== 'undefined' && (window as any).ArtificerTheme?.KEY) || 'artificer.theme';
+    try { localStorage.setItem(KEY, theme); } catch {}
   }, [theme]);
   return [theme, setTheme];
 }

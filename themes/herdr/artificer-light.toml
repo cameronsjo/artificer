@@ -1,0 +1,32 @@
+# Artificer v0.21.0 · Light — herdr theme block
+# herdr has no external theme-file mechanism; [theme.custom] lives inside your
+# own ~/.config/herdr/config.toml. Two install paths:
+#
+#   1. Paste these two tables into ~/.config/herdr/config.toml,
+#      then: herdr server reload-config
+#   2. Splice in via chezmoi templating — see themes/README.md
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+[theme]
+# Base only governs surfaces herdr does not expose; [theme.custom] below
+# overrides all 16 CustomThemeColors fields.
+name = "catppuccin-latte"
+
+[theme.custom]
+accent      = "#7a5a10"  # accent — highlights, borders, navigation UI
+panel_bg    = "#f5ead0"  # bg — the substrate (ADR 0036)
+surface0    = "#eddcc0"  # bgRaised — raised panel
+surface1    = "#e4d4b0"  # bgOverlay — selected row
+surface_dim = "#dcc99c"  # bgInactive — unfocused pane
+overlay0    = "#8a8070"  # fgDisabled — dim text — disabled tier (2.43 / 4.80)
+overlay1    = "#5a7a8a"  # fgMuted — muted meta/comment (3.05 / 3.83)
+text        = "#20203e"  # fg — 11.21 / 13.13
+subtext0    = "#4a3f2a"  # fgSecondary — 8.29 / 8.63
+mauve       = "#5a35b0"  # brandPurpleBright — 5.47 / 6.83
+green       = "#3a7050"  # successBright — 4.50 / 4.86
+yellow      = "#7a5a10"  # accent — 7.55 / 5.33 — same token as accent; Artificer accent IS gold
+red         = "#8a2418"  # urgentText — 6.98 / 7.49 — the text-tier red; bare urgent is 2.28 on dark
+blue        = "#2e4a5a"  # steel — 8.28 / 7.83
+teal        = "#3a6a68"  # cyan — 5.23 / 5.10
+peach       = "#a04500"  # attentionAlt — 5.49 / 5.25

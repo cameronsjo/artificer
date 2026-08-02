@@ -27,6 +27,46 @@
   line-height: var(--t-body-lg-lh);
 }
 
+/* ─── Masthead — the document-surface top nav ──────────────────────────────
+   The document counterpart to the tool-surface .appbar (artificer.css). Quiet,
+   NON-sticky, single-row site header for reading surfaces: brand + a few links
+   + optional meta (theme toggle). No border, no sticky chrome — it scrolls with
+   the page (the .appbar traits #131 called wrong over prose). Sans face; the
+   .wordmark brand keeps mono by its own rule. Compose the brand with
+   .wordmark--stop-none for a period-bearing mark, and the toggle with
+   .theme-toggle--inline. One <nav aria-label> landmark. Fixes #131. */
+.masthead {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: var(--s-md) var(--s-lg);
+  padding: var(--s-lg) 0;
+  font-family: var(--font-sans);
+}
+.masthead__brand { margin-right: auto; }   /* pushes nav + meta to the right */
+.masthead__nav {
+  display: flex; align-items: center; gap: var(--s-lg);
+  font-size: var(--t-label-md-size);
+}
+.masthead__nav a {
+  color: var(--fg-secondary); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+.masthead__nav a:hover { color: var(--fg); }
+.masthead__nav a[aria-current="page"] {
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);   /* active band — mirrors .sidenav's rail, rotated for a horizontal nav */
+}
+.masthead__meta { display: flex; align-items: center; gap: var(--s-sm); }
+
+/* Nav targets are 44px always (a11y rule #8) — same treatment as .crumb a /
+   .appbar__brand in artificer.css, applied to the masthead's own links. */
+@media (pointer: coarse) {
+  .masthead__brand,
+  .masthead__nav a {
+    min-height: 44px; min-width: 44px;
+    display: inline-flex; align-items: center;
+  }
+}
+
 /* ─── Prose — long-form vertical rhythm ────────────────────────────────────
    Block flow with a measured column and generous, even spacing. Drop .prose
    on the article body; children inherit the rhythm without per-element margins. */

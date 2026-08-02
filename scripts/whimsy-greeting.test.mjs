@@ -40,7 +40,7 @@ test('the pride line carries no trailing period', () => {
 test('non-June falls back to the default line + glacial flow', () => {
   const spec = greetingFor(new Date(2026, 6, 4)); // July
   assert.equal(spec.season, 'default');
-  assert.equal(spec.text, 'kindness is free');
+  assert.equal(spec.text, 'kindness is a choice');
   assert.ok(spec.classes.includes('whimsy'));
   assert.ok(spec.classes.includes('whimsy--glacial'));
 });
