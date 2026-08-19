@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.24.0 · 2026** — the chrome ships once: a compiled React adapter lands at `@cameronsjo/artificer/react` (ESM + `d.ts`, `react >=18` peer) with the whole app shell as components — `AppShell`, `Appbar`, `NavDrawer`, `SideNav` (flat or collapsible sections), `SideNavFooter`, and the canonical `ThemeToggle` — so consumers import the chrome instead of hand-assembling recipes that drift. Ambient TypeScript types ship for all seven vanilla behavior modules. `.app-shell` gains knobs (`--shell-rail`, `--shell-gap`) and `.sidenav--sticky` mints the pinned rail, replacing per-app grid overrides. Nav `href`s pass a scheme guard; the export pipeline rebuilds `dist/` from reviewed sources and hard-fails on missing package exports. See `CHANGELOG.md` for what changed.
+**v0.24.1 · 2026** — the chrome ships once: a compiled React adapter lands at `@cameronsjo/artificer/react` (ESM + `d.ts`, `react >=18` peer) with the whole app shell as components — `AppShell`, `Appbar`, `NavDrawer`, `SideNav` (flat or collapsible sections), `SideNavFooter`, and the canonical `ThemeToggle` — so consumers import the chrome instead of hand-assembling recipes that drift. Ambient TypeScript types ship for all seven vanilla behavior modules. `.app-shell` gains knobs (`--shell-rail`, `--shell-gap`) and `.sidenav--sticky` mints the pinned rail, replacing per-app grid overrides. Nav `href`s pass a scheme guard; the export pipeline rebuilds `dist/` from reviewed sources and hard-fails on missing package exports. See `CHANGELOG.md` for what changed.
 
 ---
 

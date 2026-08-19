@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.24.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.24.1 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -213,7 +213,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.24.0";
+  --art-version: "0.24.1";
 
   color-scheme: dark;
 }

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Whimsy helper · v0.24.0
+   ARTIFICER · Whimsy helper · v0.24.1
    ─────────────────────────────────────────────────────────────────────────
    Tiny, dependency-free. Pairs with artificer-whimsy.css. Exposes window.Whimsy.
 
