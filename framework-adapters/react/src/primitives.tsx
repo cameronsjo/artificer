@@ -27,9 +27,15 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
  */
 export function safeHref(href: string | undefined): string | undefined {
   if (href == null) return undefined;
-  const trimmed = href.trim();
-  if (/^(?:[a-z][a-z0-9+.-]*):/i.test(trimmed)) {
-    return /^(?:https?|mailto|tel):/i.test(trimmed) ? href : undefined;
+  // Scheme-detect on what the BROWSER will parse, not the raw string: URL
+  // parsers strip ASCII tab/LF/CR anywhere and C0 controls at the edges, so
+  // `java\tscript:` is javascript: to the browser while a naive regex sees no
+  // scheme at all (verified live — the bypass a consumer's security review
+  // caught). The original href is what gets rendered; only the DECISION uses
+  // the control-stripped view.
+  const parsed = href.replace(/[\u0000-\u001f\u007f]/g, '').trimStart();
+  if (/^(?:[a-z][a-z0-9+.-]*):/i.test(parsed)) {
+    return /^(?:https?|mailto|tel):/i.test(parsed) ? href : undefined;
   }
   return href; // relative / fragment / query — no scheme to abuse
 }
@@ -204,13 +210,11 @@ export function Notification({
 // Auto focus-traps via artificer-focus.js. Esc closes, scrim-click closes,
 // focus restores to the trigger.
 
-declare global {
-  interface Window {
-    ArtificerFocus?: {
-      trap: (el: HTMLElement, opts?: { onEscape?: (e: Event) => void }) => { release: () => void };
-    };
-  }
-}
+// No local `declare global` here — the canonical Window.ArtificerFocus shape
+// is single-homed in types/focus.d.ts (shipped via the ./focus.js export's
+// types condition). A second, narrower declaration in this file merged into
+// consumer type graphs and WON at their call sites (#407).
+import type {} from '../../../types/focus.js';
 
 export function Modal({
   open,

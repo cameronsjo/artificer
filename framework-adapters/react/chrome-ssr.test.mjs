@@ -150,6 +150,20 @@ test('safeHref: blocks javascript: and unknown schemes, passes safe ones', async
   assert.equal(safeHref(undefined), undefined);
 });
 
+test('safeHref: control characters cannot smuggle a scheme past the check', async () => {
+  const { safeHref } = await import('../../dist/react/index.js');
+  // URL parsers strip tab/LF/CR anywhere and C0 controls at the edges, so
+  // these all parse as javascript: in a browser — the check must see what
+  // the browser will see. (Bypass caught by a consumer's security review.)
+  assert.equal(safeHref('java\tscript:alert(1)'), undefined);
+  assert.equal(safeHref('java\nscript:alert(1)'), undefined);
+  assert.equal(safeHref('java\rscript:alert(1)'), undefined);
+  assert.equal(safeHref('javascript:alert(1)'), undefined);
+  assert.equal(safeHref('\tjavascript:alert(1)'), undefined);
+  // Control-free safe values still pass untouched.
+  assert.equal(safeHref('https://ok.example'), 'https://ok.example');
+});
+
 test('SideNavRow: a javascript: href renders as a button, not a link', () => {
   const html = renderToStaticMarkup(
     h(SideNav, {

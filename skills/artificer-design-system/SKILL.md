@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.24.1
+# Artificer · v0.24.2
 
 Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Every token and rule reduces cognitive load for a brain that **scans instead of reads** and holds **3–4 items** in working memory.
 

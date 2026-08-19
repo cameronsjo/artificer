@@ -70,17 +70,6 @@ export declare function Notification({ tier, title, children, action, }: {
         onClick: () => void;
     };
 }): React.JSX.Element;
-declare global {
-    interface Window {
-        ArtificerFocus?: {
-            trap: (el: HTMLElement, opts?: {
-                onEscape?: (e: Event) => void;
-            }) => {
-                release: () => void;
-            };
-        };
-    }
-}
 export declare function Modal({ open, onClose, title, children, footer, labelledBy, }: {
     open: boolean;
     onClose: () => void;

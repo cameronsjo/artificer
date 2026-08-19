@@ -26,9 +26,15 @@ export function cx(...parts) {
 export function safeHref(href) {
     if (href == null)
         return undefined;
-    const trimmed = href.trim();
-    if (/^(?:[a-z][a-z0-9+.-]*):/i.test(trimmed)) {
-        return /^(?:https?|mailto|tel):/i.test(trimmed) ? href : undefined;
+    // Scheme-detect on what the BROWSER will parse, not the raw string: URL
+    // parsers strip ASCII tab/LF/CR anywhere and C0 controls at the edges, so
+    // `java\tscript:` is javascript: to the browser while a naive regex sees no
+    // scheme at all (verified live — the bypass a consumer's security review
+    // caught). The original href is what gets rendered; only the DECISION uses
+    // the control-stripped view.
+    const parsed = href.replace(/[\u0000-\u001f\u007f]/g, '').trimStart();
+    if (/^(?:[a-z][a-z0-9+.-]*):/i.test(parsed)) {
+        return /^(?:https?|mailto|tel):/i.test(parsed) ? href : undefined;
     }
     return href; // relative / fragment / query — no scheme to abuse
 }
