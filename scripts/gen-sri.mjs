@@ -36,7 +36,13 @@ const { version } = pkg;
 // shipping untagged.
 const KIND = { '.css': 'css', '.js': 'js', '.json': 'json' };
 const FILES = [...new Set(
-  Object.values(pkg.exports).filter((target) => target !== './package.json'),
+  Object.entries(pkg.exports)
+    // `./package.json` is the package's own manifest; `./react` is the
+    // compiled ESM adapter — imported by bundlers, never CDN-script-tagged,
+    // so it gets no SRI entry by design. Conditional exports ({types,
+    // default}) resolve to their runtime `default` target.
+    .filter(([name]) => name !== './package.json' && name !== './react')
+    .map(([, target]) => (typeof target === 'string' ? target : target.default)),
 )].map((target) => {
   const path = target.replace(/^\.\//, '');
   const kind = KIND[extname(path)];

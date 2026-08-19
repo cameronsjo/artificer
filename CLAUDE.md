@@ -183,7 +183,7 @@ core scale or tool UI.
 
 | Ask | Use |
 |---|---|
-| "App shell / full-viewport layout" | `.app-shell` + `.app-shell__content` — appbar + sidenav + content skeleton for tool surfaces; collapses to the drawer under `--bp-tablet`. |
+| "App shell / full-viewport layout" | `.app-shell` + `.app-shell__content` — appbar + sidenav + content skeleton for tool surfaces; collapses to the drawer under `--bp-tablet`. Tune with knobs, never redefine the grid: `--shell-rail` (rail width), `--shell-gap` (rail↔content gap). Sticky rail: `.sidenav--sticky` (+ `--sidenav-sticky-top` to clear sticky chrome). |
 | "Top app bar" | `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer` — sticky tool chrome; clears the notch via `safe-area-inset`. |
 | "Side navigation" | `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots) — the section spine; one level deep, `.tree` for deeper. |
 | "Mobile nav drawer" | `.nav-drawer` + `.nav-scrim` — takes over below `--bp-tablet`. |

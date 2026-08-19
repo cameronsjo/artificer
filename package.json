@@ -1,6 +1,6 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
   "author": "Cameron Sjo",
@@ -23,21 +23,56 @@
     "./texture.css": "./src/artificer-texture.css",
     "./editorial.css": "./src/artificer-editorial.css",
     "./print.css": "./src/print.css",
-    "./theme.js": "./src/artificer-theme.js",
-    "./focus.js": "./src/artificer-focus.js",
-    "./tabs.js": "./src/artificer-tabs.js",
-    "./options.js": "./src/artificer-options.js",
-    "./tree.js": "./src/artificer-tree.js",
-    "./icons.js": "./src/artificer-icons.js",
-    "./whimsy.js": "./src/artificer-whimsy.js",
+    "./theme.js": {
+      "types": "./types/theme.d.ts",
+      "default": "./src/artificer-theme.js"
+    },
+    "./focus.js": {
+      "types": "./types/focus.d.ts",
+      "default": "./src/artificer-focus.js"
+    },
+    "./tabs.js": {
+      "types": "./types/tabs.d.ts",
+      "default": "./src/artificer-tabs.js"
+    },
+    "./options.js": {
+      "types": "./types/options.d.ts",
+      "default": "./src/artificer-options.js"
+    },
+    "./tree.js": {
+      "types": "./types/tree.d.ts",
+      "default": "./src/artificer-tree.js"
+    },
+    "./icons.js": {
+      "types": "./types/icons.d.ts",
+      "default": "./src/artificer-icons.js"
+    },
+    "./whimsy.js": {
+      "types": "./types/whimsy.d.ts",
+      "default": "./src/artificer-whimsy.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
     "./tokens.json": "./src/tokens.json",
     "./package.json": "./package.json"
   },
   "files": [
     "src",
     "bin",
+    "types",
+    "dist",
     "reference/SKILL.md"
   ],
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

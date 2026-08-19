@@ -52,7 +52,7 @@
 
   <main class="app-shell__content" id="content">
     <h1 class="t-headline-lg">app shell.</h1>
-    <p class="meta">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width.</p>
+    <p class="meta">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width. <b class="anchor">Tune with knobs, never redefine the grid</b>: <code>--shell-rail</code> sets the rail width, <code>--shell-gap</code> opens a rail↔content gap, and <code>.sidenav--sticky</code> pins the rail while the content scrolls (<code>--sidenav-sticky-top</code> clears sticky chrome above it). The bar row is optional — a shell without an <code>.appbar</code> child collapses the row to zero.</p>
 
     <div class="card">
       <h2 class="section-title" style="margin-top:0">Normal content</h2>

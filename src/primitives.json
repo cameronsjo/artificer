@@ -1,7 +1,7 @@
 {
   "$schemaVersion": "1",
-  "$version": "0.23.0",
-  "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage.",
+  "$version": "0.24.0",
+  "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage. The 'js' field names a VANILLA src/ behavior module (data- hook + window API); the 'react' field names the compiled React adapter component(s) for the primitive (@cameronsjo/artificer/react) — distinct fields because they are distinct consumption models.",
   "primitives": {
     "stack": {
       "kind": "utility",
@@ -180,7 +180,15 @@
         "app-shell",
         "app-shell__content"
       ],
-      "recipe": "App shell / full-viewport layout"
+      "recipe": "App shell / full-viewport layout",
+      "variants": [
+        {
+          "class": "app-shell",
+          "minted": "0.24.0",
+          "note": "knobs, not overrides: --shell-rail (rail width, 240px default) and --shell-gap (rail-to-content column gap, 0 default) — consumers tune the grid via custom properties instead of redefining grid-template-columns"
+        }
+      ],
+      "react": "AppShell + AppShellContent"
     },
     "appbar": {
       "kind": "component",
@@ -193,7 +201,8 @@
         "appbar__search",
         "appbar__spacer"
       ],
-      "recipe": "Top app bar"
+      "recipe": "Top app bar",
+      "react": "Appbar"
     },
     "sidenav": {
       "kind": "component",
@@ -203,22 +212,29 @@
         "sidenav__group",
         "sidenav__section",
         "sidenav__footer",
+        "sidenav--sticky",
         "label",
         "count"
       ],
       "recipe": "Side navigation",
       "variants": [
         {
+          "class": "sidenav--sticky",
+          "minted": "0.24.0",
+          "note": "sticky rail — pins the sidenav while .app-shell__content scrolls; align-self:start is load-bearing (a stretch child has nowhere to stick); --sidenav-sticky-top clears sticky chrome above. Replaces consumer-invented sticky wrapper asides"
+        },
+        {
           "class": "sidenav__section",
-          "minted": "unreleased",
+          "minted": "0.23.0",
           "note": "collapsible group — <details class=\"sidenav__section\"> whose <summary> carries the group-label treatment + twisty; rows keep full sidenav styling. The section holding [aria-current=\"page\"] must be rendered open (consumer JS owns the open attribute); sticky group labels deliberately don't apply inside <details>"
         },
         {
           "class": "sidenav__footer",
-          "minted": "unreleased",
+          "minted": "0.23.0",
           "note": "bottom-anchored settings row (margin-top:auto in the min-height:100% drawer sidenav) — the theme toggle's drawer seat; pairs a text label with a canonical .theme-toggle--inline [data-theme-toggle] button"
         }
-      ]
+      ],
+      "react": "SideNav + SideNavFooter"
     },
     "nav-drawer": {
       "kind": "component",
@@ -227,7 +243,8 @@
         "nav-drawer",
         "nav-scrim"
       ],
-      "recipe": "Mobile nav drawer"
+      "recipe": "Mobile nav drawer",
+      "react": "NavDrawer"
     },
     "crumb": {
       "kind": "component",
@@ -1172,6 +1189,25 @@
       "breaking": [],
       "adoption": [
         "btn"
+      ]
+    },
+    "0.24.0": {
+      "title": "chrome components: the compiled React adapter (@cameronsjo/artificer/react) single-sources the app shell; ambient d.ts for the vanilla modules; app-shell knobs + sticky rail",
+      "minted": [],
+      "breaking": [
+        {
+          "kind": "remove",
+          "what": "useTheme React hook (framework-adapters/react-components.tsx, copy-consumed only — never npm-imported)",
+          "from": "2-state dark/light hook duplicating the module's persistence",
+          "to": "canonical <ThemeToggle /> (artificer-theme.js owns state) + useThemeMode() for reactive reads",
+          "why": "the hook predated the 3-state canonical cycle and desynced from module-owned toggles"
+        }
+      ],
+      "adoption": [
+        "appbar",
+        "sidenav",
+        "nav-drawer",
+        "app-shell"
       ]
     }
   },

@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.23.0 · 2026** — the phone check: a real-device pass across three consumer sites drove the mobile chrome's seams closed. The appbar brand truncates with an ellipsis instead of a mid-glyph clip (and claims its content width before the spacer takes the surplus); the nav drawer's safe-area inset moves inside the scroll content so the last row clears the iOS home indicator; sidenav hover is gated to devices that have hover. Two primitives mint: `.sidenav__section` (details-based collapsible drawer groups) and `.sidenav__footer` (the theme toggle's bottom-anchored drawer seat, pill intact against the nav-row reset). The coarse-pointer touch floor documents its indicator escape hatch — an 8px pagination pip overrides the 44px floor and carries its hit area on a `::before` overlay. See `CHANGELOG.md` for what changed.
+**v0.24.0 · 2026** — the chrome ships once: a compiled React adapter lands at `@cameronsjo/artificer/react` (ESM + `d.ts`, `react >=18` peer) with the whole app shell as components — `AppShell`, `Appbar`, `NavDrawer`, `SideNav` (flat or collapsible sections), `SideNavFooter`, and the canonical `ThemeToggle` — so consumers import the chrome instead of hand-assembling recipes that drift. Ambient TypeScript types ship for all seven vanilla behavior modules. `.app-shell` gains knobs (`--shell-rail`, `--shell-gap`) and `.sidenav--sticky` mints the pinned rail, replacing per-app grid overrides. Nav `href`s pass a scheme guard; the export pipeline rebuilds `dist/` from reviewed sources and hard-fails on missing package exports. See `CHANGELOG.md` for what changed.
 
 ---
 
