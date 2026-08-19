@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Claude Code Theme",
-  "description": "Schema for Claude Code custom themes (~/.claude/themes/*.json). Requires Claude Code v2.1.118 or later. Token list reverse-engineered from the 2.1.126 binary; ~35 tokens are officially documented at https://code.claude.com/docs/en/terminal-config#color-token-reference and the rest are internal but reachable via overrides. Unknown tokens and invalid color values are silently ignored at runtime, so a typo cannot break rendering — but this schema flags them so you catch typos in your editor.",
+  "description": "Schema for Claude Code custom themes (~/.claude/themes/*.json). Requires Claude Code v2.1.118 or later. Token list reverse-engineered from the 2.1.226 binary (72 preset keys); 61 tokens are officially documented at https://code.claude.com/docs/en/terminal-config#color-token-reference and the rest are internal but reachable via overrides. Unknown tokens and invalid color values are silently ignored at runtime, so a typo cannot break rendering — but this schema flags them so you catch typos in your editor.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -61,7 +61,7 @@
         },
         "inactiveShimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer variant of `inactive` for animated gradients."
+          "description": "Documented. Shimmer variant of `inactive` for animated gradients."
         },
         "subtle": {
           "$ref": "#/$defs/colorValue",
@@ -73,7 +73,7 @@
         },
         "permissionShimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer variant of `permission` for animated gradients."
+          "description": "Documented. Shimmer variant of `permission` for animated gradients."
         },
         "remember": {
           "$ref": "#/$defs/colorValue",
@@ -81,7 +81,7 @@
         },
         "suggestion": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Suggestion-tier UI accents (autocomplete prompts, hint banners)."
+          "description": "Documented. Suggestion-tier UI accents (autocomplete prompts, hint banners)."
         },
         "background": {
           "$ref": "#/$defs/colorValue",
@@ -113,7 +113,7 @@
         },
         "promptBorderShimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer variant of `promptBorder` for animated gradients."
+          "description": "Documented. Shimmer variant of `promptBorder` for animated gradients."
         },
         "planMode": {
           "$ref": "#/$defs/colorValue",
@@ -122,6 +122,18 @@
         "autoAccept": {
           "$ref": "#/$defs/colorValue",
           "description": "Documented. Accept-edits mode accent and border."
+        },
+        "autoAcceptShimmer": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Shimmer variant of `autoAccept` for animated gradients."
+        },
+        "skill": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Skill-invocation accent; shares its value with `autoAccept` in the default preset."
+        },
+        "effortUltra": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Ultra effort / thinking-level indicator."
         },
         "bashBorder": {
           "$ref": "#/$defs/colorValue",
@@ -137,7 +149,7 @@
         },
         "fastModeShimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer variant of `fastMode` for animated gradients."
+          "description": "Documented. Shimmer variant of `fastMode` for animated gradients."
         },
         "diffAdded": {
           "$ref": "#/$defs/colorValue",
@@ -169,11 +181,15 @@
         },
         "userMessageBackgroundHover": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Hover-state variant of `userMessageBackground`."
+          "description": "Documented. Hover-state variant of `userMessageBackground`."
         },
         "messageActionsBackground": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Background fill behind per-message action affordances."
+          "description": "Internal. Background fill behind per-message action affordances. Absent from the preset since v2.1.140."
+        },
+        "composerSidebarBackground": {
+          "$ref": "#/$defs/colorValue",
+          "description": "Internal. Background fill for the fullscreen composer sidebar."
         },
         "selectionBg": {
           "$ref": "#/$defs/colorValue",
@@ -181,27 +197,27 @@
         },
         "bashMessageBackgroundColor": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Background fill for shell-command (`!`) messages in fullscreen mode."
+          "description": "Documented. Background fill for shell-command (`!`) messages in fullscreen mode."
         },
         "memoryBackgroundColor": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Background fill for memory / `CLAUDE.md` annotations in fullscreen mode."
+          "description": "Documented. Background fill for memory / `CLAUDE.md` annotations in fullscreen mode."
         },
         "rate_limit_fill": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Filled portion of the rate-limit usage bar."
+          "description": "Documented. Filled portion of the rate-limit usage bar."
         },
         "rate_limit_empty": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Empty portion of the rate-limit usage bar."
+          "description": "Documented. Empty portion of the rate-limit usage bar."
         },
         "briefLabelYou": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. \"You\" label color in brief / compact transcript mode."
+          "description": "Documented. \"You\" label color in brief / compact transcript mode."
         },
         "briefLabelClaude": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. \"Claude\" label color in brief / compact transcript mode."
+          "description": "Documented. \"Claude\" label color in brief / compact transcript mode."
         },
         "professionalBlue": {
           "$ref": "#/$defs/colorValue",
@@ -221,59 +237,59 @@
         },
         "rainbow_red": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Red stop in the rainbow palette (animated celebration sequences)."
+          "description": "Documented. Red stop in the rainbow palette (animated celebration sequences)."
         },
         "rainbow_orange": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Orange stop in the rainbow palette."
+          "description": "Documented. Orange stop in the rainbow palette."
         },
         "rainbow_yellow": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Yellow stop in the rainbow palette."
+          "description": "Documented. Yellow stop in the rainbow palette."
         },
         "rainbow_green": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Green stop in the rainbow palette."
+          "description": "Documented. Green stop in the rainbow palette."
         },
         "rainbow_blue": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Blue stop in the rainbow palette."
+          "description": "Documented. Blue stop in the rainbow palette."
         },
         "rainbow_indigo": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Indigo stop in the rainbow palette."
+          "description": "Documented. Indigo stop in the rainbow palette."
         },
         "rainbow_violet": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Violet stop in the rainbow palette."
+          "description": "Documented. Violet stop in the rainbow palette."
         },
         "rainbow_red_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_red`."
+          "description": "Documented. Shimmer paired with `rainbow_red`."
         },
         "rainbow_orange_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_orange`."
+          "description": "Documented. Shimmer paired with `rainbow_orange`."
         },
         "rainbow_yellow_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_yellow`."
+          "description": "Documented. Shimmer paired with `rainbow_yellow`."
         },
         "rainbow_green_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_green`."
+          "description": "Documented. Shimmer paired with `rainbow_green`."
         },
         "rainbow_blue_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_blue`."
+          "description": "Documented. Shimmer paired with `rainbow_blue`."
         },
         "rainbow_indigo_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_indigo`."
+          "description": "Documented. Shimmer paired with `rainbow_indigo`."
         },
         "rainbow_violet_shimmer": {
           "$ref": "#/$defs/colorValue",
-          "description": "Internal. Shimmer paired with `rainbow_violet`."
+          "description": "Documented. Shimmer paired with `rainbow_violet`."
         },
         "red_FOR_SUBAGENTS_ONLY": {
           "$ref": "#/$defs/colorValue",

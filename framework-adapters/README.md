@@ -43,30 +43,32 @@ That is the whole integration — no `enhance()`, no MutationObserver.
 ## SPA lifecycle — what auto-hydrates and what doesn't
 
 Artificer's DOM-owning helpers arm a `MutationObserver` so nodes mounted after
-first paint still hydrate. Two of them do it for you; **Whimsy does not.**
+first paint still hydrate.
 
-- **Icons + theme self-arm.** `artificer-icons.js` and `artificer-theme.js`
-  each call `observe()` on DOM ready, so SPA-mounted `[data-icon]` and
-  `[data-theme-toggle]` nodes hydrate with no manual call.
-- **Whimsy is opt-in and you drive it.** The distinction is *which* hydrate
-  runs: the **global auto-hydrate at DOM-ready misses SPA nodes mounted later**
-  (the exact gap #36 hit). An **explicit** `Whimsy.hydrate(ref.current)` /
-  `Whimsy.celebrate(ref.current)` inside an effect runs *after* render, so it
-  **does** see the mounted subtree. Two patterns:
+- **Icons, theme, and whimsy all self-arm.** `artificer-icons.js`,
+  `artificer-theme.js`, and `artificer-whimsy.js` each call `observe()` on DOM
+  ready, so SPA-mounted `[data-icon]`, `[data-theme-toggle]`, and
+  `[data-whimsy]` / `[data-whimsy-greeting]` nodes hydrate with no manual call
+  (#325 closed the gap where a greeting mounted after first paint — the exact
+  shape #36 hit for icons/theme — never hydrated without an explicit call).
+- **Scope hydration to a subtree, or trigger a one-shot moment, and you still
+  drive it directly.** Two patterns:
   - **Explicit-in-effect (what the shipped hook does).** After render, call a
     Whimsy method on your ref's subtree. `useWhimsy(ref?)` in
-    `react-components.tsx` is a **declarative `hydrate` wrapper**: it runs
-    `Whimsy.hydrate(ref?.current || document)` in a `useEffect`, hydrating the
-    `[data-whimsy]` markup you rendered inside the mounted node. (Re-running is
-    safe — `hydrate` is idempotent: wave nodes carry a `data-whimsy-hydrated`
-    guard and the class adds are no-ops.) For a **one-shot moment** (celebrate on
-    a "deploy succeeded" transition), call `Whimsy.celebrate(ref.current)` /
+    `react-components.tsx` is a **declarative `hydrate` + `greeting` wrapper**:
+    it runs `Whimsy.hydrate(ref?.current || document)` and
+    `Whimsy.greeting(ref?.current || document)` in a `useEffect`, hydrating the
+    `[data-whimsy]` / `[data-whimsy-greeting]` markup you rendered inside the
+    mounted node. (Re-running is safe — both are idempotent: wave nodes carry a
+    `data-whimsy-hydrated` guard, greeting nodes a `data-whimsy-greeting-done`
+    guard, and the class adds are no-ops.) For a **one-shot moment** (celebrate
+    on a "deploy succeeded" transition), call `Whimsy.celebrate(ref.current)` /
     `Whimsy.run(ref.current)` / `Whimsy.ignite(ref.current)` directly in an
     effect — no dedicated imperative React helper ships; keeping the
     one-whimsy-moment-per-view rule the caller's responsibility.
-  - **Observer (for markup mounted continuously).** Arm `Whimsy.observe(root)`
-    once so inserted `[data-whimsy]` nodes hydrate like the vanilla page. Returns
-    a disconnect fn — clean it up on unmount.
+  - **Scoped observer.** Arm `Whimsy.observe(root)` yourself to watch a
+    narrower subtree than `document.body` (the default self-armed observer's
+    scope). Returns a disconnect fn — clean it up on unmount.
 
 ## The theme key — one source, no drift
 

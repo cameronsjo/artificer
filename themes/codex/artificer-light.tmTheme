@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Artificer Light: Codex CLI TUI syntax theme (syntect .tmTheme).
+  Generated from themes/_palette.json; edit there and re-run node themes/build.mjs.
+  Install steps and the delta wiring live in themes/README.md.
+
+  Paints its own background: this variant targets a TUI pane that composites
+  over the terminal rather than sharing its canvas, so the fill is explicit.
+-->
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Artificer Light</string>
+	<key>settings</key>
+	<array>
+		<dict>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#20203e</string>
+				<key>background</key>
+				<string>#eddcc0</string>
+				<key>caret</key>
+				<string>#7a5a10</string>
+				<key>selection</key>
+				<string>#c4932a</string>
+				<key>lineHighlight</key>
+				<string>#eddcc0</string>
+				<key>invisibles</key>
+				<string>#8a8070</string>
+				<key>gutterForeground</key>
+				<string>#8a8070</string>
+				<key>findHighlight</key>
+				<string>#dbbb6f</string>
+				<key>findHighlightForeground</key>
+				<string>#f5ead0</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Comment</string>
+			<key>scope</key>
+			<string>comment, punctuation.definition.comment</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a7a8a</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>String</string>
+			<key>scope</key>
+			<string>string</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#3a7050</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>String Escape</string>
+			<key>scope</key>
+			<string>constant.character.escape</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04500</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Regexp</string>
+			<key>scope</key>
+			<string>string.regexp</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#3a7050</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Number</string>
+			<key>scope</key>
+			<string>constant.numeric</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04500</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Constant / Language</string>
+			<key>scope</key>
+			<string>constant.language, constant.other, constant.character</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04500</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Keyword</string>
+			<key>scope</key>
+			<string>keyword</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a35b0</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Keyword · Operator</string>
+			<key>scope</key>
+			<string>keyword.operator</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a7a8a</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Punctuation</string>
+			<key>scope</key>
+			<string>punctuation, meta.brace, meta.delimiter</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a7a8a</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Storage</string>
+			<key>scope</key>
+			<string>storage</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a35b0</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Storage · Type</string>
+			<key>scope</key>
+			<string>storage.type</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#866010</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Storage · Modifier</string>
+			<key>scope</key>
+			<string>storage.modifier</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a35b0</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Variable · Language</string>
+			<key>scope</key>
+			<string>variable.language</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#5a35b0</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Variable · Parameter</string>
+			<key>scope</key>
+			<string>variable.parameter</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2e4a5a</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Variable</string>
+			<key>scope</key>
+			<string>variable</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#20203e</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Function / Support Function</string>
+			<key>scope</key>
+			<string>entity.name.function, support.function, meta.function-call</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#7a5a10</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Type / Class</string>
+			<key>scope</key>
+			<string>entity.name.type, entity.name.class, entity.name.interface, entity.name.enum, support.type, support.class</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#866010</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Tag</string>
+			<key>scope</key>
+			<string>entity.name.tag</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04540</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Attribute Name</string>
+			<key>scope</key>
+			<string>entity.other.attribute-name</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04540</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Namespace</string>
+			<key>scope</key>
+			<string>entity.name.namespace, entity.name.module, support.module, support.other.namespace</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#3a6a68</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Heading</string>
+			<key>scope</key>
+			<string>markup.heading, entity.name.section</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#7a5a10</string>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Bold</string>
+			<key>scope</key>
+			<string>markup.bold</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#20203e</string>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Italic</string>
+			<key>scope</key>
+			<string>markup.italic</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#20203e</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Link</string>
+			<key>scope</key>
+			<string>markup.link, markup.underline.link, string.other.link</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#7a5a10</string>
+				<key>fontStyle</key>
+				<string>underline</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Raw</string>
+			<key>scope</key>
+			<string>markup.raw, markup.inline.raw</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#3a7050</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Quote</string>
+			<key>scope</key>
+			<string>markup.quote</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#4a3f2a</string>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Inserted</string>
+			<key>scope</key>
+			<string>markup.inserted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2a5a3a</string>
+				<key>background</key>
+				<string>#d8e4cc</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Deleted</string>
+			<key>scope</key>
+			<string>markup.deleted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#8a2418</string>
+				<key>background</key>
+				<string>#ecd6d4</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Markup · Changed</string>
+			<key>scope</key>
+			<string>markup.changed</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#8a6618</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Invalid</string>
+			<key>scope</key>
+			<string>invalid</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04540</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Invalid · Deprecated</string>
+			<key>scope</key>
+			<string>invalid.deprecated</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#a04540</string>
+				<key>fontStyle</key>
+				<string>underline</string>
+			</dict>
+		</dict>
+	</array>
+	<key>uuid</key>
+	<!-- The suffix names the VARIANT, not the filename: "opaque" is this repo's
+	     established word for a painted-background twin (see helix/*-opaque.toml).
+	     Codex's file is artificer-dark.tmTheme, so the two do not match on
+	     purpose; a tmTheme uuid identifies the theme, and these are two. -->
+	<string>artificer-light-opaque-tmtheme-v1</string>
+</dict>
+</plist>

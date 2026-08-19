@@ -39,7 +39,10 @@ module.exports = {
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'Berkeley Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
-        sans: ['iA Writer Quattro S', 'iA Writer Quattro V', 'iA Writer Quattro', 'Iowan Old Style', 'Charter', 'Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ['iA Writer Quattro V', 'Iowan Old Style', 'Charter', 'Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        interface: ['iA Writer Quattro S', 'Iowan Old Style', 'Charter', 'Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Legacy alias of `body` — kept resolvable for consumers pinned to the old key.
+        sans: ['iA Writer Quattro V', 'Iowan Old Style', 'Charter', 'Source Sans 3', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       // Spacing follows the 8px grid baked into Artificer.
       spacing: {

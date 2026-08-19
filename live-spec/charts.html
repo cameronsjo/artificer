@@ -169,6 +169,30 @@
     </div>
   </div>
 
+  <!-- Bars / meters -->
+  <h2 class="section-title">Bars / meters</h2>
+  <p class="meta">The liftable horizontal bar — <code>.bar</code> (row) wraps an optional label and a <code>.bar__track</code> holding a <code>.bar__fill</code>. Width is set inline; the fill background is any semantic token — <code>--accent-fill</code> by default, a <code>--series-*</code> for categorical, a <code>--diverge-*</code> for valenced. Two gotchas the primitive bakes out: the fill sets <code>display:block; height:100%</code> so it never collapses to zero (a bare styleless fill is invisible), and when inlining tokens into a single-file artifact the <code>*-fill</code> tokens must be in the copied set.</p>
+  <div class="figure">
+    <div class="stack" style="gap:var(--s-sm);max-width:420px">
+      <div class="bar">
+        <span class="num t-label-sm" style="width:6ch;color:var(--fg-secondary)">CPU</span>
+        <span class="bar__track"><span class="bar__fill" style="width:72%"></span></span>
+        <span class="num t-label-sm" style="width:4ch;text-align:right">72%</span>
+      </div>
+      <div class="bar">
+        <span class="num t-label-sm" style="width:6ch;color:var(--fg-secondary)">Memory</span>
+        <span class="bar__track"><span class="bar__fill" style="width:44%;background:var(--series-3)"></span></span>
+        <span class="num t-label-sm" style="width:4ch;text-align:right">44%</span>
+      </div>
+      <div class="bar">
+        <span class="num t-label-sm" style="width:6ch;color:var(--fg-secondary)">Disk</span>
+        <span class="bar__track"><span class="bar__fill" style="width:91%;background:var(--urgent-fill)"></span></span>
+        <span class="num t-label-sm" style="width:4ch;text-align:right">91%</span>
+      </div>
+    </div>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)">Fill background is the only thing that changes per bar — <code>--accent-fill</code>, a series token, or a tier token. Track and geometry stay constant.</figcaption>
+  </div>
+
   <!-- Catalog -->
   <h2 class="section-title">Catalog · pick by question</h2>
 

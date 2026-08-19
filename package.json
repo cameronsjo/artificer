@@ -1,6 +1,6 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.22.1",
+  "version": "0.23.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
   "author": "Cameron Sjo",

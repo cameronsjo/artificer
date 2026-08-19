@@ -1,0 +1,210 @@
+# Artificer theme overrides for yazi (Dark).
+#
+# Third merge layer only (preset -> flavor -> theme.toml, later winning), so
+# this states just the tokens that differ. Rationale, traps, and the case
+# against a flavor package: the dotfiles' docs/yazi-notes.md.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+# The values below were hand-authored first and ported verbatim; every literal
+# already resolved to a palette token, so this changes their SOURCE, not their
+# colour.
+#
+# Three rules, before you edit anything here:
+#
+#   1. VERIFY EVERY KEY. yazi validates theme *values* but NOT *key names* — a
+#      misspelled key loads cleanly and silently never applies. Check against
+#      the preset embedded in the installed binary:
+#        strings "$(readlink -f "$(command -v yazi)")" | grep -n 'border_style'
+#      Counter-intuitive keys are annotated where they appear below.
+#   2. SET NO BACKGROUND. The terminal canvas shows through. Do NOT reach down
+#      to the Artificer `bg` token — a terminal is a *raised* surface
+#      (ADR 0036) and Ghostty paints #313540; going a rung lower punches a
+#      visible hole through the canvas.
+#   3. SPEND GOLD SPARINGLY. #dbbb6f marks only what momentarily demands
+#      input: the cwd, the hovered row, input/pick/confirm borders, which-key
+#      candidates. Persistent chrome stays on #4a4f5c, directories on
+#      #9fb6c4. The scarcity is what makes gold read as focus.
+
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+# : Manager {{{
+[mgr]
+cwd = { fg = "#dbbb6f" }
+
+# Search state is transient and wants to out-shout the gold cwd, so it takes
+# the brighter accent rather than a second use of the same token.
+find_keyword  = { fg = "#e3c885", bold = true, italic = true, underline = true }
+find_position = { fg = "#dbbb6f", bg = "reset", bold = true, italic = true }
+
+# Persistent chrome: quiet, never gold.
+border_style = { fg = "#4a4f5c" }
+# }}}
+
+# : Indicator of the hovered file {{{
+# This is the hovered row. There is NO `[mgr] hovered` key in yazi 26.5.6 —
+# writing one is silently ignored. `[mgr]`'s full key set is: overall, cwd,
+# find_keyword, find_position, symlink_target, marker_*, count_*, border_symbol,
+# border_style, syntect_theme.
+#
+# The preset uses `reversed = true`, which inverts each row against its own
+# filetype color — so the hovered bar changes hue depending on what you land on.
+# Stating fg/bg explicitly instead gives one uniform gold bar regardless of file
+# type, which is the single strongest focus signal available here.
+[indicator]
+current = { fg = "#313540", bg = "#dbbb6f", bold = true }
+# }}}
+
+# : Tabs {{{
+# Deliberately NOT a gold fill. Tabs are persistent chrome — a gold tab would
+# compete with the hovered row for the eye and dilute both.
+[tabs]
+active   = { fg = "#e8e6e1", bg = "#3c4150", bold = true }
+inactive = { fg = "#5a7a8a" }
+# }}}
+
+# : Mode {{{
+# Keys are `*_main` / `*_alt`, not bare `normal` / `select` / `unset`.
+# `_main` is the pill body; `_alt` is the trailing separator wedge that blends
+# the pill into the status bar, so it carries the pill color as *foreground*.
+[mode]
+normal_main = { fg = "#313540", bg = "#9070d0", bold = true }
+normal_alt  = { fg = "#9070d0", bg = "#3c4150" }
+
+select_main = { fg = "#313540", bg = "#b095e0", bold = true }
+select_alt  = { fg = "#b095e0", bg = "#3c4150" }
+
+unset_main = { fg = "#313540", bg = "#a04540", bold = true }
+unset_alt  = { fg = "#a04540", bg = "#3c4150" }
+# }}}
+
+# : Status bar {{{
+# The permission triple is shared with eza's ur/uw/ux slots, so the two file
+# listers agree on what r/w/x look like.
+[status]
+perm_sep   = { fg = "#4a4f5c" }
+perm_type  = { fg = "#7da6a4" }
+perm_read  = { fg = "#dbbb6f" }
+perm_write = { fg = "#d6936a" }
+perm_exec  = { fg = "#4a8a5e" }
+
+progress_label  = { fg = "#e8e6e1", bold = true }
+progress_normal = { fg = "#4a8a5e", bg = "#3c4150" }
+progress_error  = { fg = "#a04540", bg = "#3c4150" }
+# }}}
+
+# : Gold borders — surfaces that momentarily demand input {{{
+[input]
+border   = { fg = "#dbbb6f" }
+title    = { fg = "#dbbb6f" }
+value    = { fg = "#e8e6e1" }
+selected = { fg = "#313540", bg = "#dbbb6f" }
+
+[pick]
+border   = { fg = "#dbbb6f" }
+active   = { fg = "#dbbb6f", bold = true }
+inactive = { fg = "#e8e6e1" }
+
+[confirm]
+border  = { fg = "#dbbb6f" }
+title   = { fg = "#dbbb6f" }
+btn_yes = { fg = "#313540", bg = "#dbbb6f", bold = true }
+btn_no  = { fg = "#e8e6e1" }
+# }}}
+
+# : Quiet borders — panels you read rather than answer {{{
+[tasks]
+border  = { fg = "#4a4f5c" }
+title   = { fg = "#e8e6e1" }
+hovered = { fg = "#dbbb6f", bold = true }
+
+[cmp]
+border   = { fg = "#4a4f5c" }
+active   = { fg = "#313540", bg = "#dbbb6f" }
+inactive = { fg = "#e8e6e1" }
+
+[spot]
+border   = { fg = "#4a4f5c" }
+title    = { fg = "#e8e6e1" }
+tbl_col  = { fg = "#9fb6c4" }
+tbl_cell = { fg = "#313540", bg = "#dbbb6f" }
+# }}}
+
+# : Which-key {{{
+# There is NO `border` key in this section — its full key set is cols, mask,
+# cand, rest, desc, separator, separator_style. `separator_style` is this
+# panel's equivalent chrome. `mask` (the dimming scrim) is left at the preset.
+#
+# The candidate keys take gold: the which-key panel only appears while a prefix
+# is held, which is precisely "momentarily demanding input".
+[which]
+cand            = { fg = "#dbbb6f" }
+rest            = { fg = "#5a7a8a" }
+desc            = { fg = "#e8e6e1" }
+separator_style = { fg = "#4a4f5c" }
+# }}}
+
+# : Git status column {{{
+# Keys read by the git.yazi plugin — see the `setup` function in
+# plugins/git.yazi/main.lua for the authoritative list. All six visible states
+# are stated so none falls back to a preset color that clashes with the palette.
+#
+# `updated` (unmerged / conflicted) is the one gold outside the chrome rule.
+# The plugin defaults it to the same yellow as `modified`, which hides the most
+# action-demanding state in the list behind the most common one. Gold separates
+# them and matches the "demands input" semantic. `unknown` and `clean` are left
+# unset — the plugin renders them as empty signs, so they have nothing to color.
+[git]
+added     = { fg = "#4a8a5e" }
+modified  = { fg = "#d6936a" }
+deleted   = { fg = "#a04540" }
+updated   = { fg = "#dbbb6f" }
+untracked = { fg = "#7da6a4" }
+ignored   = { fg = "#666666" }
+# }}}
+
+# : File-specific styles {{{
+# `prepend_rules` is used rather than `rules`: a bare `rules` list REPLACES the
+# preset's mime-based coloring for images, archives, documents, and video
+# wholesale.
+#
+# Directories match on `url = "*/"` — the preset's own idiom, where `*` is
+# files only and `*/` is directories only. `is = "dir"` is NOT used: `is`
+# accepts any string without validation, so a wrong value there fails silently
+# rather than erroring.
+#
+# ORDER MATTERS. Rules are first-match-wins and this whole block sits ahead of
+# the preset, so a lone `{ url = "*/" }` would shadow the two preset rules that
+# also match directories and sit above its own `*/` fallback — silently
+# stripping the warning from stale and broken directories. Both are re-stated
+# here, in palette colors, to preserve that signal.
+[filetype]
+prepend_rules = [
+	# Stale or absent virtual-filesystem entries (inside archives, mounts).
+	{ mime = "vfs/{absent,stale}", fg = "#5a7a8a" },
+	# Broken directory entries.
+	{ url = "*/", is = "dummy", bg = "#a04540" },
+	# Every other directory.
+	{ url = "*/", fg = "#9fb6c4" },
+]
+# }}}
+
+# : Icons {{{
+# Only the *generic* folder glyph is recolored. Named folders (.git, .config,
+# Documents, …) come from the preset's `dirs` table, which yazi consults before
+# `conds`, so they keep their own colors — this does not flatten them.
+#
+# Both conds are re-stated because `prepend_conds` is first-match-wins: a lone
+# `{ if = "dir" }` would shadow the preset's `dir & hovered` rule and the folder
+# would stop switching to its open glyph on hover.
+#
+# `text` is a REQUIRED field — a cond without it hard-errors with "missing field
+# `text`" and yazi discards the ENTIRE theme, falling back to presets. Do not
+# satisfy that error with `text = ""`: it parses cleanly but renders a
+# zero-width glyph and misaligns every icon column. The glyphs below are carried
+# verbatim from the preset: U+E5FE (open folder) and U+E5FF (closed folder).
+[icon]
+prepend_conds = [
+	{ if = "dir & hovered", text = "", fg = "#9fb6c4" },
+	{ if = "dir", text = "", fg = "#9fb6c4" },
+]
+# }}}

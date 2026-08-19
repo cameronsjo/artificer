@@ -1,6 +1,6 @@
 # Claude Code Theme Reference
 
-A complete reference for the `~/.claude/themes/*.json` schema, including all 69 reachable tokens. Pairs with [`theme.schema.json`](./theme.schema.json) for editor validation and autocomplete.
+A complete reference for the `~/.claude/themes/*.json` schema, including all 73 reachable tokens. Pairs with [`theme.schema.json`](./theme.schema.json) for editor validation and autocomplete.
 
 > Custom themes require Claude Code v2.1.118 or later.
 
@@ -23,6 +23,8 @@ A complete reference for the `~/.claude/themes/*.json` schema, including all 69 
 ```
 
 Selecting the theme via `/theme` stores `custom:<filename-slug>` as the preference. Claude Code watches the directory and reloads on file change.
+
+The `/theme` picker also has an interactive **"New custom theme…"** entry that scaffolds a theme file for you, and pressing `Ctrl+E` on a highlighted custom theme opens it for editing in place. One caveat: if `~/.claude/themes/` doesn't exist yet at startup, Claude Code doesn't pick up the directory watch until the next restart — create the folder (and drop in a theme file) before launching, or restart once after creating it, for live reload to take effect.
 
 ## Top-level fields
 
@@ -84,9 +86,9 @@ Badges:
 | `text` | Documented | Default foreground text (under `dark-ansi`: input chrome only — see notes below) |
 | `inverseText` | Documented | Text on top of colored backgrounds (badges) |
 | `inactive` | Documented | Hints, timestamps, disabled items |
-| `inactiveShimmer` | Internal | Shimmer paired with `inactive` |
+| `inactiveShimmer` | Documented | Shimmer paired with `inactive` |
 | `subtle` | Documented | Faint borders and de-emphasized text |
-| `suggestion` | Internal | Autocomplete highlights, focused items in QuickOpen, selected file paths, TagTabs resume label, AssistantTextMessage dot |
+| `suggestion` | Documented | Autocomplete highlights, focused items in QuickOpen, selected file paths, TagTabs resume label, AssistantTextMessage dot |
 | `remember` | Documented | Memory and `CLAUDE.md` indicators |
 | `background` | Internal | Foreground accent for status labels, diamond icons, dialog borders — **not** a canvas fill despite the name |
 
@@ -105,15 +107,18 @@ Badges:
 | Token | Status | Controls |
 | :--- | :--- | :--- |
 | `promptBorder` | Documented | Input box border (default mode) |
-| `promptBorderShimmer` | Internal | Shimmer paired with `promptBorder` |
-| `permission` | Documented | Permission prompts and pickers. Also colors inline code (codespan markdown — see [Methodology](#methodology)) |
-| `permissionShimmer` | Internal | Shimmer paired with `permission` |
-| `planMode` | Documented | Plan mode accent — used in spinner/status line context, not input border |
-| `autoAccept` | Documented | Accept-edits mode accent — used in spinner/status line context, not input border |
+| `promptBorderShimmer` | Documented | Shimmer paired with `promptBorder` |
+| `permission` | Documented | Dialog borders, including permission prompts and pickers. Also colors inline code (codespan markdown — see [Methodology](#methodology)) |
+| `permissionShimmer` | Documented | Shimmer paired with `permission` |
+| `planMode` | Documented | Plan mode accent — official docs describe it as an accent/border color; we observe it used in spinner/status line context, not input border |
+| `autoAccept` | Documented | Accept-edits mode accent — official docs describe it as an accent/border color; we observe it used in spinner/status line context, not input border |
+| `autoAcceptShimmer` | Internal | Shimmer paired with `autoAccept` (`ansi:magentaBright` in the default preset) |
 | `bashBorder` | Documented | Input border when entering `!` shell command |
 | `ide` | Documented | IDE connection indicator |
 | `fastMode` | Documented | Fast mode indicator |
-| `fastModeShimmer` | Internal | Shimmer paired with `fastMode` |
+| `fastModeShimmer` | Documented | Shimmer paired with `fastMode` |
+| `skill` | Internal | Skill-invocation accent — same value as `autoAccept` in the default preset |
+| `effortUltra` | Internal | Ultra effort / thinking-level indicator |
 
 ### Diff rendering
 
@@ -133,10 +138,11 @@ These apply only when `/tui fullscreen` rendering is active.
 | Token | Status | Controls |
 | :--- | :--- | :--- |
 | `userMessageBackground` | Documented | Background behind user messages |
-| `userMessageBackgroundHover` | Internal | Hover variant of `userMessageBackground` |
-| `messageActionsBackground` | Internal | Per-message action affordance backgrounds |
-| `bashMessageBackgroundColor` | Internal | Background for shell-command messages |
-| `memoryBackgroundColor` | Internal | Background for memory / `CLAUDE.md` annotations |
+| `userMessageBackgroundHover` | Documented | Hover variant of `userMessageBackground` |
+| `messageActionsBackground` | Internal | Per-message action affordance backgrounds. Absent from the preset since v2.1.140 |
+| `bashMessageBackgroundColor` | Documented | Background for shell-command messages |
+| `memoryBackgroundColor` | Documented | Background for memory / `CLAUDE.md` annotations |
+| `composerSidebarBackground` | Internal | Fullscreen composer sidebar fill |
 | `selectionBg` | Documented | Mouse-selection background (terminal text selection highlight) |
 
 ### Subagent palette
@@ -154,19 +160,19 @@ Subagents declared with `color: <name>` in their YAML frontmatter draw using the
 | `pink_FOR_SUBAGENTS_ONLY` | Documented |
 | `cyan_FOR_SUBAGENTS_ONLY` | Documented |
 
-### Rate-limit indicator
+### Usage meter
 
 | Token | Status | Controls |
 | :--- | :--- | :--- |
-| `rate_limit_fill` | Internal | Filled portion of the usage bar |
-| `rate_limit_empty` | Internal | Empty portion of the usage bar |
+| `rate_limit_fill` | Documented | Filled portion of the usage bar |
+| `rate_limit_empty` | Documented | Empty portion of the usage bar |
 
 ### Brief mode
 
 | Token | Status | Controls |
 | :--- | :--- | :--- |
-| `briefLabelYou` | Internal | "You" label in compact transcript mode |
-| `briefLabelClaude` | Internal | "Claude" label in compact transcript mode |
+| `briefLabelYou` | Documented | "You" label in compact transcript mode |
+| `briefLabelClaude` | Documented | "Claude" label in compact transcript mode |
 
 ### Mascot easter egg
 
@@ -177,21 +183,22 @@ Subagents declared with `color: <name>` in their YAML frontmatter draw using the
 
 ### Rainbow palette (animated celebration sequences)
 
-Each color has a `*_shimmer` partner for gradient animation.
+Each color has a `*_shimmer` partner for gradient animation. This is also the
+palette that colors the `ultrathink` keyword when typed in the prompt input.
 
 | Pair | Status |
 | :--- | :--- |
-| `rainbow_red` / `rainbow_red_shimmer` | Internal |
-| `rainbow_orange` / `rainbow_orange_shimmer` | Internal |
-| `rainbow_yellow` / `rainbow_yellow_shimmer` | Internal |
-| `rainbow_green` / `rainbow_green_shimmer` | Internal |
-| `rainbow_blue` / `rainbow_blue_shimmer` | Internal |
-| `rainbow_indigo` / `rainbow_indigo_shimmer` | Internal |
-| `rainbow_violet` / `rainbow_violet_shimmer` | Internal |
+| `rainbow_red` / `rainbow_red_shimmer` | Documented |
+| `rainbow_orange` / `rainbow_orange_shimmer` | Documented |
+| `rainbow_yellow` / `rainbow_yellow_shimmer` | Documented |
+| `rainbow_green` / `rainbow_green_shimmer` | Documented |
+| `rainbow_blue` / `rainbow_blue_shimmer` | Documented |
+| `rainbow_indigo` / `rainbow_indigo_shimmer` | Documented |
+| `rainbow_violet` / `rainbow_violet_shimmer` | Documented |
 
 ## Methodology
 
-The 35 documented tokens come from the official docs at <https://code.claude.com/docs/en/terminal-config#color-token-reference>. The remaining internal tokens were extracted from the canonical preset object inside the Claude Code binary. The codespan binding on `permission` was sourced the same way — `grep` for `case"codespan"` in the strings dump and you'll find `Oq("permission",_)(H.text)`.
+The 61 documented tokens come from the official docs at <https://code.claude.com/docs/en/terminal-config#color-token-reference>. The remaining internal tokens were extracted from the canonical preset object inside the Claude Code binary. The codespan binding on `permission` was sourced the same way — `grep` for `case"codespan"` in the strings dump and you'll find `Oq("permission",_)(H.text)`.
 
 The v2.1.140 minifier renamed the preset variables, so the original `YD4=` awk recipe no longer matches. The recipe below replaces it — it anchors on the `claudeShimmer:` literal instead of a variable name, so it survives further renames:
 
@@ -214,9 +221,15 @@ comm -23 /tmp/preset-tokens.txt /tmp/schema-tokens.txt  # new in binary
 comm -13 /tmp/preset-tokens.txt /tmp/schema-tokens.txt  # gone from binary
 ```
 
+`readlink -f "$(command -v claude)"` returns empty when `claude` resolves to a
+shell function rather than a binary on `PATH` — check your shell config
+(`type claude`) first. The real binary lives at
+`~/.local/share/claude/versions/<version>` regardless of what `claude` is
+aliased or wrapped to.
+
 Any future token added by Anthropic will appear in those preset literals first; rerun this extraction against a newer binary to refresh the catalog.
 
-**Last verified against v2.1.140 — 68 preset keys, identical across all six presets.** Our schema lists 69; the extra (`messageActionsBackground`) was present in v2.1.126 but dropped in v2.1.140. Runtime silently ignores unknown tokens, so we continue to emit it harmlessly.
+**Last verified against v2.1.226 — 72 preset keys, identical across all six presets.** Our schema lists 73; the extra (`messageActionsBackground`) was present in v2.1.126 but dropped in v2.1.140. Runtime silently ignores unknown tokens, so we continue to emit it harmlessly.
 
 ## Artificer-specific notes
 
@@ -288,6 +301,6 @@ Reversing this order triggers the lavender state with no in-app recovery path.
 ## See also
 
 - [`theme.schema.json`](./theme.schema.json) — JSON Schema for editor validation
-- [`artificer.json`](./artificer.json) — example custom theme
+- [`artificer-dark.json`](./artificer-dark.json) / [`artificer-light.json`](./artificer-light.json) — example custom themes
 - [Official theme docs](https://code.claude.com/docs/en/terminal-config#color-token-reference)
 - [Plugins reference: themes](https://code.claude.com/docs/en/plugins-reference#themes) — for shipping themes via plugins

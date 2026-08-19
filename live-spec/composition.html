@@ -281,6 +281,41 @@
     </section>
   </div>
 
+  <!-- Workbench — a .dash BODY option, not a sixth skeleton -->
+  <h2 class="section-title" id="workbench">Text workbench</h2>
+  <p class="meta">A row of equal-width editor panes — a work surface for
+    text-in/text-out tasks (paste-and-transform, diff staging, prompt
+    drafting). Composes onto <code>.dash</code> like <code>.split-pane</code>
+    or <code>.table</code>; it is a dash body, not a sixth skeleton.</p>
+  <div class="figure figure--frame">
+    <section class="dash density-cozy" aria-label="Workbench example">
+      <div class="dash__topbar">
+        <h4 class="dash__title">Paste target</h4>
+        <div class="dash__actions">
+          <button class="btn btn--ghost" style="padding:6px 10px;font-size:12px">Clear</button>
+        </div>
+      </div>
+      <div class="workbench" style="min-height:320px">
+        <div class="workbench__pane">
+          <div class="workbench__header">
+            <label for="wbInput">Input</label>
+            <span class="meta">128 chars</span>
+          </div>
+          <textarea class="textarea workbench__editor" id="wbInput"
+            placeholder="Paste raw text…"></textarea>
+        </div>
+        <div class="workbench__pane">
+          <div class="workbench__header">
+            <label for="wbOutput">Output</label>
+            <span class="meta">Read-only</span>
+          </div>
+          <textarea class="textarea workbench__editor" id="wbOutput"
+            readonly>— transformed text appears here —</textarea>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- Density modes -->
   <h2 class="section-title">Density modes</h2>
   <p class="meta">Same content, three densities. Pick by surface: <b class="anchor">compact</b> for ops/console, <b class="anchor">cozy</b> for default product, <b class="anchor">comfortable</b> for documents.</p>

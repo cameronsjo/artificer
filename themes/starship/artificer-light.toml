@@ -1,0 +1,28 @@
+# Artificer · Light — starship palette
+# starship has no @import. Merge this into ~/.config/starship.toml:
+#
+#   1. paste the [palettes.artificer] table below
+#   2. keep the top-level `palette = "artificer"` line — it activates the table
+#   3. rewrite module styles from ANSI names to these role names,
+#      e.g. style = "bold cyan"  ->  style = "bold steel"
+#
+# Step 3 is what actually changes the prompt; steps 1 and 2 are inert without
+# it. Names read as ROLES on purpose — "bold accent" says what it means where
+# "bold gold" does not.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+palette = "artificer"
+
+[palettes.artificer]
+accent      = "#7a5a10"  # the thing wanting attention — cwd, prompt char
+accent-lift = "#866010"  # accent one rung up, for a hover/active twin
+fg          = "#20203e"  # ordinary prompt text
+muted       = "#5a7a8a"  # timings, counts, anything you read second
+border      = "#cbb88a"  # separators and quiet chrome
+steel       = "#406278"  # paths and directories
+brand       = "#5a35b0"  # the language/runtime modules
+cyan        = "#3a6a68"  # vcs branch
+success     = "#2a5a3a"  # clean state, exit 0
+attention   = "#a04500"  # dirty state, staged-but-uncommitted
+urgent      = "#8a2418"  # exit non-zero, conflict

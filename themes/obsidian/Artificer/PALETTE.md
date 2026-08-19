@@ -142,3 +142,11 @@ The Style Settings `@settings` block at the bottom of the file exposes a
 curated subset of the `--art-*` tokens to end users. When you add a new
 source token, decide whether it should also be in `@settings` (most
 should).
+
+**A `variable-themed-color` entry's `default-dark` / `default-light` MUST
+equal the value its token resolves to in the matching face block.** Style
+Settings writes its *declared* default into `:root` the moment a control is
+touched, and clearing an override restores that declared value — so a default
+that lags a palette ruling silently reinstalls the superseded color, per
+vault, forever. Change a token value and its paired `@settings` default in the
+same edit; the workshop has a lockstep gate that fails the build otherwise.

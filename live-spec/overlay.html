@@ -67,6 +67,26 @@
     </span>
   </div>
 
+  <h2 class="section-title">Tooltip — reveal on hover + focus</h2>
+  <p class="meta">Wrap a trigger and a <code>.tooltip</code> in <code>.has-tooltip</code> and the tooltip hides until you <b class="anchor">hover or tab to the trigger</b> — revealing on <code>:focus-within</code>, not hover alone, is the WCAG 1.4.13 keyboard path. A <code>.tooltip--top/bottom/left/right</code> modifier places it and draws the matching arrow, replacing per-instance inline styles. A bare <code>.tooltip</code> with no <code>.has-tooltip</code> ancestor (above) stays a static always-visible box.</p>
+  <div class="figure">
+    <div class="cluster" style="gap:var(--s-xl);flex-wrap:wrap;padding:var(--s-xl) 0">
+      <span class="has-tooltip">
+        <button class="btn btn--secondary">Top</button>
+        <span class="tooltip tooltip--top">Above the trigger</span>
+      </span>
+      <span class="has-tooltip">
+        <button class="btn btn--secondary">Bottom</button>
+        <span class="tooltip tooltip--bottom">Below the trigger</span>
+      </span>
+      <span class="has-tooltip">
+        <button class="btn btn--secondary">Right</button>
+        <span class="tooltip tooltip--right">To the right</span>
+      </span>
+    </div>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)">Tab through the buttons — each tooltip appears on focus and dismisses on blur; arrow color tracks the bubble across themes.</figcaption>
+  </div>
+
   <h2 class="section-title">Modal size variants</h2>
   <p class="meta">Three width tiers for dialogs vs. content viewers. All compose with <code>.scrim</code> and the standard focus-trap pattern.</p>
   <table class="table" style="margin-top:var(--s-md)">

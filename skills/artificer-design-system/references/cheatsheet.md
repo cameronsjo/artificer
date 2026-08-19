@@ -33,16 +33,19 @@ TYPE       --font-mono JetBrains Mono
                   data tables, settings panels)
                 · ALWAYS for code, identifiers, file paths, numerals —
                   including inside documents
-           --font-sans iA Writer Quattro
+           --font-body iA Writer Quattro V
                 · BODY FACE for document surfaces (writeups, READMEs,
                   reports, design docs)
-                · On tool surfaces: labels, hints, microcopy
+           --font-interface iA Writer Quattro S
+                · Labels, controls, badges, form fields, nav —
+                  on both tool AND document surfaces
+                · --font-sans is a legacy alias of --font-body
 
-           Decision rule. >3 paragraphs of running prose → document → sans body.
+           Decision rule. >3 paragraphs of running prose → document → --font-body.
            Mostly chrome around data → tool → mono body. Same project can mix.
            Anti-pattern: setting prose in mono and then overriding `.meta`,
-           headings, tables back to sans. If you're escaping the body face,
-           the body face is wrong — flip it.
+           headings, tables back to --font-body. If you're escaping the body
+           face, the body face is wrong — flip it.
 
 SPACING    --s-xs(4) sm(8) md(16) lg(24) xl(32) 2xl(48)
 RADII      --radius-sm(4 · buttons) md(8 · cards) lg(12 · overlays only)

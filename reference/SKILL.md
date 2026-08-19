@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.22.1
+# Artificer · v0.23.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -92,13 +92,16 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Top app bar | `app-shell.html` — `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer`; sticky tool chrome, clears the notch via `safe-area-inset` |
 | Side navigation | `app-shell.html` — `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots); the section spine, one level deep, `.tree` for deeper |
 | Mobile nav drawer | `app-shell.html` — `.nav-drawer` + `.nav-scrim`; takes over below `--bp-tablet` |
+| Collapsible drawer groups | `navigation.html` — `<details class="sidenav__section">` per group; `<summary>` = group label + twisty, rows keep sidenav styling; the section holding `[aria-current="page"]` must be rendered `open` (consumer JS) |
+| Theme toggle in the drawer | `navigation.html` — `.sidenav__footer` bottom-anchored row: label + canonical `.theme-toggle--inline` `[data-theme-toggle]` button |
 | Breadcrumb | `navigation.html` — `.crumb` + `.crumb__sep`; where-am-I, nav's first rung |
 | Button | `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon` — one primary per view — `components.html` |
 | Dashboard with file/agent list | `patterns.html` sidebar + tabs + content pane |
 | Add a settings page | `forms-extended.html` `.field` blocks + fieldsets, grouped 3–5 per section |
 | Form field / form (any kind) | `forms-extended.html` — label → input → hint/error, never placeholder-as-label |
 | Confirmation dialog / modal | `overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` for focus-trap |
-| Tooltip / popover | `overlay.html` — `.tooltip` (label) or `.popover` (body content) |
+| Tooltip / popover | `overlay.html` — `.tooltip` (label) or `.popover` (body content). Reveal on hover + keyboard focus: wrap trigger + `.tooltip` in `.has-tooltip`; place/arrow via `.tooltip--top/bottom/left/right`. Bare `.tooltip` stays a static box |
+| Horizontal bar / meter / usage bar | `charts.html` — `.bar` + `.bar__track` + `.bar__fill` (width inline; fill bg any semantic token; fill bakes `display:block;height:100%` so it never collapses). Determinate % → `.progress` |
 | Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container` + `.container--{sm\|md\|lg}` (the base class is required — it carries width, centering, and inline padding; the size modifier only sets max-width) |
 | Blog / editorial / document top nav / masthead | `.masthead` (`artificer-editorial.css`) — non-sticky, no border; document counterpart to `.appbar`. Brand via `.wordmark`, toggle via `.theme-toggle--inline` — `navigation.html` |
 | Stacking children | `layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
@@ -114,11 +117,15 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Toast / alert | `notifications.html` — pick tier by *action required*, not severity; silent by default — audible escalation only as a named, opt-in carve-out |
 | Transient toast placement | Mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`, `+N more` via `.toast-region__more`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none — `notifications.html` |
 | Tree / file explorer / nested nav | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree/treeitem/group`; keyboard ships via `data-tree` / `ArtificerTree.enhance()` — `components-extended.html` |
+| HTML diagram node / flow / pipeline | `.dia-box` (HTML twin of `.dia-node`; `--accent`/`--ghost`/`--tab`) + `.flow`/`.flow__step`/`.flow__link`/`.flow-frame` for horizontal step-chains — `diagrams.html` |
+| Phased timeline / numbered grouped stages | `.spine` + `.phase` (`.phase__marker` + `.phase__body` `.stack` of `.dia-box`) + `.phase--accent` — vertical numbered timeline where each step is a set — `diagrams.html` |
+| Static / no-JS tree (SSR, docs) | `.tree--static` — nested `<details><summary class="tree__row">`; disclosure semantics, no JS — `components-extended.html` |
 | Pagination | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends; counted ranges only — `components-extended.html` |
 | Persistent page banner | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions` — a standing layout band, NOT the transient `.notif` — `components-extended.html` |
-| Footer / colophon / fine print / attribution | `.colophon` + `.colophon__label` (column headers) + `.colophon__fine` (legal tier); columns via `.grid-auto`; prose auto-sans even inside `.surface-tool` — `.surface-document` flips any other prose island back — `layout.html` |
+| Footer / colophon / fine print / attribution | **Three zones, in order — 1 and 3 optional, the spine always present.** (1) a `.grid-auto` of `.colophon__label` sections; (2) `.colophon__spine` — three POSITIONAL slots: **identity · sign-off · links**, first child starts, last ends, middle centres on the page; (3) `.colophon__fine` for the legal tier. A site with only a sign-off and a site with a full disclosure grid use the same primitive and differ only in which zones they fill. Any slot may be empty — keep the element to hold its column. Links slot: `<a>` for navigation, `<button class="btn btn--link">` for a control that ACTS (an SPA switching views) — never an `<a>` with a click handler. Prose auto-sans even inside `.surface-tool`; `.surface-document` flips any other prose island back — `layout.html` |
 | Selected card / selected row / active choice | `.card--active` (`background: var(--bg)` + accent left border) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row — never `--accent-fill` as a large surface bg, its only rated text color is `--on-accent` — `components.html` |
 | Split pane / master-detail | `.split-pane` + `.pane--active`/`.pane--inactive`; recession marks the unfocused pane — `composition.html` |
+| Text workbench / editor panes / paste target | `.workbench` + `.workbench__pane` (`.workbench__header` + `.workbench__editor`); label lives in `.workbench__header` as a real `<label for>`, not a placeholder — a `.dash` BODY, not a sixth dash recipe — `composition.html` |
 | Status pill | `.badge--{tier}` with a `.dot--{tier}` inside — dot AND text, never color alone |
 | Status indicator (bare, no count) | `.dot--{accent\|attention\|urgent\|success}` |
 | Count indicator | `.badge--{accent\|attention\|urgent\|success}` with number |
@@ -155,10 +162,11 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 
 ### SPA lifecycle (icons / whimsy / theme + modal re-trap)
 
-Icons and theme arm their own `MutationObserver` on DOM ready — SPA-mounted
-`[data-icon]` / `[data-theme-toggle]` nodes hydrate and bind automatically.
-Whimsy hydrates once on `DOMContentLoaded`; tabs, options, and tree enhance
-on explicit calls. For nodes that mount after first paint in those modules,
+Icons, theme, and whimsy arm their own `MutationObserver` on DOM ready —
+SPA-mounted `[data-icon]` / `[data-theme-toggle]` / `[data-whimsy]` /
+`[data-whimsy-greeting]`
+nodes hydrate and bind automatically. Tabs, options, and tree enhance on
+explicit calls. For nodes that mount after first paint in those modules,
 use the lifecycle API:
 
 - **`ArtificerIcons.observe(root?)` / `Whimsy.observe(root?)` /
@@ -244,10 +252,13 @@ TYPE --font-mono JetBrains Mono
                                     terminals, data tables, settings panels)
                                   · ALWAYS for code, identifiers, file paths,
                                     numerals — including inside documents
-                --font-sans iA Writer Quattro
+                --font-body iA Writer Quattro V
                                   · BODY FACE for document surfaces (writeups,
                                     READMEs, reports, design docs)
-                                  · On tool surfaces: labels, hints, microcopy
+                --font-interface iA Writer Quattro S
+                                  · Labels, controls, badges, form fields, nav
+                                    — on both tool AND document surfaces
+                                  · --font-sans is a legacy alias of --font-body
 
                 Decision rule. >3 paragraphs of running prose → document → sans body.
                 Mostly chrome around data → tool → mono body. Same project can mix.
@@ -377,6 +388,9 @@ there is no `.dash-*` class):
 ### Diagrams — non-negotiable
 
 - **`.dia-node` + `.dia-edge` + `.dia-edge-label`** — apply directly to inline SVG `<rect>`/`<path>`/`<text>`.
+- **`.dia-box`** — HTML/CSS twin of `.dia-node` for DOM diagrams (React Flow, hand-laid flows); same `--dia-*` tokens. Variants `--accent` / `--ghost` / `--tab` (tint via `style="--dia-tab: var(--series-3)"`, any series token).
+- **`.flow`** — horizontal step-chain: `.flow__step` (a `.dia-box`) + `.flow__link` connector (`--dashed` = async/return) + `.flow-frame` (dashed, labeled phase group). Vertical numbered grouped-step timeline = `.spine`/`.phase`.
+- **`.spine`** — vertical numbered timeline where each `.phase` holds a GROUP of nodes: `.phase__marker` (numbered badge) + `.phase__body` (a `.stack` of `.dia-box`). `.phase--accent` marks the pivotal station (one per timeline).
 - **1 accent node per diagram** (`.dia-node--accent`) — the diagram's subject.
 - **Ghost = planned** (`.dia-node--ghost`, dashed border).
 - **Edge stroke encodes resolution:** default = step, `--strong` = closes the flow, `--dashed` = async/return.

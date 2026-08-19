@@ -22,6 +22,15 @@ selection-foreground = 20203e
 # brightness pair on the same hue. Markdown renderers emit bright-blue
 # for inline code; sibling hues (e.g. rose + peach) make inline code
 # render a visibly different color than surrounding text.
+#
+# steelBright in slot 4 and steel in slot 12 is NOT a transposition — read
+# the values, not the names. steel #b8cad4 is LIGHTER than steelBright
+# #9fb6c4 on dark (relative luminance .572 vs .448), so this puts the dimmer
+# hue in normal-blue and the lighter one in bright-blue, which is the right
+# way round. Artificer's *Bright suffix names a ROLE ("more emphasis than
+# base on the current surface"), not a lightness direction —
+# $notes.brandPurpleBrightDirection says so for the purple, and the same
+# holds here. Reasoning from the token name alone gets this backwards.
 palette = 0=f5ead0
 palette = 1=8a2418
 palette = 2=2a5a3a

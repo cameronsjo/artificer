@@ -174,9 +174,10 @@ export function Icon({ name, ...rest }: { name: string } & React.HTMLAttributes<
 // ─── Lifecycle hooks (SPA) ───────────────────────────────────────────────
 //
 // Hydrate Artificer's vanilla JS modules against React-managed DOM. Call in
-// a component that renders [data-icon] / [data-whimsy] nodes; pass a ref to
-// scope it, or omit to hydrate the whole document. For content that streams
-// in after mount (lists, async), use the module's observe(root) instead.
+// a component that renders [data-icon] / [data-whimsy] / [data-whimsy-greeting]
+// nodes; pass a ref to scope it, or omit to hydrate the whole document. For
+// content that streams in after mount (lists, async), use the module's
+// observe(root) instead.
 
 export function useIcons(ref?: React.RefObject<HTMLElement>) {
   React.useEffect(() => {
@@ -186,7 +187,9 @@ export function useIcons(ref?: React.RefObject<HTMLElement>) {
 
 export function useWhimsy(ref?: React.RefObject<HTMLElement>) {
   React.useEffect(() => {
-    (window as any).Whimsy?.hydrate(ref?.current || document);
+    const scope = ref?.current || document;
+    (window as any).Whimsy?.hydrate(scope);
+    (window as any).Whimsy?.greeting(scope);
   });
 }
 

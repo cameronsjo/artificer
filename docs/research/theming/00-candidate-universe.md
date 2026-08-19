@@ -8,15 +8,28 @@
 
 ## Already shipped
 
-Palette-routed from `themes/_palette.json` via `themes/build.mjs`:
+Palette-routed from `themes/_palette.json` via `themes/build.mjs`. The list is
+maintained past this document's research date — the ranking below is the
+2026-05-29 snapshot, this is current:
 
 - **Ghostty** — terminal
 - **Claude Code** — agent CLI theme
 - **VS Code** — editor color theme
+- **Helix** — editor (TOML; transparent default + `-opaque` twins, ADR 0038)
+- **Neovim** — editor (one Lua colorscheme, both modes; ADR 0038 carries)
+- **bat / delta** — pager + differ (`.tmTheme`)
+- **Codex CLI** — agent TUI (same `.tmTheme` emitter, paints its own pane)
 - **tmux** — multiplexer status/pane styling
 - **gitmux** — tmux git status block
 - **lazygit** — TUI git client (block fragment)
 - **gh-dash** — GitHub dashboard TUI (block fragment)
+- **herdr** — multiplexer TUI (block fragment)
+- **cmux** — workspace accents (reuses the Ghostty values)
+- **glamour** — markdown renderer (glow and anything on glamour)
+- **gum** / **fzf** / **eza** — sourceable shell fragments
+- **starship** — prompt palette table
+- **yazi** — file manager (third merge layer)
+- **flux** — daisyUI override (both modes, one CSS file)
 
 Hand-authored separately:
 
@@ -70,5 +83,5 @@ Ordered by fit × effort:
 1. **Zed** (A, low) — JSON theme, clean role map, fast-growing editor with first-class theme extensions. Highest fit-per-effort on the board.
 2. **Helix** (A, low) — TOML theme, trivial file drop, exactly Cameron's tool-surface audience. Pairs naturally with the terminal targets already shipped.
 3. **WezTerm + Alacritty + Kitty** (B, low) — three terminal color tables that are near-mechanical maps from the existing Ghostty palette; batch them as one build-target pass.
-4. **Neovim** (A, med) — high daily dwell-time and the single biggest "where's the Artificer Neovim theme?" gap; Lua colorscheme is more surface than a terminal but the role map is well-trodden.
+4. ~~**Neovim** (A, med)~~ — **BUILT** (`themes/neovim/colors/artificer.lua`). One Lua colorscheme carrying both modes off `vim.o.background`; syntax routes through `$roles.syntax` and the `@lsp.*` groups are cleared so treesitter keeps the role layer. The prediction held: the role map was the well-trodden part, and the Neovim-specific work was the two priority hazards (`highlight clear` restoring built-in defaults, semantic tokens out-ranking treesitter).
 5. **Starship** (B, low) — prompt fragment that ties the terminal targets together visually; ships as a block fragment alongside the existing tmux/gitmux story.

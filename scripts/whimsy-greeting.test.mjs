@@ -61,6 +61,18 @@ test('opts.defaultClass overrides the off-season whimsy class', () => {
   assert.ok(!spec.classes.includes('whimsy--glacial'));
 });
 
+test('a hostile defaultClass falls back to whimsy--glacial and never throws (#325 security fold)', () => {
+  // Regression: greeting() now re-scans on every DOM mutation (autoInit ->
+  // observe()), so a data-whimsy-greeting-class attribute reaches classList.add()
+  // for nodes mounted after first paint, not just at load. A non-token value
+  // (spaces, extra classes, arbitrary strings) must never be promoted verbatim.
+  for (const hostile of ['a b', 'not-whimsy-prefixed', 'whimsy--ok evil-class', '', 'WHIMSY--CAPS']) {
+    const spec = greetingFor(new Date(2026, 0, 9), { defaultClass: hostile });
+    assert.ok(spec.classes.includes('whimsy--glacial'), `hostile value ${JSON.stringify(hostile)} falls back to whimsy--glacial`);
+    assert.equal(spec.classes.length, 2, 'exactly one extra class beyond "whimsy" — no injected extras');
+  }
+});
+
 test('every month resolves a season — only June is pride', () => {
   for (let m = 0; m < 12; m++) {
     const spec = greetingFor(new Date(2026, m, 15));

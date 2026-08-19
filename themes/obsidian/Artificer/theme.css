@@ -6,7 +6,7 @@
    ARTIFICER · An Obsidian theme
    Cameron's personal design system, ported to Obsidian.
    AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
-   v0.22.1 · 2026
+   v0.23.0 · 2026
    ═══════════════════════════════════════════════════════════════════════════
 
    How this is structured:
@@ -1240,7 +1240,8 @@ body.artificer-translucent .status-bar { background: transparent; }
                                         undercuts the feature. The dark face clears AA
                                         for all five categories at 1.0; on the cream
                                         face verb (4.20:1) and conjunction (4.28:1) sit
-                                        just under the 4.5 AA floor by deliberate design
+                                        just under the 4.5 AA floor — an eyes-open
+                                        owner override of the AA floor (ADR 0002)
                                         (both clear AA-large 3.0) — dial this slider
                                         down for a higher ratio. */
 
@@ -2241,7 +2242,7 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#e0b558'
-    default-light: '#7a5a10'
+    default-light: '#7a4f08'
   -
     id: art-accent-bright
     title: Accent (hover)
@@ -2249,7 +2250,7 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#ddb96b'
-    default-light: '#8d6a18'
+    default-light: '#8a5a10'
   -
     id: art-accent-fill
     title: Accent fill
@@ -2257,7 +2258,7 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#c4932a'
-    default-light: '#7a4f08'
+    default-light: '#b07820'
   -
     id: art-attention
     title: Attention (rose)
@@ -2265,23 +2266,23 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#e5afb7'
-    default-light: '#7a3344'
+    default-light: '#8a4818'
   -
     id: art-urgent
     title: Urgent (terracotta)
     description: Errors, danger menu items, destructive actions.
     type: variable-themed-color
     format: hex
-    default-dark: '#e8836f'
-    default-light: '#9b3a25'
+    default-dark: '#c08070'
+    default-light: '#7a1810'
   -
     id: art-success
     title: Success (olive)
     description: Sync confirmations, success toasts, code strings.
     type: variable-themed-color
     format: hex
-    default-dark: '#b7bd73'
-    default-light: '#4a5a1a'
+    default-dark: '#5fa073'
+    default-light: '#3a6b48'
   -
     id: art-steel
     title: Steel (cool blue)
@@ -2289,7 +2290,7 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#9fb6c4'
-    default-light: '#3a5566'
+    default-light: '#1d3a4a'
   -
     id: art-brand-purple
     title: Brand purple
@@ -2297,7 +2298,7 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#c9b5e8'
-    default-light: '#4a25a0'
+    default-light: '#3a1880'
 
   # ─── Tags ────────────────────────────────────────────────────────
   -
@@ -2398,35 +2399,35 @@ settings:
     type: variable-themed-color
     format: hex
     default-dark: '#c9b5e8'
-    default-light: '#4a25a0'
+    default-light: '#3a1880'
   -
     id: code-string
     title: String color
     type: variable-themed-color
     format: hex
-    default-dark: '#b7bd73'
-    default-light: '#4a5a1a'
+    default-dark: '#5fa073'
+    default-light: '#3a6b48'
   -
     id: code-function
     title: Function color
     type: variable-themed-color
     format: hex
     default-dark: '#e0b558'
-    default-light: '#7a5a10'
+    default-light: '#7a4f08'
   -
     id: code-comment
     title: Comment color
     type: variable-themed-color
     format: hex
     default-dark: '#666666'
-    default-light: '#8a7c5a'
+    default-light: '#9a8d72'
   -
     id: code-property
     title: Property color
     type: variable-themed-color
     format: hex
     default-dark: '#9fb6c4'
-    default-light: '#3a5566'
+    default-light: '#1d3a4a'
 
   # ─── Frontmatter ─────────────────────────────────────────────────
   -

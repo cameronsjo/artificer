@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.22.1 · 2026** — the mint ledger: every shipped primitive now carries machine-readable provenance in `src/primitives.json` (vintage, classes, behavior module, recipe pointer, adoption signals), gated in CI by `check:primitives` — a mint can no longer ship invisible (#190) or unreachable (#191). The `artificer-upgrade` skill v0.3 walks the ledger instead of a hand-maintained matrix and sweeps consumers for hand-rolled equivalents of newer primitives; the vendor bin transports the ledger (`ARTIFICER-CHEATSHEET.md` ride-along retired); `docs/UPGRADE.md` gains the 0.11→0.20 migration rows under an existence-lockstep gate; `.masthead` and `.colophon` mint. See `CHANGELOG.md` for what changed.
+**v0.23.0 · 2026** — the phone check: a real-device pass across three consumer sites drove the mobile chrome's seams closed. The appbar brand truncates with an ellipsis instead of a mid-glyph clip (and claims its content width before the spacer takes the surplus); the nav drawer's safe-area inset moves inside the scroll content so the last row clears the iOS home indicator; sidenav hover is gated to devices that have hover. Two primitives mint: `.sidenav__section` (details-based collapsible drawer groups) and `.sidenav__footer` (the theme toggle's bottom-anchored drawer seat, pill intact against the nav-row reset). The coarse-pointer touch floor documents its indicator escape hatch — an 8px pagination pip overrides the 44px floor and carries its hit area on a `::before` overlay. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -221,16 +221,19 @@ These are starters, not the whole system. They cover the 80% case; for new patte
 
 ## Fonts
 
-Artificer ships with two SIL OFL typefaces, self-hosted as WOFF2 in `src/assets/fonts/`. **Pick the body face by surface kind** (see CLAUDE.md → "First decision — what surface is this?"):
+Artificer ships three SIL OFL font faces (two typeface families), self-hosted as WOFF2 in `src/assets/fonts/`. **Pick the face by role** (see CLAUDE.md → "First decision — what surface is this?"):
 
 - **JetBrains Mono** (weights 400 / 500 / 700) — body face on **tool surfaces** (dashboards, consoles, terminals, settings panels, data tables). Always used for code, identifiers, file paths, and numerals — even in document surfaces.
-- **iA Writer Quattro** (weights 400 / 700, with italics) — body face on **document surfaces** (writeups, READMEs, reports, design docs). On tool surfaces, used for labels, hints, microcopy. Designed by Bold Monday for iA Writer; humanist sans tuned to share rhythm with monospace.
+- **iA Writer Quattro V** — `--font-body`, the prose face on **document surfaces** (writeups, READMEs, reports, design docs). Ships 400 only (plus italic), so bold headlines synthesize faux-bold.
+- **iA Writer Quattro S** — `--font-interface`, the chrome face: labels, controls, badges, form fields, nav, tabular UI numerals — on **both** tool and document surfaces. Ships 400 / 700 with italics.
 
-A useful rule of thumb: if the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro. If it's mostly chrome around data, it's a tool — set body in JetBrains Mono. Mixing within a project is normal: the settings page is a tool, the README explaining it is a document.
+Both Quattro faces were designed by Bold Monday for iA Writer; humanist sans tuned to share rhythm with monospace. `--font-sans` remains resolvable as a legacy alias of `--font-body`.
 
-JetBrains Mono is on Google Fonts; Quattro is **not** — that's why we self-host. The CSS `@font-face` chain points at the bundled WOFF2 files and falls back through the iA Writer Quattro variants → Iowan Old Style → Charter → Source Sans 3 → system-ui, so the page still renders if fonts haven't loaded yet.
+A useful rule of thumb: if the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro V. If it's mostly chrome around data, it's a tool — set body in JetBrains Mono. Mixing within a project is normal: the settings page is a tool, the README explaining it is a document.
 
-If you want the **iA Writer Quattro S** variant (proportional sans with tabular numerals, ideal for stacked dashboard data) or **Quattro V** (display variant), download them from [iaolo/iA-Fonts](https://github.com/iaolo/iA-Fonts) and drop the WOFF2 into `src/assets/fonts/`. The CSS already prefers them.
+JetBrains Mono is on Google Fonts; Quattro is **not** — that's why we self-host. Each `@font-face` chain points at the bundled WOFF2 files and falls back through Iowan Old Style → Charter → Source Sans 3 → system-ui, so the page still renders if fonts haven't loaded yet.
+
+Full loading recipes, the weight-coverage table, and the Windows faux-bold disposition: **[`FONTS.md`](FONTS.md)**. Upstream source for both Quattro faces is [iaolo/iA-Fonts](https://github.com/iaolo/iA-Fonts).
 
 ---
 
@@ -289,19 +292,26 @@ The CSS uses `color-scheme: dark` / `light` so form controls and scrollbars matc
 ## Editor & terminal themes
 
 Artificer also ships as themes for the surfaces where Cameron actually
-lives — same palette, four installs:
+lives — same palette, every surface. The editors and agent CLIs:
 
 - **Claude Code** — `themes/claude-code/artificer-{dark,light}.json`
-- **Ghostty** — `themes/ghostty/artificer-{dark,light}`
 - **VS Code / Cursor** — `themes/vscode/` (sideload or `vsce package`)
+- **Helix** — `themes/helix/artificer-{dark,light}.toml` (+ `-opaque` twins)
+- **Neovim** — `themes/neovim/colors/artificer.lua` (one file, both modes)
+- **Codex CLI** — `themes/codex/artificer-{dark,light}.tmTheme`
 - **Obsidian** — `themes/obsidian/Artificer/` (drop-in theme folder, hand-authored sister)
 
-Claude Code, Ghostty, and VS Code are generated from `themes/_palette.json`.
-To re-tune any color across those three surfaces in lockstep:
+Plus the terminal and TUI surfaces around them — Ghostty, tmux, gitmux, cmux,
+bat/delta, glamour, gum, fzf, eza, starship, yazi, lazygit, gh-dash, herdr, and
+flux. **`themes/README.md` carries the full list**; it is the one place that
+enumerates them, so this section never has to be counted again.
+
+Everything except Obsidian is generated from `themes/_palette.json`. To re-tune
+any color across every generated surface in lockstep:
 
 ```bash
 # 1. Edit the hex in themes/_palette.json
-# 2. Regenerate the three generated surfaces:
+# 2. Regenerate every generated surface:
 node themes/build.mjs
 # 3. Manually re-check obsidian/Artificer/theme.css (--art-* tokens at top)
 ```

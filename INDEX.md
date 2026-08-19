@@ -21,10 +21,12 @@ Cameron-first, unsupported. Read order:
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.22.1
+npm install @cameronsjo/artificer@0.23.0
 
-# or copy src/ into your project and link the CSS
-cp -r src/ <your-project>/public/artificer/
+# or vendor the runtime + a provenance sidecar into your project, no bundler required
+npx @cameronsjo/artificer vendor --dest public/artificer
+# no npm registry access? copy src/ by hand instead:
+# cp -r src/ <your-project>/public/artificer/
 # <link rel="stylesheet" href="/artificer/artificer.css" />
 
 # editor + terminal themes (Claude Code, Ghostty, VS Code, tmux, …)

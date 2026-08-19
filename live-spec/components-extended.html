@@ -117,6 +117,53 @@
       <li role="treeitem" tabindex="-1"><div class="tree__row tree__leaf"><span class="tree__twisty" aria-hidden="true"></span><i data-icon="pencil" aria-hidden="true" class="icon"></i> README.md</div></li>
     </ul>
   </div>
+
+  <!-- ────────────────────── Static tree ────────────────────── -->
+  <h2 class="section-title">Static tree (no-JS)</h2>
+  <p class="meta">Native <code>&lt;details&gt;</code> disclosure — SSR
+    and no-JS contexts. Deliberately NOT <code>role="tree"</code>; nested
+    disclosure is the honest a11y model here, and
+    <code>ArtificerTree.enhance()</code> stays inert on it.</p>
+  <div class="figure">
+    <ul class="tree tree--static" aria-label="Files" style="max-width:320px">
+      <li>
+        <details open>
+          <summary class="tree__row">
+            <span class="tree__twisty" aria-hidden="true"></span>
+            <i data-icon="menu" aria-hidden="true" class="icon"></i> src
+          </summary>
+          <ul class="tree__group">
+            <li>
+              <details>
+                <summary class="tree__row">
+                  <span class="tree__twisty" aria-hidden="true"></span>
+                  <i data-icon="menu" aria-hidden="true" class="icon"></i>
+                  components
+                </summary>
+                <ul class="tree__group">
+                  <li><div class="tree__row tree__leaf">
+                    <span class="tree__twisty" aria-hidden="true"></span>
+                    <i data-icon="pencil" aria-hidden="true" class="icon"></i>
+                    Button.tsx
+                  </div></li>
+                </ul>
+              </details>
+            </li>
+            <li><div class="tree__row tree__leaf">
+              <span class="tree__twisty" aria-hidden="true"></span>
+              <i data-icon="pencil" aria-hidden="true" class="icon"></i>
+              index.ts
+            </div></li>
+          </ul>
+        </details>
+      </li>
+      <li><div class="tree__row tree__leaf">
+        <span class="tree__twisty" aria-hidden="true"></span>
+        <i data-icon="pencil" aria-hidden="true" class="icon"></i>
+        README.md
+      </div></li>
+    </ul>
+  </div>
 </main>
 
 <!-- Command palette overlay -->

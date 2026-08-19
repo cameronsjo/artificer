@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.22.1
+# Artificer · v0.23.0
 
 Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Every token and rule reduces cognitive load for a brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -54,7 +54,7 @@ Before writing any CSS, decide. The answer picks the body font. If you skip this
 | | **Tool surface** | **Document surface** |
 |---|---|---|
 | What it is | Dashboards, consoles, terminals, log views, settings panels, command palettes, data tables, IDE-adjacent UI — anywhere the user came to *do something* | Writeups, READMEs, reports, postmortems, design docs, onboarding explainers — anywhere the user came to *read something* |
-| Body font | `var(--font-mono)` — JetBrains Mono | `var(--font-sans)` — iA Writer Quattro |
+| Body font | `var(--font-mono)` — JetBrains Mono | `var(--font-body)` — iA Writer Quattro V |
 | Default size | 14px | 15–16px |
 | Mono shows up in… | Most things | Code, identifiers, file paths, numerals, table cells |
 | Sans shows up in… | Labels, hints, microcopy | Most things |
@@ -89,7 +89,7 @@ Paths are relative to this SKILL.md. The skill lives at `skills/artificer-design
 | `../../src/artificer-icons.js` | Lucide-rooted icon set, Lucide-canonical names (legacy names alias; unknown names render a dashed placeholder). Auto-hydrates `<i data-icon="…">` placeholders. |
 | `../../src/tokens.json` | Machine-readable token export (for Tailwind, Figma, non-CSS consumers). |
 | `../../src/print.css` | Print stylesheet. Forces ivory/navy paper mode, strips chrome. |
-| `../../src/assets/fonts/` | Self-hosted JetBrains Mono + iA Writer Quattro WOFF2 files. |
+| `../../src/assets/fonts/` | Self-hosted JetBrains Mono + iA Writer Quattro S/V WOFF2 files. |
 | `../../CLAUDE.md` | Drop into target repo root. Includes the 5 motion patterns, 12 form rules, 13-point a11y checklist, 7-point voice & tone checklist in full. |
 | `../../README.md` | System overview, install paths, framework adapters. |
 | `../../FONTS.md` | Font loading recipes (Fontsource, CDN, Next.js, direct WOFF2). |
@@ -188,9 +188,11 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Toast / alert | `../../live-spec/notifications.html` — pick tier by *action required*, not severity |
 | Transient toast placement | `../../live-spec/notifications.html` — mount the `.notif` in a `.toast-region` (fixed corner stack on `--z-toast`); roles set at INSERT: urgent → `alert`, attention/info → `status`, background → none |
 | Tree / file explorer / nested nav | `../../live-spec/components-extended.html` — `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); keyboard ships via `data-tree` / `ArtificerTree.enhance()` |
+| Static / no-JS tree (SSR, docs) | `../../live-spec/components-extended.html` — `.tree--static` — nested `<details><summary class="tree__row">`; disclosure semantics, no JS |
 | Pagination | `../../live-spec/components-extended.html` — `.pagination` + `.pagination__gap`; `[aria-current=page]`; prev/next disable at ends; counted ranges only |
 | Persistent page banner | `../../live-spec/components-extended.html` — `.banner` + `--info/attention/urgent/success`; a standing layout band, NOT the transient `.notif` |
 | Split pane / master-detail | `../../live-spec/composition.html` — `.split-pane` + `.pane--active`/`.pane--inactive`; recession marks the unfocused pane |
+| Text workbench / editor panes / paste target | `../../live-spec/composition.html` — `.workbench` + `.workbench__pane` (`.workbench__header` + `.workbench__editor`); label lives in `.workbench__header` as a real `<label for>`, not a placeholder |
 | Avatar | `../../live-spec/components.html` — `.avatar` (image or initials) + `--sm`/`--lg`/`--xl`/`--square`; not `.dot` (8px status) or `.badge` (pill) |
 | File upload / dropzone | `../../live-spec/components.html` — `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events |
 | Live data indicator | `../../live-spec/composition.html` — `.live-tick` (pulsing dot) + `.last-updated` (timestamp); auto-updating regions still need an in-UI pause |
@@ -216,9 +218,14 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Stat card / KPI strip / headline numbers (KPIs) | `../../live-spec/data-display.html` — `.stat` (`.stat__label` + `.stat__value` + `.stat__row` + `.stat__delta`), the cell of a `.kpi-strip`, max 4 per row |
 | Chart / sparkline / gauge | `../../live-spec/charts.html` — Artificer-styled chart patterns; `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge` |
 | Architecture / flow diagram | `../../live-spec/diagrams.html` — system/architecture diagrams in the palette |
+| HTML diagram node / React Flow node | `../../live-spec/diagrams.html` — `.dia-box` (HTML twin of `.dia-node`) + `--accent`/`--ghost`/`--tab` (tint via `style="--dia-tab: var(--series-3)"`); reads the same `--dia-*` tokens |
+| Flow / pipeline / horizontal step-chain | `../../live-spec/diagrams.html` — `.flow` + `.flow__step` (a `.dia-box`) + `.flow__link` (`--dashed` for async) + `.flow-frame` (phase group) |
+| Phased timeline / numbered stages, each a set | `../../live-spec/diagrams.html` — `.spine` + `.phase` (`.phase__marker` badge + `.phase__body` `.stack` of `.dia-box`) + `.phase--accent` (one per timeline) |
 | Dashboard shell / page composition | `../../live-spec/composition.html` — `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`); combining patterns into full pages |
 | Empty state / error / loading copy | `../../live-spec/voice-and-tone.html` — never improvise microcopy |
 | Loading state / UI | `../../live-spec/states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
+| Horizontal bar / meter / usage bar | `../../live-spec/charts.html` — `.bar` + `.bar__track` + `.bar__fill` (width inline; fill bg any semantic token); fill bakes `display:block;height:100%`. Determinate % → `.progress` |
+| Hover/focus tooltip | `../../live-spec/overlay.html` — wrap trigger + `.tooltip` in `.has-tooltip` (reveals on hover + `:focus-within`); place/arrow via `.tooltip--top/bottom/left/right`. Bare `.tooltip` stays static |
 | Long wait, nothing to count | `../../live-spec/states.html` — `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` |
 | Refreshing a value in place | `../../live-spec/composition.html` — `.live-value[data-refreshing]` + `.live-value__dot`; NOT `.skeleton` (would blank it) |
 | Animation / transition | `../../live-spec/motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
@@ -277,7 +284,7 @@ URGENT      --urgent / --urgent-fill                errors, blocking
 SUCCESS     --success
 META        --steel / --steel-fill                 chrome, secondary UI
 BRAND       --brand-purple / --brand-purple-fill   wordmark only — NOT semantic
-TYPE        --font-mono (JetBrains)  --font-sans (iA Writer Quattro)
+TYPE        --font-mono (JetBrains)  --font-body (Quattro V)  --font-interface (Quattro S)
 SPACING     --s-{xs|sm|md|lg|xl|2xl}    4 / 8 / 16 / 24 / 32 / 48
 RADII       --radius-{sm|md|lg}         4 / 8 / 12
 MOTION      --dur-{instant|fast|max}    80 / 160 / 300 ms · ease cubic-bezier(.2,.7,.3,1)
@@ -321,8 +328,10 @@ Full 7-point voice & tone checklist: `../../CLAUDE.md`.
 ## Wiring up a new project
 
 ```bash
-# 1. Copy the system into your project (run from artificer-design-system repo root)
-cp -r src/ <your-project>/public/artificer/
+# 1. Vendor the runtime into your project (run from <your-project>)
+npx @cameronsjo/artificer vendor --dest public/artificer
+# no npm registry access? copy the system instead (run from artificer-design-system repo root):
+# cp -r src/ <your-project>/public/artificer/
 
 # 2. Drop the rules into the repo root (the bundle's CLAUDE.md, not this SKILL.md)
 cp CLAUDE.md <your-project>/CLAUDE.md
@@ -334,7 +343,7 @@ cp CLAUDE.md <your-project>/CLAUDE.md
 # <script src="/artificer/artificer-icons.js" defer></script>
 ```
 
-Frameworks: see `../../framework-adapters/` for Tailwind config, React typed wrappers, Vue 3 SFC patterns. Fonts: see `../../FONTS.md` for JetBrains Mono + iA Writer Quattro loading recipes (Fontsource recommended; Quattro is **not** on Google Fonts and must be self-hosted).
+Frameworks: see `../../framework-adapters/` for Tailwind config, React typed wrappers, Vue 3 SFC patterns. Fonts: see `../../FONTS.md` for JetBrains Mono (Fontsource) + iA Writer Quattro S/V loading recipes — Quattro is **not** on Google Fonts or Fontsource and must be self-hosted via direct WOFF2 download.
 
 ---
 
@@ -370,7 +379,7 @@ The system source lives at the repo root. From this SKILL.md:
 - [Repo CLAUDE.md](../../CLAUDE.md) — drop-in project rules + all four checklists (motion, forms, a11y, voice)
 - [System overview README](../../README.md) — install paths, system rationale
 - [Bundle index](../../INDEX.md) — read-order guide
-- [Fonts](../../FONTS.md) — JetBrains Mono + iA Writer Quattro loading recipes
+- [Fonts](../../FONTS.md) — JetBrains Mono + iA Writer Quattro S/V loading recipes
 - [Author's canonical SKILL](../../reference/SKILL.md) — original handoff doc (this file is adapted from it)
 - [Offline visual preview](../../system-preview-offline.html) — self-contained, works without `src/`
 - [Live spec](../../live-spec/) — HTML pages, the full visual reference (`index.html` is the entry point)

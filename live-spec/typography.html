@@ -40,15 +40,12 @@
   .face__numerals.prop { font-variant-numeric: normal; }
 
   /* Specific face font-family bindings */
-  .face--quattro .face__sample,
-  .face--quattro .face__weight .specimen,
-  .face--quattro .face__numerals { font-family: 'iA Writer Quattro', 'Iowan Old Style', serif; }
   .face--quattro-s .face__sample,
   .face--quattro-s .face__weight .specimen,
-  .face--quattro-s .face__numerals { font-family: 'iA Writer Quattro S', 'iA Writer Quattro', 'Iowan Old Style', serif; }
+  .face--quattro-s .face__numerals { font-family: 'iA Writer Quattro S', 'Iowan Old Style', serif; }
   .face--quattro-v .face__sample,
   .face--quattro-v .face__weight .specimen,
-  .face--quattro-v .face__numerals { font-family: 'iA Writer Quattro V', 'iA Writer Quattro', 'Iowan Old Style', serif; }
+  .face--quattro-v .face__numerals { font-family: 'iA Writer Quattro V', 'Iowan Old Style', serif; }
   .face--jetbrains .face__sample,
   .face--jetbrains .face__weight .specimen,
   .face--jetbrains .face__numerals { font-family: 'JetBrains Mono', ui-monospace, monospace; }
@@ -103,8 +100,8 @@
   .nums-col table { width: 100%; border-collapse: collapse; }
   .nums-col td { padding: 6px 0; font-size: 17px; color: var(--fg); border-bottom: 1px solid var(--border); }
   .nums-col td:last-child { text-align: right; color: var(--accent); }
-  .nums-col.prop td:last-child { font-family: 'iA Writer Quattro', 'Iowan Old Style', serif; font-variant-numeric: normal; }
-  .nums-col.tab td:last-child { font-family: 'iA Writer Quattro S', 'iA Writer Quattro', 'Iowan Old Style', serif; font-variant-numeric: tabular-nums; }
+  .nums-col.prop td:last-child { font-family: 'iA Writer Quattro V', 'Iowan Old Style', serif; font-variant-numeric: normal; }
+  .nums-col.tab td:last-child { font-family: 'iA Writer Quattro S', 'Iowan Old Style', serif; font-variant-numeric: tabular-nums; }
   @media (max-width:640px) { .nums-row { grid-template-columns: 1fr; } }
 
   @media (max-width:640px) {
@@ -120,11 +117,11 @@
 <main class="page">
   <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Typography</div>
   <h1>typography<span class="amp">.</span></h1>
-  <p class="lede">Two families, two surfaces. <span class="anchor" style="font-family:var(--font-mono)">JetBrains Mono</span> for tools — terminals, dashboards, configuration. <span class="anchor">iA Writer Quattro</span> for documents — READMEs, design specs, prose. Pick by <span class="anchor">surface kind</span> before you pick by element.</p>
+  <p class="lede">Two families, two surfaces. <span class="anchor" style="font-family:var(--font-mono)">JetBrains Mono</span> for tools — terminals, dashboards, configuration. <span class="anchor">iA Writer Quattro V</span> for document prose, <span class="anchor">Quattro S</span> for interface chrome. Pick by <span class="anchor">surface kind</span> before you pick by element.</p>
 
   <section>
     <h2><span class="num">01</span> The first decision <span class="sub">— is this a tool or a document?</span></h2>
-    <p class="section-intro">Body face is set by surface kind, not by element. If the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro. If it's mostly chrome around data, it's a tool — set body in JetBrains. Mixing within a project is normal.</p>
+    <p class="section-intro">Body face is set by surface kind, not by element. If the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro V. If it's mostly chrome around data, it's a tool — set body in JetBrains. Mixing within a project is normal.</p>
     <div class="surface-pick">
       <div class="surf">
         <div class="surf__kind">Tool surface</div>
@@ -134,13 +131,13 @@
           <div><span class="label">deploy</span>: <span class="val">artificer-prod-eu-west-1</span></div>
           <div><span class="label">last sync</span>: 14:02:38 UTC</div>
         </div>
-        <p class="surf__rule">Dashboards, terminals, settings panels, command palettes, data tables, IDE chrome. Labels and microcopy still stay in Quattro for readability — that's the only proportional intrusion.</p>
+        <p class="surf__rule">Dashboards, terminals, settings panels, command palettes, data tables, IDE chrome. Labels and microcopy still stay in Quattro S for readability — that's the only proportional intrusion.</p>
       </div>
       <div class="surf">
         <div class="surf__kind">Document surface</div>
-        <div class="surf__name" style="font-family:'iA Writer Quattro', serif; font-size:24px;">iA Writer Quattro</div>
+        <div class="surf__name" style="font-family:'iA Writer Quattro V', serif; font-size:24px;">iA Writer Quattro V</div>
         <div class="surf__sample doc">
-          The system rests on a two-face rule. Tool surfaces lean on monospace rhythm; document surfaces use Quattro's humanist sans. The two faces share the same x-height and a similar vertical weight, so switching mid-page doesn't break the line.
+          The system rests on a two-face rule. Tool surfaces lean on monospace rhythm; document surfaces use Quattro V's humanist sans. The two faces share the same x-height and a similar vertical weight, so switching mid-page doesn't break the line.
         </div>
         <p class="surf__rule">READMEs, design docs, reports, writeups, marketing-adjacent surfaces. Code blocks, identifiers, file paths, and numerals still render mono — those are typographic tells the reader is trained on.</p>
       </div>
@@ -149,7 +146,7 @@
 
   <section>
     <h2><span class="num">02</span> The faces</h2>
-    <p class="section-intro">Both self-hosted as WOFF2 in <code>src/assets/fonts/</code>. SIL OFL 1.1 — bundle freely. The CSS chains gracefully: if Quattro S isn't installed, the base Quattro picks up; if Quattro isn't installed, Iowan Old Style and Charter take over before system-ui.</p>
+    <p class="section-intro">Both self-hosted as WOFF2 in <code>src/assets/fonts/</code>. SIL OFL 1.1 — bundle freely. The CSS chains gracefully: if Quattro S or V isn't installed, Iowan Old Style and Charter take over before system-ui.</p>
 
     <div class="face face--jetbrains">
       <div class="face__header">
@@ -169,34 +166,16 @@
       </div>
     </div>
 
-    <div class="face face--quattro">
-      <div class="face__header">
-        <div>
-          <div class="face__name">iA Writer Quattro</div>
-          <div class="face__role">Document-surface body · UI labels on tool surfaces</div>
-        </div>
-        <div class="face__role" style="text-align:right">400 · 400i · 700 · 700i</div>
-      </div>
-      <div class="face__sample" style="font-weight:700">The artist commits the draft, then prints it.</div>
-      <p class="face__pangram">Drawn by Bold Monday for iA Writer. Humanist sans with monospace rhythm baked in — letters share advance widths within ranges so prose feels metric-aware without being literally fixed-width. Lifts off the page on long-form reading the way Inter and Helvetica don't.</p>
-      <div class="face__weights">
-        <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">Calm body prose.</span></div>
-        <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">Emphasis where needed.</span></div>
-        <div class="face__weight"><span class="label">Bold · 700</span><span class="specimen" style="font-weight:700">Anchor words pull.</span></div>
-        <div class="face__weight"><span class="label">Bold Italic · 700i</span><span class="specimen" style="font-weight:700;font-style:italic">For citations.</span></div>
-      </div>
-    </div>
-
     <div class="face face--quattro-s">
       <div class="face__header">
         <div>
           <div class="face__name">iA Writer Quattro S</div>
-          <div class="face__role">Tabular-numeral variant · dashboard data · finance UI</div>
+          <div class="face__role">Interface chrome (<code>--font-interface</code>) · labels · controls · tabular UI numerals</div>
         </div>
         <div class="face__role" style="text-align:right">400 · 400i · 700 · 700i</div>
       </div>
       <div class="face__sample" style="font-weight:700">$1,247.83 · 24.6% · 11:42:08</div>
-      <p class="face__pangram">Same outlines as Quattro, with figure widths fixed for clean numeric columns. Use on stacked data, transaction tables, time displays, ratios — anywhere digits should align vertically without eye-jitter. Falls back to base Quattro transparently.</p>
+      <p class="face__pangram">Tabular-numeral variant with figure widths fixed for clean numeric columns, and a real 700 weight — unlike Quattro V. Use for labels, controls, badges, form fields, nav, and anywhere digits should align vertically without eye-jitter. Windows renders its bold via a synthesized faux-bold in some environments, an upstream font-metadata defect Artificer accepts rather than patches — see FONTS.md § Weight coverage.</p>
       <div class="face__weights">
         <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">$1,234.56 · 78.90</span></div>
         <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">$1,234.56 · 78.90</span></div>
@@ -209,12 +188,12 @@
       <div class="face__header">
         <div>
           <div class="face__name">iA Writer Quattro V</div>
-          <div class="face__role">Display variant · marquee · hero · pull-quote</div>
+          <div class="face__role">Document body (<code>--font-body</code>) · headline/body type utilities · <code>.meta</code> · <code>.colophon</code></div>
         </div>
         <div class="face__role" style="text-align:right">400 only</div>
       </div>
       <div class="face__sample" style="font-weight:400;font-size:52px;letter-spacing:-0.02em">Made by hand, shipped by command.</div>
-      <p class="face__pangram">Tighter spacing and more stroke contrast than the base Quattro. Use sparingly: hero headlines, section openers, pull-quotes. Don't reach for it inside body — the contrast that gives it presence at 48px also breaks long-form rhythm. Single weight (400) by design.</p>
+      <p class="face__pangram">Tighter spacing and more stroke contrast than Quattro S. The default prose face on document surfaces — running text, headlines, <code>.meta</code>. Only 400 ships upstream, so a bold headline set on this face (<code>.t-headline-lg</code>/<code>.t-headline-md</code>) synthesizes faux-bold in the browser, the same as any face missing a weight.</p>
       <div class="face__weights">
         <div class="face__weight"><span class="label">Regular · 400</span><span class="specimen" style="font-weight:400">For when ink matters.</span></div>
         <div class="face__weight"><span class="label">Italic · 400</span><span class="specimen" style="font-weight:400;font-style:italic">A whisper, displayed loud.</span></div>
@@ -224,8 +203,8 @@
 
   <section>
     <h2><span class="num">03</span> The scale</h2>
-    <p class="section-intro">Scale entries pick their face from <code>var(--font-mono)</code> or <code>var(--font-sans)</code>, so wrapping a region in <code>.surface-tool</code> swaps the body face without touching individual rules. Sizes below show the dark-mode rendering at typical desktop.</p>
-    <p class="section-intro"><code>.surface-document</code> is the inverse escape: a prose island — a colophon, a legal notice, a help panel — dropped inside a <code>.surface-tool</code> region opts back to <code>--font-sans</code> with <code>&lt;div class="surface-document"&gt;…&lt;/div&gt;</code>, no per-element overrides.</p>
+    <p class="section-intro">Scale entries pick their face from <code>var(--font-mono)</code>, <code>var(--font-body)</code>, or <code>var(--font-interface)</code>, so wrapping a region in <code>.surface-tool</code> swaps the body face without touching individual rules. Sizes below show the dark-mode rendering at typical desktop.</p>
+    <p class="section-intro"><code>.surface-document</code> is the inverse escape: a prose island — a colophon, a legal notice, a help panel — dropped inside a <code>.surface-tool</code> region opts back to <code>--font-body</code> with <code>&lt;div class="surface-document"&gt;…&lt;/div&gt;</code>, no per-element overrides.</p>
 
     <div class="spec">
       <div class="meta">
@@ -293,10 +272,10 @@
 
   <section>
     <h2><span class="num">04</span> Numerals <span class="sub">— when to reach for Quattro S</span></h2>
-    <p class="section-intro">Quattro's default figures are proportional — beautiful in running prose, bad in stacked columns. Quattro S keeps the outlines, fixes the widths. Always pair tabular figures with right-aligned numeric columns, and add <code>font-variant-numeric: tabular-nums</code> to the parent.</p>
+    <p class="section-intro">Quattro V's default figures are proportional — beautiful in running prose, bad in stacked columns. Quattro S keeps the outlines, fixes the widths. Always pair tabular figures with right-aligned numeric columns, and add <code>font-variant-numeric: tabular-nums</code> to the parent.</p>
     <div class="nums-row">
       <div class="nums-col prop">
-        <div class="label">Proportional · iA Writer Quattro</div>
+        <div class="label">Proportional · iA Writer Quattro V</div>
         <div class="sub">Runs cleanly in body text. Notice digits don't line up vertically.</div>
         <table>
           <tr><td>Subscription</td><td>1,247.83</td></tr>
@@ -386,11 +365,19 @@
     <h2><span class="num">08</span> Font stack fallbacks</h2>
     <div class="spec">
       <div class="meta">
-        <b>--font-sans</b>
-        <span class="stack">iA Writer Quattro S · iA Writer Quattro V · iA Writer Quattro · Iowan Old Style · Charter · Source Sans 3 · system-ui · -apple-system · sans-serif</span>
-        <span class="vars">document body, labels, microcopy</span>
+        <b>--font-body</b>
+        <span class="stack">iA Writer Quattro V · Iowan Old Style · Charter · Source Sans 3 · system-ui · -apple-system · sans-serif</span>
+        <span class="vars">document body, headline/body type utilities, .meta, .colophon</span>
       </div>
-      <div class="t-body-md">Body face on document surfaces. If Quattro S is installed (tabular figures), it preempts the base Quattro everywhere — useful for dashboards that mix prose and stacked data.</div>
+      <div class="t-body-md">Body face on document surfaces. <code>--font-sans</code> is a legacy alias of this token, kept resolvable for public-API back-compat.</div>
+    </div>
+    <div class="spec">
+      <div class="meta">
+        <b>--font-interface</b>
+        <span class="stack">iA Writer Quattro S · Iowan Old Style · Charter · Source Sans 3 · system-ui · -apple-system · sans-serif</span>
+        <span class="vars">labels, controls, badges, form fields, nav, tabular UI numerals</span>
+      </div>
+      <div class="t-body-md">Interface chrome face — on both tool AND document surfaces. Tabular figures, and a real bold weight unlike Quattro V.</div>
     </div>
     <div class="spec">
       <div class="meta">

@@ -45,7 +45,7 @@
 
   <!-- ── App bar ─────────────────────────────────────────────────── -->
   <h2 class="section-title">App bar · <span style="color:var(--fg-disabled);font-weight:400">global chrome</span></h2>
-  <p class="meta">Brand · optional search · spacer · trailing actions. The wordmark is mono (and a sanctioned <code>.whimsy</code> home). At most one <code>.btn--primary</code> in the bar. The hamburger (<code>.appbar__menu-btn</code>) appears only below 800px to open the drawer — and carries <code>.btn--icon-prominent</code>: a <b class="anchor">lone primary icon control</b> rests at full <code>--fg</code>, because it has no row of neighbors to borrow prominence from (ghost's <code>--fg-secondary</code> is for icons in a cluster). <b class="anchor">Apply <code>.wordmark</code> to an inline element inside <code>.appbar__brand</code></b>, not to the brand container itself — the container is a flex row and a <code>::after</code> period in flex becomes a separate flex item. <code>display:inline-block</code> on <code>.wordmark</code> guards against this.</p>
+  <p class="meta">Brand · optional search · spacer · trailing actions. The wordmark is mono (and a sanctioned <code>.whimsy</code> home). At most one <code>.btn--primary</code> in the bar. The hamburger (<code>.appbar__menu-btn</code>) appears only below 800px to open the drawer — and carries <code>.btn--icon-prominent</code>: a <b class="anchor">lone primary icon control</b> rests at full <code>--fg</code>, because it has no row of neighbors to borrow prominence from (ghost's <code>--fg-secondary</code> is for icons in a cluster). <b class="anchor">Both brand compositions are supported</b>: the combined single element (<code>class="appbar__brand wordmark"</code>) and a <code>.wordmark</code> child inside the brand. Dedicated ellipsis-carrier rules make each a block-level box, so the <code>::after</code> stop stays inline and a long mark truncates with an ellipsis instead of a mid-glyph clip.</p>
   <div class="figure figure--flush">
     <header class="appbar">
       <button class="btn btn--ghost btn--icon btn--icon-prominent appbar__menu-btn" aria-label="Open menu"><i data-icon="menu"></i></button>
@@ -221,14 +221,24 @@
     <div class="nav-scrim" id="drawer-scrim"></div>
     <aside class="nav-drawer" id="demo-drawer-nav" aria-label="Console sections" aria-hidden="true" inert>
       <nav class="sidenav">
-        <div class="sidenav__group">Workspace</div>
-        <a href="#" aria-current="page"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
-        <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
-        <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
-        <a href="#"><i data-icon="settings"></i><span class="label">Settings</span></a>
+        <details class="sidenav__section" open>
+          <summary>Workspace</summary>
+          <a href="#" aria-current="page"><i data-icon="square-terminal"></i><span class="label">Runs</span><span class="count">42</span></a>
+          <a href="#"><i data-icon="folder"></i><span class="label">Projects</span><span class="count">7</span></a>
+        </details>
+        <details class="sidenav__section">
+          <summary>Library</summary>
+          <a href="#"><i data-icon="file"></i><span class="label">Artifacts</span></a>
+          <a href="#"><i data-icon="settings"></i><span class="label">Settings</span></a>
+        </details>
+        <div class="sidenav__footer">
+          <span>Theme</span>
+          <button class="theme-toggle theme-toggle--inline" data-theme-toggle aria-label="Toggle theme"></button>
+        </div>
       </nav>
     </aside>
   </div>
+  <p class="meta"><b class="anchor">Collapsible groups</b> — past ~15 rows a flat drawer reads as a wall. Wrap each group in <code>&lt;details class="sidenav__section"&gt;</code>; the <code>&lt;summary&gt;</code> takes the group-label treatment plus a twisty, and the rows inside keep the full sidenav styling. <b class="anchor">The active section must be open</b>: <code>open</code> is an HTML attribute, so the consumer's router sets it on the section holding <code>aria-current="page"</code> — a deep link must never land on a hidden active row. <b class="anchor">The footer row</b> (<code>.sidenav__footer</code>) is the bottom-anchored settings seat — the theme toggle's drawer home. A fixed <code>.theme-toggle</code> sits below the drawer's z-index, so on mobile the toggle moves <em>into</em> the drawer.</p>
 
   <!-- ── Tabs ────────────────────────────────────────────────────── -->
   <h2 class="section-title">Tabs · <span style="color:var(--fg-disabled);font-weight:400">switch the view</span></h2>

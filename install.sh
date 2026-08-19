@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Installs Artificer themes for VS Code, Ghostty, Claude Code, Helix, tmux,
-# gitmux, glamour, gum, and Obsidian.
+# Installs Artificer themes for VS Code, Ghostty, Claude Code, Helix, Neovim,
+# tmux, gitmux, glamour, gum, fzf, eza, bat, codex, and Obsidian.
 #
 # Default mode: copy. The installed theme is an independent file, so nothing
 # else that manages these paths (chezmoi deploys most of them) is fighting a
@@ -35,11 +35,48 @@ GHOSTTY_DIR="$HOME/.config/ghostty/themes"
 CLAUDE_DIR="$HOME/.claude/themes"
 CLAUDE_COMMANDS_DIR="$HOME/.claude/commands"
 HELIX_DIR="$HOME/.config/helix/themes"
+NVIM_DIR="$HOME/.config/nvim/colors"
 GLAMOUR_DIR="$HOME/.config/glamour"
 GUM_DIR="$HOME/.config/gum"
+FZF_DIR="$HOME/.config/fzf"
+EZA_DIR="$HOME/.config/eza"
+BAT_DIR="$HOME/.config/bat/themes"
+CODEX_DIR="$HOME/.codex/themes"
 TMUX_DIR="$HOME/.config/tmux"
 GITMUX_DIR="$HOME/.config/tmux"
 OBSIDIAN_VAULT="${ARTIFICER_OBSIDIAN_VAULT:-$HOME/Documents/Obsidian}"
+
+# Advisory activation probe for --verify: "label:file:pattern" triples. A
+# target lands on disk once install.sh runs, but most targets also need a
+# line added to a dotfile the user owns (source a fragment, set a theme key)
+# before the install actually takes effect — install.sh cannot make that edit
+# itself (it would be clobbering a config file it does not own), so this only
+# REPORTS whether the activation line is present. Each pattern is drawn from
+# the exact advice the install-mode footer prints below — if the footer's
+# wording changes, update the matching pattern here.
+#
+# delta is deliberately absent: it rides bat's tmTheme registry (the footer's
+# own delta line points at the [delta] section of ~/.gitconfig, a file this
+# probe doesn't reach) rather than a fragment of its own, so there's no
+# independent activation line for it to check.
+ACTIVATIONS=(
+  "helix:$HOME/.config/helix/config.toml:theme = \"artificer"
+  "glamour:$HOME/.zshenv:GLAMOUR_STYLE"
+  "gum:$HOME/.zshenv:gum/artificer"
+  "fzf:$HOME/.zshrc:fzf/artificer"
+  "eza:$HOME/.zshrc:eza/artificer"
+  "bat:$HOME/.config/bat/config:theme = \"artificer"
+  "codex:$HOME/.codex/config.toml:theme = \"artificer"
+  # Anchored to an UNcommented source-file line — a bare "tmux/artificer"
+  # substring also lives in this repo's own path (~/Projects/.../tmux/...),
+  # which a looser pattern would false-match on some checkouts.
+  "tmux:$HOME/.tmux.conf:^[^#]*source-file.*tmux/artificer"
+  "ghostty:$HOME/.config/ghostty/config:theme = artificer"
+  # Anchored to the "theme" key specifically — a bare "artificer" substring
+  # false-matches any unrelated settings.json value that happens to mention
+  # the word (e.g. a permissions path under ~/Projects/artificer/).
+  "claude-code:$HOME/.claude/settings.json:\"theme\".*artificer"
+)
 
 mode="copy"
 
@@ -56,7 +93,9 @@ USAGE
   ./install.sh            Copy themes (default; independent of the repo)
   ./install.sh --symlink  Symlink themes (repo edits propagate live)
   ./install.sh --verify   Check installed themes are current; prints the
-                          diff for anything that drifted
+                          diff for anything that drifted, and reports
+                          whether each target's activation line is present
+                          (advisory — never fails the check)
   ./install.sh --help     Show this message
 
 Re-running is a no-op for anything already current — copy mode compares
@@ -71,8 +110,13 @@ TARGETS
   Commands     ~/.claude/commands/*.md             (from repo's commands/)
   Helix        ~/.config/helix/themes/artificer-{dark,light}.toml
                ~/.config/helix/themes/artificer-{dark,light}-opaque.toml
+  Neovim       ~/.config/nvim/colors/artificer.lua   (one file, both modes)
   glamour      ~/.config/glamour/artificer-{dark,light}.json
   gum          ~/.config/gum/artificer-{dark,light}.sh
+  fzf          ~/.config/fzf/artificer-{dark,light}.sh
+  eza          ~/.config/eza/artificer-{dark,light}.sh
+  bat          ~/.config/bat/themes/artificer-{dark,light}.tmTheme  (also read by delta)
+  codex        ~/.codex/themes/artificer-{dark,light}.tmTheme
   tmux         ~/.config/tmux/artificer-{dark,light}.conf
   gitmux       ~/.config/tmux/gitmux.yml
   Obsidian     <vault>/.obsidian/themes/Artificer/   (vault from
@@ -134,6 +178,8 @@ print_capped_diff() {
 }
 
 verify_target() {
+  # shellcheck disable=SC2034 # label is the caller-facing name; kept for
+  # call-site readability even though this function body doesn't echo it.
   local label="$1" src="$2" dst="$3"
   if [[ ! -e "$dst" ]]; then
     echo "  MISSING  $dst"
@@ -181,6 +227,9 @@ if [[ "$mode" == "verify" ]]; then
   verify_target "helix-dark-opaque" "$THEMES/helix/artificer-dark-opaque.toml" "$HELIX_DIR/artificer-dark-opaque.toml" || ((++fails))
   verify_target "helix-light-opaque" "$THEMES/helix/artificer-light-opaque.toml" "$HELIX_DIR/artificer-light-opaque.toml" || ((++fails))
 
+  echo "==> Neovim"
+  verify_target "neovim" "$THEMES/neovim/colors/artificer.lua" "$NVIM_DIR/artificer.lua" || ((++fails))
+
   echo "==> glamour"
   verify_target "glamour-dark" "$THEMES/glamour/artificer-dark.json" "$GLAMOUR_DIR/artificer-dark.json" || ((++fails))
   verify_target "glamour-light" "$THEMES/glamour/artificer-light.json" "$GLAMOUR_DIR/artificer-light.json" || ((++fails))
@@ -188,6 +237,22 @@ if [[ "$mode" == "verify" ]]; then
   echo "==> gum"
   verify_target "gum-dark" "$THEMES/gum/artificer-dark.sh" "$GUM_DIR/artificer-dark.sh" || ((++fails))
   verify_target "gum-light" "$THEMES/gum/artificer-light.sh" "$GUM_DIR/artificer-light.sh" || ((++fails))
+
+  echo "==> fzf"
+  verify_target "fzf-dark" "$THEMES/fzf/artificer-dark.sh" "$FZF_DIR/artificer-dark.sh" || ((++fails))
+  verify_target "fzf-light" "$THEMES/fzf/artificer-light.sh" "$FZF_DIR/artificer-light.sh" || ((++fails))
+
+  echo "==> eza"
+  verify_target "eza-dark" "$THEMES/eza/artificer-dark.sh" "$EZA_DIR/artificer-dark.sh" || ((++fails))
+  verify_target "eza-light" "$THEMES/eza/artificer-light.sh" "$EZA_DIR/artificer-light.sh" || ((++fails))
+
+  echo "==> bat"
+  verify_target "bat-dark" "$THEMES/bat/artificer-dark.tmTheme" "$BAT_DIR/artificer-dark.tmTheme" || ((++fails))
+  verify_target "bat-light" "$THEMES/bat/artificer-light.tmTheme" "$BAT_DIR/artificer-light.tmTheme" || ((++fails))
+
+  echo "==> codex"
+  verify_target "codex-dark" "$THEMES/codex/artificer-dark.tmTheme" "$CODEX_DIR/artificer-dark.tmTheme" || ((++fails))
+  verify_target "codex-light" "$THEMES/codex/artificer-light.tmTheme" "$CODEX_DIR/artificer-light.tmTheme" || ((++fails))
 
   echo "==> tmux"
   verify_target "tmux-dark" "$THEMES/tmux/artificer-dark.conf" "$TMUX_DIR/artificer-dark.conf" || ((++fails))
@@ -202,6 +267,30 @@ if [[ "$mode" == "verify" ]]; then
   else
     echo "  skip    no vault at $OBSIDIAN_VAULT"
   fi
+
+  echo "==> activation"
+  for act_entry in "${ACTIVATIONS[@]}"; do
+    act_label="${act_entry%%:*}"
+    act_rest="${act_entry#*:}"
+    act_file="${act_rest%%:*}"
+    act_pattern="${act_rest#*:}"
+
+    if [[ ! -f "$act_file" ]]; then
+      echo "  inert    $act_label — add: $act_pattern in $act_file (file not found)"
+      continue
+    fi
+
+    # "not activated yet" is the common, expected case here, not an error —
+    # `|| true` keeps grep's no-match exit (1) from aborting the script under
+    # `set -e`. Captured to a variable rather than piped, so there is no
+    # SIGPIPE hazard for `pipefail` to promote either.
+    act_hit="$(grep -E -m1 "$act_pattern" "$act_file" 2>/dev/null || true)"
+    if [[ -n "$act_hit" ]]; then
+      echo "  active   $act_label"
+    else
+      echo "  inert    $act_label — add: $act_pattern in $act_file"
+    fi
+  done
 
   if ((fails > 0)); then
     echo ""
@@ -288,6 +377,13 @@ place "$THEMES/helix/artificer-light.toml"        "$HELIX_DIR/artificer-light.to
 place "$THEMES/helix/artificer-dark-opaque.toml"  "$HELIX_DIR/artificer-dark-opaque.toml"
 place "$THEMES/helix/artificer-light-opaque.toml" "$HELIX_DIR/artificer-light-opaque.toml"
 
+echo "==> Neovim"
+# The mkdir is load-bearing on a green-field machine: ~/.config/nvim/colors is
+# a brand-new subtree, and place()'s cp would fail under `set -euo pipefail`
+# and abort the whole install.
+mkdir -p "$NVIM_DIR"
+place "$THEMES/neovim/colors/artificer.lua" "$NVIM_DIR/artificer.lua"
+
 echo "==> glamour"
 mkdir -p "$GLAMOUR_DIR"
 place "$THEMES/glamour/artificer-dark.json"  "$GLAMOUR_DIR/artificer-dark.json"
@@ -297,6 +393,35 @@ echo "==> gum"
 mkdir -p "$GUM_DIR"
 place "$THEMES/gum/artificer-dark.sh"  "$GUM_DIR/artificer-dark.sh"
 place "$THEMES/gum/artificer-light.sh" "$GUM_DIR/artificer-light.sh"
+
+echo "==> fzf"
+mkdir -p "$FZF_DIR"
+place "$THEMES/fzf/artificer-dark.sh"  "$FZF_DIR/artificer-dark.sh"
+place "$THEMES/fzf/artificer-light.sh" "$FZF_DIR/artificer-light.sh"
+
+echo "==> eza"
+mkdir -p "$EZA_DIR"
+place "$THEMES/eza/artificer-dark.sh"  "$EZA_DIR/artificer-dark.sh"
+place "$THEMES/eza/artificer-light.sh" "$EZA_DIR/artificer-light.sh"
+
+echo "==> bat"
+mkdir -p "$BAT_DIR"
+place "$THEMES/bat/artificer-dark.tmTheme"  "$BAT_DIR/artificer-dark.tmTheme"
+place "$THEMES/bat/artificer-light.tmTheme" "$BAT_DIR/artificer-light.tmTheme"
+# bat/delta (syntect) compile themes into a binary cache at install time, not
+# at load time, so a fresh drop-in is invisible until this runs.
+if command -v bat >/dev/null 2>&1; then
+  # stdout only — stderr carries the parse error when a theme is rejected, and
+  # swallowing it turns a broken plist into a bare "warn" with no reason.
+  bat cache --build >/dev/null || echo "  warn    'bat cache' failed to rebuild — run it manually"
+else
+  echo "  skip    bat not installed — run 'bat cache' after installing it"
+fi
+
+echo "==> codex"
+mkdir -p "$CODEX_DIR"
+place "$THEMES/codex/artificer-dark.tmTheme"  "$CODEX_DIR/artificer-dark.tmTheme"
+place "$THEMES/codex/artificer-light.tmTheme" "$CODEX_DIR/artificer-light.tmTheme"
 
 echo "==> tmux"
 mkdir -p "$TMUX_DIR"
@@ -328,8 +453,19 @@ Done. Activate:
   Commands    /<command-name> inside any Claude Code session
   Helix       theme = "artificer-dark" in ~/.config/helix/config.toml
               (:theme artificer-dark to reload live)
+  neovim      :colorscheme artificer  (needs termguicolors; set background
+              BEFORE the colorscheme, and re-run it after changing background)
   glamour     export GLAMOUR_STYLE="$HOME/.config/glamour/artificer-dark.json"
   gum         add '. ~/.config/gum/artificer-dark.sh' to ~/.zshenv
+  fzf         add '. ~/.config/fzf/artificer-dark.sh' to ~/.zshrc, then compose
+              FZF_DEFAULT_OPTS="$ARTIFICER_FZF_COLORS" (the fragment exports the
+              colours only, so your own options survive)
+  eza         add '. ~/.config/eza/artificer-dark.sh' to ~/.zshrc
+  bat         --theme=artificer-dark, or 'theme = "artificer-dark"' in
+              ~/.config/bat/config; confirm with 'bat --list-themes'
+  delta       'syntax-theme = artificer-dark' in the [delta] section of
+              ~/.gitconfig (delta reads bat's theme registry, same cache)
+  codex       'theme = "artificer-dark"' under [tui] in ~/.codex/config.toml
   tmux        add 'source-file ~/.config/tmux/artificer-dark.conf' to ~/.tmux.conf
   gitmux      already referenced by gitmux.yml path convention
   Obsidian    Settings → Appearance → Themes → Artificer

@@ -7,6 +7,14 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// Shared with scripts/check-shell-fragments.mjs — see that module's header for
+// why the grammar cannot live in this file.
+import {
+  shellHexValue,
+  assertInertFragment,
+  FZF_COLOR_GRAMMAR,
+  LS_COLORS_GRAMMAR,
+} from './_shell-guard.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const palette = JSON.parse(readFileSync(join(__dirname, '_palette.json'), 'utf8'));
@@ -87,6 +95,7 @@ const cssomRgb = (hex) => {
 // (VS Code derefs to a hex, Helix keeps the name for its [palette] table). One
 // lookup so a third consumer never re-types the path into _palette.json.
 const syntaxToken = (role) => palette.$roles.syntax[role];
+
 
 const write = (relPath, content) => {
   const full = join(__dirname, relPath);
@@ -230,6 +239,15 @@ selection-foreground = ${(mode === 'dark' ? P.fg : P.ink).replace('#','')}
 # brightness pair on the same hue. Markdown renderers emit bright-blue
 # for inline code; sibling hues (e.g. rose + peach) make inline code
 # render a visibly different color than surrounding text.
+#
+# steelBright in slot 4 and steel in slot 12 is NOT a transposition — read
+# the values, not the names. steel #b8cad4 is LIGHTER than steelBright
+# #9fb6c4 on dark (relative luminance .572 vs .448), so this puts the dimmer
+# hue in normal-blue and the lighter one in bright-blue, which is the right
+# way round. Artificer's *Bright suffix names a ROLE ("more emphasis than
+# base on the current surface"), not a lightness direction —
+# $notes.brandPurpleBrightDirection says so for the purple, and the same
+# holds here. Reasoning from the token name alone gets this backwards.
 palette = 0=${P.ansiBlack.replace('#','')}
 palette = 1=${P.urgent.replace('#','')}
 palette = 2=${P.success.replace('#','')}
@@ -506,15 +524,73 @@ const vscodeTheme = (mode) => {
       { scope: ['entity.name.class', 'entity.name.type', 'entity.name.interface', 'entity.name.enum', 'support.class', 'support.type'], settings: { foreground: sx('type') } },
       { scope: ['entity.name.namespace', 'entity.name.module', 'support.module', 'support.namespace'], settings: { foreground: sx('namespace') } },
       { scope: ['entity.name.tag', 'entity.other.attribute-name'], settings: { foreground: sx('tag') } },
-      { scope: ['markup.heading'], settings: { foreground: P.accent, fontStyle: 'bold' } },
-      { scope: ['markup.bold'], settings: { fontStyle: 'bold', foreground: P.fg } },
-      { scope: ['markup.italic'], settings: { fontStyle: 'italic', foreground: P.fg } },
+      // Markdown treatment is sourced from the glamour (glow) target so prose
+      // reads the same on every surface — that target was already the richest
+      // markdown mapping in the system and vscode had drifted flat against it.
+      // Heading LEVELS live in their own `heading.N.markdown` scope, a sibling
+      // of markup.heading rather than a child, so they need explicit rules.
+      // glamour differentiates h2 and h6 and lets h3-h5 inherit the base gold.
+      { scope: ['markup.heading', 'entity.name.section'], settings: { foreground: P.accent, fontStyle: 'bold' } },
+      // DESCENDANT selectors are required here, not bare `heading.N.markdown`.
+      // The heading TEXT's innermost scope is entity.name.section.markdown, and
+      // the rule above matches it directly — which out-specifies an ancestor
+      // scope like heading.2.markdown, so a bare level rule silently loses and
+      // every level renders identical gold. `heading.2 entity.name.section`
+      // matches the same leaf with more context, so it wins.
+      { scope: ['heading.2.markdown entity.name.section'], settings: { foreground: P.accentBright, fontStyle: 'bold' } },
+      // glamour sets h6 bold:false. An omitted fontStyle INHERITS the bold from
+      // the base rule, so clearing it takes an explicit empty style.
+      { scope: ['heading.6.markdown entity.name.section'], settings: { foreground: P.fgSecondary, fontStyle: '' } },
+      // Emphasis carries NO foreground on purpose: a TextMate rule with only a
+      // fontStyle inherits its color from the next matching rule. Pinning these
+      // to P.fg made `**bold**` INSIDE a heading win over markup.heading on
+      // scope specificity and drop from accent to body-fg — emphasis that
+      // visually de-emphasized. Unstyled, bold composes: gold in a heading,
+      // body-fg in a paragraph, string-green in a code span.
+      { scope: ['markup.bold'], settings: { fontStyle: 'bold' } },
+      { scope: ['markup.italic'], settings: { fontStyle: 'italic' } },
+      { scope: ['markup.strikethrough'], settings: { fontStyle: 'strikethrough' } },
+      // Emphasis in PROSE takes a color; emphasis inside a heading keeps
+      // inheriting the heading hue via the uncolored base rules above.
+      //
+      // The separator is meta.paragraph.markdown, which body and list-item
+      // emphasis sit under and heading emphasis does not — measured stacks:
+      //   heading  text.html > markup.heading > heading.N > entity.name.section > markup.bold
+      //   body     text.html > meta.paragraph > markup.bold
+      //   list     text.html > markup.list.unnumbered > meta.paragraph > markup.bold
+      //
+      // A `-markup.heading` EXCLUSION selector is the obvious way to write this
+      // and silently matches nothing — vscode-textmate honors `-` in grammar
+      // injection selectors but not in theme scope matching, so the rule is
+      // dropped with no error and prose emphasis stays uncolored.
+      //
+      // Deliberate deviation from glamour, whose strong/emph carry no color:
+      // markdown here uses `**Term** — description` as a label, and a label
+      // reads better colored.
+      { scope: ['meta.paragraph.markdown markup.bold'], settings: { foreground: P.accentBright, fontStyle: 'bold' } },
+      { scope: ['meta.paragraph.markdown markup.italic'], settings: { foreground: P.steel, fontStyle: 'italic' } },
       { scope: ['markup.inserted'], settings: { foreground: P.success } },
       { scope: ['markup.deleted'], settings: { foreground: P.urgent } },
       { scope: ['markup.changed'], settings: { foreground: P.attention } },
       { scope: ['markup.quote'], settings: { foreground: P.fgSecondary, fontStyle: 'italic' } },
-      { scope: ['markup.link'], settings: { foreground: P.accent } },
+      // List markers carry the same structural gold as headings; without this
+      // they fall through to the generic `punctuation` rule and read as noise.
+      { scope: ['punctuation.definition.list.begin'], settings: { foreground: P.accent } },
+      // glamour: link URL cyan + underline, link TEXT sand + bold, image purple.
+      // markup.underline.link is a DIFFERENT subtree from markup.link — it is
+      // where the grammar puts the URL itself, so a `markup.link`-only rule
+      // leaves every URL unstyled.
+      { scope: ['markup.link', 'markup.underline.link'], settings: { foreground: P.cyan, fontStyle: 'underline' } },
+      { scope: ['string.other.link.title', 'string.other.link.description'], settings: { foreground: P.accentBright, fontStyle: 'bold' } },
+      // More specific than markup.underline.link above, so images win their hue.
+      { scope: ['markup.underline.link.image', 'meta.image'], settings: { foreground: P.brandPurpleBright, fontStyle: 'underline' } },
+      // glamour splits these: inline `code` is string-green, but a fenced
+      // code_block is document foreground — the embedded language grammar
+      // colors its contents, so tinting the block itself fights that.
       { scope: ['markup.raw', 'markup.inline.raw'], settings: { foreground: sx('string') } },
+      { scope: ['markup.fenced_code.block'], settings: { foreground: P.fg } },
+      { scope: ['fenced_code.block.language'], settings: { foreground: P.fgSecondary } },
+      { scope: ['meta.separator'], settings: { foreground: P.border } },
       { scope: ['invalid', 'invalid.illegal'], settings: { foreground: sx('invalid'), fontStyle: 'italic' } },
       { scope: ['invalid.deprecated'], settings: { foreground: sx('invalid'), fontStyle: 'italic' } }
     ]
@@ -776,6 +852,660 @@ write('helix/artificer-dark-opaque.toml',  helixTheme('dark',  { paintBackground
 write('helix/artificer-light-opaque.toml', helixTheme('light', { paintBackground: true }));
 
 // ─────────────────────────────────────────────────────────────────────
+// Neovim — one Lua colorscheme, both modes
+// ─────────────────────────────────────────────────────────────────────
+//
+// Fourth consumer of $roles.syntax, and the second terminal editor on the same
+// canvas as Helix — so ADR 0038 governs here too rather than a new ruling:
+// ship transparent (inherit Ghostty's terminalBg) and keep the floor-clearing
+// opaque surface one command away. Helix expressed that as `-opaque` twins
+// because its themes are static TOML; a Neovim colorscheme is EXECUTABLE, so
+// the escape is a flag the file reads at load — `vim.g.artificer_opaque = true`
+// before `:colorscheme artificer`. Same ruling, idiomatic mechanism, one file.
+//
+// One file for both modes for the same reason: the emitted Lua branches on
+// vim.o.background, which plugins and `:set background=light` already read.
+// Two colorschemes (artificer / artificer-light) would discard that.
+//
+// Group authority is Neovim's own documented set (`:help highlight-groups`,
+// `:help treesitter-highlight-groups`, `:help lsp-semantic-highlight`), NOT a
+// stock theme. Two Neovim-specific hazards shape what is emitted:
+//
+//   · `highlight clear` restores Neovim's BUILT-IN defaults, not nothing — so a
+//     legacy group left unset keeps a stock color rather than inheriting an
+//     Artificer one. Vim's "preferred groups" are therefore all defined
+//     explicitly (vim/vim#4405: stale links survive a colorscheme switch, and
+//     the upstream conclusion was to stop relying on them).
+//   · nvim_set_hl REPLACES a group's whole definition — there is no merge — so
+//     every spec below is complete on its own.
+//
+// A group with no sensible binding among the twelve roles is LEFT UNSET so it
+// inherits through Neovim's own specific→generic @capture fallback. Deliberately
+// unset, and why:
+//   · @comment.documentation, @string.special.*, @function.builtin,
+//     @constant.builtin, @type.builtin, @variable.member, @property — no role
+//     distinguishes these from their parent, and an explicit child that lands on
+//     the parent's hex is noise rather than design.
+//   · language-specialized forms (@keyword.lua, @string.python, …) — the whole
+//     point of the role layer is that a keyword is one hue everywhere.
+//   · @markup.list markers and Vim's Character/Number/Boolean/Conditional/Repeat
+//     — they default-link to a parent this file DOES define, so the cascade
+//     already carries them.
+//   · DiagnosticVirtualText* / DiagnosticSign* — Neovim default-links each to
+//     its Diagnostic* parent, which is defined below.
+//   · Statusline MODE chips (Helix's ui.statusline.normal/insert/select) — core
+//     Neovim has no group for them; the mode indicator belongs to a statusline
+//     plugin, and none is assumed here. Chrome parity stops there, on purpose.
+//   · cterm* on every group — see the truecolor banner in the emitted header.
+//
+// Colors route through a `palette` table keyed by the EXACT _palette.json token
+// names (the greppability Helix's [palette] table buys), and every reference in
+// the body goes through t()/sx() so a mistyped token throws at build time
+// instead of emitting a nil that Lua would silently pass to nvim_set_hl.
+
+const neovimTheme = () => {
+  // Both modes ship in one file, so a token has to exist in BOTH blocks — a
+  // token present only in dark would emit `P.x` that resolves to nil under
+  // `:set background=light`, which nvim_set_hl accepts and renders as "no color".
+  const used = new Set();
+
+  // This emitter's output is EXECUTED — a Lua script Neovim runs on every
+  // `:colorscheme artificer`, not a data file it parses. That makes it the
+  // highest-consequence sink in build.mjs, and _palette.json is by this repo's
+  // own threat model not repo-authored: it is Lane 1's artifact, pulled over
+  // DesignSync from an external project (CLAUDE.md § Encapsulation).
+  //
+  // A value of the shape `#000", x = os.execute("…") --` closes the Lua string
+  // literal and becomes statements; a token NAME lands as a bare table key AND
+  // as `P.<name>`, so it is the same hole twice. Both are guarded here, at the
+  // emitter, for the reason batTheme's hex() states: check:themes regenerates
+  // and diffs, so a poisoned palette and its faithful regeneration both pass
+  // green. The test's parser catching a malformed value is a side effect, not
+  // a control.
+  const hex = (value, what) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
+      throw new Error(
+        `neovimTheme: ${what} resolved to ${JSON.stringify(value)}, which is not a `
+        + 'six-digit hex colour. Refusing to emit it into an executable Lua file.'
+      );
+    }
+    return value;
+  };
+
+  // A Lua identifier, and nothing else — the name is emitted unquoted on both
+  // sides of the table.
+  const identifier = (token) => {
+    if (!/^[A-Za-z_]\w*$/.test(token)) {
+      throw new Error(
+        `neovimTheme: palette token ${JSON.stringify(token)} is not a Lua identifier. `
+        + 'Refusing to emit it as a table key.'
+      );
+    }
+    return token;
+  };
+
+  const t = (token) => {
+    // hasOwn, not `in` — `in` walks the prototype chain, so `"constructor" in P`
+    // is true for any object.
+    if (!Object.hasOwn(D, token) || !Object.hasOwn(L, token)) {
+      throw new Error(`neovimTheme: token "${token}" is not in BOTH palette modes`);
+    }
+    identifier(token);
+    hex(D[token], `dark token "${token}"`);
+    hex(L[token], `light token "${token}"`);
+    used.add(token);
+    return `P.${token}`;
+  };
+  const sx = (role) => t(syntaxToken(role));
+
+  // ink in BOTH modes per $notes.onAccentDark/onAccentLight — ivory on
+  // accentFill measures 2.32:1 (v0.19.0 #122-A).
+  const onAccent = t('ink');
+
+  const paletteBlock = (P) => {
+    const tokens = [...used].sort();
+    const pad = Math.max(...tokens.map((token) => token.length));
+    return tokens.map((token) => `    ${token.padEnd(pad)} = "${P[token]}",`).join('\n');
+  };
+
+  const body = `-- Artificer — Neovim colorscheme
+-- Ghostty-rooted spine, Jazz Age accents · ivory paper, midnight indigo ink
+--
+-- Drop in: ~/.config/nvim/colors/artificer.lua
+-- Then:    :colorscheme artificer
+--
+-- Generated from themes/_palette.json — edit there + re-run build.mjs.
+--
+-- Syntax resolves through $roles.syntax, the same editor-agnostic role layer VS
+-- Code and Helix consume — a keyword is the same hue in all three editors by
+-- construction, not coincidence.
+--
+-- TRUECOLOR REQUIRED. No ctermfg/ctermbg is emitted, so without
+-- \`termguicolors\` this degrades to whatever 16 colors the terminal guesses —
+-- a disposition, not an oversight. This file deliberately does NOT set
+-- \`termguicolors\` itself: setting it from inside colors/ mutates a global the
+-- user never gets back on switch-away, and it is redundant on Neovim >= 0.10.
+-- Set it in your init.lua.
+--
+-- \`highlight clear\` below wipes EVERY highlight, including groups plugins
+-- defined earlier — they vanish on each colorscheme switch. Personal overrides
+-- belong in a ColorScheme autocommand created BEFORE \`:colorscheme\` runs.
+
+vim.cmd('highlight clear')
+if vim.fn.exists('syntax_on') == 1 then
+  vim.cmd('syntax reset')
+end
+vim.g.colors_name = 'artificer'
+
+-- ── Palette · verbatim _palette.json token names ─────────────────────
+local palette = {
+  dark = {
+__DARK__
+  },
+  light = {
+__LIGHT__
+  },
+}
+
+-- \`background\` is read ONCE, here. Neovim fires OptionSet and nothing else on
+-- \`:set background=light\`, so the flip does not re-source this file — re-run
+-- \`:colorscheme artificer\` after changing it.
+local P = palette[vim.o.background == 'light' and 'light' or 'dark']
+
+-- ADR 0038's escape hatch. Default is transparent: the terminal canvas
+-- (Ghostty's terminalBg) shows through, where comment and operator measure 2.68
+-- against the repo's 3.0 floor — the same pre-existing terminal-wide condition
+-- Ghostty's ANSI 9/10 already ship. Want the floors back?
+--
+--     vim.g.artificer_opaque = true
+--     vim.cmd.colorscheme('artificer')
+--
+-- vim.g survives \`:colorscheme\`, and \`:colorscheme\` re-sources
+-- unconditionally, so re-entry re-reads the flag. \`= 1\` is accepted too, for
+-- \`:let g:artificer_opaque = 1\`.
+local opaque = vim.g.artificer_opaque == true or vim.g.artificer_opaque == 1
+
+local function hi(group, opts)
+  vim.api.nvim_set_hl(0, group, opts)
+end
+
+-- ── Editor plane ─────────────────────────────────────────────────────
+if opaque then
+  -- PAINTS the substrate. On bg every $roles.syntax binding passes: string
+  -- 4.50, comment and operator 3.05, tag and invalid 3.08.
+  hi('Normal', { fg = ${t('fg')}, bg = ${t('bg')} })
+else
+  -- No bg key at all — that is how a Lua colorscheme is transparent; there is
+  -- no "none" color to assign.
+  hi('Normal', { fg = ${t('fg')} })
+end
+
+hi('Cursor', { fg = ${t('bg')}, bg = ${t('accent')} })
+hi('CursorLine', { bg = ${t('bgRaised')} })
+hi('CursorLineNr', { fg = ${t('fg')}, bold = true })
+-- Line numbers recede on purpose (fgDisabled: 2.43 dark / 3.25 light) — with
+-- relative numbering these are offsets you glance past, and the absolute number
+-- you actually read is the selected one at full fg (ruleUsageSetsRatio).
+hi('LineNr', { fg = ${t('fgDisabled')} })
+-- No bg: the sign column inherits whichever canvas Normal settled on, so it
+-- does not become an opaque stripe on the transparent default.
+hi('SignColumn', { fg = ${t('fgDisabled')} })
+hi('WinSeparator', { fg = ${t('border')} })
+hi('Folded', { fg = ${t('fgSecondary')}, bg = ${t('bgRaised')} })
+hi('ColorColumn', { bg = ${t('bgRaised')} })
+hi('Title', { fg = ${t('accent')}, bold = true })
+hi('Directory', { fg = ${t('steel')} })
+hi('Conceal', { fg = ${t('fgDisabled')} })
+hi('EndOfBuffer', { fg = ${t('fgDisabled')} })
+
+-- Selection and search are surface TINTS, not saturated fills: Neovim cannot
+-- force a selection foreground, so the syntax hues underneath keep whatever
+-- color they had. An opaque accent slab would swamp them (comment on
+-- selectionFill measures 1.39 dark / 1.65 light). CurSearch is the one that may
+-- shout — it marks exactly one match, and it sets its own fg.
+hi('Visual', { bg = ${t('bgOverlay')} })
+hi('Search', { bg = ${t('bgFloat')} })
+hi('CurSearch', { fg = ${onAccent}, bg = ${t('accentFill')}, bold = true })
+hi('IncSearch', { link = 'CurSearch' })
+hi('MatchParen', { fg = ${t('accentBright')}, bold = true, underline = true, sp = ${t('accent')} })
+
+-- ── Floating plane ───────────────────────────────────────────────────
+-- Popups need an opaque fill in both variants — text renders over whatever is
+-- behind them. Worth knowing before touching this: a code block inside a hover
+-- doc paints syntax on bgOverlay, where comment measures 2.22 dark (3.13
+-- light). Not gated by check:contrast, which scopes SURFACE to bg/ivory.
+hi('NormalFloat', { fg = ${t('fg')}, bg = ${t('bgOverlay')} })
+hi('FloatBorder', { fg = ${t('border')}, bg = ${t('bgOverlay')} })
+hi('FloatTitle', { fg = ${t('accent')}, bg = ${t('bgOverlay')}, bold = true })
+hi('Pmenu', { fg = ${t('fg')}, bg = ${t('bgOverlay')} })
+hi('PmenuSel', { fg = ${onAccent}, bg = ${t('accentFill')}, bold = true })
+hi('PmenuSbar', { bg = ${t('bgRaised')} })
+hi('PmenuThumb', { bg = ${t('borderLifted')} })
+hi('WildMenu', { link = 'PmenuSel' })
+hi('QuickFixLine', { bg = ${t('bgRaised')} })
+
+-- ── Statusline & tabs ────────────────────────────────────────────────
+-- bgOverlay so the bar reads as a band against the editor canvas, not a seam.
+hi('StatusLine', { fg = ${t('fg')}, bg = ${t('bgOverlay')} })
+hi('StatusLineNC', { fg = ${t('fgSecondary')}, bg = ${t('bgRaised')} })
+hi('TabLine', { fg = ${t('fgSecondary')}, bg = ${t('bgRaised')} })
+hi('TabLineSel', { fg = ${t('fg')}, bg = ${t('bg')}, bold = true })
+hi('TabLineFill', { bg = ${t('bgRaised')} })
+hi('MsgArea', { fg = ${t('fg')} })
+hi('ModeMsg', { fg = ${t('fgSecondary')}, bold = true })
+hi('MoreMsg', { fg = ${t('accent')} })
+hi('Question', { fg = ${t('accent')} })
+-- urgentText, not urgent: ErrorMsg is body text in the message area, and bare
+-- urgent measures 2.27:1 on dark bg. urgentText exists for exactly this
+-- (ADR 0016). WarningMsg keeps attention — the palette offers no lifted
+-- attention-text token, and Helix binds warning the same way.
+hi('ErrorMsg', { fg = ${t('urgentText')} })
+hi('WarningMsg', { fg = ${t('attention')} })
+
+-- ── Virtual text & whitespace ────────────────────────────────────────
+hi('NonText', { fg = ${t('fgDisabled')} })
+hi('Whitespace', { fg = ${t('fgDisabled')} })
+hi('SpecialKey', { fg = ${t('fgDisabled')} })
+hi('LspInlayHint', { fg = ${t('fgMuted')} })
+
+-- ── Syntax · $roles.syntax ───────────────────────────────────────────
+-- Vim's "preferred groups", all defined rather than left to the built-in
+-- defaults \`highlight clear\` restores. Their documented children (Number,
+-- Boolean, Conditional, Repeat, StorageClass, …) default-link here, so the
+-- cascade carries them without a line each.
+hi('Comment', { fg = ${sx('comment')} })
+hi('Constant', { fg = ${sx('constant')} })
+hi('String', { fg = ${sx('string')} })
+hi('Identifier', { fg = ${sx('variable')} })
+hi('Function', { fg = ${sx('function')} })
+hi('Statement', { fg = ${sx('keyword')} })
+hi('Keyword', { fg = ${sx('keyword')} })
+hi('Operator', { fg = ${sx('operator')} })
+hi('PreProc', { fg = ${sx('keyword')} })
+hi('Type', { fg = ${sx('type')} })
+hi('Special', { fg = ${sx('constant')} })
+hi('Delimiter', { fg = ${sx('operator')} })
+hi('Underlined', { fg = ${t('accent')}, underline = true })
+hi('Error', { fg = ${sx('invalid')} })
+-- The one place a fill is right: TODO is a marker, not prose. attentionFill
+-- pairs with ink at 5.09:1 dark / 8.49:1 light ($notes.attentionFill).
+hi('Todo', { fg = ${t('ink')}, bg = ${t('attentionFill')}, bold = true })
+
+-- ── Treesitter @captures ─────────────────────────────────────────────
+-- Mostly links, so one palette token cascades. Explicit fg only where the role
+-- genuinely differs from every legacy group above.
+hi('@comment', { link = 'Comment' })
+hi('@string', { link = 'String' })
+hi('@string.escape', { link = 'String' })
+hi('@character', { link = 'Constant' })
+hi('@number', { link = 'Constant' })
+hi('@boolean', { link = 'Constant' })
+hi('@constant', { link = 'Constant' })
+hi('@variable', { link = 'Identifier' })
+hi('@label', { link = 'Identifier' })
+hi('@function', { link = 'Function' })
+hi('@function.call', { link = 'Function' })
+hi('@function.method', { link = 'Function' })
+hi('@function.method.call', { link = 'Function' })
+hi('@keyword', { link = 'Keyword' })
+hi('@keyword.function', { link = 'Keyword' })
+hi('@keyword.import', { link = 'Keyword' })
+hi('@keyword.return', { link = 'Keyword' })
+-- \`or\`, \`in\`, \`not\` — operators wearing a keyword's spelling.
+hi('@keyword.operator', { link = 'Operator' })
+hi('@type', { link = 'Type' })
+hi('@type.definition', { link = 'Type' })
+-- A constructor names the type it yields.
+hi('@constructor', { link = 'Type' })
+hi('@operator', { link = 'Operator' })
+hi('@punctuation.delimiter', { link = 'Operator' })
+hi('@punctuation.bracket', { link = 'Operator' })
+hi('@punctuation.special', { link = 'Operator' })
+hi('@tag.delimiter', { link = 'Operator' })
+
+hi('@variable.parameter', { fg = ${sx('parameter')}, italic = true })
+-- self / this — a keyword wearing a variable's spelling.
+hi('@variable.builtin', { fg = ${sx('keyword')}, italic = true })
+hi('@function.macro', { fg = ${sx('keyword')} })
+hi('@module', { fg = ${sx('namespace')} })
+-- @namespace is the pre-0.10 spelling of @module; both ship because a pinned
+-- older parser set still emits it.
+hi('@namespace', { fg = ${sx('namespace')} })
+-- Neovim has no legacy Tag group to link to, so tag takes an explicit fg.
+-- Attributes read as tag, the same call Helix and the tmTheme emitter make.
+hi('@tag', { fg = ${sx('tag')} })
+hi('@tag.attribute', { fg = ${sx('tag')} })
+hi('@attribute', { fg = ${sx('tag')} })
+
+-- ── Markup (markdown, docs) ──────────────────────────────────────────
+hi('@markup.heading', { link = 'Title' })
+hi('@markup.strong', { fg = ${t('fg')}, bold = true })
+hi('@markup.italic', { fg = ${t('fg')}, italic = true })
+hi('@markup.strikethrough', { strikethrough = true })
+hi('@markup.raw', { link = 'String' })
+hi('@markup.link.url', { fg = ${t('accent')}, underline = true })
+hi('@markup.link.label', { fg = ${t('accent')} })
+hi('@markup.quote', { fg = ${t('fgSecondary')}, italic = true })
+
+-- ── Diagnostics ──────────────────────────────────────────────────────
+-- info=cyan / hint=fgMuted follows Helix rather than VS Code's steel pair:
+-- Neovim is a terminal editor on the same canvas, and cross-editor agreement
+-- there is the point.
+hi('DiagnosticError', { fg = ${t('urgent')} })
+hi('DiagnosticWarn', { fg = ${t('attention')} })
+hi('DiagnosticInfo', { fg = ${t('cyan')} })
+hi('DiagnosticHint', { fg = ${t('fgMuted')} })
+hi('DiagnosticOk', { fg = ${t('success')} })
+-- An undercurl carries severity without recoloring the code underneath.
+hi('DiagnosticUnderlineError', { undercurl = true, sp = ${t('urgent')} })
+hi('DiagnosticUnderlineWarn', { undercurl = true, sp = ${t('attention')} })
+hi('DiagnosticUnderlineInfo', { undercurl = true, sp = ${t('cyan')} })
+hi('DiagnosticUnderlineHint', { undercurl = true, sp = ${t('fgMuted')} })
+hi('DiagnosticUnderlineOk', { undercurl = true, sp = ${t('success')} })
+hi('DiagnosticUnnecessary', { fg = ${t('fgDisabled')} })
+-- The only place the \`invalid\` role lands besides Error.
+hi('DiagnosticDeprecated', { fg = ${sx('invalid')}, strikethrough = true })
+
+-- ── Diff ─────────────────────────────────────────────────────────────
+-- Foreground, not the diffAddBg/diffDelBg line fills VS Code uses: on the
+-- transparent default a painted line would be the only opaque band on the
+-- canvas. Same call as Helix's diff.plus/minus/delta, and it is also what
+-- gitsigns wants for gutter signs.
+hi('DiffAdd', { fg = ${t('success')} })
+hi('DiffChange', { fg = ${t('attention')} })
+hi('DiffDelete', { fg = ${t('urgent')} })
+hi('DiffText', { fg = ${t('urgentBright')}, bold = true })
+hi('@diff.plus', { link = 'DiffAdd' })
+hi('@diff.minus', { link = 'DiffDelete' })
+hi('@diff.delta', { link = 'DiffChange' })
+
+-- ── LSP semantic tokens ──────────────────────────────────────────────
+-- Semantic tokens out-prioritize treesitter (125 vs 100), so a semantic-token
+-- capable server repaints identifiers the @capture groups above already styled
+-- — the "christmas tree". Clearing each override with an empty table hands the
+-- decision back to treesitter, which is where $roles.syntax lives.
+--
+-- @lsp.type.* alone is not enough: servers also emit modifiers and typemods,
+-- and those are separate groups with their own priority.
+for _, group in ipairs({
+  '@lsp.type.variable', '@lsp.type.parameter', '@lsp.type.property',
+  '@lsp.type.function', '@lsp.type.method', '@lsp.type.namespace',
+  '@lsp.type.class', '@lsp.type.enum', '@lsp.type.enumMember',
+  '@lsp.type.type', '@lsp.type.typeParameter', '@lsp.type.keyword',
+  '@lsp.type.comment', '@lsp.type.string', '@lsp.type.number',
+  '@lsp.type.operator', '@lsp.type.macro', '@lsp.type.decorator',
+  '@lsp.type.struct', '@lsp.type.interface',
+  '@lsp.mod.readonly', '@lsp.mod.deprecated', '@lsp.mod.defaultLibrary',
+  '@lsp.typemod.variable.defaultLibrary',
+  '@lsp.typemod.function.defaultLibrary',
+  '@lsp.typemod.variable.readonly',
+}) do
+  hi(group, {})
+end
+
+-- ── :terminal ANSI slots ─────────────────────────────────────────────
+-- Slots 1-7 / 9-15 are Ghostty's semantic map verbatim, so a shell inside
+-- Neovim matches the shell outside it. Slots 0 and 8 depend on the canvas,
+-- which is exactly what the opaque flag changes:
+--   transparent — the canvas IS Ghostty's terminalBg, so ADR 0001's lift
+--                 applies and black comes from ansiBlack/ansiBrightBlack.
+--   opaque      — the canvas is bg, the same substrate VS Code's integrated
+--                 terminal paints, so VS Code's deferral applies instead.
+if opaque then
+  vim.g.terminal_color_0 = ${t('bg')}
+  vim.g.terminal_color_8 = ${t('fgDisabled')}
+else
+  vim.g.terminal_color_0 = ${t('ansiBlack')}
+  vim.g.terminal_color_8 = ${t('ansiBrightBlack')}
+end
+
+vim.g.terminal_color_1 = ${t('urgent')}
+vim.g.terminal_color_2 = ${t('success')}
+vim.g.terminal_color_3 = ${t('accent')}
+-- Invariant: slots 4 and 12 must be a brightness pair on the same hue.
+-- Markdown renderers emit bright-blue for inline code; sibling hues make it
+-- render a visibly different color than the text around it. steelBright in 4
+-- and steel in 12 is not a transposition: \`steel\` is the LIGHTER of the two
+-- on dark (#b8cad4 vs #9fb6c4), because \`*Bright\` names a role, not a
+-- lightness direction. Ghostty ships the same pairing.
+vim.g.terminal_color_4 = ${t('steelBright')}
+vim.g.terminal_color_5 = ${t('brandPurple')}
+vim.g.terminal_color_6 = ${t('cyan')}
+vim.g.terminal_color_7 = ${t('fg')}
+vim.g.terminal_color_9 = ${t('urgentBright')}
+vim.g.terminal_color_10 = ${t('successBright')}
+vim.g.terminal_color_11 = ${t('accentBright')}
+vim.g.terminal_color_12 = ${t('steel')}
+vim.g.terminal_color_13 = ${t('brandPurpleBright')}
+vim.g.terminal_color_14 = ${t('cyanBright')}
+-- The one slot with no single token: ivory IS the light canvas, so bright
+-- white has to flip to fg there or vanish (Ghostty makes the same flip).
+vim.g.terminal_color_15 = vim.o.background == 'light' and ${t('fg')} or ${t('ivory')}
+`;
+
+  // Replacer FUNCTIONS, not strings: a string replacement interprets $&, $$ and
+  // $1 as specials. The two guards above already make a `$` unreachable in a
+  // token name or hex, so this is belt-and-braces — but it costs nothing and it
+  // means loosening those regexes can never quietly resurrect the hazard.
+  return body
+    .replace('__DARK__', () => paletteBlock(D))
+    .replace('__LIGHT__', () => paletteBlock(L));
+};
+
+write('neovim/colors/artificer.lua', neovimTheme());
+
+// ─────────────────────────────────────────────────────────────────────
+// bat / delta — legacy .tmTheme (XML plist), syntect's own theme format.
+//
+// syntect (the highlighting engine bat and delta both link) only reads the
+// legacy TextMate .tmTheme plist, never the modern .sublime-color-scheme
+// JSON docs/research/theming/sublime.md documents — there is no ST GUI on a
+// build box to run "Convert Color Scheme", so this hand-emits the plist
+// directly from the same syntaxToken() role layer every other editor target
+// uses. Scope mapping mirrors sublime.md's table (comment→comment,
+// string→string, keyword→keyword, type→storage.type + entity.name.type,
+// function→entity.name.function + support.function, plus
+// constant.numeric/variable/entity.name.tag), widened with the handful of
+// scopes syntect's bundled grammars actually emit (keyword.operator,
+// variable.parameter, variable.language, entity.name.namespace,
+// entity.other.attribute-name, markup.*, invalid).
+//
+// Deliberately NO top-level "background" key in the global settings dict —
+// the same choice Helix's non-opaque variant makes for ui.background (ADR
+// 0038): omitting it lets bat/delta inherit whatever canvas the terminal
+// already painted (Ghostty running the Artificer theme), rather than
+// fighting it with a second, possibly-mismatched fill. bat's stock
+// "base16"/"base16-256" themes reach the same terminal-following goal a
+// different way — an #RRGGBBAA-encoded ANSI-index hack syntect special-cases
+// — but that trades away per-role hues (everything renders in the terminal's
+// flat ANSI palette). This theme keeps the real per-role Artificer colors
+// (truecolor hex, like every other editor port) and only leaves the *fill*
+// unset.
+//
+// "foreground" IS set (to fg), unlike background — syntect's highlighter
+// falls back to pure black for any scope with no explicit match (plain
+// text, most punctuation) when a theme carries no top-level foreground, which
+// reads as invisible/wrong on a dark canvas. caret/selection/lineHighlight
+// are unconditional overlays either way, independent of whether a base fill
+// is painted underneath them.
+
+// The same emitter serves a second consumer: the Codex CLI's TUI, which reads
+// ~/.codex/themes/*.tmTheme and selects one by name from [tui] theme in
+// ~/.codex/config.toml. Codex differs from bat/delta on exactly one axis —
+// it paints its own pane rather than letting the terminal canvas show through
+// — so it takes { paintBackground: true } and is otherwise byte-for-byte the
+// same role mapping. Before this, ~/.codex/themes/artificer-dark.tmTheme was a
+// hand-authored orphan in ~/.dotfiles whose header claimed it was generated
+// from _palette.json while no generator for it existed; folding it in here
+// makes that claim true and leaves install.sh the single owner of the file.
+
+const batTheme = (mode, { paintBackground = false, consumer = 'bat/delta' } = {}) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Artificer Dark' : 'Artificer Light';
+
+  // Every colour that reaches this plist goes through hex() first.
+  //
+  // _palette.json is NOT repo-authored — it is Lane 1's artifact, pulled over
+  // DesignSync from an external claude.ai project (CLAUDE.md § Encapsulation).
+  // Until this emitter, gum was the only target where a palette value landed
+  // anywhere but a JSON.stringify() call, and its gumValue() guard carried the
+  // whole invariant. A hand-templated XML plist breaks that: esc() below covers
+  // the rule name and scope, which are repo-authored literals and can never
+  // carry hostile content, while every colour slot interpolates raw. A value of
+  // `#000</string><key>background</key><string>#f00` would inject plist
+  // structure, and a bare `&` would emit malformed XML that install.sh's
+  // `bat cache --build` then swallows — a silently dead theme, not a loud fail.
+  //
+  // check:themes structurally cannot catch this: it regenerates and diffs, so a
+  // poisoned palette and its faithfully regenerated output both pass green. The
+  // guard has to live at the emitter, exactly as gumValue() does.
+  const hex = (value, what) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
+      throw new Error(
+        `batTheme(${mode}): ${what} resolved to ${JSON.stringify(value)}, which is `
+        + 'not a six-digit hex colour. Refusing to emit it into a theme plist.'
+      );
+    }
+    return value;
+  };
+
+  // t()/sx() mirror helixTheme's: hasOwn, not `in` — `in` walks the prototype
+  // chain, so `"constructor" in P` is true for any object and would interpolate
+  // a stringified function body (full of < and &) into the XML.
+  const t = (token) => {
+    if (!Object.hasOwn(P, token)) throw new Error(`batTheme(${mode}): unknown palette token "${token}"`);
+    return hex(P[token], `token "${token}"`);
+  };
+  const sx = (role) => t(syntaxToken(role));
+
+  // XML-escape the handful of characters plist text nodes disallow bare.
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const rule = (name, scope, { foreground, background, fontStyle } = {}) => `\t\t<dict>
+\t\t\t<key>name</key>
+\t\t\t<string>${esc(name)}</string>
+\t\t\t<key>scope</key>
+\t\t\t<string>${esc(scope)}</string>
+\t\t\t<key>settings</key>
+\t\t\t<dict>${foreground ? `
+\t\t\t\t<key>foreground</key>
+\t\t\t\t<string>${foreground}</string>` : ''}${background ? `
+\t\t\t\t<key>background</key>
+\t\t\t\t<string>${background}</string>` : ''}${fontStyle ? `
+\t\t\t\t<key>fontStyle</key>
+\t\t\t\t<string>${fontStyle}</string>` : ''}
+\t\t\t</dict>
+\t\t</dict>`;
+
+  const rules = [
+    // punctuation.definition.comment is NOT a child of `comment` — TextMate
+    // scope matching is prefix-based, so the alias is load-bearing, not noise.
+    rule('Comment', 'comment, punctuation.definition.comment', { foreground: sx('comment'), fontStyle: 'italic' }),
+    rule('String', 'string', { foreground: sx('string') }),
+    rule('String Escape', 'constant.character.escape', { foreground: sx('constant') }),
+    rule('Regexp', 'string.regexp', { foreground: sx('string') }),
+    rule('Number', 'constant.numeric', { foreground: sx('constant') }),
+    rule('Constant / Language', 'constant.language, constant.other, constant.character', { foreground: sx('constant') }),
+    rule('Keyword', 'keyword', { foreground: sx('keyword') }),
+    rule('Keyword · Operator', 'keyword.operator', { foreground: sx('operator') }),
+    rule('Punctuation', 'punctuation, meta.brace, meta.delimiter', { foreground: sx('operator') }),
+    rule('Storage', 'storage', { foreground: sx('keyword') }),
+    rule('Storage · Type', 'storage.type', { foreground: sx('type') }),
+    rule('Storage · Modifier', 'storage.modifier', { foreground: sx('keyword'), fontStyle: 'italic' }),
+    // self/this reads as a keyword role (matches Helix's variable.builtin binding).
+    rule('Variable · Language', 'variable.language', { foreground: sx('keyword'), fontStyle: 'italic' }),
+    rule('Variable · Parameter', 'variable.parameter', { foreground: sx('parameter'), fontStyle: 'italic' }),
+    rule('Variable', 'variable', { foreground: sx('variable') }),
+    rule('Function / Support Function', 'entity.name.function, support.function, meta.function-call', { foreground: sx('function') }),
+    rule('Type / Class', 'entity.name.type, entity.name.class, entity.name.interface, entity.name.enum, support.type, support.class', { foreground: sx('type') }),
+    // Attributes route through the tag role, same call Helix's "attribute" binding makes.
+    rule('Tag', 'entity.name.tag', { foreground: sx('tag') }),
+    rule('Attribute Name', 'entity.other.attribute-name', { foreground: sx('tag') }),
+    rule('Namespace', 'entity.name.namespace, entity.name.module, support.module, support.other.namespace', { foreground: sx('namespace') }),
+    rule('Markup · Heading', 'markup.heading, entity.name.section', { foreground: t('accent'), fontStyle: 'bold' }),
+    rule('Markup · Bold', 'markup.bold', { foreground: t('fg'), fontStyle: 'bold' }),
+    rule('Markup · Italic', 'markup.italic', { foreground: t('fg'), fontStyle: 'italic' }),
+    rule('Markup · Link', 'markup.link, markup.underline.link, string.other.link', { foreground: t('accent'), fontStyle: 'underline' }),
+    rule('Markup · Raw', 'markup.raw, markup.inline.raw', { foreground: sx('string') }),
+    rule('Markup · Quote', 'markup.quote', { foreground: t('fgSecondary'), fontStyle: 'italic' }),
+    // The diff triple is why delta wants this theme at all — delta renders its
+    // own +/- gutters, but the hunk bodies highlight through these scopes.
+    rule('Markup · Inserted', 'markup.inserted', { foreground: t('success'), background: t('diffAddBg') }),
+    rule('Markup · Deleted', 'markup.deleted', { foreground: t('urgent'), background: t('diffDelBg') }),
+    rule('Markup · Changed', 'markup.changed', { foreground: t('attention') }),
+    rule('Invalid', 'invalid', { foreground: sx('invalid') }),
+    rule('Invalid · Deprecated', 'invalid.deprecated', { foreground: sx('invalid'), fontStyle: 'underline' }),
+  ].join('\n');
+
+  const backgroundNote = paintBackground
+    ? `  Paints its own background: this variant targets a TUI pane that composites
+  over the terminal rather than sharing its canvas, so the fill is explicit.`
+    : `  No top-level background override: this theme inherits the terminal's own
+  canvas (Ghostty running Artificer already) instead of painting over it.
+  foreground IS set, so unscoped text and punctuation render in Artificer fg
+  rather than syntect's black fallback.`;
+
+  // XML comments forbid a literal double hyphen anywhere in their body (not
+  // just "-->"), so the header below is written without one — no CLI flags
+  // spelled out inline. Install steps live in themes/README.md instead.
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  ${title}: ${consumer} syntax theme (syntect .tmTheme).
+  Generated from themes/_palette.json; edit there and re-run node themes/build.mjs.
+  Install steps and the delta wiring live in themes/README.md.
+
+${backgroundNote}
+-->
+<plist version="1.0">
+<dict>
+\t<key>name</key>
+\t<string>${title}</string>
+\t<key>settings</key>
+\t<array>
+\t\t<dict>
+\t\t\t<key>settings</key>
+\t\t\t<dict>
+\t\t\t\t<key>foreground</key>
+\t\t\t\t<string>${t('fg')}</string>${paintBackground ? `
+\t\t\t\t<key>background</key>
+\t\t\t\t<string>${t('bgRaised')}</string>` : ''}
+\t\t\t\t<key>caret</key>
+\t\t\t\t<string>${t('accent')}</string>
+\t\t\t\t<key>selection</key>
+\t\t\t\t<string>${t('selectionFill')}</string>
+\t\t\t\t<key>lineHighlight</key>
+\t\t\t\t<string>${t('bgRaised')}</string>
+\t\t\t\t<key>invisibles</key>
+\t\t\t\t<string>${t('fgDisabled')}</string>
+\t\t\t\t<key>gutterForeground</key>
+\t\t\t\t<string>${t('fgDisabled')}</string>
+\t\t\t\t<key>findHighlight</key>
+\t\t\t\t<string>${t('attentionFill')}</string>
+\t\t\t\t<key>findHighlightForeground</key>
+\t\t\t\t<string>${t(mode === 'dark' ? 'ink' : 'ivory')}</string>
+\t\t\t</dict>
+\t\t</dict>
+${rules}
+\t</array>
+\t<key>uuid</key>
+\t<!-- The suffix names the VARIANT, not the filename: "opaque" is this repo's
+\t     established word for a painted-background twin (see helix/*-opaque.toml).
+\t     Codex's file is artificer-dark.tmTheme, so the two do not match on
+\t     purpose; a tmTheme uuid identifies the theme, and these are two. -->
+\t<string>artificer-${mode}${paintBackground ? '-opaque' : ''}-tmtheme-v1</string>
+</dict>
+</plist>
+`;
+};
+
+write('bat/artificer-dark.tmTheme',  batTheme('dark'));
+write('bat/artificer-light.tmTheme', batTheme('light'));
+
+write('codex/artificer-dark.tmTheme',  batTheme('dark',  { paintBackground: true, consumer: 'Codex CLI TUI' }));
+write('codex/artificer-light.tmTheme', batTheme('light', { paintBackground: true, consumer: 'Codex CLI TUI' }));
+
+// ─────────────────────────────────────────────────────────────────────
 // tmux — styles-only fragment, source-file from tmux.conf
 // ─────────────────────────────────────────────────────────────────────
 
@@ -925,7 +1655,7 @@ const cmuxConfig = () => JSON.stringify({
   },
   workspaceColors: {
     indicatorStyle: 'leftRail',
-    selectionColor: D.steel,                // active-row fill; calm cool neutral, cmux auto-renders ink text (9.30); owner
+    selectionColor: D.steel,                // active-row fill; calm cool neutral, cmux auto-renders ink text (9.30); owner override
     notificationBadgeColor: D.urgentBright, // 3.08/3.79 on both; bare urgent is 2.28 on the default dark sidebar
     colors: {                               // categorical series-1..5 — dark-tuned (see header); a label co-identifies
       'Artificer Gold':   D.accent,         // series-1
@@ -1136,15 +1866,25 @@ write('herdr/artificer-light.toml', herdrTheme('light'));
 // mirroring styles/dark.json in charmbracelet/glamour v1.0.0. NOT v2
 // (charm.land/glamour/v2): glow 2.1.2 links v1, and the two disagree.
 // Unrecognized keys are silently ignored, so this file cannot be validated by
-// reading it — render a fixture and inspect the escape sequences.
+// reading it — render a fixture and inspect the escape sequences. Piping glow
+// to a file proves nothing: glamour switches to its `notty` style off a tty and
+// strips all color, which reads as a dead theme. Use `script -q /dev/null`.
+//
+// The SHAPE is upstream's; the STRUCTURE is ours. Three things no style file can
+// reach — code-block syntax quantized to 256 colors, no paintable block canvas,
+// no table color — are recorded in themes/README.md § glow. Read that before
+// re-chasing any of them from a palette pass. Note the first is GLOW's gap, not
+// glamour's: glamour ships WithChromaFormatter and glow never calls it.
 
 const glamourTheme = (mode) => {
   const P = mode === 'dark' ? D : L;
 
-  // The code-block canvas. Dark's bgRaised IS terminalBg (both #313540, ADR
-  // 0036), so a block painted at bgRaised sits at 1.00:1 against its own
-  // background and vanishes — the same trap the Claude Code message chip
-  // works around above, fixed the same way: lift a rung. Light inverts
+  // The plate behind INLINE `code` — the fenced block ships unpainted
+  // (ceiling 2 below), so inline code is the sole consumer and the lift below
+  // is load-bearing for it, not vestigial. Dark's bgRaised IS terminalBg (both
+  // #313540, ADR 0036), so a plate painted at bgRaised sits at 1.00:1 against
+  // its own background and vanishes — the same trap the Claude Code message
+  // chip works around above, fixed the same way: lift a rung. Light inverts
   // elevation (bgRaised is darker than bg) and needs no lift.
   const codeBg = mode === 'dark' ? P.bgOverlay : P.bgRaised;
 
@@ -1165,11 +1905,16 @@ const glamourTheme = (mode) => {
     // Inverts correctly in both modes without a ternary: dark accent is light
     // brass over a dark bg, light accent is dark brown over a cream bg.
     h1: { prefix: ' ', suffix: ' ', color: P.bg, background_color: P.accent, bold: true },
-    h2: { prefix: '## ', color: P.accentBright },
-    h3: { prefix: '### ' },
-    h4: { prefix: '#### ' },
-    h5: { prefix: '##### ' },
-    h6: { prefix: '###### ', color: P.fgSecondary, bold: false },
+    // Depth reads as a graded glyph run rather than the literal '## '/'### '
+    // prefixes stock dark.json ships. glamour gives h3–h5 the same inherited
+    // style, so without a glyph the three levels are indistinguishable; the
+    // bar run also echoes h1's gold plate instead of leaking markdown syntax
+    // into rendered output.
+    h2: { prefix: '▌ ', color: P.accentBright },
+    h3: { prefix: '▎ ' },
+    h4: { prefix: '▏ ' },
+    h5: { prefix: '· ' },
+    h6: { prefix: '· ', color: P.fgSecondary, bold: false },
 
     text: {},
     strikethrough: { crossed_out: true },
@@ -1179,7 +1924,11 @@ const glamourTheme = (mode) => {
     emph: { italic: true },
     strong: { bold: true },
 
-    hr: { color: P.border, format: '\n--------\n' },
+    // Box-drawing rule instead of stock's ASCII '--------'. glamour's `format`
+    // is a text/template over {{.text}} with no width variable exposed, so the
+    // run is a fixed literal and will wrap below ~76 columns. Accepted
+    // knowingly: ~/.config/glow/glow.yml pins width 100.
+    hr: { color: P.border, format: `\n${'─'.repeat(72)}\n` },
     item: { block_prefix: '• ' },
     enumeration: { block_prefix: '. ' },
     task: { ticked: '[✓] ', unticked: '[ ] ' },
@@ -1229,16 +1978,26 @@ const glamourTheme = (mode) => {
         generic_emph:          { italic: true },
         generic_strong:        { bold: true },
         generic_subheading:    { color: P.fgSecondary },
-        // The block's own canvas. glamour paints the background here, not at
-        // code_block.background_color — stock dark.json leaves that unset.
-        background:            { background_color: codeBg },
+        // NO canvas entry — and be precise about why, because an earlier
+        // comment here got it wrong in the other direction. glamour DOES read
+        // the key: codeblock.go wires `Chroma.Background` through chromaStyle
+        // into a `bg:<hex>` on chroma's Background token. It dead-ends one
+        // layer down — chroma's terminal256 formatter paints per token, and
+        // nothing carries that token's bg onto the block's whitespace, so a
+        // pty render emits zero `48;` sequences. The block ships unpainted on
+        // purpose; derivation in themes/README.md § glow, ceiling 2.
       },
     },
 
-    table: {},
+    // Glyphs only — table color is UNREACHABLE in glamour v1 (themes/README.md
+    // § glow, ceiling 3). These match what `table: {}` inherited, so the render
+    // is unchanged; setting them makes the glyphs a ratified decision rather
+    // than an upstream default. All three MUST stay set together: setBorders
+    // dereferences CenterSeparator unguarded once the other two are present.
+    table: { center_separator: '┼', column_separator: '│', row_separator: '─' },
     definition_list: {},
     definition_term: {},
-    definition_description: { block_prefix: '\n🠶 ' },
+    definition_description: { block_prefix: '\n→ ' },
     html_block: {},
     html_span: {},
   };
@@ -1302,30 +2061,6 @@ const GUM_GROUPS = {
             ['PROMPT', 'accent', '']],
 };
 
-// gum is the ONLY target where a palette value lands somewhere executable —
-// every other target is JSON.stringify'd and inert. Shell double quotes do NOT
-// suppress $(...) or backticks, so a palette value of `#dbb$(cmd)` would run
-// cmd on every source: in each zsh invocation via ~/.zshenv, in the cmux
-// launcher, and at login under the LaunchAgent. No quote breakout required.
-//
-// check-themes cannot catch this. It verifies the fragment matches the
-// generator, so a poisoned palette AND its regenerated fragment pass green.
-// The guard therefore has to live at the emitter.
-//
-// It also catches a typo'd token, which today silently emits "undefined".
-const gumValue = (token, tokenName, palette) => {
-  if (!token) return '';
-  const value = palette[token];
-  if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
-    throw new Error(
-      `gumTheme: ${tokenName} → "${token}" resolved to ${JSON.stringify(value)}, ` +
-      'which is not a six-digit hex colour. Refusing to emit it into a sourced ' +
-      'shell fragment.'
-    );
-  }
-  return value;
-};
-
 const gumTheme = (mode) => {
   const P = mode === 'dark' ? D : L;
   const title = mode === 'dark' ? 'Dark' : 'Light';
@@ -1336,31 +2071,13 @@ const gumTheme = (mode) => {
     for (const [group, fgTok, bgTok] of groups) {
       // pager's top-level style has no group segment: GUM_PAGER_FOREGROUND.
       const stem = group ? `GUM_${cmd.toUpperCase()}_${group}` : `GUM_${cmd.toUpperCase()}`;
-      lines.push(`export ${stem}_FOREGROUND="${gumValue(fgTok, `${stem}_FOREGROUND`, P)}"`);
-      lines.push(`export ${stem}_BACKGROUND="${gumValue(bgTok, `${stem}_BACKGROUND`, P)}"`);
+      lines.push(`export ${stem}_FOREGROUND="${shellHexValue(fgTok, `${stem}_FOREGROUND`, P, 'gumTheme')}"`);
+      lines.push(`export ${stem}_BACKGROUND="${shellHexValue(bgTok, `${stem}_BACKGROUND`, P, 'gumTheme')}"`);
     }
     lines.push('');
   }
 
-  // Every line must be a comment, an export, or blank. ~/.zshenv sources this
-  // for EVERY zsh invocation, and a non-login non-interactive shell is what
-  // scp, sftp, git-over-ssh and mosh get — any byte on stdout during startup
-  // corrupts their protocol handshake and breaks remote access, not just
-  // colour. A future banner or deprecation notice added here would do exactly
-  // that, and check-themes would green-light it, so assert the shape now.
-  const assertInert = (body) => {
-    const offender = body.split('\n').find((l) => !/^(#|export |$)/.test(l));
-    if (offender !== undefined) {
-      throw new Error(
-        `gumTheme: refusing to emit a line that is neither a comment, an export, ` +
-        `nor blank: ${JSON.stringify(offender)}. This fragment is sourced by ` +
-        `every zsh invocation; anything that prints breaks git-over-ssh.`
-      );
-    }
-    return body;
-  };
-
-  return assertInert(`# Artificer · ${title} — gum style environment
+  return assertInertFragment(`# Artificer · ${title} — gum style environment
 # gum has no config file (charmbracelet/gum#991). Source this fragment from a
 # shell rc, or from a script that calls gum outside an interactive shell.
 #
@@ -1368,11 +2085,536 @@ const gumTheme = (mode) => {
 # Every value is a hex; gum needs a truecolor-capable terminal to render them
 # exactly, and degrades to the nearest 256 colour otherwise.
 
-${lines.join('\n')}`);
+${lines.join('\n')}`, 'gumTheme');
 };
 
 write('gum/artificer-dark.sh',  gumTheme('dark'));
 write('gum/artificer-light.sh', gumTheme('light'));
+
+// ─────────────────────────────────────────────────────────────────────
+// fzf — a --color= string, sourced from a shell rc
+// ─────────────────────────────────────────────────────────────────────
+//
+// Lands in ~/.zshrc (interactive shells only), NOT ~/.zshenv like gum. Same
+// guard either way — see themes/_shell-guard.mjs on why blast radius does not
+// get to relax the grammar.
+//
+// The fragment exports ARTIFICER_FZF_COLORS — the --color= string ALONE — and
+// the rc composes the rest:
+//
+//   FZF_DEFAULT_OPTS="$ARTIFICER_FZF_COLORS${TMUX:+ --tmux 80%}"
+//
+// Exporting FZF_DEFAULT_OPTS from here instead would race the rc's own
+// assignment and silently drop either the colours or --tmux, depending on
+// source order. The fragment owns the colours; the rc owns the options.
+//
+// fzf is a SECOND INTERPRETER behind the shell, which is the part that is easy
+// to miss. It re-parses FZF_DEFAULT_OPTS and honours --preview, --bind
+// …execute(…), --listen and --history out of it — so a hex-clean, grammatically
+// perfect export line can still be a command-execution vector at fzf runtime,
+// after the shell has already blessed it. Two invariants, not a division of
+// labour: the value is asserted against an anchored --color= grammar (no space,
+// so no second flag can ride along), and the fragment ASSIGNS, never composes
+// (`export X="$X …"` would let an attacker-controlled prefix survive an
+// assertion that only saw the suffix).
+//
+// No `bg:` slot. The terminal canvas shows through — the same call yazi's rule
+// 2 and bat's theme make (ADR 0036: a terminal is a raised surface, and
+// repainting it punches a visible hole).
+
+const FZF_SLOTS = [
+  // [fzf slot, token, what it is]
+  ['fg',      'fg',                'unselected row text'],
+  ['fg+',     'fg',                'selected row text — the bar carries the signal, not a text hue'],
+  ['bg+',     'bgOverlay',         'the selected row bar'],
+  ['hl',      'accent',            'matched substring'],
+  ['hl+',     'accentBright',      'matched substring on the selected row'],
+  ['pointer', 'accent',            'the ▌ cursor'],
+  ['marker',  'success',           'multi-select mark'],
+  ['prompt',  'brandPurpleBright', 'the > prompt'],
+  ['info',    'fgMuted',           'the match counter'],
+  ['border',  'border',            'quiet chrome, never gold'],
+  ['spinner', 'accent',            'the loading spinner'],
+  ['header',  'cyan',              'header lines'],
+];
+
+const fzfTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Dark' : 'Light';
+
+  const pairs = FZF_SLOTS.map(([slot, token]) =>
+    `${slot}:${shellHexValue(token, `fzf --color ${slot}`, P, 'fzfTheme')}`);
+  const value = `--color=${pairs.join(',')}`;
+
+  // Grammar imported, not re-typed — a security control copied into two places
+  // drifts, which is the whole reason _shell-guard.mjs exists.
+  if (!FZF_COLOR_GRAMMAR.test(value)) {
+    throw new Error(
+      `fzfTheme: assembled value is not a bare --color= list: ${JSON.stringify(value)}`
+    );
+  }
+
+  return assertInertFragment(`# Artificer · ${title} — fzf colours
+# Source this from ~/.zshrc, then COMPOSE the options around it:
+#
+#   FZF_DEFAULT_OPTS="$ARTIFICER_FZF_COLORS\${TMUX:+ --tmux 80%}"
+#
+# This fragment exports the colours only. Exporting FZF_DEFAULT_OPTS here would
+# race your own assignment and drop one side or the other.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+# No bg: slot, so the terminal canvas shows through (ADR 0036).
+
+export ARTIFICER_FZF_COLORS="${value}"`, 'fzfTheme');
+};
+
+write('fzf/artificer-dark.sh',  fzfTheme('dark'));
+write('fzf/artificer-light.sh', fzfTheme('light'));
+
+// ─────────────────────────────────────────────────────────────────────
+// eza — EZA_COLORS, which is LS_COLORS grammar, not hex
+// ─────────────────────────────────────────────────────────────────────
+//
+// This is exactly where the hex guard stops describing what reaches the file.
+// EZA_COLORS is `di=38;2;219;187;111:ex=…` — SGR parameters, not colours — so
+// the instant we convert, shellHexValue's regex no longer matches the emitted
+// text. Three rules follow, and they are the whole reason this generator reads
+// the way it does:
+//
+//   1. Validate at the PALETTE READ (shellHexValue), then convert to integers
+//      with parseInt(). Palette *text* is never interpolated into the SGR
+//      string — only numbers derived from an already-validated hex.
+//   2. Re-assert the assembled value against a closed grammar before emission,
+//      since the thing being emitted is no longer the thing that was validated.
+//   3. The KEY half comes from the hard-coded table below, never from a palette
+//      key. Palette VALUES pass a guard; palette KEYS are unvalidated today.
+//
+// Permission slots deliberately match yazi's ([status] perm_read / perm_write /
+// perm_exec), so the two file listers agree on what r/w/x look like. Read from
+// _palette.json directly rather than from yaziTheme's output — a build-order
+// dependency between two generators would be a worse coupling than a repeated
+// token name.
+
+const EZA_SLOTS = [
+  // [LS_COLORS key, token, what it is] — keys are literals, never palette-derived.
+  ['di', 'steelBright',  'directory'],
+  ['ex', 'success',      'executable'],
+  ['ln', 'cyan',         'symlink'],
+  ['or', 'urgent',       'orphaned symlink'],
+  ['pi', 'attentionAlt', 'fifo'],
+  ['so', 'brandPurpleBright', 'socket'],
+  ['bd', 'attentionAlt', 'block device'],
+  ['cd', 'attentionAlt', 'char device'],
+  ['ur', 'accent',       'user read      — matches yazi [status] perm_read'],
+  ['uw', 'attentionAlt', 'user write     — matches yazi perm_write'],
+  ['ux', 'success',      'user execute   — matches yazi perm_exec'],
+  ['ue', 'success',      'user execute on a file it owns'],
+  ['gr', 'accent',       'group read'],
+  ['gw', 'attentionAlt', 'group write'],
+  ['gx', 'success',      'group execute'],
+  ['tr', 'accent',       'other read'],
+  ['tw', 'attentionAlt', 'other write'],
+  ['tx', 'success',      'other execute'],
+  ['su', 'urgent',       'setuid'],
+  ['sf', 'urgent',       'setgid'],
+  ['xa', 'fgMuted',      'extended attribute marker'],
+  ['sn', 'fg',           'size number'],
+  ['sb', 'fgMuted',      'size unit'],
+  ['uu', 'accent',       'your own user name'],
+  ['un', 'fgMuted',      'someone else\'s user name'],
+  ['gu', 'accent',       'a group you belong to'],
+  ['gn', 'fgMuted',      'a group you do not'],
+  ['da', 'fgMuted',      'timestamp'],
+  ['ga', 'success',      'git new'],
+  ['gm', 'attentionAlt', 'git modified'],
+  ['gd', 'urgent',       'git deleted'],
+  ['gv', 'brandPurpleBright', 'git renamed'],
+  ['gt', 'cyan',         'git type-changed'],
+  ['xx', 'border',       'punctuation between columns'],
+];
+
+// Same shape as cssomRgb() above, but returning the SGR triple rather than a
+// CSS list. Takes an ALREADY-VALIDATED hex — never a raw palette read.
+const sgrTruecolor = (hex) => {
+  const h = hex.replace('#', '');
+  return '38;2;' + [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)).join(';');
+};
+
+const ezaTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Dark' : 'Light';
+
+  const value = EZA_SLOTS
+    .map(([key, token]) => `${key}=${sgrTruecolor(shellHexValue(token, `EZA_COLORS ${key}`, P, 'ezaTheme'))}`)
+    .join(':');
+
+  // The assembled string is not what shellHexValue validated, so it gets its
+  // own closed grammar — imported, for the same no-second-copy reason as fzf's.
+  if (!LS_COLORS_GRAMMAR.test(value)) {
+    throw new Error(
+      `ezaTheme: assembled EZA_COLORS is not a bare LS_COLORS list: ${JSON.stringify(value)}`
+    );
+  }
+
+  return assertInertFragment(`# Artificer · ${title} — eza colours
+# Source this from ~/.zshrc. eza reads EZA_COLORS on every invocation, so no
+# reload step is needed beyond starting a new shell.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+# This is LS_COLORS grammar, not hex: 38;2;R;G;B is an SGR truecolor escape.
+# Permission slots match yazi's [status] perm_read / perm_write / perm_exec so
+# the two file listers agree.
+
+export EZA_COLORS="${value}"`, 'ezaTheme');
+};
+
+write('eza/artificer-dark.sh',  ezaTheme('dark'));
+write('eza/artificer-light.sh', ezaTheme('light'));
+
+// ─────────────────────────────────────────────────────────────────────
+// starship — a [palettes.*] table, merged into the user's own config
+// ─────────────────────────────────────────────────────────────────────
+//
+// Not sourced by a shell, so no .sh guard applies — this is a TOML fragment
+// starship parses, and it is inert by format.
+//
+// A tradeoff worth stating rather than burying, because it is a real cost and
+// the owner took it with eyes open: the config this replaces used bare ANSI
+// names ("bold cyan", "bold yellow"), which already resolve through Ghostty's
+// Artificer palette AND adapt to any other terminal the prompt appears in — an
+// ssh session, a CI log, someone else's machine. Hex pins the prompt to
+// Artificer specifically. Selected anyway (2026-08-08).
+//
+// What ships here is a palette DEFINITION plus the one line that activates it.
+// Rewriting each module's `style = "bold cyan"` to `style = "bold steel"` is
+// the dotfiles-side follow-up — starship resolves palette names inside style
+// strings, so the two halves are independent and this file is inert until the
+// module lines change.
+//
+// Names are chosen to read as roles in a style string, not as hues: `style =
+// "bold accent"` says what it means where `style = "bold gold"` does not.
+
+const STARSHIP_COLORS = [
+  // [palette name, token, what it is for]
+  ['accent',      'accent',            'the thing wanting attention — cwd, prompt char'],
+  ['accent-lift', 'accentBright',      'accent one rung up, for a hover/active twin'],
+  ['fg',          'fg',                'ordinary prompt text'],
+  ['muted',       'fgMuted',           'timings, counts, anything you read second'],
+  ['border',      'border',            'separators and quiet chrome'],
+  ['steel',       'steelBright',       'paths and directories'],
+  ['brand',       'brandPurpleBright', 'the language/runtime modules'],
+  ['cyan',        'cyan',              'vcs branch'],
+  ['success',     'success',           'clean state, exit 0'],
+  ['attention',   'attentionAlt',      'dirty state, staged-but-uncommitted'],
+  ['urgent',      'urgent',            'exit non-zero, conflict'],
+];
+
+const starshipTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Dark' : 'Light';
+
+  // No shell guard here (TOML, not sourced), but the same hex assertion —
+  // a typo'd token would otherwise emit the literal string "undefined" as a
+  // colour, which starship accepts silently as an unknown name.
+  const rows = STARSHIP_COLORS.map(([name, token, why]) => {
+    const hex = shellHexValue(token, `[palettes.artificer] ${name}`, P, 'starshipTheme');
+    return `${name.padEnd(12)}= "${hex}"  # ${why}`;
+  });
+
+  return `# Artificer · ${title} — starship palette
+# starship has no @import. Merge this into ~/.config/starship.toml:
+#
+#   1. paste the [palettes.artificer] table below
+#   2. keep the top-level \`palette = "artificer"\` line — it activates the table
+#   3. rewrite module styles from ANSI names to these role names,
+#      e.g. style = "bold cyan"  ->  style = "bold steel"
+#
+# Step 3 is what actually changes the prompt; steps 1 and 2 are inert without
+# it. Names read as ROLES on purpose — "bold accent" says what it means where
+# "bold gold" does not.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+palette = "artificer"
+
+[palettes.artificer]
+${rows.join('\n')}
+`;
+};
+
+write('starship/artificer-dark.toml',  starshipTheme('dark'));
+write('starship/artificer-light.toml', starshipTheme('light'));
+
+// ─────────────────────────────────────────────────────────────────────
+// yazi — theme.toml, third merge layer over preset → flavor
+// ─────────────────────────────────────────────────────────────────────
+//
+// Ported from a hand-authored ~/.dotfiles/private_dot_config/yazi/theme.toml
+// whose COLOURS were already correct — every one of its fifteen literals
+// resolves to a palette token — but whose SOURCE was wrong: hexes inlined by
+// hand, with a header admitting "re-derive by hand if the palette moves".
+// That is the defect this fixes. Cameron's ruling: yazi's colour must live in
+// Artificer.
+//
+// The prose is carried through DELIBERATELY, not summarised. It is trap
+// knowledge, and the traps are the expensive part:
+//
+//   · yazi validates theme VALUES but not KEY NAMES — a misspelled key loads
+//     cleanly and silently never applies. Half the annotations exist to record
+//     which keys were verified against the binary's embedded preset.
+//   · `text` is REQUIRED in an [icon] cond, and satisfying that error with
+//     text = "" parses cleanly while misaligning every icon column.
+//   · prepend_rules / prepend_conds are first-match-wins and sit AHEAD of the
+//     preset, so a lone catch-all silently shadows preset rules above it.
+//
+// A mechanical port that dropped those comments would look identical and be
+// worth much less. So the template below is prose-first, values interpolated.
+//
+// Rule 2 (set no background) is why terminalBg appears where an instinct would
+// reach for bg: a terminal is a RAISED surface (ADR 0036), and dropping to the
+// substrate punches a visible hole through Ghostty's canvas.
+
+const yaziTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Dark' : 'Light';
+
+  // Same discipline as the shell emitters even though TOML is inert: a typo'd
+  // token would emit the literal "undefined", which yazi rejects as a colour
+  // and — because it discards the ENTIRE theme on a parse error — would fall
+  // the whole file back to presets.
+  const t = (token) => shellHexValue(token, `yazi ${token}`, P, 'yaziTheme');
+
+  const accent      = t('accent');
+  const accentLift  = t('accentBright');
+  const canvas      = t('terminalBg');
+  const chrome      = t('border');
+  const raised      = t('bgOverlay');
+  const text        = t('fg');
+  const muted       = t('fgMuted');
+  const dim         = t('fgDisabled');
+  const dirs        = t('steelBright');
+  const purple      = t('brandPurple');
+  const purpleLift  = t('brandPurpleBright');
+  const bad         = t('urgent');
+  const good        = t('success');
+  const warn        = t('attentionAlt');
+  const info        = t('cyan');
+
+  return `# Artificer theme overrides for yazi (${title}).
+#
+# Third merge layer only (preset -> flavor -> theme.toml, later winning), so
+# this states just the tokens that differ. Rationale, traps, and the case
+# against a flavor package: the dotfiles' docs/yazi-notes.md.
+#
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+# The values below were hand-authored first and ported verbatim; every literal
+# already resolved to a palette token, so this changes their SOURCE, not their
+# colour.
+#
+# Three rules, before you edit anything here:
+#
+#   1. VERIFY EVERY KEY. yazi validates theme *values* but NOT *key names* — a
+#      misspelled key loads cleanly and silently never applies. Check against
+#      the preset embedded in the installed binary:
+#        strings "$(readlink -f "$(command -v yazi)")" | grep -n 'border_style'
+#      Counter-intuitive keys are annotated where they appear below.
+#   2. SET NO BACKGROUND. The terminal canvas shows through. Do NOT reach down
+#      to the Artificer \`bg\` token — a terminal is a *raised* surface
+#      (ADR 0036) and Ghostty paints ${canvas}; going a rung lower punches a
+#      visible hole through the canvas.
+#   3. SPEND GOLD SPARINGLY. ${accent} marks only what momentarily demands
+#      input: the cwd, the hovered row, input/pick/confirm borders, which-key
+#      candidates. Persistent chrome stays on ${chrome}, directories on
+#      ${dirs}. The scarcity is what makes gold read as focus.
+
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+# : Manager {{{
+[mgr]
+cwd = { fg = "${accent}" }
+
+# Search state is transient and wants to out-shout the gold cwd, so it takes
+# the brighter accent rather than a second use of the same token.
+find_keyword  = { fg = "${accentLift}", bold = true, italic = true, underline = true }
+find_position = { fg = "${accent}", bg = "reset", bold = true, italic = true }
+
+# Persistent chrome: quiet, never gold.
+border_style = { fg = "${chrome}" }
+# }}}
+
+# : Indicator of the hovered file {{{
+# This is the hovered row. There is NO \`[mgr] hovered\` key in yazi 26.5.6 —
+# writing one is silently ignored. \`[mgr]\`'s full key set is: overall, cwd,
+# find_keyword, find_position, symlink_target, marker_*, count_*, border_symbol,
+# border_style, syntect_theme.
+#
+# The preset uses \`reversed = true\`, which inverts each row against its own
+# filetype color — so the hovered bar changes hue depending on what you land on.
+# Stating fg/bg explicitly instead gives one uniform gold bar regardless of file
+# type, which is the single strongest focus signal available here.
+[indicator]
+current = { fg = "${canvas}", bg = "${accent}", bold = true }
+# }}}
+
+# : Tabs {{{
+# Deliberately NOT a gold fill. Tabs are persistent chrome — a gold tab would
+# compete with the hovered row for the eye and dilute both.
+[tabs]
+active   = { fg = "${text}", bg = "${raised}", bold = true }
+inactive = { fg = "${muted}" }
+# }}}
+
+# : Mode {{{
+# Keys are \`*_main\` / \`*_alt\`, not bare \`normal\` / \`select\` / \`unset\`.
+# \`_main\` is the pill body; \`_alt\` is the trailing separator wedge that blends
+# the pill into the status bar, so it carries the pill color as *foreground*.
+[mode]
+normal_main = { fg = "${canvas}", bg = "${purple}", bold = true }
+normal_alt  = { fg = "${purple}", bg = "${raised}" }
+
+select_main = { fg = "${canvas}", bg = "${purpleLift}", bold = true }
+select_alt  = { fg = "${purpleLift}", bg = "${raised}" }
+
+unset_main = { fg = "${canvas}", bg = "${bad}", bold = true }
+unset_alt  = { fg = "${bad}", bg = "${raised}" }
+# }}}
+
+# : Status bar {{{
+# The permission triple is shared with eza's ur/uw/ux slots, so the two file
+# listers agree on what r/w/x look like.
+[status]
+perm_sep   = { fg = "${chrome}" }
+perm_type  = { fg = "${info}" }
+perm_read  = { fg = "${accent}" }
+perm_write = { fg = "${warn}" }
+perm_exec  = { fg = "${good}" }
+
+progress_label  = { fg = "${text}", bold = true }
+progress_normal = { fg = "${good}", bg = "${raised}" }
+progress_error  = { fg = "${bad}", bg = "${raised}" }
+# }}}
+
+# : Gold borders — surfaces that momentarily demand input {{{
+[input]
+border   = { fg = "${accent}" }
+title    = { fg = "${accent}" }
+value    = { fg = "${text}" }
+selected = { fg = "${canvas}", bg = "${accent}" }
+
+[pick]
+border   = { fg = "${accent}" }
+active   = { fg = "${accent}", bold = true }
+inactive = { fg = "${text}" }
+
+[confirm]
+border  = { fg = "${accent}" }
+title   = { fg = "${accent}" }
+btn_yes = { fg = "${canvas}", bg = "${accent}", bold = true }
+btn_no  = { fg = "${text}" }
+# }}}
+
+# : Quiet borders — panels you read rather than answer {{{
+[tasks]
+border  = { fg = "${chrome}" }
+title   = { fg = "${text}" }
+hovered = { fg = "${accent}", bold = true }
+
+[cmp]
+border   = { fg = "${chrome}" }
+active   = { fg = "${canvas}", bg = "${accent}" }
+inactive = { fg = "${text}" }
+
+[spot]
+border   = { fg = "${chrome}" }
+title    = { fg = "${text}" }
+tbl_col  = { fg = "${dirs}" }
+tbl_cell = { fg = "${canvas}", bg = "${accent}" }
+# }}}
+
+# : Which-key {{{
+# There is NO \`border\` key in this section — its full key set is cols, mask,
+# cand, rest, desc, separator, separator_style. \`separator_style\` is this
+# panel's equivalent chrome. \`mask\` (the dimming scrim) is left at the preset.
+#
+# The candidate keys take gold: the which-key panel only appears while a prefix
+# is held, which is precisely "momentarily demanding input".
+[which]
+cand            = { fg = "${accent}" }
+rest            = { fg = "${muted}" }
+desc            = { fg = "${text}" }
+separator_style = { fg = "${chrome}" }
+# }}}
+
+# : Git status column {{{
+# Keys read by the git.yazi plugin — see the \`setup\` function in
+# plugins/git.yazi/main.lua for the authoritative list. All six visible states
+# are stated so none falls back to a preset color that clashes with the palette.
+#
+# \`updated\` (unmerged / conflicted) is the one gold outside the chrome rule.
+# The plugin defaults it to the same yellow as \`modified\`, which hides the most
+# action-demanding state in the list behind the most common one. Gold separates
+# them and matches the "demands input" semantic. \`unknown\` and \`clean\` are left
+# unset — the plugin renders them as empty signs, so they have nothing to color.
+[git]
+added     = { fg = "${good}" }
+modified  = { fg = "${warn}" }
+deleted   = { fg = "${bad}" }
+updated   = { fg = "${accent}" }
+untracked = { fg = "${info}" }
+ignored   = { fg = "${dim}" }
+# }}}
+
+# : File-specific styles {{{
+# \`prepend_rules\` is used rather than \`rules\`: a bare \`rules\` list REPLACES the
+# preset's mime-based coloring for images, archives, documents, and video
+# wholesale.
+#
+# Directories match on \`url = "*/"\` — the preset's own idiom, where \`*\` is
+# files only and \`*/\` is directories only. \`is = "dir"\` is NOT used: \`is\`
+# accepts any string without validation, so a wrong value there fails silently
+# rather than erroring.
+#
+# ORDER MATTERS. Rules are first-match-wins and this whole block sits ahead of
+# the preset, so a lone \`{ url = "*/" }\` would shadow the two preset rules that
+# also match directories and sit above its own \`*/\` fallback — silently
+# stripping the warning from stale and broken directories. Both are re-stated
+# here, in palette colors, to preserve that signal.
+[filetype]
+prepend_rules = [
+	# Stale or absent virtual-filesystem entries (inside archives, mounts).
+	{ mime = "vfs/{absent,stale}", fg = "${muted}" },
+	# Broken directory entries.
+	{ url = "*/", is = "dummy", bg = "${bad}" },
+	# Every other directory.
+	{ url = "*/", fg = "${dirs}" },
+]
+# }}}
+
+# : Icons {{{
+# Only the *generic* folder glyph is recolored. Named folders (.git, .config,
+# Documents, …) come from the preset's \`dirs\` table, which yazi consults before
+# \`conds\`, so they keep their own colors — this does not flatten them.
+#
+# Both conds are re-stated because \`prepend_conds\` is first-match-wins: a lone
+# \`{ if = "dir" }\` would shadow the preset's \`dir & hovered\` rule and the folder
+# would stop switching to its open glyph on hover.
+#
+# \`text\` is a REQUIRED field — a cond without it hard-errors with "missing field
+# \`text\`" and yazi discards the ENTIRE theme, falling back to presets. Do not
+# satisfy that error with \`text = ""\`: it parses cleanly but renders a
+# zero-width glyph and misaligns every icon column. The glyphs below are carried
+# verbatim from the preset: U+E5FE (open folder) and U+E5FF (closed folder).
+[icon]
+prepend_conds = [
+	{ if = "dir & hovered", text = "", fg = "${dirs}" },
+	{ if = "dir", text = "", fg = "${dirs}" },
+]
+# }}}
+`;
+};
+
+write('yazi/artificer-dark.toml',  yaziTheme('dark'));
+write('yazi/artificer-light.toml', yaziTheme('light'));
 
 // ─────────────────────────────────────────────────────────────────────
 // flux — daisyUI override sheet for an upstream board we don't own

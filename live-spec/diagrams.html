@@ -177,6 +177,79 @@
     </svg>
   </div>
 
+  <!-- HTML nodes -->
+  <h2 class="section-title">HTML nodes</h2>
+  <p class="meta">When a diagram is built from real DOM (React Flow, a hand-laid flow) rather than inline SVG, <code>.dia-box</code> is the CSS twin of <code>.dia-node</code> — a padded mono card reading the same <code>--dia-*</code> tokens. Same variants: <code>--accent</code> (the one node the diagram is about), <code>--ghost</code> (planned / optional), and <code>--tab</code> for a colored type-edge tinted by a series token.</p>
+  <div class="figure">
+    <div class="cluster" style="gap:var(--s-md);align-items:center;flex-wrap:wrap">
+      <div class="dia-box">tokens.json</div>
+      <div class="dia-box dia-box--accent">artificer · core</div>
+      <div class="dia-box dia-box--ghost">figma · planned</div>
+      <div class="dia-box dia-box--tab" style="--dia-tab: var(--series-3)">react adapter</div>
+    </div>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)"><code>.dia-box--accent</code> used once; <code>--tab</code> tint set inline with <code>--dia-tab: var(--series-3)</code> — a semantic token, never a hex.</figcaption>
+  </div>
+
+  <!-- Flow / pipeline -->
+  <h2 class="section-title">Flow / pipeline</h2>
+  <p class="meta">Horizontal step-chains — the left-to-right shape (distinct from the vertical, numbered <code>.spine</code> timeline). <code>.flow</code> is the row, each <code>.flow__step</code> is a <code>.dia-box</code>, and <code>.flow__link</code> draws the connector (a line + arrowhead mirroring <code>.dia-edge</code>; add <code>--dashed</code> for async / return). Wrap a run of steps in a <code>.flow-frame</code> to mark a phase group.</p>
+  <div class="figure">
+    <div class="flow">
+      <div class="dia-box flow__step">Source</div>
+      <span class="flow__link" aria-hidden="true"></span>
+      <div class="dia-box flow__step dia-box--accent">Transform</div>
+      <span class="flow__link" aria-hidden="true"></span>
+      <div class="dia-box flow__step">Verify</div>
+      <span class="flow__link flow__link--dashed" aria-hidden="true"></span>
+      <div class="dia-box flow__step dia-box--ghost">Publish</div>
+    </div>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)">Solid connectors close the flow; the dashed link marks the async publish step. One accent per chain.</figcaption>
+  </div>
+  <div class="figure">
+    <div class="flow-frame">
+      <div class="flow-frame__label">Build phase</div>
+      <div class="flow">
+        <div class="dia-box flow__step">Lint</div>
+        <span class="flow__link" aria-hidden="true"></span>
+        <div class="dia-box flow__step">Test</div>
+        <span class="flow__link" aria-hidden="true"></span>
+        <div class="dia-box flow__step">Bundle</div>
+      </div>
+    </div>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)"><code>.flow-frame</code> groups a run of steps under a dashed, labeled phase boundary.</figcaption>
+  </div>
+
+  <!-- Phased timeline -->
+  <h2 class="section-title">Phased timeline</h2>
+  <p class="meta">When each numbered step is a <i>group</i> of things — "what happens in sequence, where each phase is a set" — reach for <code>.spine</code>. The rail runs down the marker gutter; each <code>.phase</code> is a station (<code>.phase__marker</code> badge + <code>.phase__body</code>) whose body holds a <code>.stack</code> of <code>.dia-box</code> nodes. Vertical and grouped — distinct from the horizontal single-node <code>.flow</code> chain. Mark the pivotal phase with <code>--accent</code> (one per timeline).</p>
+  <div class="figure">
+    <ol class="spine" style="list-style:none;padding:0;margin:0">
+      <li class="phase">
+        <div class="phase__marker">1</div>
+        <div class="phase__body stack">
+          <div class="dia-box">Fetch sources</div>
+          <div class="dia-box">Validate schema</div>
+        </div>
+      </li>
+      <li class="phase phase--accent">
+        <div class="phase__marker">2</div>
+        <div class="phase__body stack">
+          <div class="dia-box">Transform</div>
+          <div class="dia-box">Enrich</div>
+          <div class="dia-box">Dedupe</div>
+        </div>
+      </li>
+      <li class="phase">
+        <div class="phase__marker">3</div>
+        <div class="phase__body stack">
+          <div class="dia-box">Write warehouse</div>
+          <div class="dia-box dia-box--ghost">Notify · planned</div>
+        </div>
+      </li>
+    </ol>
+    <figcaption class="meta" style="font-size:12px;margin-top:var(--s-sm)">Each station groups a set of <code>.dia-box</code> nodes; phase 2 carries the accent marker + ring. Ghost node marks planned work.</figcaption>
+  </div>
+
   <!-- Color rules -->
   <h2 class="section-title">Color rules</h2>
   <ul class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em;max-width:70ch">

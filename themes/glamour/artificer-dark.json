@@ -27,20 +27,20 @@
     "bold": true
   },
   "h2": {
-    "prefix": "## ",
+    "prefix": "▌ ",
     "color": "#e3c885"
   },
   "h3": {
-    "prefix": "### "
+    "prefix": "▎ "
   },
   "h4": {
-    "prefix": "#### "
+    "prefix": "▏ "
   },
   "h5": {
-    "prefix": "##### "
+    "prefix": "· "
   },
   "h6": {
-    "prefix": "###### ",
+    "prefix": "· ",
     "color": "#c5c8c6",
     "bold": false
   },
@@ -56,7 +56,7 @@
   },
   "hr": {
     "color": "#4a4f5c",
-    "format": "\n--------\n"
+    "format": "\n────────────────────────────────────────────────────────────────────────\n"
   },
   "item": {
     "block_prefix": "• "
@@ -184,17 +184,18 @@
       },
       "generic_subheading": {
         "color": "#c5c8c6"
-      },
-      "background": {
-        "background_color": "#3c4150"
       }
     }
   },
-  "table": {},
+  "table": {
+    "center_separator": "┼",
+    "column_separator": "│",
+    "row_separator": "─"
+  },
   "definition_list": {},
   "definition_term": {},
   "definition_description": {
-    "block_prefix": "\n🠶 "
+    "block_prefix": "\n→ "
   },
   "html_block": {},
   "html_span": {}

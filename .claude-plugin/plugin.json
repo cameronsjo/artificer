@@ -14,5 +14,9 @@
     "audhd",
     "ui-kit",
     "personal"
+  ],
+  "themes": [
+    "./themes/claude-code/artificer-dark.json",
+    "./themes/claude-code/artificer-light.json"
   ]
 }

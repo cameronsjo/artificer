@@ -54,10 +54,10 @@ Before you write any CSS, decide: **is this a tool surface or a document surface
 | | **Tool surface** | **Document surface** |
 |---|---|---|
 | What it is | Dashboards, consoles, terminals, log views, settings panels, command palettes, data tables, IDE-adjacent UI — anywhere the user came to *do something* | Writeups, READMEs, reports, postmortems, design docs, onboarding explainers, marketing-adjacent pages — anywhere the user came to *read something* |
-| Body font | `var(--font-mono)` | `var(--font-sans)` |
+| Body font | `var(--font-mono)` | `var(--font-body)` |
 | Default size | 14px | 15–16px |
 | Mono shows up in… | Most things | Code, identifiers, file paths, numerals, table cells |
-| Sans shows up in… | Labels, hints, microcopy | Most things |
+| Interface face (`var(--font-interface)`) shows up in… | Labels, hints, microcopy | Labels, controls, form fields — chrome, not prose |
 | Mental model | Mono *is* the voice — every line is "data" | Mono is the *exception* — used to mark things that aren't prose |
 
 **The same project can mix both.** A settings page is a tool. The README explaining the settings is a document. Use the right default for the right page; don't try to make one rule cover both.
@@ -101,17 +101,20 @@ var(--font-mono) /* JetBrains Mono — code, identifiers, file paths,
                           numerals, dense UI chrome (toolbars, status bars,
                           terminals). Default body face for TOOL surfaces:
                           dashboards, consoles, log views, data tables. */
-var(--font-sans) /* iA Writer Quattro — prose. Default body face for DOCUMENT
+var(--font-body) /* iA Writer Quattro V — prose. Default body face for DOCUMENT
                           surfaces: writeups, READMEs, reports, settings
-                          explainers, marketing-adjacent content. Also: form
-                          labels, hints, microcopy on tool surfaces. */
+                          explainers, marketing-adjacent content. */
+var(--font-interface) /* iA Writer Quattro S — labels, controls, badges, form
+                          fields, nav. Chrome, not prose — on BOTH tool and
+                          document surfaces. --font-sans is a legacy alias of
+                          --font-body, kept resolvable for public-API back-compat. */
 /* Sizes via classes: .t-headline-lg/md, .t-body-lg/md, .t-label-md/sm */
 /* Type utilities set size + line-height only; compose vertical rhythm
                           with .stack (gap-owned), not margins. */
-/* Prose / doc-chrome utilities: .meta (sans body-md, fg-secondary,
+/* Prose / doc-chrome utilities: .meta (--font-body, body-md, fg-secondary,
                           max-width 66ch), .note (sister of .meta — label-sm
                           fg-secondary; INHERITS the body face, so it's mono on
-                          tool surfaces and sans on document surfaces), .num
+                          tool surfaces and --font-body on document surfaces), .num
                           (tabular-nums), .section-title (mono 22px/--t-headline-md-size uppercase
                           fg-secondary border-bottom — doc-page h2 chrome). */
 
@@ -160,6 +163,12 @@ target floors at **≥24×24px** or the WCAG spacing exception (SC 2.5.8);
 dense-table affordances are the audited exception below that. Touch devices escalate
 automatically via `@media (pointer: coarse)` (btn/inputs/checkbox/radio/
 toggle/slider grow to ≥44px on a finger; mouse desktops are untouched).
+**The coarse-pointer floor covers BARE `<button>`s too** — a small indicator
+button (pagination pip, dot) inflates to 44px on a real touch device (and
+only there: emulators report `pointer: fine`). That's intended for real
+controls; an indicator that must stay visually small overrides
+`min-width`/`min-height` back down and carries its ≥44px hit area on a
+`::before` overlay (`position:absolute; inset:-18px` on an 8px dot).
 Sticky/fixed chrome (`.appbar`, `.nav-drawer`) clears the notch with
 `env(safe-area-inset-*)` — set `viewport-fit=cover`. Wide data tables reflow
 to cards below 640px with `.table--responsive` + `data-label` on each `<td>`.
@@ -178,17 +187,20 @@ core scale or tool UI.
 | "Top app bar" | `.appbar` + `__brand`/`__search`/`__actions`/`__menu-btn`/`__spacer` — sticky tool chrome; clears the notch via `safe-area-inset`. |
 | "Side navigation" | `.sidenav` + `.sidenav__group` (+ `.label`/`.count` slots) — the section spine; one level deep, `.tree` for deeper. |
 | "Mobile nav drawer" | `.nav-drawer` + `.nav-scrim` — takes over below `--bp-tablet`. |
+| "Collapsible drawer groups / dense drawer nav" | `<details class="sidenav__section">` wrapping each group — `<summary>` takes the group-label treatment + twisty, rows keep full sidenav styling. The section holding `[aria-current="page"]` MUST be rendered `open` (consumer JS owns the attribute). Drawer/full-width only — never compose with `.sidenav--rail`. |
+| "Theme toggle in the drawer (mobile)" | `.sidenav__footer` — bottom-anchored settings row (label + canonical `.theme-toggle--inline` `[data-theme-toggle]` button). On mobile the toggle moves INTO the drawer; a fixed `.theme-toggle` sits below the drawer's z-index. |
 | "Add a settings page" | `.page-shell` + `.container--md` + `<fieldset>` + `.field` blocks, 3–5 fields per group |
 | "Breadcrumb" | `.crumb` + `.crumb__sep` — where-am-I; nav's first rung. |
 | "Button" | `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon` — one primary per view (Hard rule #3). |
 | "Search input" | `.search` — the icon-slotted search box; `.appbar__search` in the bar. |
 | "Chip / facet tag" | `.chip` (+ `.chip__count`) — faceted filters in a `.filter-bar` or `.cluster`. |
 | "Confirmation dialog" | `.scrim` + `.modal` + `ArtificerFocus.trap()` — see `overlay.html` in live system |
-| "Tooltip" | `.tooltip` — label-tier hover aid; `.popover` for body content. |
+| "Tooltip" | Wrap a trigger + `.tooltip` in `.has-tooltip`; the tooltip reveals on `:hover` AND `:focus-within` (keyboard path, WCAG 1.4.13) and hides on blur. Place + draw the arrow with `.tooltip--top/bottom/left/right`. A bare `.tooltip` with no `.has-tooltip` ancestor stays a static always-visible box (backward compatible). |
 | "Toast" | `.notif` + tier modifier; pick by action-required not severity. For transient on-screen placement, mount the `.notif` in a `.toast-region` (fixed corner-anchored stack on `--z-toast`; `--top-right`/`--bottom-left`/… + `.toast-region__more`). A toast IS a `.notif` in the region — no separate toast class. |
 | "Status pill" | `.badge--{tier}` + `.dot--{tier}` inside. Coming from Bootstrap/Tailwind `warning`? That tier is `--attention` here (badge, dot, card, notif, banner) — one name per tier, no `warning` alias. |
 | "Dense table status / ✓✗~– cells" | `.glyph--{success\|muted\|attention\|na}` — the themeable anti-emoji for comparison grids (✓ `--success`, ✗ `--fg-muted`, ~ `--attention`, – `--fg-secondary`). Emoji are OS-rendered and ignore the theme; glyphs are real text tinted by a token. They're graphical objects (WCAG SC 1.4.11, 3:1 floor): each pairs with `role="img"` + `aria-label`, never the mark alone. Sparse/labeled status stays `.badge`+`.dot`. |
 | "Loading state" | Pick by duration: <100ms nothing · 100–500ms disabled label · 500ms–2s `.skeleton` · >2s `.progress` with concrete copy · >10s background. Long wait with nothing to count: `.progress--indeterminate` + concrete copy ("Deploying to us-east-1…", never bare "Deploying…"). |
+| "Horizontal bar / meter / usage bar" | `.bar` (row) + `.bar__track` + `.bar__fill` (width inline; fill background is any semantic token — `--accent-fill`, a `--series-*`, or a `--diverge-*`). The fill bakes `display:block; height:100%` so it never collapses to zero. Determinate progress with a % → `.progress`; a static magnitude/usage bar → `.bar`. |
 | "Refreshing a value in place" | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses; fresh value fades in on `.live-value`'s transition. NOT `.skeleton` (would blank it). |
 | "Live data indicator" | `.live-tick` (pulsing dot) + `.last-updated` (timestamp) — auto-updating regions still need an in-UI pause (a11y #13). |
 | "Empty state" | `.empty-state` — title + body + ONE primary action |
@@ -208,10 +220,12 @@ core scale or tool UI.
 | "Combobox / dropdown / palette" | One option-popover (`.menu`/`.listbox` + `__option`/`__label`/`__sep`/`__hint`/`--danger`; `.is-active` is the roving cursor) — don't hand-roll a floating list. Behavior: `data-options` / `ArtificerOptions.enhance()` |
 | "Command palette / ⌘K" | `.palette` (= `.palette__search` header + a `.listbox` body) on a `.scrim`, focus-trapped via `ArtificerFocus.trap()`; Esc closes. Cursor + Enter dispatch: `ArtificerOptions.combobox(input, list, {onSelect})`. A recipe over the option-popover — see `components-extended.html`. |
 | "Tree / file explorer / nested nav" | `.tree` > `.tree__group` > `.tree__row` (+ `.tree__twisty`, `.tree__leaf`); `role=tree`/`treeitem`/`group`. Nested disclosure beyond `.accordion` (flat) + `.sidenav` (one level). `artificer-tree.js` ships expand/collapse + arrow-key roving (`data-tree` / `ArtificerTree.enhance()`). |
+| "Static / no-JS tree (SSR, docs)" | `.tree--static` — nested `<details><summary class="tree__row">`; disclosure semantics, no JS. Deliberately not `role="tree"`; `ArtificerTree.enhance()` is inert on it. |
 | "Split pane / master-detail" | `.split-pane` + `.pane--active`/`.pane--inactive` — Rule #6 recession marks the unfocused pane. |
+| "Text workbench / editor panes / paste target" | `.workbench` + `.workbench__pane` (`.workbench__header` + `.workbench__editor`) — a row of equal-width `.textarea` panes for text-in/text-out surfaces; the label lives in `.workbench__header` as a real `<label for>`, never a placeholder. A `.dash` BODY, not a sixth dash recipe — the five-recipe ceiling (§ Dashboards) stands. |
 | "Pagination" | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends. Counted, jumpable ranges only — unbounded sets use "load more". |
 | "Persistent page banner" | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions`. A standing layout band (read-only mode, degraded nodes), NOT the transient toast-tier `.notif`. Color encodes tier; texture never does. |
-| "Footer / colophon / fine print / attribution" | `.colophon` (band) + `.colophon__label` (column headers) + `.colophon__fine` (legal tier); columns via `.grid-auto`; prose auto-sans even inside `.surface-tool`. For a prose island elsewhere in a tool surface, `.surface-document` flips a region back to `--font-sans`. |
+| "Footer / colophon / fine print / attribution" | **Three zones, in order — 1 and 3 optional, the spine always present.** (1) a `.grid-auto` of `.colophon__label` sections; (2) `.colophon__spine` — three POSITIONAL slots, **identity · sign-off · links** (first child starts, last ends, middle centres *on the page*, so a long identity can't shove the sign-off off-centre); (3) `.colophon__fine` for the legal tier. Every site uses the same primitive and differs only in which zones it fills. Any slot may be empty — keep the element to hold its column. In the links slot use `<a>` to navigate and `<button class="btn btn--link">` for a control that *acts* — never an `<a>` carrying a click handler, which makes the a11y tree announce a link that doesn't link. Prose auto-flips to `--font-body` even inside `.surface-tool`; `.surface-document` flips a prose island elsewhere back to `--font-body`. |
 | "Selected card / selected row / active choice" | Mark it on the edge, not as a fill: `.card--active` (`background: var(--bg)` + `border-left: 2px solid var(--accent)`) for a card, the option-list `.is-active` treatment (`background: var(--bg-raised)`) for a row. NEVER `--accent-fill` as a large surface background — its only rated text color is `--on-accent`, so default body text on it fails contrast. |
 | "File upload / dropzone" | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events. Color marks the drag state, not texture. |
 | "Animation" | Only animate state changes. `transition: prop var(--dur-fast) var(--ease)`. Never invent durations. |
@@ -226,6 +240,9 @@ core scale or tool UI.
 | "User-defined fun element / celebration / long 'thinking' state / brand wordmark" | `.whimsy` + `artificer-whimsy.css` & `.js` — the ONE sanctioned exception to the motion + raw-color rules. **See § Whimsy.** Never reach for it on chrome, status, data, or errors. |
 | "Make it fun / playful / celebratory / rainbow" | The **Whimsy** layer — see § Whimsy. `.whimsy` / `data-whimsy="wave"` / `Whimsy.celebrate()`. Don't hand-roll a one-off. |
 | "Make it feel like paper / give it grain / material / texture / depth" | The **Texture** layer (`artificer-texture.css`) — see § Texture. `.tex-grain` / `.tex-dots` / `.tex-line--hatch` / `.tex-paper` / `.tex-raised`. Hueless + motionless; never on data/status/errors. |
+| "HTML diagram node / React Flow node / boxes-and-arrows in DOM" | `.dia-box` — the HTML/CSS twin of the SVG `.dia-node`, reading the same `--dia-*` tokens. `--accent` (one per diagram), `--ghost` (planned/optional, dashed), `--tab` + `style="--dia-tab: var(--series-3)"` (any series token) for a colored type-edge. Inline SVG diagrams stay on `.dia-node`. |
+| "Flow / pipeline / horizontal step-chain" | `.flow` (row) + `.flow__step` (each IS a `.dia-box`) + `.flow__link` (connector, mirrors `.dia-edge`; `--dashed` for async/return) + `.flow-frame` (dashed, labeled phase-group). Left-to-right chain — for a vertical numbered timeline of grouped steps use `.spine`/`.phase`. |
+| "Phased timeline / numbered stages where each step is a set" | `.spine` (rail down the marker gutter) + `.phase` (`.phase__marker` numbered badge + `.phase__body` holding a `.stack` of `.dia-box` nodes) + `.phase--accent` (the pivotal station, accent marker + ring, one per timeline). Vertical + grouped — for a horizontal single-node chain use `.flow`. |
 
 ## Composition — dashboards, charts, diagrams
 

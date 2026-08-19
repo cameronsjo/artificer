@@ -12,7 +12,7 @@ marketing/landing pages (wrong system — use something else).
 
 | | Path | When |
 |---|---|---|
-| **A** | **Vendor the files** — copy `src/artificer.css` (+ the JS you need) into your project, link them. | Most apps. You control versioning. |
+| **A** | **Vendor the files** — `npx @cameronsjo/artificer vendor --dest <dir>` copies the runtime + a provenance sidecar into your project; no npm registry access? copy `src/artificer.css` (+ the JS you need) by hand instead. Either way, link them. | Most apps. You control versioning. |
 | **B** | **Inline** — paste the contents of `artificer.css` into a `<style>` block. | Chat artifacts / single-file HTML with no file system. |
 | **C** | **Tailwind** — point `tailwind.config.js` at `framework-adapters/tailwind.config.js` and read tokens from `tokens.json`. | You're already on Tailwind. |
 
@@ -94,10 +94,12 @@ If all four pass, you're set.
   only after first paint, so the wrong-theme frame flashes. The persistence
   key is **`'artificer.theme'`** (a dot, values `dark`/`light`/`auto`) —
   vanilla JS and any React `useTheme` must agree on it.
-- **SPA (nodes mount after first paint):** the JS modules hydrate once on load.
-  For dynamically-mounted content call `ArtificerIcons.observe(root)` /
-  `Whimsy.observe(root)` (a `MutationObserver` auto-hydrates inserted nodes), or
-  in React use the `useIcons(ref)` / `useWhimsy(ref)` hooks. See CLAUDE.md
+- **SPA (nodes mount after first paint):** icons, theme, and whimsy each arm
+  their own `MutationObserver` on DOM ready, so `[data-icon]` /
+  `[data-theme-toggle]` / `[data-whimsy]` / `[data-whimsy-greeting]` nodes mounted later
+  hydrate automatically. To scope hydration to one subtree, call
+  `ArtificerIcons.observe(root)` / `Whimsy.observe(root)` directly, or in
+  React use the `useIcons(ref)` / `useWhimsy(ref)` hooks. See CLAUDE.md
   § "Where the system lives" → SPA lifecycle.
 
 ---
@@ -121,5 +123,5 @@ If all four pass, you're set.
 | **Flash of light on load** | The bootstrap script isn't **first** in `<head>`, or runs after the CSS. Move it above every `<link>`. |
 | **Theme doesn't persist** | The key must be **`'artificer.theme'`** (dot) everywhere — bootstrap, `useTheme`, vanilla. |
 | **Icons don't render** | Load `artificer-icons.js` (it arms its own observer — SPA-mounted icons hydrate automatically). A dashed box means the name is unknown: check it against `icons.html` or `ArtificerIcons.list()` (names are Lucide-canonical). |
-| **Everything is monospace** | You're on a tool surface by default. For prose, use sans (`var(--font-sans)`) — see § "First decision". |
+| **Everything is monospace** | You're on a tool surface by default. For prose, use `var(--font-body)` — see § "First decision". |
 | **Colors look off / invented** | You hardcoded a hex. Use the semantic tokens (`var(--accent)`, etc.); never raw hex. |
