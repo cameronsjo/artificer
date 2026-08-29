@@ -110,7 +110,7 @@ const write = (relPath, content) => {
 
 const claudeCodeTheme = (mode) => {
   const P = mode === 'dark' ? D : L;
-  const onAccent = mode === 'dark' ? P.ink : P.ivory;
+  const onAccent = P.ink; // ink in BOTH modes per $notes.onAccentDark/onAccentLight (ink 5.65:1 on accentFill, ivory 2.32)
   return {
     $schema: './theme.schema.json',
     name: mode === 'dark' ? 'Artificer Dark' : 'Artificer Light',
@@ -281,7 +281,7 @@ write('ghostty/artificer-light', ghosttyTheme('light'));
 
 const vscodeTheme = (mode) => {
   const P = mode === 'dark' ? D : L;
-  const onAccent = mode === 'dark' ? P.ink : P.ivory;
+  const onAccent = P.ink; // ink in BOTH modes per $notes.onAccentDark/onAccentLight (ink 5.65:1 on accentFill, ivory 2.32)
   // Syntax role resolver: syntaxToken() maps role → token name; P[tokenName]
   // resolves to the per-mode hex.
   const sx = (role) => P[syntaxToken(role)];
@@ -599,6 +599,566 @@ const vscodeTheme = (mode) => {
 
 write('vscode/themes/artificer-dark-color-theme.json',  JSON.stringify(vscodeTheme('dark'),  null, 2) + '\n');
 write('vscode/themes/artificer-light-color-theme.json', JSON.stringify(vscodeTheme('light'), null, 2) + '\n');
+
+// ─────────────────────────────────────────────────────────────────────
+// JetBrains (IntelliJ Platform) — a theme PLUGIN: two UI themes + two
+// editor color schemes + the plugin manifest, side-loaded as one jar
+// ─────────────────────────────────────────────────────────────────────
+//
+// Research + verified gotchas: docs/research/theming/jetbrains.md. The
+// IntelliJ Platform splits theming across two files with different jobs and
+// DIFFERENT hex encodings, and this emitter has to honour both:
+//   · the UI theme (*.theme.json) paints IDE chrome. A value is a literal
+//     colour iff it starts with "#"; anything else is a lookup into the file's
+//     own `colors` map (UITheme.java branches on the prefix). So the `ui`
+//     block below is written in PALETTE TOKEN NAMES — greppable, like Helix's
+//     [palette] table and Neovim's tables — and `colors` carries every token
+//     verbatim. The only literals are the #RRGGBBAA alpha blends, which have
+//     no name.
+//   · the editor scheme (*.xml) paints content — syntax, gutter, caret,
+//     console — in BARE hex (no "#"); 8-digit means RGBA, alpha LAST, same as
+//     the JSON side. A scheme is a diff against its parent_scheme (Darcula /
+//     Default): every <option> omitted inherits, and an EMPTY value="" does
+//     NOT inherit, it suppresses the fallback (jetbrains.md:61) — so a role
+//     with no sensible binding is left out, never blanked.
+//   · per-element override is all-or-nothing. VERIFIED 2026-08-20 from
+//     EditorColorsSchemeImpl.getAttributes(): a directly-defined
+//     TextAttributes object is returned WHOLE, there is no per-field merge
+//     with the parent. Every <attributes> entry below therefore carries its
+//     full intended set; a FOREGROUND-only entry deliberately means
+//     "transparent background, plain font".
+//
+// Base: the 2025.2 "Islands" UI (parentTheme "Islands Dark" / "Islands
+// Light", since-build 252 — the Islands theme dir exists on the 252 branch of
+// intellij-community and not on 251). Every UI key inherits from Islands
+// except the handful the SDK's Supporting-Islands page calls out:
+// Island.borderColor (set equal to the island fill — islands have no visible
+// border by design), MainWindow.background (the backdrop the islands float
+// on), and the EditorTabs.*underlined* quartet.
+//
+// Surface model, and why the editor sits on `bg` not `bgRaised`: the Islands
+// page recommends islands clear 1.20:1 against the backdrop. Islands on
+// bgRaised over a bgInactive backdrop measure 1.35 (dark) / 1.21 (light) and
+// would clear it — but the three 3.0-floor syntax roles (comment / operator /
+// tag) measure 2.68 on bgRaised in dark against 3.05 on bg. WCAG wins over a
+// layout recommendation: islands + editor canvas = bg, backdrop = bgInactive
+// (1.18 dark — 0.02 under the recommendation; 1.36 light). Ratios measured
+// with the same sRGB math as scripts/contrast.mjs; re-measure if the palette
+// moves.
+//
+// Syntax routes through $roles.syntax via syntaxToken() like every other
+// editor target, onto the DEFAULT_* fallback keys only — those paint every
+// language at once (jetbrains.md:79). Punctuation binds the operator role, as
+// VS Code's tokenColors and bat's plist do. EFFECT_TYPE integers come from
+// AttributesFlyweight.fromEffectType() (NOT the EffectType enum, whose
+// ordinals differ): 0 boxed · 1 line underscore · 2 wave · 3 strikeout ·
+// 4 bold line · 5 bold dotted; FONT_TYPE is java.awt.Font: 0 plain · 1 bold ·
+// 2 italic · 3 bold-italic.
+//
+// Deliberately unset, and why:
+//   · language-specific keys (JAVA_KEYWORD, PY_STRING, KOTLIN_*, …) — the
+//     DEFAULT_* fallbacks already paint them; a per-language copy would be
+//     the same hex twice and would drift.
+//   · DEFAULT_REASSIGNED_LOCAL_VARIABLE / _PARAMETER, DEFAULT_STATIC_*,
+//     DEFAULT_GLOBAL_VARIABLE, DEFAULT_LABEL — no role distinguishes them from
+//     their parent; they inherit through the fallback chain.
+//   · INJECTED_LANGUAGE_FRAGMENT, TEMPLATE_VARIABLE_ATTRIBUTES, LIVE_TEMPLATE_*
+//     — background tints the stock schemes tune per language; inherit.
+//   · CONSOLE_*_OUTPUT *background* keys (the 16 ANSI bg slots) — inherit;
+//     only foregrounds carry the Artificer terminal map.
+//   · every non-Islands UI key — the point of parentTheme is that Islands
+//     supplies the rest.
+//
+// Two themeProvider UUIDs identify the themes to the IDE and are generated
+// ONCE and committed here (jetbrains.md:51,81) — parent/child theme
+// inheritance keys off them, and the SDK warns against regenerating. They are
+// constants, not build-time values.
+//
+// The plugin manifest carries <version>X.Y.Z</version> from package.json and
+// is ALSO a sync-version.mjs stamp site — two writers, one line, byte-
+// identical on purpose (scripts/jetbrains-theme.test.mjs asserts agreement).
+// An IDE plugin needs a version (the plugin list shows it; update-from-disk
+// keys on it), and an unregistered manifest is how themes/vscode/package.json
+// came to sit at 0.7.2 against a 0.24.x repo.
+
+const JETBRAINS_THEME_IDS = Object.freeze({
+  dark:  '66d9b354-01e3-4533-b4d0-5217f2e71fdb',
+  light: '8eabb434-0d08-4d9b-b433-1ec2dc1a249a',
+});
+const JETBRAINS_SINCE_BUILD = '252';
+const JETBRAINS_PLUGIN_ID = 'lol.sjo.artificer.jetbrains';
+
+// Per-mode guarded accessors, shared by the scheme + UI-theme emitters.
+// _palette.json is Lane 1's artifact (CLAUDE.md § Encapsulation), and the
+// scheme emitter hand-templates XML — a value of `#000"/><option name="X` would
+// inject scheme structure. Same discipline as batTheme's hex()/t()/sx():
+// validate at the emitter, because check:themes regenerates-and-diffs and a
+// poisoned palette passes it green.
+const jetbrainsPalette = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const hex = (value, what) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
+      throw new Error(
+        `jetbrains(${mode}): ${what} resolved to ${JSON.stringify(value)}, which is `
+        + 'not a six-digit hex colour. Refusing to emit it into a theme file.'
+      );
+    }
+    return value.toLowerCase();
+  };
+  // hasOwn, not `in` — `in` walks the prototype chain ("constructor" in P is true).
+  const t = (token) => {
+    if (!Object.hasOwn(P, token)) throw new Error(`jetbrains(${mode}): unknown palette token "${token}"`);
+    return hex(P[token], `token "${token}"`);
+  };
+  const sx = (role) => t(syntaxToken(role));
+  const alpha = (aa) => {
+    if (!/^[0-9a-f]{2}$/.test(aa)) throw new Error(`jetbrains(${mode}): alpha ${JSON.stringify(aa)} is not two lowercase hex digits`);
+    return aa;
+  };
+  // ink in BOTH modes: _palette.json $notes.onAccentLight rules it (ink measures
+  // 5.65:1 on accentFill in either mode; ivory 2.32). VS Code's emitter still
+  // flips to ivory in light — that is the stale one, not this.
+  const onAccent = 'ink';
+  return { P, t, sx, alpha, onAccent };
+};
+
+// Editor color scheme — bare hex, RGBA alpha-last, diff against the parent.
+const jetbrainsScheme = (mode) => {
+  const { t, sx, alpha } = jetbrainsPalette(mode);
+  const title = mode === 'dark' ? 'Artificer Dark' : 'Artificer Light';
+  const parent = mode === 'dark' ? 'Darcula' : 'Default';
+  const bare = (token) => t(token).slice(1);
+  const bareA = (token, aa) => bare(token) + alpha(aa);
+  const sxBare = (role) => sx(role).slice(1);
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  const color = (name, value) => `\t\t<option name="${esc(name)}" value="${value}" />`;
+  // FONT_TYPE / EFFECT_TYPE are repo-authored small integers; EFFECT_COLOR rides
+  // the same bare-hex guard as every colour slot.
+  const attr = (name, { fg, bg, effect, effectColor, font } = {}) => {
+    const opts = [
+      fg ? `\t\t\t\t<option name="FOREGROUND" value="${fg}" />` : '',
+      bg ? `\t\t\t\t<option name="BACKGROUND" value="${bg}" />` : '',
+      font ? `\t\t\t\t<option name="FONT_TYPE" value="${font}" />` : '',
+      effectColor ? `\t\t\t\t<option name="EFFECT_COLOR" value="${effectColor}" />` : '',
+      effect ? `\t\t\t\t<option name="EFFECT_TYPE" value="${effect}" />` : '',
+    ].filter(Boolean).join('\n');
+    return `\t\t<option name="${esc(name)}">\n\t\t\t<value>\n${opts}\n\t\t\t</value>\n\t\t</option>`;
+  };
+
+  const ITALIC = 2, BOLD = 1;
+  const LINE = 1, WAVE = 2, STRIKEOUT = 3;
+
+  // The canonical 16-slot terminal map — VS Code's (build.mjs terminal.ansi*),
+  // incl. its ANSI-0 = bg exemption (ADR 0001 scoped the lift to Ghostty).
+  const ansi = [
+    ['BLACK', 'bg'], ['RED', 'urgent'], ['GREEN', 'success'], ['YELLOW', 'accent'],
+    ['BLUE', 'steelBright'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['GRAY', 'fg'],
+    ['DARKGRAY', 'fgDisabled'], ['RED_BRIGHT', 'urgentBright'], ['GREEN_BRIGHT', 'successBright'],
+    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'steel'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
+    ['CYAN_BRIGHT', 'cyanBright'], ['WHITE', mode === 'dark' ? 'ivory' : 'fg'],
+  ];
+
+  const colors = [
+    // editor canvas + chrome
+    color('CARET_COLOR', bare('accent')),
+    color('CARET_ROW_COLOR', bare('bgRaised')),
+    color('SELECTION_BACKGROUND', bareA('accentFill', '55')),
+    color('SELECTION_FOREGROUND', bare('fg')),
+    color('GUTTER_BACKGROUND', bare('bg')),
+    color('LINE_NUMBERS_COLOR', bare('fgDisabled')),
+    color('LINE_NUMBER_ON_CARET_ROW_COLOR', bare('fg')),
+    color('INDENT_GUIDE', bare('border')),
+    color('SELECTED_INDENT_GUIDE', bare('borderLifted')),
+    color('VISUAL_INDENT_GUIDE', bare('border')),
+    color('WHITESPACES', bare('fgDisabled')),
+    color('TEARLINE_COLOR', bare('border')),
+    color('RIGHT_MARGIN_COLOR', bare('border')),
+    color('FOLDED_TEXT_BORDER_COLOR', bare('border')),
+    color('DOCUMENTATION_COLOR', bare('bgRaised')),
+    // VCS gutter + diff
+    color('ADDED_LINES_COLOR', bare('success')),
+    color('MODIFIED_LINES_COLOR', bare('attention')),
+    color('DELETED_LINES_COLOR', bare('urgent')),
+    color('WHITESPACES_MODIFIED_LINES_COLOR', bare('attentionAlt')),
+    color('DIFF_INSERTED', bare('diffAddBg')),
+    color('DIFF_DELETED', bare('diffDelBg')),
+    color('DIFF_MODIFIED', bareA('attentionFill', '40')),
+    color('DIFF_CONFLICT', bareA('urgentBright', '40')),
+    // file status (project tree)
+    color('FILESTATUS_ADDED', bare('success')),
+    color('FILESTATUS_UNKNOWN', bare('success')),
+    color('FILESTATUS_MODIFIED', bare('attention')),
+    color('FILESTATUS_DELETED', bare('urgent')),
+    color('FILESTATUS_IGNORED', bare('fgDisabled')),
+    color('FILESTATUS_MERGED_WITH_CONFLICTS', bare('urgentBright')),
+    // console / terminal
+    color('CONSOLE_BACKGROUND_KEY', bare('bg')),
+    ...ansi.map(([slot, token]) => color(`CONSOLE_${slot}_OUTPUT`, bare(token))),
+  ].join('\n');
+
+  // The 2024.2+ "new" terminal reads its 16 ANSI slots from BLOCK_TERMINAL_*
+  // text attributes (the classic console keeps the CONSOLE_*_OUTPUT colours
+  // above); same map, second surface. Slot names differ from the console's:
+  // BLACK/RED/…/WHITE + _BRIGHT, no GRAY/DARKGRAY aliases.
+  const blockTerminal = [
+    ['BLACK', 'bg'], ['RED', 'urgent'], ['GREEN', 'success'], ['YELLOW', 'accent'],
+    ['BLUE', 'steelBright'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['WHITE', 'fg'],
+    ['BLACK_BRIGHT', 'fgDisabled'], ['RED_BRIGHT', 'urgentBright'], ['GREEN_BRIGHT', 'successBright'],
+    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'steel'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
+    ['CYAN_BRIGHT', 'cyanBright'], ['WHITE_BRIGHT', mode === 'dark' ? 'ivory' : 'fg'],
+  ];
+
+  const attributes = [
+    attr('TEXT', { fg: bare('fg'), bg: bare('bg') }),
+    // the twelve roles, on the DEFAULT_* fallback keys
+    attr('DEFAULT_KEYWORD', { fg: sxBare('keyword') }),
+    attr('DEFAULT_STRING', { fg: sxBare('string') }),
+    attr('DEFAULT_VALID_STRING_ESCAPE', { fg: sxBare('constant') }),
+    attr('DEFAULT_INVALID_STRING_ESCAPE', { fg: sxBare('invalid'), effectColor: sxBare('invalid'), effect: WAVE }),
+    attr('DEFAULT_NUMBER', { fg: sxBare('constant') }),
+    attr('DEFAULT_CONSTANT', { fg: sxBare('constant') }),
+    attr('DEFAULT_PREDEFINED_SYMBOL', { fg: sxBare('constant') }),
+    attr('DEFAULT_LINE_COMMENT', { fg: sxBare('comment'), font: ITALIC }),
+    attr('DEFAULT_BLOCK_COMMENT', { fg: sxBare('comment'), font: ITALIC }),
+    attr('DEFAULT_DOC_COMMENT', { fg: sxBare('comment'), font: ITALIC }),
+    attr('DEFAULT_DOC_COMMENT_TAG', { fg: sxBare('keyword'), font: ITALIC }),
+    attr('DEFAULT_DOC_MARKUP', { fg: sxBare('comment'), font: ITALIC }),
+    attr('DEFAULT_FUNCTION_DECLARATION', { fg: sxBare('function') }),
+    attr('DEFAULT_FUNCTION_CALL', { fg: sxBare('function') }),
+    attr('DEFAULT_CLASS_NAME', { fg: sxBare('type') }),
+    attr('DEFAULT_CLASS_REFERENCE', { fg: sxBare('type') }),
+    attr('DEFAULT_INTERFACE_NAME', { fg: sxBare('type') }),
+    attr('DEFAULT_IDENTIFIER', { fg: sxBare('variable') }),
+    attr('DEFAULT_LOCAL_VARIABLE', { fg: sxBare('variable') }),
+    attr('DEFAULT_INSTANCE_FIELD', { fg: sxBare('variable') }),
+    attr('DEFAULT_PARAMETER', { fg: sxBare('parameter'), font: ITALIC }),
+    attr('DEFAULT_OPERATION_SIGN', { fg: sxBare('operator') }),
+    attr('DEFAULT_BRACES', { fg: sxBare('operator') }),
+    attr('DEFAULT_BRACKETS', { fg: sxBare('operator') }),
+    attr('DEFAULT_PARENTHS', { fg: sxBare('operator') }),
+    attr('DEFAULT_DOT', { fg: sxBare('operator') }),
+    attr('DEFAULT_COMMA', { fg: sxBare('operator') }),
+    attr('DEFAULT_SEMICOLON', { fg: sxBare('operator') }),
+    attr('DEFAULT_TAG', { fg: sxBare('tag') }),
+    attr('DEFAULT_ATTRIBUTE', { fg: sxBare('tag') }),
+    attr('DEFAULT_ENTITY', { fg: sxBare('constant') }),
+    // decorators / annotations read as the function role (VS Code parity)
+    attr('DEFAULT_METADATA', { fg: sxBare('function') }),
+    attr('DEFAULT_TEMPLATE_LANGUAGE_COLOR', { fg: sxBare('namespace') }),
+    // diagnostics — the VS Code squiggle map: error urgent, warning attention,
+    // weak/info steel, typo steelBright; deprecated = the invalid role, struck
+    attr('ERRORS_ATTRIBUTES', { effectColor: bare('urgent'), effect: WAVE }),
+    attr('WARNING_ATTRIBUTES', { effectColor: bare('attention'), effect: WAVE }),
+    attr('WEAK_WARNING_ATTRIBUTES', { effectColor: bare('steel'), effect: LINE }),
+    attr('INFO_ATTRIBUTES', { effectColor: bare('steel'), effect: LINE }),
+    attr('TYPO', { effectColor: bare('steelBright'), effect: WAVE }),
+    attr('DEPRECATED_ATTRIBUTES', { fg: sxBare('invalid'), effect: STRIKEOUT, effectColor: sxBare('invalid') }),
+    attr('MARKED_FOR_REMOVAL_ATTRIBUTES', { fg: sxBare('invalid'), effect: STRIKEOUT, effectColor: sxBare('invalid') }),
+    attr('NOT_USED_ELEMENT_ATTRIBUTES', { fg: bare('fgMuted') }),  // unused code is still code to read: the comment tier, not the disabled tier
+    attr('WRONG_REFERENCES_ATTRIBUTES', { fg: bare('urgent') }),
+    // editor affordances
+    attr('MATCHED_BRACE_ATTRIBUTES', { fg: bare('accent'), bg: bareA('accentFill', '30'), font: BOLD }),
+    attr('UNMATCHED_BRACE_ATTRIBUTES', { fg: bare('urgentBright'), font: BOLD }),
+    attr('SEARCH_RESULT_ATTRIBUTES', { fg: bare('ink'), bg: bare('attentionFill') }),
+    attr('TEXT_SEARCH_RESULT_ATTRIBUTES', { fg: bare('ink'), bg: bare('attentionFill') }),
+    attr('WRITE_SEARCH_RESULT_ATTRIBUTES', { fg: bare('ink'), bg: bare('attentionFill'), font: BOLD }),
+    attr('IDENTIFIER_UNDER_CARET_ATTRIBUTES', { bg: bare('bgRaised') }),
+    attr('WRITE_IDENTIFIER_UNDER_CARET_ATTRIBUTES', { bg: bareA('attentionFill', '40') }),
+    attr('TODO_DEFAULT_ATTRIBUTES', { fg: bare('ink'), bg: bare('attentionFill'), font: BOLD }),
+    attr('FOLDED_TEXT_ATTRIBUTES', { fg: bare('fgSecondary'), bg: bare('bgRaised') }),
+    attr('INLINE_PARAMETER_HINT', { fg: bare('fgMuted'), bg: bare('bgRaised') }),
+    attr('INLINE_PARAMETER_HINT_HIGHLIGHTED', { fg: bare('fg'), bg: bare('bgOverlay') }),
+    attr('INLAY_DEFAULT', { fg: bare('fgMuted'), bg: bare('bgRaised') }),
+    attr('INLAY_TEXT_WITHOUT_BACKGROUND', { fg: bare('fgMuted') }),
+    attr('BREAKPOINT_ATTRIBUTES', { bg: bare('diffDelBg') }),
+    attr('EXECUTIONPOINT_ATTRIBUTES', { fg: bare('fg'), bg: bare('steelFill') }),
+    attr('HYPERLINK_ATTRIBUTES', { fg: bare('accent'), effectColor: bare('accent'), effect: LINE }),
+    attr('FOLLOWED_HYPERLINK_ATTRIBUTES', { fg: bare('accentBright'), effectColor: bare('accentBright'), effect: LINE }),
+    attr('INACTIVE_HYPERLINK_ATTRIBUTES', { fg: bare('fgMuted'), effectColor: bare('fgMuted'), effect: LINE }),
+    // console + log
+    attr('CONSOLE_NORMAL_OUTPUT', { fg: bare('fg') }),
+    attr('CONSOLE_ERROR_OUTPUT', { fg: bare('urgentText') }),
+    attr('CONSOLE_SYSTEM_OUTPUT', { fg: bare('fgSecondary') }),
+    attr('CONSOLE_USER_INPUT', { fg: bare('accent') }),
+    attr('LOG_ERROR_OUTPUT', { fg: bare('urgent') }),
+    attr('LOG_WARNING_OUTPUT', { fg: bare('attention') }),
+    attr('LOG_INFO_OUTPUT', { fg: bare('steel') }),
+    attr('LOG_DEBUG_OUTPUT', { fg: bare('fgMuted') }),
+    attr('LOG_VERBOSE_OUTPUT', { fg: bare('fgDisabled') }),
+    attr('LOG_EXPIRED_ENTRY', { fg: bare('fgDisabled') }),
+    // diff hunk bodies. Same NAMES as the DIFF_* entries in <colors> above on
+    // purpose: the platform registers both a ColorKey (gutter / VCS swatches)
+    // and a TextAttributesKey (diff-viewer text) under each name, read from
+    // different XML sections — not a duplicate.
+    attr('DIFF_INSERTED', { bg: bare('diffAddBg') }),
+    attr('DIFF_DELETED', { bg: bare('diffDelBg') }),
+    attr('DIFF_MODIFIED', { bg: bareA('attentionFill', '40') }),
+    attr('DIFF_CONFLICT', { bg: bareA('urgentBright', '40') }),
+    ...blockTerminal.map(([slot, token]) => attr(`BLOCK_TERMINAL_${slot}`, { fg: bare(token) })),
+  ].join('\n');
+
+  // Language-specific keys (Java's CLASS_NAME_ATTRIBUTES, Markdown's
+  // MARKDOWN_HEADER, …) are NOT re-declared here, and deliberately carry no
+  // baseAttributes="1" marker either: a key this scheme does not define walks
+  // its fallback chain INSIDE this scheme first (EditorColorsSchemeImpl.
+  // getAttributes → getFallbackAttributes) and reaches the parent only when the
+  // chain finds nothing — so the DEFAULT_* roles already win over the parent's
+  // explicit language keys. Proven by A/B in IDEA CE 2025.2.5 (identical render
+  // with and without 177 markers); the "String is red" that suggested otherwise
+  // was the unresolved-reference highlight of a JDK-less project.
+
+  // XML comments forbid a literal double hyphen anywhere in the body.
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ${title}: IntelliJ Platform editor color scheme.
+  Generated from themes/_palette.json by themes/build.mjs; edit there and rebuild.
+  A diff against parent_scheme "${parent}": every option omitted inherits.
+  Bare hex, RGBA alpha-last. Bound to the matching *.theme.json via editorScheme.
+-->
+<scheme name="${esc(title)}" version="142" parent_scheme="${parent}">
+\t<metaInfo>
+\t\t<property name="generated">themes/build.mjs</property>
+\t\t<property name="pluginId">${JETBRAINS_PLUGIN_ID}</property>
+\t</metaInfo>
+\t<colors>
+${colors}
+\t</colors>
+\t<attributes>
+${attributes}
+\t</attributes>
+</scheme>
+`;
+};
+
+// UI theme — palette token NAMES in `ui`, every token verbatim in `colors`,
+// #RRGGBBAA literals only for alpha blends.
+const jetbrainsUiTheme = (mode) => {
+  const { P, t, alpha, onAccent } = jetbrainsPalette(mode);
+  const name = mode === 'dark' ? 'Artificer Dark' : 'Artificer Light';
+  // Every string-valued top-level palette token, verbatim. This is the one
+  // emitter that walks the palette wholesale rather than naming tokens, so it
+  // is load-bearing on the palette's shape: a string value that is not a
+  // six-digit hex still throws (t() guards it — a typo'd colour must not ship),
+  // but a non-string field Lane 1 might add later (a flag, a nested object) is
+  // skipped here rather than failing all twenty generators at once.
+  const colors = Object.fromEntries(
+    Object.keys(P).filter((token) => typeof P[token] === 'string').map((token) => [token, t(token)])
+  );
+  // A literal with alpha — the one place a "#" value appears in `ui`.
+  const a = (token, aa) => t(token) + alpha(aa);
+  // A bare name is a lookup; guard it so a typo throws here, not silently
+  // renders as "unresolved" in the IDE.
+  const n = (token) => { t(token); return token; };
+
+  const theme = {
+    name,
+    dark: mode === 'dark',
+    author: 'Cameron Sjo',
+    parentTheme: mode === 'dark' ? 'Islands Dark' : 'Islands Light',
+    editorScheme: `/artificer-${mode}.xml`,
+    colors,
+    ui: {
+      '*': {
+        background: n('bg'),
+        foreground: n('fg'),
+        selectionBackground: n('selectionFill'),
+        selectionForeground: n('fg'),
+        selectionInactiveBackground: n('bgRaised'),
+        borderColor: n('border'),
+        separatorColor: n('border'),
+        focusColor: n('accent'),
+        focusedBorderColor: n('accent'),
+        disabledForeground: n('fgDisabled'),
+        infoForeground: n('fgSecondary'),
+        lineSeparatorColor: n('border'),
+      },
+      // Islands: backdrop vs islands (see the surface-model note in the banner)
+      'MainWindow.background': n('bgInactive'),
+      'Island.borderColor': n('bg'),
+      'Editor.background': n('bg'),
+      'EditorPane.background': n('bg'),
+      'ToolWindow.background': n('bg'),
+      'ToolWindow.Header.background': n('bg'),
+      'ToolWindow.Header.inactiveBackground': n('bg'),
+      'ToolWindow.Header.borderColor': n('border'),
+      'ToolWindow.HeaderTab.underlineColor': n('accent'),
+      'ToolWindow.HeaderTab.inactiveUnderlineColor': n('fgDisabled'),
+      'EditorTabs.background': n('bg'),
+      'EditorTabs.underlinedTabBackground': n('bg'),
+      'EditorTabs.inactiveUnderlinedTabBackground': n('bg'),
+      'EditorTabs.underlinedBorderColor': n('accent'),
+      'EditorTabs.inactiveUnderlinedTabBorderColor': n('fgDisabled'),
+      'EditorTabs.underlineColor': n('accent'),
+      'EditorTabs.inactiveUnderlineColor': n('fgDisabled'),
+      'EditorTabs.underlinedTabForeground': n('fg'),
+      'EditorTabs.inactiveColoredFileBackground': n('bgRaised'),
+      'MainToolbar.background': n('bgInactive'),
+      'MainToolbar.inactiveBackground': n('bgInactive'),
+      'StatusBar.background': n('bgInactive'),
+      'StatusBar.borderColor': n('border'),
+      // lists, trees, tables
+      'Tree.selectionBackground': a('accentFill', '55'),
+      'Tree.selectionForeground': n('fg'),
+      'Tree.selectionInactiveBackground': n('bgRaised'),
+      'Tree.hoverBackground': a('bgOverlay', '80'),
+      'List.selectionBackground': a('accentFill', '55'),
+      'List.selectionForeground': n('fg'),
+      'List.selectionInactiveBackground': n('bgRaised'),
+      'List.hoverBackground': a('bgOverlay', '80'),
+      'Table.selectionBackground': a('accentFill', '55'),
+      'Table.selectionForeground': n('fg'),
+      'Table.selectionInactiveBackground': n('bgRaised'),
+      'Table.gridColor': n('border'),
+      'Table.stripeColor': n('bgRaised'),
+      'TableHeader.background': n('bgRaised'),
+      // controls
+      'Button.default.startBackground': n('accentFill'),
+      'Button.default.endBackground': n('accentFill'),
+      'Button.default.startBorderColor': n('accentFill'),
+      'Button.default.endBorderColor': n('accentFill'),
+      'Button.default.foreground': n(onAccent),
+      'Button.default.focusedBorderColor': n('accentBright'),
+      'Button.startBackground': n('bgRaised'),
+      'Button.endBackground': n('bgRaised'),
+      'Button.startBorderColor': n('border'),
+      'Button.endBorderColor': n('border'),
+      'Button.focusedBorderColor': n('accent'),
+      'ActionButton.hoverBackground': n('bgRaised'),
+      'ActionButton.hoverBorderColor': n('bgRaised'),
+      'ActionButton.pressedBackground': n('bgOverlay'),
+      'ActionButton.pressedBorderColor': n('bgOverlay'),
+      'ComboBox.background': n('bgRaised'),
+      'ComboBox.nonEditableBackground': n('bgRaised'),
+      'TextField.background': n('bgRaised'),
+      'TextArea.background': n('bgRaised'),
+      'SearchField.background': n('bgRaised'),
+      'Editor.SearchField.background': n('bgRaised'),
+      'CheckBox.background': n('bg'),
+      'Component.focusColor': n('accent'),
+      'Component.focusedBorderColor': n('accent'),
+      'Component.errorFocusColor': n('urgent'),
+      'Component.inactiveErrorFocusColor': a('urgent', '80'),
+      'Component.warningFocusColor': n('attention'),
+      'Component.inactiveWarningFocusColor': a('attention', '80'),
+      'Label.foreground': n('fg'),
+      'Label.infoForeground': n('fgSecondary'),
+      'Label.disabledForeground': n('fgDisabled'),
+      'Link.activeForeground': n('accent'),
+      'Link.hoverForeground': n('accentBright'),
+      'Link.pressedForeground': n('accentBright'),
+      'Link.visitedForeground': n('accent'),
+      'TabbedPane.underlineColor': n('accent'),
+      'TabbedPane.disabledUnderlineColor': n('fgDisabled'),
+      'TabbedPane.hoverColor': a('bgOverlay', '80'),
+      'ProgressBar.progressColor': n('accent'),
+      'ProgressBar.indeterminateStartColor': n('accent'),
+      'ProgressBar.indeterminateEndColor': n('accentBright'),
+      'ProgressBar.trackColor': n('bgRaised'),
+      'ProgressBar.passedColor': n('success'),
+      'ProgressBar.failedColor': n('urgent'),
+      'Counter.background': n('accentFill'),
+      'Counter.foreground': n(onAccent),
+      'ScrollBar.thumbColor': a('fgDisabled', '80'),
+      'ScrollBar.thumbBorderColor': a('fgDisabled', '80'),
+      'ScrollBar.hoverThumbColor': a('fgMuted', '80'),
+      'ScrollBar.hoverThumbBorderColor': a('fgMuted', '80'),
+      'ScrollBar.trackColor': a('bg', '00'),
+      'ScrollBar.hoverTrackColor': a('bgRaised', '80'),
+      // popups, menus, notifications
+      'Popup.background': n('bgOverlay'),
+      'Popup.borderColor': n('border'),
+      'Popup.Header.activeBackground': n('bgOverlay'),
+      'Popup.Header.inactiveBackground': n('bgOverlay'),
+      'Popup.separatorColor': n('border'),
+      'PopupMenu.background': n('bgOverlay'),
+      'Menu.background': n('bgOverlay'),
+      'Menu.borderColor': n('border'),
+      'MenuItem.background': n('bgOverlay'),
+      'MenuItem.selectionBackground': a('accentFill', '55'),
+      'MenuItem.selectionForeground': n('fg'),
+      'MenuBar.background': n('bgInactive'),
+      'Notification.background': n('bgOverlay'),
+      'Notification.borderColor': n('border'),
+      'Notification.errorBackground': n('diffDelBg'),
+      'Notification.errorBorderColor': n('urgent'),
+      'Notification.errorForeground': n('fg'),
+      'Notification.ToolWindow.informativeBackground': n('bgOverlay'),
+      'Notification.ToolWindow.informativeBorderColor': n('steel'),
+      'Notification.ToolWindow.warningBackground': a('attentionFill', '40'),
+      'Notification.ToolWindow.warningBorderColor': n('attention'),
+      'Notification.ToolWindow.errorBackground': n('diffDelBg'),
+      'Notification.ToolWindow.errorBorderColor': n('urgent'),
+      'ValidationTooltip.errorBackground': n('diffDelBg'),
+      'ValidationTooltip.errorBorderColor': n('urgent'),
+      'ValidationTooltip.warningBackground': a('attentionFill', '40'),
+      'ValidationTooltip.warningBorderColor': n('attention'),
+      'ToolTip.background': n('bgOverlay'),
+      'ToolTip.borderColor': n('border'),
+      'SearchEverywhere.Header.background': n('bgOverlay'),
+      'SearchEverywhere.SearchField.background': n('bgOverlay'),
+      'SearchEverywhere.Tab.selectedBackground': n('bgRaised'),
+      'SearchEverywhere.List.separatorColor': n('border'),
+      'Banner.infoBackground': a('steelFill', '40'),
+      'Banner.infoBorderColor': n('steel'),
+      'Banner.warningBackground': a('attentionFill', '40'),
+      'Banner.warningBorderColor': n('attention'),
+      'Banner.errorBackground': n('diffDelBg'),
+      'Banner.errorBorderColor': n('urgent'),
+      'Banner.successBackground': n('diffAddBg'),
+      'Banner.successBorderColor': n('success'),
+      'Borders.color': n('border'),
+      'Borders.ContrastBorderColor': n('border'),
+      // VCS log + diff
+      'VersionControl.Log.Commit.currentBranchBackground': n('bgRaised'),
+      'VersionControl.RefLabel.foreground': n('fg'),
+      'VersionControl.FileHistory.Commit.selectedBranchBackground': n('bgRaised'),
+      'VersionControl.GitLog.localBranchIconColor': n('success'),
+      'VersionControl.GitLog.remoteBranchIconColor': n('steel'),
+      'VersionControl.GitLog.tagIconColor': n('accent'),
+      'VersionControl.GitLog.headIconColor': n('accentBright'),
+    },
+  };
+  return JSON.stringify(theme, null, 2) + '\n';
+};
+
+const jetbrainsPluginXml = () => {
+  // <version> byte shape is load-bearing: sync-version.mjs stamps exactly
+  // `<version>X.Y.Z</version>`; any whitespace inside would desync the two writers.
+  const provider = (mode) => `    <themeProvider id="${JETBRAINS_THEME_IDS[mode]}" path="/artificer-${mode}.theme.json" />`;
+  return `<!--
+  Artificer theme plugin for IntelliJ Platform IDEs (IntelliJ IDEA, PyCharm,
+  WebStorm, GoLand, RustRover, ...). Generated from themes/_palette.json by
+  themes/build.mjs; edit there and rebuild. Pack with "npm run pack:jetbrains"
+  and install via Settings > Plugins > (gear) > Install Plugin from Disk.
+-->
+<idea-plugin>
+  <id>${JETBRAINS_PLUGIN_ID}</id>
+  <name>Artificer Theme</name>
+  <vendor>Cameron Sjo</vendor>
+  <version>${version}</version>
+  <idea-version since-build="${JETBRAINS_SINCE_BUILD}" />
+  <depends>com.intellij.modules.platform</depends>
+  <description><![CDATA[
+    Artificer &mdash; a Jazz Age palette for tool surfaces: burnished gold on
+    slate in the dark, sienna on ivory paper in the light. Two UI themes on the
+    Islands base, each bound to its own editor color scheme, generated from the
+    same palette as the Artificer design system's other editor and terminal
+    themes.
+  ]]></description>
+  <extensions defaultExtensionNs="com.intellij">
+${provider('dark')}
+${provider('light')}
+  </extensions>
+</idea-plugin>
+`;
+};
+
+write('jetbrains/META-INF/plugin.xml', jetbrainsPluginXml());
+write('jetbrains/artificer-dark.theme.json',  jetbrainsUiTheme('dark'));
+write('jetbrains/artificer-light.theme.json', jetbrainsUiTheme('light'));
+write('jetbrains/artificer-dark.xml',  jetbrainsScheme('dark'));
+write('jetbrains/artificer-light.xml', jetbrainsScheme('light'));
 
 // ─────────────────────────────────────────────────────────────────────
 // Helix — TOML theme, dark + light variants
@@ -1763,8 +2323,10 @@ write('gh-dash/artificer-light.yml', ghDashTheme('light'));
 // exported publicly, so it points at the exported README rather than the
 // workshop-only research doc that carries the underlying ruling.)
 //
-// The token set is herdr's CustomThemeColors struct — all 16 fields, in the
-// binary's own declaration order. Overriding every field means the base `name`
+// The token set is herdr's CustomThemeColors struct — 18 of its 19 fields, in
+// the binary's own declaration order. `sidebar_bg` is deliberately left unset so
+// the sidebar keeps inheriting whatever substrate the user's terminal or base
+// preset supplies. Overriding the rest means the base `name`
 // only governs surfaces herdr does not expose; we still pin it to the
 // Catppuccin pair because these token names ARE Catppuccin's palette roles
 // (surface0/1, overlay0/1, subtext0, mauve/peach), so any unexposed internal
@@ -1784,10 +2346,16 @@ write('gh-dash/artificer-light.yml', ghDashTheme('light'));
 //     WCAG 1.4.3's inactive-control carve-out, same as everywhere else.
 //   · overlay1 = fgMuted (3.05 / 3.83) — the muted meta/comment role, above the
 //     3:1 graphical floor and below text-AA by design.
-// A third is worth naming so a future reader does not "fix" it: `accent` and
-// `yellow` resolve to the SAME token. Artificer's accent IS gold, so herdr's
-// navigation accent and its yellow state marker legitimately coincide; forcing
-// them apart would mean importing an off-palette hue (Hard rule #1).
+// Two more are worth naming so a future reader does not "fix" them. First,
+// `accent` and `yellow` resolve to the SAME token. Artificer's accent IS gold,
+// so herdr's navigation accent and its yellow state marker legitimately
+// coincide; forcing them apart would mean importing an off-palette hue
+// (Hard rule #1). Second, `active_row_bg` and `surface1` both resolve to
+// `bgOverlay`. herdr's focused row and its generic selected row are the same
+// elevation in the ADR 0036 ladder, and only one is ever visible at a time —
+// `surface1` marks a selected row in a list, `active_row_bg` the focused pane's
+// sidebar row. Splitting them would spend a distinct rung on a distinction the
+// user never sees side by side.
 //
 // Surfaces do not carry the text ratios, so they are listed without one: the
 // bg → bgRaised → bgOverlay ladder is the ADR 0036 elevation model, with
@@ -1798,22 +2366,24 @@ write('gh-dash/artificer-light.yml', ghDashTheme('light'));
 // [herdrKey, paletteToken, note]. One table, so the emitted file and the ratio
 // commentary above cannot drift apart. Order mirrors CustomThemeColors.
 const HERDR_TOKENS = [
-  ['accent',      'accent',            'highlights, borders, navigation UI'],
-  ['panel_bg',    'bg',                'the substrate (ADR 0036)'],
-  ['surface0',    'bgRaised',          'raised panel'],
-  ['surface1',    'bgOverlay',         'selected row'],
-  ['surface_dim', 'bgInactive',        'unfocused pane'],
-  ['overlay0',    'fgDisabled',        'dim text — disabled tier (2.43 / 4.80)'],
-  ['overlay1',    'fgMuted',           'muted meta/comment (3.05 / 3.83)'],
-  ['text',        'fg',                '11.21 / 13.13'],
-  ['subtext0',    'fgSecondary',       '8.29 / 8.63'],
-  ['mauve',       'brandPurpleBright', '5.47 / 6.83'],
-  ['green',       'successBright',     '4.50 / 4.86'],
-  ['yellow',      'accent',            '7.55 / 5.33 — same token as accent; Artificer accent IS gold'],
-  ['red',         'urgentText',        '6.98 / 7.49 — the text-tier red; bare urgent is 2.28 on dark'],
-  ['blue',        'steel',             '8.28 / 7.83'],
-  ['teal',        'cyan',              '5.23 / 5.10'],
-  ['peach',       'attentionAlt',      '5.49 / 5.25'],
+  ['accent',        'accent',            'highlights, borders, navigation UI'],
+  ['panel_bg',      'bg',                'the substrate (ADR 0036)'],
+  ['active_row_bg', 'bgOverlay',         'focused agent / active workspace row — same token as surface1'],
+  ['selection_bg',  'bgFloat',           'Navigate-mode cursor row'],
+  ['surface0',      'bgRaised',          'raised panel'],
+  ['surface1',      'bgOverlay',         'selected row — same token as active_row_bg'],
+  ['surface_dim',   'bgInactive',        'unfocused pane'],
+  ['overlay0',      'fgDisabled',        'dim text — disabled tier (2.43 / 4.80)'],
+  ['overlay1',      'fgMuted',           'muted meta/comment (3.05 / 3.83)'],
+  ['text',          'fg',                '11.21 / 13.13'],
+  ['subtext0',      'fgSecondary',       '8.29 / 8.63'],
+  ['mauve',         'brandPurpleBright', '5.47 / 6.83'],
+  ['green',         'successBright',     '4.50 / 4.86'],
+  ['yellow',        'accent',            '7.55 / 5.33 — same token as accent; Artificer accent IS gold'],
+  ['red',           'urgentText',        '6.98 / 7.49 — the text-tier red; bare urgent is 2.28 on dark'],
+  ['blue',          'steel',             '8.28 / 7.83'],
+  ['teal',          'cyan',              '5.23 / 5.10'],
+  ['peach',         'attentionAlt',      '5.49 / 5.25'],
 ];
 
 // Alignment is a property of the table, not of the mode — derive it once here
@@ -1846,7 +2416,7 @@ const herdrTheme = (mode) => {
 
 [theme]
 # Base only governs surfaces herdr does not expose; [theme.custom] below
-# overrides all 16 CustomThemeColors fields.
+# overrides 18 of the 19 CustomThemeColors fields (sidebar_bg is left unset).
 name = "${base}"
 
 [theme.custom]
@@ -2403,8 +2973,10 @@ const yaziTheme = (mode) => {
   return `# Artificer theme overrides for yazi (${title}).
 #
 # Third merge layer only (preset -> flavor -> theme.toml, later winning), so
-# this states just the tokens that differ. Rationale, traps, and the case
-# against a flavor package: the dotfiles' docs/yazi-notes.md.
+# this states just the tokens that differ. Stating only the delta is what keeps
+# this file readable against yazi's preset; the case against shipping a full
+# flavor package instead is that a flavor would have to restate every token and
+# would then drift from this generator on every palette change.
 #
 # Generated from themes/_palette.json — edit there + re-run build.mjs.
 # The values below were hand-authored first and ported verbatim; every literal
@@ -2440,6 +3012,19 @@ find_position = { fg = "${accent}", bg = "reset", bold = true, italic = true }
 
 # Persistent chrome: quiet, never gold.
 border_style = { fg = "${chrome}" }
+
+# Syntax colours for the file preview, borrowed from the bat tmTheme this same
+# installer places at \$HOME/.config/bat/themes/. Without it the preview falls
+# back to syntect's default, which is not Artificer and clashes hard with the
+# chrome above.
+#
+# \`\$HOME\` is deliberate and is the ONLY portable spelling. yazi's
+# \`expand_variables\` (yazi-fs/src/path/expand.rs) substitutes \`\$VAR\` and
+# \`\${VAR}\` and nothing else — there is NO tilde branch — and \`sanitize_path\`
+# then rejects any result that is not absolute. So \`~/...\` fails, and a path
+# relative to the config dir is refused outright with
+# "syntect_theme must be either empty or an absolute path".
+syntect_theme = "\$HOME/.config/bat/themes/artificer-${mode}.tmTheme"
 # }}}
 
 # : Indicator of the hovered file {{{
@@ -2769,6 +3354,208 @@ ${block('light')}
 };
 
 write('flux/artificer-flux.css', fluxTheme());
+
+// ─────────────────────────────────────────────────────────────────────
+// Browsers — Chrome / Edge (Chromium) + Firefox
+// ─────────────────────────────────────────────────────────────────────
+//
+// Three artifacts, five store listings. The split is forced by the formats,
+// not chosen:
+//
+//   · Firefox takes hex strings AND a sibling `dark_theme` manifest key, so
+//     ONE package carries both modes and follows the OS.
+//   · Chromium accepts only RGB arrays and has no dark/light switch, so one
+//     package is one mode — hence artificer-dark/ and artificer-light/.
+//   · Edge takes the Chromium package unchanged (learn.microsoft.com): a
+//     second listing, not a third artifact.
+//
+// The key sets are NOT a subset relation, which is why the shared table below
+// tags every row with the browsers that accept it. Chromium's accepted keys are
+// `kOverwritableColorTable` in chrome/browser/themes/browser_theme_pack.cc —
+// Chrome does not publish the list, and an unrecognized key parses fine and is
+// then silently ignored, so a guessed name fails invisibly. Chromium says
+// `omnibox_background` / `omnibox_text` / `toolbar_button_icon` where Firefox
+// says `toolbar_field` / `toolbar_field_text` / `icons`, and has no popup,
+// sidebar, separator or focus keys at all.
+//
+// Chromium's kTintTable (`background_tab`, `buttons`, `frame`, …) takes HSL
+// float triples rather than colours. Nothing is emitted into it: the one thing
+// a tint would buy — legible text on an inactive tab over a dark frame — is
+// bought directly and exactly by the `background_tab` / `tab_background_text`
+// COLOUR rows below, and a guessed HSL shift is worse than no shift.
+
+// [key, token, accepted-by, what it is]
+//   'both'     — the literal key string is in Chromium's table AND Firefox's
+//   'chromium' — Chromium only
+//   'firefox'  — Firefox only
+const BROWSER_SLOTS = [
+  // the window frame: the browser's own backdrop
+  ['frame',                                 'bg',            'both',     'the window frame'],
+  ['frame_inactive',                        'bgInactive',    'both',     'frame of an unfocused window — Rule #6 recession'],
+  ['frame_incognito',                       'bgInactive',    'chromium', 'incognito frame'],
+  ['frame_incognito_inactive',              'bgInactive',    'chromium', 'unfocused incognito frame'],
+  ['ntp_background',                        'bg',            'both',     'the new-tab page — its own surface, not the toolbar\'s'],
+
+  // the toolbar strip and the selected tab sit one rung up, as raised chrome
+  ['toolbar',                               'bgRaised',      'both',     'the toolbar strip and the selected tab'],
+  ['tab_selected',                          'bgRaised',      'firefox',  'selected tab (Chromium derives it from `toolbar`)'],
+  ['sidebar',                               'bgRaised',      'firefox',  'sidebar panel background'],
+  ['ntp_card_background',                   'bgRaised',      'firefox',  'new-tab-page cards'],
+  ['ntp_header',                            'bgRaised',      'chromium', 'new-tab-page header band'],
+  ['button_background',                     'bgRaised',      'chromium', 'frame caption buttons'],
+
+  // inactive tabs ride on the frame, so they take the frame's surface
+  ['background_tab',                        'bg',            'chromium', 'an unselected tab'],
+  ['background_tab_inactive',               'bgInactive',    'chromium', 'unselected tab in an unfocused window'],
+  ['background_tab_incognito',              'bg',            'chromium', 'unselected incognito tab'],
+  ['background_tab_incognito_inactive',     'bgInactive',    'chromium', 'unselected incognito tab, unfocused window'],
+
+  // the URL bar and popups are the overlay rung
+  ['toolbar_field',                         'bgOverlay',     'firefox',  'the URL bar'],
+  ['toolbar_field_focus',                   'bgOverlay',     'firefox',  'the URL bar while focused'],
+  ['omnibox_background',                    'bgOverlay',     'chromium', 'the URL bar (Chromium spelling)'],
+  ['popup',                                 'bgOverlay',     'firefox',  'autocomplete + doorhanger panels'],
+  ['button_background_hover',               'bgOverlay',     'firefox',  'toolbar button hover'],
+
+  // primary text, everywhere it lands on bg / bgRaised / bgOverlay
+  ['tab_text',                              'fg',            'both',     'selected-tab text'],
+  ['toolbar_text',                          'fg',            'both',     'toolbar text'],
+  ['bookmark_text',                         'fg',            'both',     'bookmarks-bar text'],
+  ['ntp_text',                              'fg',            'both',     'new-tab-page text'],
+  ['toolbar_field_text',                    'fg',            'firefox',  'URL-bar text'],
+  ['toolbar_field_text_focus',              'fg',            'firefox',  'URL-bar text while focused'],
+  ['omnibox_text',                          'fg',            'chromium', 'URL-bar text (Chromium spelling)'],
+  ['popup_text',                            'fg',            'firefox',  'popup-panel text'],
+  ['sidebar_text',                          'fg',            'firefox',  'sidebar text'],
+
+  // secondary text and icons — the quiet tier
+  ['tab_background_text',                   'fgSecondary',   'both',     'unselected-tab text'],
+  ['tab_background_text_inactive',          'fgSecondary',   'chromium', 'unselected-tab text, unfocused window'],
+  ['tab_background_text_incognito',         'fgSecondary',   'chromium', 'unselected incognito-tab text'],
+  ['tab_background_text_incognito_inactive','fgSecondary',   'chromium', 'unselected incognito-tab text, unfocused window'],
+  ['icons',                                 'fgSecondary',   'firefox',  'toolbar icons'],
+  ['toolbar_button_icon',                   'fgSecondary',   'chromium', 'toolbar icons (Chromium spelling)'],
+
+  // accent — the one interactive hue
+  //
+  // ntp_link is bound deliberately: leave it out and new-tab-page links render
+  // at Chrome's default blue on an Artificer surface.
+  ['ntp_link',                              'accent',        'chromium', 'new-tab-page links'],
+  ['tab_line',                              'accent',        'firefox',  'the selected-tab indicator line'],
+  ['icons_attention',                       'accent',        'firefox',  'an icon wanting attention'],
+  ['toolbar_field_border_focus',            'accent',        'firefox',  'URL-bar border while focused'],
+
+  // selection fills, and the text rated against them
+  ['popup_highlight',                       'selectionFill', 'firefox',  'highlighted autocomplete row'],
+  ['popup_highlight_text',                  'fg',            'firefox',  'text on the highlighted row'],
+  ['sidebar_highlight',                     'selectionFill', 'firefox',  'selected sidebar row'],
+  ['sidebar_highlight_text',                'fg',            'firefox',  'text on the selected sidebar row'],
+  ['toolbar_field_highlight',               'selectionFill', 'firefox',  'selected text inside the URL bar'],
+  ['button_background_active',              'selectionFill', 'firefox',  'a pressed toolbar button'],
+
+  // quiet chrome — dividers and borders are never gold
+  ['toolbar_field_border',                  'border',        'firefox',  'URL-bar border'],
+  ['toolbar_top_separator',                 'border',        'firefox',  'rule above the toolbar'],
+  ['toolbar_bottom_separator',              'border',        'firefox',  'rule below the toolbar'],
+  ['toolbar_vertical_separator',            'border',        'firefox',  'in-toolbar dividers'],
+  ['popup_border',                          'border',        'firefox',  'popup-panel border'],
+  ['sidebar_border',                        'border',        'firefox',  'sidebar border'],
+];
+
+const browserSlotsFor = (browser) =>
+  BROWSER_SLOTS.filter(([, , accepts]) => accepts === 'both' || accepts === browser);
+
+// Resolved once per browser, not once per mode: the key set does not vary with
+// mode, and hoisting it makes that invariant visible instead of leaving it
+// implicit in two identical filter calls.
+const CHROMIUM_SLOTS = browserSlotsFor('chromium');
+const FIREFOX_SLOTS = browserSlotsFor('firefox');
+
+// Hex → [r, g, b]. Chromium's theme.colors takes ONLY RGB arrays; a hex string
+// there parses and is then ignored. Deliberately NOT an overload of rgb()
+// above — Obsidian's callout system depends on that helper's "r, g, b" string
+// shape inside rgba(var(--callout-foo), 0.1).
+const rgbArray = (hex) => {
+  const h = hex.replace('#', '');
+  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+};
+
+const BROWSER_BLURB =
+  'Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in '
+  + 'the dark, sienna on ivory paper in the light. Generated from the same '
+  + 'palette as the Artificer design system\'s editor and terminal themes.';
+
+// The 128×128 mark committed in every package directory (rendered from
+// src/assets/favicon.svg). Both manifests must NAME it: pack-browser.mjs puts
+// the file in the zip, but an undeclared PNG is inert — Chrome falls back to
+// the grey puzzle piece on chrome://extensions and AMO shows a generic icon.
+const BROWSER_ICONS = { 128: 'icon-128.png' };
+
+// manifest_version 3: the Chrome Web Store and Microsoft Partner Center both
+// reject MV2 submissions.
+const chromiumTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const colors = Object.fromEntries(
+    CHROMIUM_SLOTS.map(([key, token]) => [key, rgbArray(P[token])])
+  );
+  return JSON.stringify({
+    manifest_version: 3,
+    name: mode === 'dark' ? 'Artificer Dark' : 'Artificer Light',
+    version,
+    description: BROWSER_BLURB,
+    icons: BROWSER_ICONS,
+    theme: { colors },
+  }, null, 2) + '\n';
+};
+
+// The add-on id is IDENTITY and permanent, the same lesson JETBRAINS_THEME_IDS
+// carries: leave it unset and AMO mints one at first submission, making the
+// listing's identity a store artifact rather than a repo fact — and changing it
+// later mints a DIFFERENT add-on that existing users never receive.
+//
+// The brace-UUID form rather than the email-shaped one Gecko also accepts: an
+// email-shaped id publishes a domain, permanently and unchangeably once AMO
+// takes the first submission, in a file the public export ships. A UUID depends
+// on no domain and discloses nothing, at no cost — the id is an opaque string
+// to Gecko, never resolved or fetched.
+const FIREFOX_ADDON_ID = '{b91a29e8-5147-4076-8bda-1b1f5c5e12d9}';
+
+// dark_theme landed in Firefox 68 (mdn/browser-compat-data). On anything older
+// the key is ignored and the theme renders light-only, silently — hence the
+// floor rather than a comment.
+const FIREFOX_MIN_VERSION = '68.0';
+
+// manifest_version 2: Mozilla's own current static-theme documentation ships
+// MV2 as the canonical example and has stated no plan to deprecate it
+// (extensionworkshop.com/documentation/themes/static-themes/). Themes carry no
+// background-script surface, so the MV3 split that matters for extensions does
+// not reach them.
+const firefoxTheme = () => {
+  const colorsFor = (P) => Object.fromEntries(FIREFOX_SLOTS.map(([key, token]) => [key, P[token]]));
+  return JSON.stringify({
+    manifest_version: 2,
+    name: 'Artificer',
+    version,
+    description: BROWSER_BLURB,
+    icons: BROWSER_ICONS,
+    browser_specific_settings: {
+      gecko: { id: FIREFOX_ADDON_ID, strict_min_version: FIREFOX_MIN_VERSION },
+    },
+    // `theme` is the default; `dark_theme` takes over when the OS is dark.
+    theme: { colors: colorsFor(L) },
+    dark_theme: { colors: colorsFor(D) },
+  }, null, 2) + '\n';
+};
+
+// Literal single-quoted paths, never a template literal: emittedTargets() in
+// scripts/check-install-coverage.mjs scans this file for write() calls with a
+// single-quoted string literal argument, so interpolating the mode makes both
+// targets invisible to the meta-gate — check:install would stay green while
+// dispositioning nothing. (The regex is why this note does not quote a sample
+// call: the sample would itself parse as a phantom emitted target.)
+write('chromium/artificer-dark/manifest.json',  chromiumTheme('dark'));
+write('chromium/artificer-light/manifest.json', chromiumTheme('light'));
+write('firefox/artificer/manifest.json',        firefoxTheme());
 
 // ─────────────────────────────────────────────────────────────────────
 // Obsidian fonts — base64-inline woff2 into the distributed theme.css

@@ -1,8 +1,10 @@
 # Artificer theme overrides for yazi (Light).
 #
 # Third merge layer only (preset -> flavor -> theme.toml, later winning), so
-# this states just the tokens that differ. Rationale, traps, and the case
-# against a flavor package: the dotfiles' docs/yazi-notes.md.
+# this states just the tokens that differ. Stating only the delta is what keeps
+# this file readable against yazi's preset; the case against shipping a full
+# flavor package instead is that a flavor would have to restate every token and
+# would then drift from this generator on every palette change.
 #
 # Generated from themes/_palette.json — edit there + re-run build.mjs.
 # The values below were hand-authored first and ported verbatim; every literal
@@ -38,6 +40,19 @@ find_position = { fg = "#7a5a10", bg = "reset", bold = true, italic = true }
 
 # Persistent chrome: quiet, never gold.
 border_style = { fg = "#cbb88a" }
+
+# Syntax colours for the file preview, borrowed from the bat tmTheme this same
+# installer places at $HOME/.config/bat/themes/. Without it the preview falls
+# back to syntect's default, which is not Artificer and clashes hard with the
+# chrome above.
+#
+# `$HOME` is deliberate and is the ONLY portable spelling. yazi's
+# `expand_variables` (yazi-fs/src/path/expand.rs) substitutes `$VAR` and
+# `${VAR}` and nothing else — there is NO tilde branch — and `sanitize_path`
+# then rejects any result that is not absolute. So `~/...` fails, and a path
+# relative to the config dir is refused outright with
+# "syntect_theme must be either empty or an absolute path".
+syntect_theme = "$HOME/.config/bat/themes/artificer-light.tmTheme"
 # }}}
 
 # : Indicator of the hovered file {{{

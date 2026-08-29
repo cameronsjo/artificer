@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "1",
-  "$version": "0.24.2",
+  "$version": "0.25.0",
   "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage. The 'js' field names a VANILLA src/ behavior module (data- hook + window API); the 'react' field names the compiled React adapter component(s) for the primitive (@cameronsjo/artificer/react) — distinct fields because they are distinct consumption models.",
   "primitives": {
     "stack": {

@@ -1,9 +1,9 @@
 # Artificer · Editor & Terminal Themes
 
-Same Jazz Age palette, twenty-one surfaces. Each ships dark + ivory-paper light
-— except `cmux/`, `gitmux/`, `flux/` and `neovim/`, which carry a single file
-(flux and neovim hold both modes in one, because those hosts switch at runtime
-rather than picking a file).
+Same Jazz Age palette, twenty-four surfaces. Each ships dark + ivory-paper
+light — except `cmux/`, `gitmux/`, `flux/`, `neovim/` and `firefox/`, which
+carry a single file (flux, neovim and firefox hold both modes in one, because
+those hosts switch at runtime rather than picking a file).
 
 The tree below is the whole set — one entry per directory `build.mjs` emits, and
 `npm run check:install` fails if a generator lands with no disposition in
@@ -25,6 +25,7 @@ themes/
 ├── codex/                  artificer-{dark,light}.tmTheme      (Codex CLI TUI; paints its own pane)
 ├── helix/                  artificer-{dark,light}.toml         (+ -opaque twins)
 ├── neovim/colors/          artificer.lua                       (BOTH modes, one file)
+├── jetbrains/              META-INF/plugin.xml + artificer-{dark,light}.theme.json + .xml  (IDE plugin source; pack to a jar)
 ├── starship/               artificer-{dark,light}.toml         ([palettes.artificer] merge layer)
 ├── yazi/                   artificer-{dark,light}.toml         (third merge layer)
 ├── tmux/                   artificer-{dark,light}.conf
@@ -33,15 +34,19 @@ themes/
 ├── gh-dash/                artificer-{dark,light}.yml          (block fragment)
 ├── herdr/                  artificer-{dark,light}.toml         (block fragment)
 ├── vscode/                 package.json + themes/*.json        (installable extension)
+├── chromium/               artificer-{dark,light}/manifest.json (Chrome + Edge extension; one package per mode)
+├── firefox/                artificer/manifest.json             (BOTH modes, one file, via `dark_theme`)
 └── obsidian/Artificer/     manifest.json + theme.css           (drop-in theme folder)
 ```
 
 **`./install.sh` places fourteen of these** — Claude Code, Ghostty, Helix,
 Neovim, glamour, gum, fzf, eza, bat, codex, tmux, gitmux, VS Code, Obsidian —
 as **copies** (`--symlink` if you'd rather repo edits propagate live). The other
-seven are deliberately manual: `cmux`, `lazygit`, `gh-dash` and `herdr` splice
+ten are deliberately manual: `cmux`, `lazygit`, `gh-dash` and `herdr` splice
 into a config file you also own, `starship` and `yazi` merge into one you
-maintain, and `flux` targets another repo's build output.
+maintain, `flux` targets another repo's build output, `jetbrains` is an IDE
+plugin you install from a jar, and `chromium` and `firefox` load through the
+browser's own extension surface.
 
 Because they're copies, a repo change doesn't reach an installed theme until
 you re-run `./install.sh` — and `./install.sh --verify` prints the actual diff
@@ -628,23 +633,154 @@ indicator: Helix's three statusline mode chips have no core Neovim group, so
 chrome parity stops at `StatusLine`. A statusline plugin owns that, and none is
 assumed here.
 
+## JetBrains IDEs (IntelliJ IDEA, PyCharm, WebStorm, GoLand, RustRover, …)
+
+An IntelliJ Platform **theme plugin** — not a config file. `jetbrains/` is the
+plugin's source tree (`META-INF/plugin.xml`, two UI themes, two editor color
+schemes); pack it and install the jar from disk:
+
+```bash
+npm run pack:jetbrains          # → dist/artificer-jetbrains.jar
+# IDE: Settings → Plugins → ⚙ → Install Plugin from Disk… → pick the jar
+# then Settings → Appearance & Behavior → Appearance → Theme: Artificer Dark / Light
+```
+
+Requires **2025.2 or newer** (`since-build 252`): both themes inherit from the
+Islands UI (`parentTheme: "Islands Dark"` / `"Islands Light"`), so everything
+not set here — and that is most of the chrome — comes from Islands. What *is*
+set: the surface model (islands and the editor on `bg`, the main-window backdrop
+on `bgInactive`, no visible island border), selection, focus, buttons, tabs,
+notifications, and the VCS colours. The editor canvas is `bg`, not `bgRaised`,
+because the three 3:1-floor syntax roles measure 2.68:1 on `bgRaised` in dark
+and 3.05:1 on `bg` — the WCAG floor outranks the Islands 1.20:1 layout
+recommendation the backdrop comes in 0.02 under.
+
+Each UI theme is bound to its editor scheme via `editorScheme`, and the IDE asks
+once whether to switch the scheme with the theme. If you answered "don't ask
+again" with *no* in some earlier life, the scheme will look ignored even though
+it is correctly declared — pick it by hand under Editor → Color Scheme, or
+remove `change.laf.on.editor.theme.change` from `options/options.xml` while the
+IDE is closed.
+
+Syntax resolves through `$roles.syntax` — the same editor-agnostic role layer
+VS Code, Helix and Neovim consume — onto the `DEFAULT_*` fallback keys, so
+every language paints at once and a keyword is the same hue in all four editors
+by construction. All five files — `plugin.xml`, both `.theme.json`, both editor-scheme `.xml` — are regenerated from `_palette.json` by
+`build.mjs`; `plugin.xml`'s `<version>` rides the same version sweep as every
+other stamp. No Marketplace listing (yet) — install from disk is the path.
+
 ## VS Code / Cursor
 
 Two paths:
 
-**1. Sideload (fastest):** copy the whole `vscode/` folder to
-`~/.vscode/extensions/cameron.artificer-theme-0.1.0/`, then reload window.
-Pick "Artificer Dark" or "Artificer Light" from `Cmd+K Cmd+T`.
+**1. Sideload (fastest):** from this `themes/` directory, copy the whole
+`vscode/` folder to a directory whose suffix matches its manifest version:
+
+```bash
+version="$(node -p "require('./vscode/package.json').version")"
+cp -R vscode "$HOME/.vscode/extensions/cameron.artificer-theme-$version"
+```
+
+Fully quit and relaunch VS Code so it rescans sideloaded extensions, then pick
+"Artificer Dark" or "Artificer Light" from `Cmd+K Cmd+T`. A window reload is
+not sufficient when the extension was previously absent from the scan.
 
 **2. Package + install:**
 
 ```bash
 cd vscode
 npx @vscode/vsce package
-code --install-extension artificer-theme-0.1.0.vsix
+version="$(node -p "require('./package.json').version")"
+code --install-extension "artificer-theme-$version.vsix"
 ```
 
 Tested against VS Code 1.70+. Cursor and other forks read the same schema.
+
+## Chromium (Chrome, Edge, Brave, Arc, …)
+
+A browser **extension**, not a config file — and **one package per mode**,
+because Chromium's manifest accepts only RGB arrays and carries no dark/light
+switch. Sideload either one:
+
+```bash
+# chrome://extensions → toggle Developer mode → Load unpacked
+#   → themes/chromium/artificer-dark/     (or artificer-light/)
+```
+
+Loading a theme applies it immediately; there is no picker step. Swapping modes
+means removing one and loading the other — Chrome allows exactly one theme at a
+time. After a `node themes/build.mjs` rebuild, hit **Reload** on the card in
+`chrome://extensions` (or remove and re-load it) — Chrome caches the theme pack
+and will otherwise keep painting the old colours.
+
+**Edge takes this package unchanged.** `edge://extensions` sideloads it the same
+way, and Microsoft Partner Center accepts the same artifact — two listings, one
+build.
+
+For store upload rather than sideload:
+
+```bash
+npm run pack:browser   # → dist/artificer-chromium-{dark,light}.zip
+```
+
+Bound to Chromium's `kOverwritableColorTable`
+(`chrome/browser/themes/browser_theme_pack.cc`). Chrome does not publish that
+list, and an unrecognized key parses fine and is then **silently ignored** — so
+if a colour looks unbound, check the key against that table before assuming the
+palette is wrong. Chromium spells three of them differently from Firefox:
+`omnibox_background` / `omnibox_text` for the URL bar, and `toolbar_button_icon`
+for toolbar icons. It has no popup, sidebar, separator or focus keys at all.
+
+> **The 128×128 `icon-128.png` is committed in each package directory**, and the
+> generated manifest names it under `icons` — an undeclared PNG is inert, so the
+> file and the key ship together. It is owner-supplied rather than generated:
+> this repo is zero-dependency and has no SVG rasterizer, and
+> `src/assets/favicon.svg` carries hard-coded hexes, so it does not track the
+> palette. Re-render it with
+> `rsvg-convert -w 128 -h 128 src/assets/favicon.svg -o <package-dir>/icon-128.png`;
+> `pack:browser` **fails** if it is missing, because a manifest pointing at an
+> absent icon is rejected on load.
+
+## Firefox
+
+**One package, both modes.** Firefox takes hex strings and supports the sibling
+`dark_theme` manifest key, so the theme follows the OS by itself — dark chrome
+under a dark OS, ivory paper under a light one, no second install.
+
+```bash
+# about:debugging#/runtime/this-firefox → Load Temporary Add-on…
+#   → themes/firefox/artificer/manifest.json
+```
+
+A temporary add-on is dropped at browser exit — that is the sideload path, not
+the install path. For a persistent install, upload the packed zip to
+addons.mozilla.org:
+
+```bash
+npm run pack:browser   # → dist/artificer-firefox.zip
+```
+
+`strict_min_version` is **68.0**, the release `dark_theme` landed in. Below it
+the key is ignored and the theme renders light-only *silently*, which is why the
+floor is declared rather than left to a comment. The manifest is **MV2**:
+Mozilla's own static-theme documentation still ships MV2 as the canonical
+example and has stated no plan to deprecate it, and a theme carries no
+background-script surface for the MV3 split to reach.
+
+The `browser_specific_settings.gecko.id` is **identity and permanent**, the same
+rule the JetBrains theme UUIDs follow. Leave it unset and AMO mints one at first
+submission, making the listing's identity a store artifact rather than a repo
+fact; change it later and you mint a *different* add-on that existing users never
+receive. It is pinned in `build.mjs` and asserted in
+`scripts/browser-theme.test.mjs`.
+
+It takes the **brace-UUID** form rather than the email-shaped one Gecko also
+accepts, and that is a deliberate choice: an email-shaped id publishes a domain,
+permanently, in a file this repo ships publicly. A UUID depends on no domain and
+discloses nothing, at no cost — Gecko treats the id as an opaque string and never
+resolves or fetches it.
+
+The same `icon-128.png` note under **Chromium** applies here.
 
 ## Obsidian
 
@@ -780,10 +916,14 @@ so it's worth running after a paste. The same chezmoi `includeTemplate` path
 above works; the fragment is a complete `[theme]` + `[theme.custom]` pair, so
 it splices at the top level rather than under a parent key.
 
-Two notes on the mapping, both deliberate:
+Three notes on the mapping, all deliberate:
 
 - **`accent` and `yellow` are the same hex.** Artificer's accent *is* gold, so
   herdr's navigation accent and its yellow state marker legitimately coincide.
+- **`active_row_bg` and `surface1` are the same hex** (`bgOverlay`). herdr's
+  focused row and its generic selected row sit at the same elevation, and only
+  one is ever visible at a time — `surface1` marks a selected row in a list,
+  `active_row_bg` the focused pane's sidebar row.
 - **`overlay0` / `overlay1` are dim *text*, not borders** — that's Catppuccin's
   role naming, which herdr inherits. They map to the foreground dim ladder
   (`fgDisabled`, `fgMuted`), not `border`; mapping them to `border` would put

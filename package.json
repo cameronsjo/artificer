@@ -1,6 +1,6 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.24.2",
+  "version": "0.25.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
   "author": "Cameron Sjo",
@@ -86,6 +86,8 @@
     "sync:version": "node scripts/sync-version.mjs",
     "check:tokens": "node scripts/sync-tokens.mjs --check",
     "sync:tokens": "node scripts/sync-tokens.mjs",
+    "pack:jetbrains": "node scripts/pack-jetbrains.mjs",
+    "pack:browser": "node scripts/pack-browser.mjs",
     "sri": "node scripts/gen-sri.mjs",
     "test": "node --test scripts/*.test.mjs"
   }

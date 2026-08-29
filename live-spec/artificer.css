@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.24.2 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.25.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -213,7 +213,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.24.2";
+  --art-version: "0.25.0";
 
   color-scheme: dark;
 }
@@ -542,6 +542,11 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .badge--urgent    { background: var(--urgent-fill);    color: var(--on-urgent); }
 .badge--success   { background: var(--success-fill);   color: var(--on-success); }
 .badge--ghost     { background: transparent; color: var(--fg-secondary); border: 1px solid var(--border); }
+/* Steel — the meta/info tier tokens.json always promised. A whisper tint,
+   not a fill: no text color clears AA on solid --steel-fill (best 4.23:1),
+   so the fill stays 15% and --steel carries the text (>=5.9:1 on every
+   surface, both themes — measured with scripts/contrast.mjs). */
+.badge--steel     { background: color-mix(in oklch, var(--steel-fill) 15%, transparent); color: var(--steel); border: 1px solid var(--steel-fill); }
 
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .dot--accent    { background: var(--accent-fill); }
@@ -934,6 +939,21 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 .scroll-x:focus-visible, .code-block:focus-visible {
   outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset);
 }
+/* Edge-fade scroll affordance — "there's more" shadows that appear only when
+   content extends past an edge and self-hide at scroll end. Pure CSS scrolling
+   shadows: two cover gradients travel with the content (attachment: local) and
+   slide over two fixed edge shadows (attachment: scroll). Tokens only; the
+   shadow is a hint, not chrome — an opaque cell fill may paint over it.
+   Compose: <div class="scroll-x scroll-x--fade" tabindex="0">…</div> */
+.scroll-x--fade {
+  background:
+    linear-gradient(to right, var(--bg) 30%, transparent) left / 40px 100%,
+    linear-gradient(to left,  var(--bg) 30%, transparent) right / 40px 100%,
+    linear-gradient(to right, color-mix(in oklch, var(--fg) 14%, transparent), transparent) left / 14px 100%,
+    linear-gradient(to left,  color-mix(in oklch, var(--fg) 14%, transparent), transparent) right / 14px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
 
 .code-block {
   font-family: var(--font-mono); font-size: var(--t-label-md-size); line-height: 1.6;
@@ -1109,7 +1129,15 @@ select:focus-visible,
   background: var(--bg);
   box-shadow: 0 1px 0 var(--border);
 }
+/* Body cells pin at --z-base: above their in-flow row siblings, below the
+   sticky header (--z-raised) — at equal z the later-in-DOM body cells would
+   paint over the header row in the sticky-head + sticky-col combo. Covers
+   <th scope="row"> row headers, not only td:first-child. */
 .table--sticky-col tbody td:first-child,
+.table--sticky-col tbody th:first-child {
+  position: sticky; left: 0; z-index: var(--z-base);
+  background: var(--bg);
+}
 .table--sticky-col thead th:first-child {
   position: sticky; left: 0; z-index: var(--z-raised);
   background: var(--bg);
@@ -1800,6 +1828,10 @@ select:focus-visible,
 .tabs {
   display: flex; flex-wrap: nowrap; gap: var(--s-md); align-items: stretch;
   overflow-x: auto;
+  /* overflow-y must be pinned: with overflow-x alone it computes to auto, and
+     the buttons' -1px underline pull-down makes the strip 1px "scrollable" —
+     a permanent vertical scrollbar next to the horizontal one. */
+  overflow-y: hidden;
   /* Thin, token-colored scrollbar — hidden until tabs overflow the container. */
   scrollbar-width: thin; scrollbar-color: var(--border) transparent;
   border-bottom: 1px solid var(--border);
@@ -1934,7 +1966,14 @@ select:focus-visible,
 
 /* Table -> cards reflow. Below --bp-mobile (640px) a wide data table
    restacks: each row becomes a card, each cell labelled by its column.
-   Opt-in: add .table--responsive and a data-label on every <td>. */
+   Opt-in: add .table--responsive and a data-label on every <td>.
+   A <th scope="row"> becomes the card's header (no data-label needed);
+   a <td> WITHOUT data-label spans the card as a plain block (also the
+   colspan story) instead of rendering a phantom empty label slot.
+   Cells holding .glyph (role="img" + aria-label) are the sanctioned
+   non-text content; interactive-control grids (cell buttons) should stay
+   tables inside .scroll-x rather than reflow. tfoot and tr.group-row are
+   not reflowed — omit them from responsive tables. */
 @media (max-width: 640px) {
   .table--responsive thead {
     position: absolute; width: 1px; height: 1px;
@@ -1946,14 +1985,25 @@ select:focus-visible,
     padding: var(--s-sm) var(--s-md);
   }
   .table--responsive tbody td {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: var(--s-md); border: none; padding: 6px 0; text-align: right;
+    display: block; border: none; padding: 6px 0; text-align: left;
   }
-  .table--responsive tbody td::before {
+  .table--responsive tbody td[data-label] {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-md); text-align: right;
+  }
+  .table--responsive tbody td[data-label]::before {
     content: attr(data-label); text-align: left;
     font-family: var(--font-interface); font-size: var(--t-label-sm-size);
     letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg-secondary);
   }
+  .table--responsive tbody th[scope="row"] {
+    display: block; text-align: left;
+    padding: 6px 0 var(--s-sm); border-bottom: 1px solid var(--border);
+  }
+  /* Sticky-col is meaningless once rows are cards — neutralize the combo so
+     the pinned cell doesn't carry position:sticky into block layout. */
+  .table--responsive.table--sticky-col tbody td:first-child,
+  .table--responsive.table--sticky-col tbody th:first-child { position: static; }
 }
 
 

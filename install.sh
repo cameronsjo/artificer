@@ -30,7 +30,15 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 THEMES="$REPO/themes"
 COMMANDS="$REPO/commands"
 
-VSCODE_EXT="$HOME/.vscode/extensions/cameron.artificer-theme-0.1.0"
+# VS Code rejects a sideloaded extension when the directory suffix disagrees
+# with the extension manifest's version. Derive the destination from the
+# manifest so a routine version bump cannot silently make the theme disappear.
+VSCODE_VERSION="$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*/\1/p' "$THEMES/vscode/package.json")"
+if [[ -z "$VSCODE_VERSION" || "$VSCODE_VERSION" == *$'\n'* ]]; then
+  echo "Could not read one VS Code extension version from $THEMES/vscode/package.json" >&2
+  exit 2
+fi
+VSCODE_EXT="$HOME/.vscode/extensions/cameron.artificer-theme-$VSCODE_VERSION"
 GHOSTTY_DIR="$HOME/.config/ghostty/themes"
 CLAUDE_DIR="$HOME/.claude/themes"
 CLAUDE_COMMANDS_DIR="$HOME/.claude/commands"
@@ -102,7 +110,7 @@ Re-running is a no-op for anything already current — copy mode compares
 content first and only backs up a target it would otherwise overwrite.
 
 TARGETS
-  VS Code      ~/.vscode/extensions/cameron.artificer-theme-0.1.0
+  VS Code      ~/.vscode/extensions/cameron.artificer-theme-<manifest-version>
   Ghostty      ~/.config/ghostty/themes/{artificer-dark,artificer-light}
                ~/.config/ghostty/themes/Artificer {Dark,Light}   (for cmux)
   Claude Code  ~/.claude/themes/{artificer-dark,artificer-light}.json
@@ -124,7 +132,12 @@ TARGETS
 
 Not installed here, on purpose: cmux, lazygit, and gh-dash splice their
 colors into a config file you also own, so installing the whole file would
-clobber your own settings; flux installs into another repo's build output.
+clobber your own settings; flux installs into another repo's build output;
+JetBrains is an IDE plugin, installed from the packed jar (npm run pack:jetbrains).
+
+Chrome, Edge and Firefox are browser extensions, not config files: load them
+unpacked from themes/chromium/artificer-{dark,light}/ and themes/firefox/artificer/,
+or pack them for the stores with npm run pack:browser.
 
 After install: reload VS Code, restart Ghostty (or cmd+shift+,), pick
 "Artificer Dark" / "Artificer Light" from /theme inside Claude Code,
@@ -444,7 +457,7 @@ fi
 cat <<'EOF'
 
 Done. Activate:
-  VS Code     reload window, pick from Cmd+K Cmd+T
+  VS Code     fully quit and relaunch, then pick from Cmd+K Cmd+T
   Ghostty     set 'theme = artificer-dark' in ~/.config/ghostty/config
               (or 'theme = light:artificer-light,dark:artificer-dark')
               reload with cmd+shift+,

@@ -20,15 +20,15 @@
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Tables for rows, key-value lists for records, stat cards for headlines. <b class="anchor">Always tabular-nums</b> for numbers — alignment is information.</p>
 
   <h2 class="section-title">Table</h2>
-  <p class="meta">Mono body, sans header, hover row. Add <code>.table--zebra</code> for striped rows on dense data. Add <code>.table--responsive</code> (+ <code>data-label</code> on each cell) and the rows reflow to cards below 640px — narrow this window to see it.</p>
+  <p class="meta">Mono body, sans header, hover row. Add <code>.table--zebra</code> for striped rows on dense data. Add <b class="anchor"><code>.table--responsive</code></b> (+ <b class="anchor"><code>data-label</code> on each cell</b>) and the rows reflow to cards below 640px — narrow this window to see it. A <code>&lt;th scope="row"&gt;</code> becomes the card's <b class="anchor">header</b>; a cell holding a <code>.glyph</code> keeps its <code>aria-label</code>; a <code>&lt;td&gt;</code> without <code>data-label</code> <b class="anchor">spans the card</b> as a plain block. Interactive grids (cell buttons) stay tables inside <code>.scroll-x</code> instead — see Keyboard for the wrapper.</p>
   <div class="figure">
     <table class="table table--responsive">
-      <thead><tr><th>Run</th><th>Status</th><th>Duration</th><th class="num" style="text-align:right">Cost</th></tr></thead>
+      <thead><tr><th>Run</th><th>Status</th><th style="text-align:center">Cached</th><th>Duration</th><th class="num" style="text-align:right">Cost</th></tr></thead>
       <tbody>
-        <tr><td data-label="Run">build-1284</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 14s</td><td class="num" data-label="Cost" style="text-align:right">$0.42</td></tr>
-        <tr><td data-label="Run">build-1283</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 09s</td><td class="num" data-label="Cost" style="text-align:right">$0.41</td></tr>
-        <tr><td data-label="Run">build-1282</td><td data-label="Status"><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td data-label="Duration">—</td><td class="num" data-label="Cost" style="text-align:right">$0.08</td></tr>
-        <tr><td data-label="Run">build-1281</td><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Duration">2m 21s</td><td class="num" data-label="Cost" style="text-align:right">$0.44</td></tr>
+        <tr><th scope="row">build-1284</th><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Cached" style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td class="num" data-label="Duration">2m 14s</td><td class="num" data-label="Cost" style="text-align:right">$0.42</td></tr>
+        <tr><th scope="row">build-1283</th><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Cached" style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td><td class="num" data-label="Duration">2m 09s</td><td class="num" data-label="Cost" style="text-align:right">$0.41</td></tr>
+        <tr><th scope="row">build-1282</th><td data-label="Status"><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td data-label="Cached" style="text-align:center"><span class="glyph glyph--na" role="img" aria-label="Not applicable">–</span></td><td data-label="Duration">—</td><td class="num" data-label="Cost" style="text-align:right">$0.08</td></tr>
+        <tr><th scope="row">build-1281</th><td data-label="Status"><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td data-label="Cached" style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td class="num" data-label="Duration">2m 21s</td><td class="num" data-label="Cost" style="text-align:right">$0.44</td></tr>
       </tbody>
     </table>
   </div>

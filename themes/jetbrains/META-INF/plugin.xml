@@ -1,0 +1,25 @@
+<!--
+  Artificer theme plugin for IntelliJ Platform IDEs (IntelliJ IDEA, PyCharm,
+  WebStorm, GoLand, RustRover, ...). Generated from themes/_palette.json by
+  themes/build.mjs; edit there and rebuild. Pack with "npm run pack:jetbrains"
+  and install via Settings > Plugins > (gear) > Install Plugin from Disk.
+-->
+<idea-plugin>
+  <id>lol.sjo.artificer.jetbrains</id>
+  <name>Artificer Theme</name>
+  <vendor>Cameron Sjo</vendor>
+  <version>0.25.0</version>
+  <idea-version since-build="252" />
+  <depends>com.intellij.modules.platform</depends>
+  <description><![CDATA[
+    Artificer &mdash; a Jazz Age palette for tool surfaces: burnished gold on
+    slate in the dark, sienna on ivory paper in the light. Two UI themes on the
+    Islands base, each bound to its own editor color scheme, generated from the
+    same palette as the Artificer design system's other editor and terminal
+    themes.
+  ]]></description>
+  <extensions defaultExtensionNs="com.intellij">
+    <themeProvider id="66d9b354-01e3-4533-b4d0-5217f2e71fdb" path="/artificer-dark.theme.json" />
+    <themeProvider id="8eabb434-0d08-4d9b-b433-1ec2dc1a249a" path="/artificer-light.theme.json" />
+  </extensions>
+</idea-plugin>

@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.24.2
+# Artificer · v0.25.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -133,7 +133,9 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | File upload / dropzone | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events — `components.html` |
 | Dense table status / ✓✗~– cells | `.glyph--{success\|muted\|attention\|na}` tints ✓✗~– with a theme token; graphical (SC 1.4.11) so each pairs with `aria-label` — sparse/labeled status stays `.badge`+`.dot` — `data-display.html` |
 | Icon inside button/link | `<i data-icon="search"></i>` — see `icons.html` for full set |
-| Table of data | `data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums` |
+| Table of data | `data-display.html` — `.table`, right-align numerics, `font-variant-numeric: tabular-nums`; `.table--responsive` + `data-label` reflows to cards <640px (a `<th scope="row">` becomes the card header) |
+| Wide table / diff / wider-than-phone block | `<div class="scroll-x" tabindex="0">…</div>` — content scrolls inside, never the page; `tabindex="0"` is load-bearing (axe scrollable-region-focusable). `.scroll-x--fade` adds self-hiding edge shadows — `keyboard.html` |
+| Wide comparison matrix (tools × features) | Row-per-item + glyph/text cells → `.table--responsive` cards; interactive/score grids (cell buttons, heatmaps) → stay a table in `.scroll-x.scroll-x--fade` + `.table--sticky-col` (pins `tbody th:first-child` too). Never both below 640px — `data-display.html` |
 | Key-value list | `.kv`; mono `<dl>` grid for metadata pairs, `.table` for real data — `data-display.html` |
 | Live data indicator | `.live-tick` (pulsing dot) + `.last-updated` (timestamp); auto-updating regions still need an in-UI pause — `composition.html` |
 | Stat card / KPI strip / headline numbers (KPIs) | `.stat` — `.stat__label` + `.stat__value` (mono, tabular) + `.stat__row` + `.stat__delta`(`.down`); the cell of a `.kpi-strip`, max 4 per row — `data-display.html` |
@@ -292,6 +294,8 @@ CARDS .card + .card--active | --attention | --urgent
 FORMS .field > label + .input | .select | .textarea + .hint | .error
 
 BADGES .badge + .badge--accent | --attention | --urgent | --success | --ghost
+           .badge--steel (meta tier: versions, languages, maturity — whisper
+           tint, never a solid steel fill; no text clears AA on solid steel)
 DOTS .dot + .dot--accent | --attention | --urgent | --success
 
 PANES .pane--active (gold left border) · .pane--inactive (55% opacity, desaturated)

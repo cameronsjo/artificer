@@ -4,7 +4,7 @@ User-visible changes to the Artificer web design system, published to npm as
 `@cameronsjo/artificer`. Cameron-first and unsupported — see `docs/UPGRADE.md`
 for the pin / versioning contract.
 
-## v0.24.2
+## v0.25.0
 
 First public release of the Artificer design system.
 

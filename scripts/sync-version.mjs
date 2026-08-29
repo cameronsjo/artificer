@@ -68,6 +68,11 @@ export function STAMPS(version) {
     // banner: `v0.1 · 2026` at the file head. The ` · 2026` suffix anchors it — the
     // v0.19.0 #NNN inline comments have no such suffix, so they're never touched.
     { file: 'themes/obsidian/Artificer/theme.src.css', label: 'banner', re: /(v)[0-9][\w.]*( · 2026)/, repl: v },
+    // JetBrains plugin manifest — build.mjs emits the same <version>X.Y.Z</version>
+    // from package.json, so this stamp and a rebuild agree byte-for-byte (which is
+    // what lets the file sit in check-themes TARGETS; jetbrains-theme.test.mjs
+    // asserts the two writers agree).
+    { file: 'themes/jetbrains/META-INF/plugin.xml', label: 'version', re: /(<version>)[^<]*(<\/version>)/, repl: v },
   ];
 }
 

@@ -1,0 +1,133 @@
+{
+  "manifest_version": 3,
+  "name": "Artificer Light",
+  "version": "0.25.0",
+  "description": "Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in the dark, sienna on ivory paper in the light. Generated from the same palette as the Artificer design system's editor and terminal themes.",
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        245,
+        234,
+        208
+      ],
+      "frame_inactive": [
+        220,
+        201,
+        156
+      ],
+      "frame_incognito": [
+        220,
+        201,
+        156
+      ],
+      "frame_incognito_inactive": [
+        220,
+        201,
+        156
+      ],
+      "ntp_background": [
+        245,
+        234,
+        208
+      ],
+      "toolbar": [
+        237,
+        220,
+        192
+      ],
+      "ntp_header": [
+        237,
+        220,
+        192
+      ],
+      "button_background": [
+        237,
+        220,
+        192
+      ],
+      "background_tab": [
+        245,
+        234,
+        208
+      ],
+      "background_tab_inactive": [
+        220,
+        201,
+        156
+      ],
+      "background_tab_incognito": [
+        245,
+        234,
+        208
+      ],
+      "background_tab_incognito_inactive": [
+        220,
+        201,
+        156
+      ],
+      "omnibox_background": [
+        228,
+        212,
+        176
+      ],
+      "tab_text": [
+        32,
+        32,
+        62
+      ],
+      "toolbar_text": [
+        32,
+        32,
+        62
+      ],
+      "bookmark_text": [
+        32,
+        32,
+        62
+      ],
+      "ntp_text": [
+        32,
+        32,
+        62
+      ],
+      "omnibox_text": [
+        32,
+        32,
+        62
+      ],
+      "tab_background_text": [
+        74,
+        63,
+        42
+      ],
+      "tab_background_text_inactive": [
+        74,
+        63,
+        42
+      ],
+      "tab_background_text_incognito": [
+        74,
+        63,
+        42
+      ],
+      "tab_background_text_incognito_inactive": [
+        74,
+        63,
+        42
+      ],
+      "toolbar_button_icon": [
+        74,
+        63,
+        42
+      ],
+      "ntp_link": [
+        122,
+        90,
+        16
+      ]
+    }
+  }
+}

@@ -21,7 +21,7 @@ Cameron-first, unsupported. Read order:
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.24.2
+npm install @cameronsjo/artificer@0.25.0
 
 # or vendor the runtime + a provenance sidecar into your project, no bundler required
 npx @cameronsjo/artificer vendor --dest public/artificer

@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.24.2 · 2026** — the chrome ships once: a compiled React adapter lands at `@cameronsjo/artificer/react` (ESM + `d.ts`, `react >=18` peer) with the whole app shell as components — `AppShell`, `Appbar`, `NavDrawer`, `SideNav` (flat or collapsible sections), `SideNavFooter`, and the canonical `ThemeToggle` — so consumers import the chrome instead of hand-assembling recipes that drift. Ambient TypeScript types ship for all seven vanilla behavior modules. `.app-shell` gains knobs (`--shell-rail`, `--shell-gap`) and `.sidenav--sticky` mints the pinned rail, replacing per-app grid overrides. Nav `href`s pass a scheme guard; the export pipeline rebuilds `dist/` from reviewed sources and hard-fails on missing package exports. See `CHANGELOG.md` for what changed.
+**v0.25.0 · 2026** — the browser wears it too: generated Chrome/Edge (`themes/chromium/`) and Firefox (`themes/firefox/`) themes, sideloadable today, packed by `npm run pack:browser`. The comparison-matrix pass hardens the wide-table story — `.tabs` loses its phantom vertical scrollbar, `.table--sticky-col` covers `<th scope="row">` row headers, `.table--responsive` promotes row headers to card titles and guards unlabeled cells, `.scroll-x--fade` mints the edge-fade scroll affordance, and `.badge--steel` lands the meta badge tier as a rated whisper tint. Plus the JetBrains theme plugin (twentieth generator), light-mode `onAccent` ink parity for Claude Code / VS Code, and herdr's focused-row colors. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -289,7 +289,7 @@ The CSS uses `color-scheme: dark` / `light` so form controls and scrollbars matc
 
 ---
 
-## Editor & terminal themes
+## Editor, terminal & browser themes
 
 Artificer also ships as themes for the surfaces where Cameron actually
 lives — same palette, every surface. The editors and agent CLIs:
@@ -298,8 +298,17 @@ lives — same palette, every surface. The editors and agent CLIs:
 - **VS Code / Cursor** — `themes/vscode/` (sideload or `vsce package`)
 - **Helix** — `themes/helix/artificer-{dark,light}.toml` (+ `-opaque` twins)
 - **Neovim** — `themes/neovim/colors/artificer.lua` (one file, both modes)
+- **JetBrains IDEs** — `themes/jetbrains/` (IntelliJ Platform theme plugin; `npm run pack:jetbrains` → install the jar from disk)
 - **Codex CLI** — `themes/codex/artificer-{dark,light}.tmTheme`
 - **Obsidian** — `themes/obsidian/Artificer/` (drop-in theme folder, hand-authored sister)
+
+And the browser:
+
+- **Chrome / Edge** — `themes/chromium/artificer-{dark,light}/` (one extension package per mode; Chromium's manifest takes only RGB arrays and has no dark/light switch)
+- **Firefox** — `themes/firefox/artificer/` (one package, both modes — the sibling `dark_theme` key follows the OS)
+
+`npm run pack:browser` builds the store zips; sideload straight from the
+directory without packing at all.
 
 Plus the terminal and TUI surfaces around them — Ghostty, tmux, gitmux, cmux,
 bat/delta, glamour, gum, fzf, eza, starship, yazi, lazygit, gh-dash, herdr, and

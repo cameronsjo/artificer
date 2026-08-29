@@ -17,6 +17,7 @@ maintained past this document's research date — the ranking below is the
 - **VS Code** — editor color theme
 - **Helix** — editor (TOML; transparent default + `-opaque` twins, ADR 0038)
 - **Neovim** — editor (one Lua colorscheme, both modes; ADR 0038 carries)
+- **JetBrains IDEs** — editor (an IntelliJ Platform theme plugin: two Islands-based UI themes + two editor schemes, packed to a jar by `npm run pack:jetbrains`)
 - **bat / delta** — pager + differ (`.tmTheme`)
 - **Codex CLI** — agent TUI (same `.tmTheme` emitter, paints its own pane)
 - **tmux** — multiplexer status/pane styling
@@ -41,7 +42,7 @@ Hand-authored separately:
 
 | App | Tier | Theme format | Distribution category | Effort | Verdict |
 |---|---|---|---|---|---|
-| JetBrains (IntelliJ Platform) | A | `.icls` editor scheme + `.theme.json` UI theme (plugin) | Plugin/zip primitive | High | maybe |
+| JetBrains (IntelliJ Platform) | A | `.icls` editor scheme + `.theme.json` UI theme (plugin) | Plugin/zip primitive | Med | **BUILT** (`themes/jetbrains/`) |
 | Neovim | A | Lua colorscheme (`hl` groups, `:highlight`) | Theme primitive (plugin/file) | Med | **add** |
 | Zed | A | JSON theme (`themes/*.json`, theme extension) | Theme primitive (file) | Low | **add** |
 | Helix | A | TOML theme (`~/.config/helix/themes/`) | Theme primitive (file) | Low | **add** |
@@ -60,6 +61,15 @@ Hand-authored separately:
 | Userscript managers (Tampermonkey / Violentmonkey / Userscripts) | C | JS-injected CSS | Injection | High | skip |
 
 **Tier legend** — A: code editors/IDEs (high daily dwell-time, palette maps cleanly to syntax + UI roles). B: terminals/CLI chrome (16-color ANSI + a few UI keys, mostly trivial maps). C: browsers and web-surface injection (no first-class theming hook; fragile by construction).
+
+> **Amendment — browser CHROME is tier B, not tier C.** The tier-C rows above
+> survey theming a browser's *page content*, where the "injection only, fragile
+> by construction" verdict still holds. It does not hold for the browser's own
+> chrome: Chrome, Edge and Firefox all expose a first-class static-theme
+> manifest — a plain colour table in an extension package, no injection, no
+> fragility. Artificer ships all three (`themes/chromium/`, `themes/firefox/`),
+> so the Edge row's `skip` verdict should be read as scoped to page content
+> only. Safari has no equivalent and remains a genuine skip.
 
 ---
 

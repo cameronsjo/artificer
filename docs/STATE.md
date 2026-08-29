@@ -5,9 +5,16 @@
 > Born from the 2026-05-31 reassessment after mobile and wide-screen bugs
 > shipped (`docs/plans/2026-05-31-trust-layer-and-maturity-baseline.md`).
 
-**Last assessed:** 2026-06-09 · v0.15.x · trust layer landed; A1 conformance
-gate + the Workstream-E mints shipped; the v0.15.0 review wave (#173–#197) is
-being paid down by the hardening train
+**Last assessed:** 2026-08-28 · v0.25.0 · placement unchanged (clay ★★★★★,
+materials/rooms/trust ★★★★). Since v0.15.x: the public split shipped
+(`cameronsjo/artificer` → npm/jsDelivr), the compiled React adapter landed
+(v0.24.0), the generator count grew to twenty-two (JetBrains was the twentieth;
+the Chromium and Firefox browser targets land this release), and the first
+component-color contrast
+gate landed (`badge-contrast.spec.mjs`). The comparison-matrix pass hardened
+the wide-table story (`.table--sticky-col` row headers, `.table--responsive`
+card titles, `.scroll-x--fade`). The named trust debt (#122 rendered-contrast
+rulings) still stands.
 
 ## The scale
 
