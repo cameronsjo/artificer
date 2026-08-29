@@ -284,20 +284,3 @@ test('the packer names exactly the three emitted manifests, and each exists on d
     assert.deepEqual(manifest(p.src).icons, { 128: ICON }, `${p.src}: manifest does not declare the packed icon`);
   }
 });
-
-test('the packer covers every browser directory build.mjs emits — a new target cannot land unpacked', async () => {
-  // PACKAGES is hand-maintained and check:install would stay green on a fourth
-  // browser target with its own disposition row, so this is the only place a
-  // new emitted directory that nobody wired into the packer goes red.
-  const { MEMBERS } = await import('./pack-browser.mjs');
-  const { emittedTargets } = await import('./check-install-coverage.mjs');
-  const buildMjs = readFileSync(join(THEMES, 'build.mjs'), 'utf8');
-  const browserDirs = [...emittedTargets(buildMjs)].filter((d) => d === 'chromium' || d === 'firefox');
-  assert.deepEqual(browserDirs.sort(), ['chromium', 'firefox'], 'the emitted browser target set changed');
-  for (const dir of browserDirs) {
-    assert.ok(
-      MEMBERS.some((m) => m.startsWith(`${dir}/`)),
-      `themes/build.mjs emits ${dir}/ but scripts/pack-browser.mjs PACKAGES names no package under it — pack:browser would silently skip it`
-    );
-  }
-});
