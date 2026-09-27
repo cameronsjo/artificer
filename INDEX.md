@@ -15,13 +15,13 @@ Cameron-first, unsupported. Read order:
 5. **`live-spec/`** — every reference page from the source. Open
    `live-spec/index.html` for the full visual reference.
 6. **`FONTS.md`** — how to load the type stack.
-7. **`reference/SKILL.md`** — exhaustive cheatsheet (tokens, recipes, anti-patterns).
+7. **`reference/SKILL.md`** — single-file cheatsheet (tokens, recipes, anti-patterns); the skill is canonical.
 
 ## Install
 
 ```bash
 # npm (the web system — src/ only)
-npm install @cameronsjo/artificer@0.25.0
+npm install @cameronsjo/artificer@0.27.0
 
 # or vendor the runtime + a provenance sidecar into your project, no bundler required
 npx @cameronsjo/artificer vendor --dest public/artificer
@@ -57,7 +57,7 @@ artificer/
 │   ├── obsidian/Artificer/  ← Obsidian theme snapshot
 │   ├── _palette.json        ← single source of truth
 │   └── build.mjs            ← regenerator
-├── reference/SKILL.md   ← exhaustive AI handoff doc
+├── reference/SKILL.md   ← single-file AI handoff doc
 └── docs/                ← STATE, UPGRADE, design research (color/contrast/theming)
 ```
 

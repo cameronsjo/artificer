@@ -34,7 +34,7 @@
 
     // ── Text & surfaces ──────────────────────────────────────────────
     "text": "#e8e6e1",
-    // alts: ffffff (max contrast, harsh) | dcd9d2 (warmer parchment)
+    // alts: ffffff (max contrast, harsh) | eee8d9/f5ead0 (parchment/ivory — trialed 2026-08, too yellow)
 
     "inverseText": "#20203e",
     // alt: 1a1a32 (lighter indigo on accent — softer)
@@ -99,9 +99,10 @@
     "diffRemovedWord": "#5a2e2a",
 
     // ── Fullscreen mode backgrounds ─────────────────────────────────
-    "userMessageBackground": "#313540",
-    // alts: 2e323c (subtler) | 363a45 (lifted)
-    "userMessageBackgroundHover": "#3c4150",
+    // v0.21.0 (#332): band = bgFloat, hover = bgFloatHover — the old
+    // canvas-adjacent values sat at ≤1.20:1 separation and vanished
+    "userMessageBackground": "#474d60",
+    "userMessageBackgroundHover": "#525a70",
     "messageActionsBackground": "#2a2d36",
     "bashMessageBackgroundColor": "#2e2b25",
     "memoryBackgroundColor": "#252a30",

@@ -69,6 +69,19 @@
     var(--accent,       #dbbb6f)                /* → gold      */
   );
 
+  /* Night ground for .whimsy-sky (#501) — derived from tokens, no new hex.
+     scripts/icon-recipe.mjs reads these two declarations and resolves them
+     (var() or an oklab color-mix) for the app icon, so keep them in one of
+     those two forms. A deep night at the zenith (--bg-inactive
+     with a touch of the deepest brand purple) that ends exactly on --bg, so
+     the band meets the page with no seam (owner ruling 2026-09-27, from the
+     Gatehouse header: the first, brighter purple read too loud). --fg holds
+     11.2:1 or better across the whole band. */
+  --whimsy-night-top:    color-mix(in oklab, var(--bg-inactive) 76%, var(--brand-purple-fill));
+  --whimsy-night-bottom: var(--bg);
+  --whimsy-sky-speed:    40s;    /* one sky cycle — slow drift, not a sweep */
+  --whimsy-sky-opacity:  0.1;    /* flowing field over the ground — a faint tint, never a fill */
+
   /* Sine-wave mask for the rainbow rule (one period = 64px). */
   --whimsy-wave-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='22' viewBox='0 0 64 22'><path d='M0 11 Q 8 2 16 11 T 32 11 T 48 11 T 64 11' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
 }
@@ -420,4 +433,161 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .whimsy-underline::after { animation: none !important; background-position: 30% 50% !important; }
+}
+
+/* ═══ Night sky — the backdrop form of whimsy (#501) ══════════════════════════
+   A slow flowing brand field over a night ground, with a seeded starfield
+   (Whimsy.starfield / data-whimsy="sky"). Rule #5 ("display + bold only")
+   governs gradient TEXT; the sky is a non-text backdrop, so it lives by its
+   own bounds instead:
+     • only behind a header or hero band — never behind data, status, errors,
+       or body copy; foreground text stays on solid ground (--fg > 9:1)
+     • the sky and the wordmark it frames are ONE whimsy moment (rule #2) and
+       rest on one timer (rule #7 — Whimsy.starfield arms it)
+     • dark only: light mode hides the field and stars, leaving plain --bg
+     • never stacked with a texture (texture rule #2)
+   Markup: <header data-whimsy="sky"> … <a class="wordmark whimsy whimsy--brand">
+   The stars layer is aria-hidden; the sky adds nothing to the a11y tree. */
+.whimsy-sky {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.whimsy-sky::before,
+.whimsy-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-base);
+  pointer-events: none;
+}
+/* The night ground. */
+.whimsy-sky::before {
+  background: linear-gradient(180deg, var(--whimsy-night-top), var(--whimsy-night-bottom));
+}
+/* The flowing field — the brand cycle, faded out toward the bottom so the
+   horizon stays quiet. Unlike text whimsy it drifts by TRANSFORM, not
+   background-position: the layer is two sky-widths wide with one gradient
+   tile per sky-width, and slides left by one tile per cycle. A transform
+   runs on the compositor; a background-position animation repaints this
+   whole band every frame, which is too much for a long-lived backdrop. */
+.whimsy-sky::after {
+  right: auto;
+  width: 200%;
+  background-image: var(--whimsy-gradient-brand);
+  background-size: 50% 100%;
+  background-repeat: repeat;
+  opacity: var(--whimsy-sky-opacity);
+  animation: whimsy-sky-drift var(--whimsy-sky-speed) linear infinite;
+  /* A mask reads alpha only; --fg is simply an opaque token. */
+  -webkit-mask-image: linear-gradient(180deg, var(--fg), transparent);
+          mask-image: linear-gradient(180deg, var(--fg), transparent);
+}
+@keyframes whimsy-sky-drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }   /* exactly one tile → seamless loop */
+}
+.whimsy-sky__stars {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-base);
+  pointer-events: none;
+}
+/* Paint order at --z-base follows the box tree: ::before (ground), then the
+   stars layer, then ::after (field). The field washing over the stars is
+   deliberate — one tint unifies the sky. Content rides above all three. */
+.whimsy-sky > :not(.whimsy-sky__stars) {
+  position: relative;
+  z-index: var(--z-raised);
+}
+
+/* A star — the element holds position and its base opacity; ::before draws
+   the tinted dot and twinkles. Tints are token roles softened toward --fg,
+   so the field reads as starlight, not as status colors. */
+.whimsy-star {
+  position: absolute;
+  width: calc(2 * var(--star-r, 1.7px));
+  height: calc(2 * var(--star-r, 1.7px));
+  transform: translate(-50%, -50%);
+  opacity: var(--star-o, 0.6);
+}
+.whimsy-star::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--star-tint, var(--accent)) 70%, var(--fg));
+  animation: whimsy-twinkle var(--star-period, 6s) var(--ease) infinite;
+  animation-delay: var(--d, 0s);
+}
+/* A sparkle — a four-point star over a soft glow. The glow is the element's
+   own background; the star shape is ::before, clipped, so the clip never
+   cuts the glow. */
+.whimsy-star--sparkle {
+  background: radial-gradient(closest-side,
+    color-mix(in oklab, var(--star-tint, var(--accent)) 45%, transparent),
+    transparent);
+}
+.whimsy-star--sparkle::before {
+  inset: 1px;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 57.7% 42.3%, 100% 50%, 57.7% 57.7%,
+                     50% 100%, 42.3% 57.7%, 0 50%, 42.3% 42.3%);
+}
+/* Twinkle — opacity only, dipping to 65% of the star's base (the element's
+   opacity multiplies in). Constant keyframes on purpose: a var() inside
+   @keyframes keeps 48 animations off the compositor, and on WebKit that
+   measurably stalls the main thread. */
+@keyframes whimsy-twinkle {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+
+/* Settle — the sky rests with its wordmark (Whimsy.starfield arms one timer
+   that adds these to the sky, every star, and every .whimsy inside).
+   Glacial: the field drifts at --whimsy-settle-speed; stars hold at base.
+   Static: everything freezes. Compound selectors, !important, and the
+   reduced-motion list below all mirror the #221 pattern above. */
+.whimsy-sky.whimsy--glacial::after {
+  animation-name: whimsy-sky-drift !important;
+  animation-duration: var(--whimsy-settle-speed) !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+}
+.whimsy-sky.whimsy--settled::after {
+  animation: none !important;
+}
+.whimsy-star.whimsy--glacial::before,
+.whimsy-star.whimsy--settled::before {
+  animation: none !important;
+}
+
+/* Reduced motion freezes the whole sky: no drift, no twinkle. Every settle
+   compound is listed so its !important longhands tie on specificity and
+   this later block wins (#221). */
+@media (prefers-reduced-motion: reduce) {
+  .whimsy-sky::after,
+  .whimsy-sky.whimsy--glacial::after,
+  .whimsy-sky.whimsy--settled::after,
+  .whimsy-star::before,
+  .whimsy-star.whimsy--glacial::before,
+  .whimsy-star.whimsy--settled::before {
+    animation: none !important;
+  }
+}
+
+/* Dark only — light mode hides the ground, the field, and the stars, and the
+   sky falls back to the plain page surface. Both light branches, mirroring
+   the light rules at the top of this file. */
+:root[data-theme="light"] .whimsy-sky::before,
+:root[data-theme="light"] .whimsy-sky::after,
+:root[data-theme="light"] .whimsy-sky__stars {
+  display: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .whimsy-sky::before,
+  :root:not([data-theme]) .whimsy-sky::after,
+  :root:not([data-theme]) .whimsy-sky__stars {
+    display: none;
+  }
 }

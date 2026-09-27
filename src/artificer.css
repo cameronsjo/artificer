@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.25.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.27.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -111,7 +111,7 @@
   --bg-inactive:     #1d1f21;   /* unfocused panes */
 
   /* Foreground — bone, not chrome. Softer than #fff but still AAA. */
-  --fg:              #e8e6e1;   /* warm off-white, 11.2:1 on --bg */
+  --fg:              #e8e6e1;   /* warm off-white, 11.21:1 on --bg */
   --fg-secondary:    #c5c8c6;
   --fg-muted:        #5a7a8a;   /* steel-blue muted — meta/comment text, between secondary and disabled */
   --fg-disabled:     #666666;
@@ -213,7 +213,7 @@
   --z-toast:   3000;  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.25.0";
+  --art-version: "0.27.0";
 
   color-scheme: dark;
 }
@@ -395,6 +395,36 @@ body { font-size: var(--t-body-md-size); }
   padding-bottom: var(--s-sm);
   border-bottom: 1px solid var(--border);
 }
+/* Sibling of .section-title for the h3 under it (#508). */
+.subsection-title {
+  font-family: var(--font-mono); font-weight: 700;
+  font-size: var(--t-body-md-size); line-height: var(--t-body-md-lh);
+  color: var(--fg);
+  margin: var(--s-lg) 0 var(--s-sm);
+}
+/* Uppercase overline label above a heading, block, or demo (#507). Tracking
+   matches .stat__label / .menu__label so the system has one label tracking. */
+.eyebrow {
+  font-family: var(--font-interface); font-weight: 500;
+  font-size: var(--t-label-xs-size); line-height: var(--t-label-xs-lh);
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-secondary);
+}
+.eyebrow--accent { color: var(--accent); }
+/* Callout: a raised note with an accent edge (#461). Tier modifiers recolor
+   the edge only; the title (.callout__title) must name the tier in text, so
+   color never carries the meaning alone. No success tier: no success token
+   clears the 3:1 non-text floor on --bg-raised in dark. */
+.callout {
+  background: var(--bg-raised);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: var(--s-md) var(--s-lg);
+}
+.callout__title { margin-bottom: var(--s-xs); }
+.callout--steel     { border-left-color: var(--steel); }
+.callout--attention { border-left-color: var(--attention); }
+.callout--urgent    { border-left-color: var(--urgent-text); }
 
 code, .code {
   font-family: var(--font-mono);
@@ -692,6 +722,8 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 .container--sm   { max-width: 560px; }
 .container--md   { max-width: 820px; }
 .container--lg   { max-width: 1120px; }
+/* Page-level block padding for a top-level <main> (#506): top --s-2xl, bottom --s-3xl. */
+.container--page { padding-block: var(--s-2xl) var(--s-3xl); }
 
 /* Page shell: sticky masthead + scrolling main. */
 .page-shell      { display: grid; grid-template-rows: auto 1fr; min-height: 100vh; }
@@ -999,6 +1031,19 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 }
 .figure--frame { padding: 0; overflow: hidden; position: relative; }
 .figure--flush { padding: 0; overflow: hidden; }
+/* Embed: a labeled diagram or media card (#461). Compose on .figure--frame:
+   .figure__bar holds an .eyebrow kind label and an optional reset control;
+   .figure__body centers the content. The bar's icon button drops to 32px
+   (>= 24px floor); the coarse-pointer rule still lifts it to 44px on touch. */
+.figure__bar {
+  display: flex; align-items: center; gap: var(--s-sm);
+  padding: var(--s-xs) var(--s-md);
+  border-bottom: 1px solid var(--border);
+}
+.figure__bar > .eyebrow { flex: 1; }
+.figure__bar > .btn--icon { width: var(--s-xl); height: var(--s-xl); min-width: var(--s-xl); }
+.figure__body { display: flex; justify-content: center; padding: var(--s-lg); overflow: auto; }
+.figure__body > svg, .figure__body > img { max-width: 100%; height: auto; }
 
 .table {
   width: 100%; border-collapse: collapse;
@@ -1012,6 +1057,17 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
 .kv { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-sm) var(--s-lg); font-family: var(--font-mono); font-size: var(--t-body-md-size); }
 .kv dt { color: var(--fg-secondary); }
 .kv dd { margin: 0; color: var(--fg); }
+/* Properties block (#461): .kv in a bordered raised box, one divider per row,
+   an optional leading icon on each key, and wrapping tag values in the dd. */
+.kv--props {
+  gap: 0; background: var(--bg-raised);
+  border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;
+}
+.kv--props dt, .kv--props dd { padding: var(--s-xs) var(--s-md); border-bottom: 1px solid var(--border); }
+.kv--props dt:last-of-type, .kv--props dd:last-of-type { border-bottom: none; }
+.kv--props dt { display: flex; align-items: center; gap: var(--s-xs); font-size: var(--t-label-sm-size); }
+.kv--props dt > .icon { color: var(--fg-disabled); flex: none; }
+.kv--props dd { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-xs); }
 
 /* ═══ States — empty, skeleton, progress ══════════════════════════════ */
 .empty-state {
@@ -1341,7 +1397,7 @@ select:focus-visible,
   --series-1: var(--accent);          /* gold */
   --series-2: var(--steel);           /* steel-blue */
   --series-3: var(--brand-purple);    /* purple */
-  --series-4: var(--success);         /* olive */
+  --series-4: var(--success);         /* apothecary green */
   --series-5: var(--attention);       /* rose */
 
   /* Sequential ramp — single-hue, 5 stops light→dark.
@@ -1352,7 +1408,7 @@ select:focus-visible,
   --ramp-4: color-mix(in oklch, var(--accent) 85%, var(--bg));
   --ramp-5: var(--accent);
 
-  /* Diverging — for signed deltas. Vermillion-low → neutral → olive-high. */
+  /* Diverging — for signed deltas. Brick-low → neutral → apothecary-green-high. */
   --diverge-low:  var(--urgent);
   --diverge-mid:  var(--fg-disabled);
   --diverge-high: var(--success);
@@ -1587,7 +1643,10 @@ select:focus-visible,
   color: var(--fg-secondary); margin: 0 0 var(--s-md);
 }
 .crumb a { color: var(--fg-secondary); text-decoration: none; }
-.crumb a:hover, .crumb a:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.crumb a:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+@media (hover: hover) {
+  .crumb a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+}
 .crumb [aria-current="page"] { color: var(--fg); }
 .crumb__sep { color: var(--fg-disabled); margin: 0 0.4em; }
 
@@ -1845,7 +1904,9 @@ select:focus-visible,
   border-bottom: 2px solid transparent;
   transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
-.tabs button:hover, .tabs a:hover { color: var(--fg); }
+@media (hover: hover) {
+  .tabs button:hover, .tabs a:hover { color: var(--fg); }
+}
 .tabs [aria-selected="true"], .tabs [aria-current="page"] {
   color: var(--accent); border-bottom-color: var(--accent);
 }
@@ -2149,7 +2210,9 @@ select:focus-visible,
   transform: rotate(45deg); transition: transform var(--dur-fast) var(--ease);
 }
 .accordion details[open] > summary::after { transform: rotate(-135deg); }
-.accordion summary:hover { background: var(--bg-raised); }
+@media (hover: hover) {
+  .accordion summary:hover { background: var(--bg-raised); }
+}
 .accordion summary:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset-inset); }
 .accordion__body { padding: 0 var(--s-md) var(--s-md); color: var(--fg-secondary); }
 
@@ -2377,7 +2440,10 @@ select:focus-visible,
   color: var(--fg-secondary); cursor: pointer;
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
-.tree__row:hover { background: var(--bg-raised); color: var(--fg); }
+/* Hover only where hover exists — same latch rationale as the .sidenav guard. */
+@media (hover: hover) {
+  .tree__row:hover { background: var(--bg-raised); color: var(--fg); }
+}
 /* aria-expanded / aria-selected live on the parent [role="treeitem"] (APG tree
    pattern), so reach the row through it — keying off .tree__row[aria-*] matches
    nothing (the row is a roleless div, the attrs sit on the <li>). */

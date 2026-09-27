@@ -50,9 +50,15 @@ These are intentional. Don't flatten them unless we discuss it.
 
 ## Prose highlighting (Lane-2 addition, v0.7.0)
 
-The five prose-highlight colours (adjective / noun / adverb / verb /
+> Default since the Lane 2 v0.9.0 mirror (2026-09-01): **Artificer ★** —
+> fixed palette tokens (verb gold, adjective steel — light face steel-fill
+> per the v0.9.1 ruling — adverb attention; noun/conjunction unpainted),
+> no ramp, intensity slider inert (ADR 0040).
+> The ramp below powers the opt-in presets, **Cameron** first among them.
+
+The five prose-highlight ramp colours (adjective / noun / adverb / verb /
 conjunction) are **new values introduced in this theme**, lifted from the
-Artificer *Prose-Highlighting playground* (the **Cameron ★** preset).
+Artificer *Prose-Highlighting playground* (the **Cameron** preset).
 They are **not** in the canonical `_palette.json` and do **not**
 propagate to Ghostty / VS Code / Claude Code — that palette is managed in
 the separate design-system session. If you ever want these reconciled

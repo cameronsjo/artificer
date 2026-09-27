@@ -11,7 +11,7 @@
 <script src="artificer-whimsy.js" defer></script>
 <style>
   h3 { font-family: var(--font-mono); font-size: 14px; margin: var(--s-lg) 0 var(--s-xs); }
-  .figure--center { display: flex; align-items: center; justify-content: center; min-height: 96px; gap: var(--s-md); flex-wrap: wrap; }
+  .figure--center { display: flex; align-items: center; justify-content: center; min-height: var(--s-3xl); gap: var(--s-md); flex-wrap: wrap; }
   .hero-mark { font-family: var(--font-mono); font-size: 64px; letter-spacing: -0.02em; line-height: 1; }
   .wave-mark { font-family: var(--font-mono); font-size: 48px; letter-spacing: 0.01em; line-height: 1.3; }
   .knob-grid { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-xs) var(--s-lg); align-items: baseline; }
@@ -29,7 +29,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--md container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Whimsy</p>
   <h1 class="t-headline-lg whimsy">whimsy.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The one <b class="anchor">sanctioned exception</b> to "no looping decoration" and "no raw color." A flowing sine-wave rainbow — the feeling of an <code>ultrathink</code> shimmer — reserved for <b class="anchor">user-defined fun elements</b> and whimsical operations. It is <b class="anchor">burnished, not neon</b>: the spectrum is generated in oklch at the palette's own chroma, and its hue stops land on Artificer's real brand colors. A rainbow made of the palette, set in motion.</p>
@@ -215,15 +215,60 @@
 Whimsy.<span class="tok-fn">greeting</span>(document);
 Whimsy.<span class="tok-fn">greetingFor</span>(<span class="tok-keyword">new</span> <span class="tok-fn">Date</span>());  <span class="tok-comment">// PURE — { season, text, classes }</span></pre>
 
+  <h3>10 · Night sky</h3>
+  <p class="meta">The <b class="anchor">backdrop form</b> of whimsy: a slow <b class="anchor">flowing brand field</b> over a night ground, with a <b class="anchor">seeded starfield</b>. The same seed always draws the same sky, so an app and its app icon can share one. It sits <b class="anchor">only behind a header or hero band</b> — never behind data, status, errors, or body copy — and the text on it stays on solid ground.</p>
+  <p class="meta">The sky and the wordmark it frames are <b class="anchor">one whimsy moment</b> and rest on <b class="anchor">one timer</b>: after three 40s sky cycles both settle to a glacial drift and the stars stop twinkling. It is <b class="anchor">dark only</b> — switch to light and the sky gives way to the plain page. Reduced motion freezes all of it.</p>
+  <div class="figure figure--flush">
+    <header class="stack" id="sky-demo" data-whimsy="sky" data-whimsy-seed="20260925"
+            style="padding: var(--s-2xl) var(--s-lg); align-items: center; text-align: center">
+      <a class="wordmark whimsy whimsy--brand t-headline-lg" href="#sky-demo">artificer</a>
+      <p class="meta">a header band under a night sky</p>
+    </header>
+  </div>
+  <div class="cluster">
+    <div class="field">
+      <label class="field__label" for="sky-seed">Seed</label>
+      <input class="input num" id="sky-seed" type="number" step="1" value="20260925" />
+    </div>
+    <div class="field">
+      <label class="field__label" for="sky-stars">Stars</label>
+      <input class="input num" id="sky-stars" type="number" min="0" max="120" step="4" value="48" />
+    </div>
+  </div>
+  <pre class="code-block"><span class="tok-comment">&lt;!-- hydrates on its own; the seed picks the sky --&gt;</span>
+&lt;<span class="tok-keyword">header</span> <span class="tok-fn">data-whimsy</span>=<span class="tok-string">"sky"</span> <span class="tok-fn">data-whimsy-seed</span>=<span class="tok-string">"20260925"</span>&gt;
+  &lt;<span class="tok-keyword">a</span> <span class="tok-fn">class</span>=<span class="tok-string">"wordmark whimsy whimsy--brand"</span>&gt;artificer&lt;/<span class="tok-keyword">a</span>&gt;
+&lt;/<span class="tok-keyword">header</span>&gt;
+
+<span class="tok-comment">/* also: data-whimsy-stars, -loops, -settle (glacial|static|none) */</span>
+Whimsy.<span class="tok-fn">starfield</span>(el, { seed: <span class="tok-string">7</span>, count: <span class="tok-string">64</span> });
+Whimsy.<span class="tok-fn">starPositions</span>(<span class="tok-string">7</span>);  <span class="tok-comment">// PURE — [{ x, y, r, o, tint, ... }]</span></pre>
+  <script>
+    (function () {
+      var sky = document.getElementById('sky-demo');
+      var seed = document.getElementById('sky-seed');
+      var stars = document.getElementById('sky-stars');
+      function redraw() {
+        if (!window.Whimsy) return;
+        var s = parseInt(seed.value, 10);
+        var n = parseInt(stars.value, 10);
+        if (isNaN(s) || isNaN(n) || n < 0) return;
+        Whimsy.starfield(sky, { seed: s, count: Math.min(n, 120) });
+      }
+      seed.addEventListener('change', redraw);
+      stars.addEventListener('change', redraw);
+    })();
+  </script>
+
   <h2 class="section-title">The doctrine</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Opt-in only.</b> Never on page chrome, nav, or anything automatic. Whimsy is something a person chose to light up.</li>
-    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper. The API doesn't coordinate flowing slots for you — <b class="anchor">exclusivity is the caller's responsibility</b>, same as one-primary-CTA.</li>
-    <li><b class="anchor">Never on load-bearing UI.</b> No whimsy on errors, destructive actions, status, or data. It decorates delight, never function. <b class="anchor">One sanctioned exception:</b> the <code>.whimsy-focus</code> ring (pattern 08), which <em>augments</em> the standard focus outline rather than replacing it — the outline still carries the a11y signal. Reach for it only on explicit request.</li>
+    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper. The API doesn't coordinate flowing slots for you — <b class="anchor">exclusivity is the caller's responsibility</b>, same as one-primary-CTA. A <b class="anchor">night sky and the wordmark it frames</b> count as one moment, and rest on one timer (pattern 10).</li>
+    <li><b class="anchor">Never on load-bearing UI.</b> No whimsy on errors, destructive actions, status, or data. It decorates delight, never function. <b class="anchor">One sanctioned exception:</b> the <code>.whimsy-focus</code> ring (pattern 08), which <em>augments</em> the standard focus outline rather than replacing it — the outline still carries the a11y signal. Reach for it only on explicit request. The <b class="anchor">night sky</b> (pattern 10) sits only behind a header or hero band, never behind data, status, errors, or body copy.</li>
     <li><b class="anchor">Burnished by default.</b> It's tuned to the palette. Reach for <code>.whimsy--vivid</code> consciously, not by reflex.</li>
-    <li><b class="anchor">Display + bold only.</b> Gradient text drops contrast — keep it large. Never set body copy in whimsy.</li>
+    <li><b class="anchor">Display + bold only.</b> Gradient text drops contrast — keep it large. Never set body copy in whimsy. This rule governs gradient <em>text</em>; the <b class="anchor">night sky</b> is a non-text backdrop, <code>aria-hidden</code>, and <b class="anchor">dark only</b> — light mode shows the plain page.</li>
     <li><b class="anchor">Reduced-motion is sacred.</b> The flow stops; the burnished gradient stays. Already wired — don't undo it.</li>
-    <li><b class="anchor">Whimsy rests.</b> Anything long-lived settles after a few loops — to a static gradient or a glacial drift. A rainbow that never stops is just wallpaper; the joy is in the arrival and the coming-to-rest.</li>
+    <li><b class="anchor">Whimsy rests.</b> Anything long-lived settles after a few loops — to a static gradient or a glacial drift. A rainbow that never stops is just wallpaper; the joy is in the arrival and the coming-to-rest. The <b class="anchor">night sky rests too</b>: after a few sky cycles its drift goes glacial and the stars stop twinkling.</li>
   </ol>
 
   <h2 class="section-title">Wiring</h2>

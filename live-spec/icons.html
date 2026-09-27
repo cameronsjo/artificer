@@ -9,23 +9,21 @@
 <script src="artificer-theme.js" defer></script>
 <script src="artificer-icons.js" defer></script>
 <style>
-  main { max-width: 920px; margin: 0 auto; padding: 48px 24px 96px; }
+  main { max-width: 920px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
   h1 { margin: 0 0 var(--s-sm); }
-  .lede { color: var(--fg-secondary); margin: 0 0 var(--s-2xl); max-width: 60ch; }
+  .lede { margin: 0 0 var(--s-2xl); }
   section { margin-bottom: var(--s-2xl); }
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s-sm); }
   .cell { background: var(--bg-raised); border-radius: var(--radius-sm); padding: var(--s-md) var(--s-sm); display: flex; flex-direction: column; align-items: center; gap: var(--s-sm); transition: border-color var(--dur-fast) var(--ease); border: 1px solid transparent; }
   .cell:hover { border-color: var(--accent); }
   .cell .glyph { color: var(--fg); height: 24px; display: flex; align-items: center; }
   .cell .glyph svg { width: 20px; height: 20px; }
-  .cell .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
+  .cell .name { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--fg-secondary); }
   .row-demo { display: flex; gap: var(--s-md); align-items: center; flex-wrap: wrap; }
   .row-demo .btn .icon { width: 14px; height: 14px; }
   .badge .icon { width: 12px; height: 12px; }
   .a-icon { display: inline-flex; align-items: center; gap: 6px; }
   .a-icon .icon { width: 14px; height: 14px; }
-  .usage { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
   .usage pre { margin: 0; padding: var(--s-md); background: var(--bg-inactive); border-radius: var(--radius-sm); overflow-x: auto; color: var(--fg-secondary); font-size: 12.5px; line-height: 1.6; }
   .usage code { color: var(--accent); }
 </style>
@@ -37,11 +35,11 @@
 <main>
   <p class="crumb">Foundations · Icons</p>
   <h1 class="t-headline-lg">icons.</h1>
-  <p class="lede t-body-lg">A small, hand-tuned set rooted in <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>, keyed by <b class="anchor">Lucide's canonical names</b>. <b class="anchor">16px viewBox</b>, <b class="anchor">1.5 stroke</b>, color via <code>currentColor</code>. Used sparingly — at most one per UI row.</p>
+  <p class="lede t-body-lg meta">A small, hand-tuned set rooted in <a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a>, keyed by <b class="anchor">Lucide's canonical names</b>. <b class="anchor">16px viewBox</b>, <b class="anchor">1.5 stroke</b>, color via <code>currentColor</code>. Used sparingly — at most one per UI row.</p>
 
   <section>
-    <h2>Usage</h2>
-    <div class="usage">
+    <h2 class="section-title">Usage</h2>
+    <div class="usage card">
       <p class="t-body-md" style="margin:0 0 var(--s-md)">Drop a placeholder anywhere in the DOM. The hydrator replaces it on load.</p>
       <pre><code>&lt;script src="artificer-icons.js" defer&gt;&lt;/script&gt;
 
@@ -55,7 +53,7 @@
   </section>
 
   <section>
-    <h2>In context</h2>
+    <h2 class="section-title">In context</h2>
     <div class="row-demo">
       <button class="btn btn--primary"><i data-icon="send"></i>Send</button>
       <button class="btn btn--secondary"><i data-icon="download"></i>Export</button>
@@ -76,7 +74,7 @@
   </section>
 
   <section>
-    <h2>Navigation</h2>
+    <h2 class="section-title">Navigation</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="menu"></i></span><span class="name">menu</span></div>
       <div class="cell"><span class="glyph"><i data-icon="chevron-right"></i></span><span class="name">chevron-right</span></div>
@@ -90,7 +88,7 @@
   </section>
 
   <section>
-    <h2>Status</h2>
+    <h2 class="section-title">Status</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="check"></i></span><span class="name">check</span></div>
       <div class="cell"><span class="glyph"><i data-icon="x"></i></span><span class="name">x</span></div>
@@ -102,7 +100,7 @@
   </section>
 
   <section>
-    <h2>Actions</h2>
+    <h2 class="section-title">Actions</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="plus"></i></span><span class="name">plus</span></div>
       <div class="cell"><span class="glyph"><i data-icon="minus"></i></span><span class="name">minus</span></div>
@@ -118,7 +116,7 @@
   </section>
 
   <section>
-    <h2>Files &amp; system</h2>
+    <h2 class="section-title">Files &amp; system</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="file"></i></span><span class="name">file</span></div>
       <div class="cell"><span class="glyph"><i data-icon="folder"></i></span><span class="name">folder</span></div>
@@ -132,7 +130,7 @@
   </section>
 
   <section>
-    <h2>Common objects</h2>
+    <h2 class="section-title">Common objects</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="lock"></i></span><span class="name">lock</span></div>
       <div class="cell"><span class="glyph"><i data-icon="lock-open"></i></span><span class="name">lock-open</span></div>
@@ -145,7 +143,7 @@
   </section>
 
   <section>
-    <h2>Observability &amp; app-nav</h2>
+    <h2 class="section-title">Observability &amp; app-nav</h2>
     <div class="grid">
       <div class="cell"><span class="glyph"><i data-icon="activity"></i></span><span class="name">activity</span></div>
       <div class="cell"><span class="glyph"><i data-icon="bell"></i></span><span class="name">bell</span></div>
@@ -159,7 +157,7 @@
   </section>
 
   <section>
-    <h2>Beyond the set</h2>
+    <h2 class="section-title">Beyond the set</h2>
     <p class="t-body-md" style="color:var(--fg-secondary);max-width:66ch">The set is
     deliberately small — it grows by curation, not accretion. When an app
     genuinely needs a glyph that isn't here, use
@@ -172,7 +170,7 @@
   </section>
 
   <section>
-    <h2>Rules</h2>
+    <h2 class="section-title">Rules</h2>
     <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
       <li><b class="anchor">One icon per row.</b> Two competing glyphs is one too many.</li>
       <li><b class="anchor">Always paired with a text label</b> in primary navigation. Icon-only is reserved for tight chrome (close, expand).</li>

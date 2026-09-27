@@ -44,6 +44,9 @@ const palette = JSON.parse(readFileSync(join(THEMES, '_palette.json'), 'utf8'));
 
 const FIREFOX_ADDON_ID = '{b91a29e8-5147-4076-8bda-1b1f5c5e12d9}';
 const FIREFOX_MIN_VERSION = '68.0';
+// The Chrome Web Store hard-rejects a manifest `description` past this many
+// UTF-16 code units at upload.
+const CHROME_DESCRIPTION_MAX = 132;
 
 const CHROMIUM_DIRS = { dark: 'chromium/artificer-dark', light: 'chromium/artificer-light' };
 const FIREFOX_DIR = 'firefox/artificer';
@@ -95,14 +98,14 @@ const EXPECT_CHROMIUM = {
   frame_incognito:                         'bgInactive',
   frame_incognito_inactive:                'bgInactive',
   ntp_background:                          'bg',
-  toolbar:                                 'bgRaised',
+  toolbar:                                 'bgOverlay',
   ntp_header:                              'bgRaised',
   button_background:                       'bgRaised',
   background_tab:                          'bg',
   background_tab_inactive:                 'bgInactive',
   background_tab_incognito:                'bg',
   background_tab_incognito_inactive:       'bgInactive',
-  omnibox_background:                      'bgOverlay',
+  omnibox_background:                      'bg',
   tab_text:                                'fg',
   toolbar_text:                            'fg',
   bookmark_text:                           'fg',
@@ -120,14 +123,14 @@ const EXPECT_FIREFOX = {
   frame:                       'bg',
   frame_inactive:              'bgInactive',
   ntp_background:              'bg',
-  toolbar:                     'bgRaised',
-  tab_selected:                'bgRaised',
+  toolbar:                     'bgOverlay',
+  tab_selected:                'bgOverlay',
   sidebar:                     'bgRaised',
   ntp_card_background:         'bgRaised',
-  toolbar_field:               'bgOverlay',
-  toolbar_field_focus:         'bgOverlay',
-  popup:                       'bgOverlay',
-  button_background_hover:     'bgOverlay',
+  toolbar_field:               'bg',
+  toolbar_field_focus:         'bg',
+  popup:                       'bgFloat',
+  button_background_hover:     'bgFloat',
   tab_text:                    'fg',
   toolbar_text:                'fg',
   bookmark_text:               'fg',
@@ -167,6 +170,12 @@ for (const [mode, dir] of Object.entries(CHROMIUM_DIRS)) {
     assert.equal(m.name, mode === 'dark' ? 'Artificer Dark' : 'Artificer Light');
   });
 
+  test(`chromium ${mode}: the description fits the Chrome Web Store cap`, () => {
+    const { description } = manifest(dir);
+    assert.equal(typeof description, 'string', 'manifest has no description');
+    assert.ok(description.length <= CHROME_DESCRIPTION_MAX, `description is ${description.length} chars; the Chrome Web Store caps it at ${CHROME_DESCRIPTION_MAX}`);
+  });
+
   test(`chromium ${mode}: every colour is an [r, g, b] array of integers — never a hex string`, () => {
     const { colors } = manifest(dir).theme;
     for (const [key, value] of Object.entries(colors)) {
@@ -203,6 +212,21 @@ for (const [mode, dir] of Object.entries(CHROMIUM_DIRS)) {
     }
   });
 }
+
+test('every browser manifest carries the SAME description as build.mjs, and it fits the Chrome cap', () => {
+  // These manifests are drift: false, so a blurb edit in build.mjs without a
+  // rebuild would ship stale copy through every other gate. build.mjs keeps
+  // the literal on one line so it can be read here as text (never imported —
+  // the file writes on import).
+  const src = readFileSync(join(THEMES, 'build.mjs'), 'utf8');
+  const match = src.match(/^const BROWSER_BLURB = '([^'\n]*)';$/m);
+  assert.ok(match, 'BROWSER_BLURB must be a single-line single-quoted literal in build.mjs — this test reads it as text');
+  const blurb = match[1];
+  assert.ok(blurb.length <= CHROME_DESCRIPTION_MAX, `BROWSER_BLURB is ${blurb.length} chars; the Chrome Web Store caps it at ${CHROME_DESCRIPTION_MAX}`);
+  for (const dir of [...Object.values(CHROMIUM_DIRS), FIREFOX_DIR]) {
+    assert.equal(manifest(dir).description, blurb, `${dir}: committed description differs from build.mjs — run node themes/build.mjs`);
+  }
+});
 
 test('firefox: manifest_version is exactly 2, the stamp equals package.json, and the name is unsuffixed', () => {
   const m = manifest(FIREFOX_DIR);

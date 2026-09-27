@@ -75,7 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "Artificer web design system \`@cameronsjo/artificer@${VERSION}\` — published to npm and mirrored on jsDelivr."
+            echo "Artificer web design system \`@cameronsjo/artificer@${VERSION}\` — published to npm, mirrored on jsDelivr."
             echo
             echo "Apache-2.0; published for Cameron's own reuse, unsupported and Cameron-first. See docs/UPGRADE.md for the pin/versioning contract."
             echo

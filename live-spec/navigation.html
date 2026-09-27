@@ -11,7 +11,7 @@
 <script src="artificer-icons.js" defer></script>
 <style>
   /* Page chrome only — the nav classes themselves are canonical (artificer.css). */
-  h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin: var(--s-lg) 0 var(--s-sm); color: var(--fg); }
+
   .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-lg); align-items: start; }
   @media (max-width: 760px) { .twocol { grid-template-columns: 1fr; } }
 
@@ -26,7 +26,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--lg container--page">
   <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span>Patterns<span class="crumb__sep">·</span><span aria-current="page">Navigation</span></nav>
   <h1 class="t-headline-lg">navigation.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:64ch">The spine. Four surfaces, four jobs — <b class="anchor">breadcrumb</b> for location, <b class="anchor">sidebar</b> for the between-section spine, <b class="anchor">app bar</b> for global chrome, <b class="anchor">tabs</b> for switching the view inside one surface. One spine per page: a sidebar <em>or</em> a top nav, never both.</p>
@@ -63,7 +63,7 @@
   </div>
   <p class="note">Resize below 800px (or open this page narrow) — search collapses and the menu button appears.</p>
 
-  <h3>Appbar modifiers</h3>
+  <h3 class="subsection-title">Appbar modifiers</h3>
   <p class="meta"><code>.appbar--contained</code> zeroes the bar's built-in inline padding so a surrounding <code>.container</code> owns the gutter — prevents double-inset when the bar lives inside a padded column. <code>.appbar--static</code> opts out of <code>position:sticky</code> for compact tool surfaces or layouts where stickiness conflicts with a second sticky plane (sidenav).</p>
   <div class="figure figure--flush">
     <!-- .appbar--contained: bar inside a padded container, brand aligns flush -->
@@ -138,7 +138,7 @@
     </div>
   </div>
 
-  <h3>Hierarchy at scale <span style="color:var(--fg-disabled);font-weight:400">— a long spine</span></h3>
+  <h3 class="subsection-title">Hierarchy at scale <span style="color:var(--fg-disabled);font-weight:400">— a long spine</span></h3>
   <p class="meta">Grouping alone isn't hierarchy: at ~15 uniform rows the group labels recede and the only anchor is the active row. The <code>.sidenav__group</code> header now <b class="anchor">sticks</b> as the spine scrolls and carries a <b class="anchor">divider</b> above each section — so you always know which group you're in without reading every row. <b class="anchor">Scroll this list</b>; the section label pins. No new tokens, and the treatment is inert on short, non-scrolling navs.</p>
   <div class="figure figure--frame">
     <div class="split-pane" style="gap:0;min-height:300px">
@@ -169,7 +169,7 @@
     </div>
   </div>
 
-  <h3>SPA section-switch — <code>&lt;button&gt;</code> nav items</h3>
+  <h3 class="subsection-title">SPA section-switch — <code>&lt;button&gt;</code> nav items</h3>
   <p class="meta">A single-page app switches sections without navigating between documents — that's a <code>&lt;button&gt;</code>, not an <code>&lt;a href&gt;</code>. <code>.sidenav button</code> now receives the full treatment: resting, hover, focus, and the <code>[aria-current]</code> accent rail. <b class="anchor">Close the <code>.nav-drawer</code> with <code>inert</code></b> when off-canvas — CSS alone cannot remove off-screen buttons from the tab order.</p>
   <div class="figure figure--frame">
     <div class="split-pane" style="gap:0;min-height:280px">
@@ -188,7 +188,7 @@
     </div>
   </div>
 
-  <h3>Collapsed rail <span style="color:var(--fg-disabled);font-weight:400">— <code>.sidenav--rail</code></span></h3>
+  <h3 class="subsection-title">Collapsed rail <span style="color:var(--fg-disabled);font-weight:400">— <code>.sidenav--rail</code></span></h3>
   <p class="meta">Icon-only, 56px. Labels move to screen-reader-only (kept in the a11y tree, not <code>display:none</code>); counts shrink to a dot. For dense apps where the spine should yield horizontal room.</p>
   <div class="figure figure--frame">
     <div class="split-pane" style="grid-template-columns:56px 1fr;gap:0;min-height:300px">
@@ -259,7 +259,7 @@
   </div>
   <p class="meta"><b class="anchor">The behavior ships too.</b> <code>.tabs</code> is the look; <code>artificer-tabs.js</code> is the unavoidable-JS half of the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/">WAI-ARIA tabs pattern</a> — roving <code>tabindex</code>, <kbd>←</kbd>/<kbd>→</kbd> (or <kbd>↑</kbd>/<kbd>↓</kbd> under <code>aria-orientation="vertical"</code>), <kbd>Home</kbd>/<kbd>End</kbd>, and panel toggling from each tab's <code>aria-controls</code>. Mark a tablist <code>data-tabs</code> and call <code>ArtificerTabs.observe(document)</code> (or <code>ArtificerTabs.enhance(el)</code> for one). <b class="anchor">This demo is live</b> — focus a tab and arrow across it. Same precedent as <code>ArtificerFocus.trap()</code>: the system ships the a11y JS, not just the CSS.</p>
 
-  <h3>Tabs vs. segmented — not the same control</h3>
+  <h3 class="subsection-title">Tabs vs. segmented — not the same control</h3>
   <p class="meta">They look alike and do different jobs. <b class="anchor">Tabs switch the view</b> (different content). The <b class="anchor">segmented control switches a parameter</b> of one view — a time window, a density. If the content stays and only its shape changes, it's segmented (<code>.timerange</code>), not tabs.</p>
   <div class="twocol">
     <div class="figure">

@@ -9,12 +9,8 @@
 <style>
   body { font-family: var(--font-mono); font-size: var(--t-label-md-size); }
   .page { max-width: 1080px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
-  .bc { font-family: var(--font-sans); font-size: var(--t-label-xs-size); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); }
-  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
 
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 18px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); border-bottom: 1px solid var(--border); padding-bottom: var(--s-sm); }
   h2 .num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
@@ -28,15 +24,14 @@
   }
   .mode-btn.active { background: var(--accent-fill); color: var(--on-accent); border-color: var(--accent-fill); }
   .load-status { font-size: var(--t-label-xs-size); color: var(--fg-secondary); }
-  .load-status.ok { color: #4a8a5e; }
+  .load-status.ok { color: var(--success); }
   .load-status.err { color: var(--urgent); }
 
   /* Sections */
   .section { margin-bottom: var(--s-xl); }
 
   /* Token row layout */
-  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  @media (max-width: 720px) { .token-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
 
   /* Terminal canvas — actual Ghostty background, not Artificer card surface */
   .terminal-canvas {
@@ -63,14 +58,14 @@
   /* WCAG badge */
   .wcag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
     padding: 1px 5px; border-radius: 3px; vertical-align: middle; margin-left: 4px; }
-  .wcag.aaa { background: #1f3a28; color: #b7bd73; }
+  .wcag.aaa { background: var(--diff-add-bg); color: #b7bd73; }
   .wcag.aa  { background: #1a2e1c; color: #7db87f; }
-  .wcag.aa3 { background: #2a1f00; color: #c4932a; }
-  .wcag.fail{ background: #3a1f1d; color: #e8836f; }
-  [data-theme="light"] .wcag.aaa { background: #d8e4cc; color: #2a5a3a; }
+  .wcag.aa3 { background: #2a1f00; color: var(--accent-fill); }
+  .wcag.fail{ background: var(--diff-del-bg); color: #e8836f; }
+  [data-theme="light"] .wcag.aaa { background: var(--diff-add-bg); color: var(--success); }
   [data-theme="light"] .wcag.aa  { background: #cce0cc; color: #1a4a28; }
-  [data-theme="light"] .wcag.aa3 { background: #f0e4c0; color: #7a5a10; }
-  [data-theme="light"] .wcag.fail{ background: #ecd6d4; color: #8a2418; }
+  [data-theme="light"] .wcag.aa3 { background: #f0e4c0; color: var(--accent); }
+  [data-theme="light"] .wcag.fail{ background: var(--diff-del-bg); color: var(--urgent); }
 
   /* Prompt input mock */
   .prompt-mock {
@@ -155,16 +150,15 @@
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Claude Code Tokens</div>
-  <h1>Claude Code Tokens<span class="amp">.</span></h1>
-  <p class="lede">Pseudo-renderer for <span class="anchor">artificer-dark.json</span> and <span class="anchor">artificer-light.json</span>. Each section exercises the actual token colors against mock UI elements, with sRGB-correct WCAG contrast ratios.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Claude Code Tokens</span></nav>
+  <h1 class="t-mono-headline-lg">Claude Code Tokens<span class="amp">.</span></h1>
+  <p class="meta">Pseudo-renderer for <span class="anchor">artificer-dark.json</span> and <span class="anchor">artificer-light.json</span>. Each section exercises the actual token colors against mock UI elements, with sRGB-correct WCAG contrast ratios.</p>
 
   <div class="controls">
     <button class="mode-btn active" id="btn-dark" onclick="loadTheme('dark')">Dark</button>
     <button class="mode-btn" id="btn-light" onclick="loadTheme('light')">Light</button>
     <span class="load-status" id="load-status">Loading…</span>
   </div>
-
 
   <!-- 00 ANSI Palette (Ghostty layer) ─────────────────────────── -->
   <section class="section">
@@ -397,7 +391,7 @@
   <!-- 10 Message backgrounds ───────────────────────────────────── -->
   <section class="section">
     <h2><span class="num">10</span> Message &amp; fullscreen backgrounds</h2>
-    <div class="token-grid">
+    <div class="grid-2">
       <div>
         <div id="bg-user" class="bg-panel">
           <div style="font-weight:700;margin-bottom:4px">User message</div>
@@ -432,7 +426,7 @@
   <!-- 11 Selection & rate limit ────────────────────────────────── -->
   <section class="section">
     <h2><span class="num">11</span> Selection &amp; rate limit</h2>
-    <div class="token-grid">
+    <div class="grid-2">
       <div class="mock-panel">
         <div class="mock-panel-label">Selection background</div>
         <div id="selection-demo" style="padding:6px 10px;border-radius:var(--radius-sm);font-size: var(--t-label-md-size)">

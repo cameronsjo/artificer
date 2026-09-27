@@ -10,6 +10,13 @@
 // CHANGELOG's top "## vX.Y.Z" heading is hand-authored — verified, never rewritten.
 // og-image.svg is deliberately NOT a stamp site — Lane 1 ruled the version OFF the OG
 // card (it's what kept going stale); the refreshed card drops it. Don't re-add it here.
+// themes/stylus/vikunja.user.css's @version is ALSO deliberately excluded — unlike
+// jetbrains/plugin.xml (the one generated file that IS a stamp site, because its two
+// writers are proven to agree byte-for-byte, see its STAMPS entry below), the Stylus
+// file has only ONE writer: build.mjs pulls `version` straight from package.json on
+// every regen, so `npm run build:themes` after a version bump already leaves it
+// current — check:themes' drift gate (themes/stylus/vikunja.user.css is in its
+// TARGETS) is what catches a stale committed copy, not this script.
 //
 // Usage:
 //   node scripts/sync-version.mjs           rewrite stamps to match package.json

@@ -1,0 +1,55 @@
+# Artificer · Dark — WezTerm colour scheme
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+#
+# Install: drop this file in ~/.config/wezterm/colors/ (no config needed), then
+# in wezterm.lua:
+#
+#   config.color_scheme = "Artificer Dark"
+#
+# Select by the [metadata] NAME above, never the filename — pointing
+# color_scheme at the file stem silently fails to load the scheme.
+#
+# The tab bar is NOT themed by this file. WezTerm's default fancy tab bar
+# ignores [colors.tab_bar] entirely and reads window_frame from Lua; see the
+# WezTerm section of themes/README.md for that fragment.
+
+[metadata]
+name = "Artificer Dark"
+author = "Cameron Sjo"
+origin_url = "https://github.com/cameronsjo/artificer-design-system"
+
+[colors]
+background      = "#313540"
+foreground      = "#e8e6e1"
+cursor_bg       = "#dbbb6f"  # must differ from cursor_fg
+cursor_fg       = "#292c33"
+cursor_border   = "#e3c885"
+selection_bg    = "#7a5a10"
+selection_fg    = "#e8e6e1"
+scrollbar_thumb = "#4a4f5c"
+split           = "#4a4f5c"
+compose_cursor  = "#d6936a"
+
+# Terminal programs have no syntax layer — these sixteen slots are where bat,
+# ls, vim and everything else land their colour.
+ansi = [
+  "#5f6576",  # black
+  "#d07a72",  # red
+  "#6fae82",  # green
+  "#dbbb6f",  # yellow
+  "#c4808a",  # blue
+  "#9070d0",  # magenta
+  "#7da6a4",  # cyan
+  "#e8e6e1",  # white
+]
+
+brights = [
+  "#9aa2b3",  # black
+  "#e6a8a2",  # red
+  "#7ab88c",  # green
+  "#e3c885",  # yellow
+  "#d9a6ae",  # blue
+  "#b095e0",  # magenta
+  "#9bc1bf",  # cyan
+  "#f5ead0",  # white
+]

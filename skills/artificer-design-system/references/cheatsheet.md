@@ -2,7 +2,7 @@
 
 Token surface, utility classes, and anti-pattern → pattern transforms. Extracted from SKILL.md for progressive disclosure. Open this when you need the full surface area; SKILL.md keeps the decision tables and rules.
 
-For the full token values (hex, AAA contrast pairings, light/dark variants), read `src/tokens.json` or `live-spec/colors.html` directly.
+For the full token values (hex, contrast pairings, light/dark variants), read `src/tokens.json` or `live-spec/colors.html` directly.
 
 ---
 
@@ -12,16 +12,16 @@ For the full token values (hex, AAA contrast pairings, light/dark variants), rea
 SURFACES   --bg / --bg-raised / --bg-overlay / --bg-inactive
 TEXT       --fg / --fg-secondary / --fg-disabled / --border
 
-INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
+INTERACTIVE --accent gold text — links, focus, secondary buttons
             --accent-bright hover state
             --accent-fill gold background — SMALL controls only (buttons, badges);
                  never a selected-card/surface bg, pairs only with --on-accent
 
-ATTENTION  --attention rose text (AAA) — "look when you can"
+ATTENTION  --attention dusty rose text — "look when you can"
             --attention-fill rose background
 
-URGENT     --urgent terracotta red text — errors, blocking
-            --urgent-fill terracotta red background
+URGENT     --urgent brick red text — errors, blocking
+            --urgent-fill brick red background
 
 SUCCESS    --success apothecary green — completed
 META       --steel / --steel-fill — chrome, secondary UI
@@ -75,7 +75,7 @@ DOTS       .dot + .dot--accent | --attention | --urgent | --success
 PANES      .pane--active (gold left border) · .pane--inactive (55% opacity, desaturated)
 
 KBD        <kbd>⌘ ↵</kbd>
-THEME      <button class="theme-toggle" data-theme-toggle><span class="dot"></span><span data-theme-label>Dark</span></button>
+THEME      <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>  (empty — the module injects the glyph)
 ```
 
 ---

@@ -279,7 +279,8 @@ default for everyone** — that is *why* the cognitive-load budget exists.
 - **Targets:** ≥24px for *all* pointer targets (WCAG 2.2 SC 2.5.8 AA, or the
   spacing exception); ≥44px in nav and for touch (Fitts's Law — and place
   high-frequency or destructive controls at edges/corners, which are "infinite"
-  targets). Dense desktop tables may go below 44 but not below the 24px AA floor.
+  targets). Dense desktop tables may go below 44 but not below 24 (or the spacing
+  exception).
 - **Focus never obscured** (SC 2.4.11) — sticky headers, toasts, and drawers must
   not cover the element being tabbed to; offset or scroll-pad it.
 - **Consistent help** (SC 3.2.6) — help/contact/docs live in the same relative

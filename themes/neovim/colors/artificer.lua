@@ -34,7 +34,9 @@ local palette = {
     accentBright      = "#e3c885",
     accentFill        = "#c4932a",
     ansiBlack         = "#5f6576",
-    ansiBrightBlack   = "#737a8d",
+    ansiBrightBlack   = "#9aa2b3",
+    ansiBrightRose    = "#d9a6ae",
+    ansiRose          = "#c4808a",
     attention         = "#c4808a",
     attentionAlt      = "#d6936a",
     attentionFill     = "#c4808a",
@@ -55,7 +57,6 @@ local palette = {
     ink               = "#20203e",
     ivory             = "#f5ead0",
     steel             = "#b8cad4",
-    steelBright       = "#9fb6c4",
     success           = "#4a8a5e",
     successBright     = "#5fa073",
     urgent            = "#a04540",
@@ -68,6 +69,8 @@ local palette = {
     accentFill        = "#c4932a",
     ansiBlack         = "#f5ead0",
     ansiBrightBlack   = "#8a8070",
+    ansiBrightRose    = "#74303c",
+    ansiRose          = "#924753",
     attention         = "#8a6618",
     attentionAlt      = "#a04500",
     attentionFill     = "#dbbb6f",
@@ -88,7 +91,6 @@ local palette = {
     ink               = "#20203e",
     ivory             = "#f5ead0",
     steel             = "#2e4a5a",
-    steelBright       = "#406278",
     success           = "#2a5a3a",
     successBright     = "#3a7050",
     urgent            = "#8a2418",
@@ -352,20 +354,19 @@ end
 vim.g.terminal_color_1 = P.urgent
 vim.g.terminal_color_2 = P.success
 vim.g.terminal_color_3 = P.accent
--- Invariant: slots 4 and 12 must be a brightness pair on the same hue.
--- Markdown renderers emit bright-blue for inline code; sibling hues make it
--- render a visibly different color than the text around it. steelBright in 4
--- and steel in 12 is not a transposition: `steel` is the LIGHTER of the two
--- on dark (#b8cad4 vs #9fb6c4), because `*Bright` names a role, not a
--- lightness direction. Ghostty ships the same pairing.
-vim.g.terminal_color_4 = P.steelBright
+-- Invariant: slots 4 and 12 are a brightness pair on the same rose hue
+-- (#444). `ansiBrightRose` names the SLOT (bright blue, 12), not a
+-- lightness — lighter member on dark, darker on light; the direction lives
+-- entirely in the hexes. Ghostty ships the same pair; full derivation in
+-- _palette.json $notes.ansiRose.
+vim.g.terminal_color_4 = P.ansiRose
 vim.g.terminal_color_5 = P.brandPurple
 vim.g.terminal_color_6 = P.cyan
 vim.g.terminal_color_7 = P.fg
 vim.g.terminal_color_9 = P.urgentBright
 vim.g.terminal_color_10 = P.successBright
 vim.g.terminal_color_11 = P.accentBright
-vim.g.terminal_color_12 = P.steel
+vim.g.terminal_color_12 = P.ansiBrightRose
 vim.g.terminal_color_13 = P.brandPurpleBright
 vim.g.terminal_color_14 = P.cyanBright
 -- The one slot with no single token: ivory IS the light canvas, so bright

@@ -7,18 +7,15 @@
 <link rel="stylesheet" href="artificer.css" />
 <script src="artificer-theme.js" defer></script>
 <style>
-  .page { max-width: 900px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
-  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  .page { max-width: 900px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .sec-num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .sec-num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
 
-  .tier { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); display: grid; grid-template-columns: 160px 1fr; gap: var(--s-lg); align-items: start; }
+  .tier { margin-bottom: var(--s-sm); display: grid; grid-template-columns: 160px 1fr; gap: var(--s-lg); align-items: start; }
   .tier .side { display: flex; flex-direction: column; gap: 4px; }
-  .tier .n { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; }
+  .tier .n { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; letter-spacing: 0.14em; }
   .tier.urgent .n { color: var(--urgent); }
   .tier.attention .n { color: var(--fg); }
   .tier.info .n { color: var(--accent); }
@@ -33,14 +30,14 @@
 <body>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Notifications</div>
-  <h1>notifications<span class="amp">.</span></h1>
-  <p class="lede">Four tiers, sorted by <span class="anchor">action required</span>. If a message doesn't need action, it <span class="anchor">never interrupts</span> — badge it silently instead.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Notifications</span></nav>
+  <h1 class="t-mono-headline-lg">notifications<span class="amp">.</span></h1>
+  <p class="meta">Four tiers, sorted by <span class="anchor">action required</span>. If a message doesn't need action, it <span class="anchor">never interrupts</span> — badge it silently instead.</p>
 
   <section>
     <h2><span class="sec-num">01</span> The four tiers</h2>
 
-    <div class="tier urgent">
+    <div class="tier urgent card">
       <div class="side">
         <span class="n">TIER 01 · URGENT</span>
         <span class="t">Blocking</span>
@@ -58,7 +55,7 @@
       </div>
     </div>
 
-    <div class="tier attention">
+    <div class="tier attention card">
       <div class="side">
         <span class="n">TIER 02 · ATTENTION</span>
         <span class="t">Look when you can</span>
@@ -76,7 +73,7 @@
       </div>
     </div>
 
-    <div class="tier info">
+    <div class="tier info card">
       <div class="side">
         <span class="n">TIER 03 · INFO</span>
         <span class="t">Task complete</span>
@@ -93,7 +90,7 @@
       </div>
     </div>
 
-    <div class="tier bg">
+    <div class="tier bg card">
       <div class="side">
         <span class="n">TIER 04 · BACKGROUND</span>
         <span class="t">No notification</span>
@@ -127,7 +124,7 @@
 
   <section>
     <h2><span class="sec-num">03</span> Toast region — live demo</h2>
-    <p class="lede" style="font-size:13px">The <code>.toast-region</code> is the fixed placement layer (bottom-right, <code>--z-toast</code>); a toast IS a <code>.notif</code> mounted in it. <span class="anchor">ARIA is set at insert time</span> — CSS cannot set roles: urgent → <code>role="alert"</code>, attention/info → <code>role="status"</code>, background → <span class="anchor">no role</span> (the silent badge never enters the region). Info auto-dismisses after 5s; the timer <span class="anchor">pauses on hover/focus</span>.</p>
+    <p class="meta" style="font-size:13px">The <code>.toast-region</code> is the fixed placement layer (bottom-right, <code>--z-toast</code>); a toast IS a <code>.notif</code> mounted in it. <span class="anchor">ARIA is set at insert time</span> — CSS cannot set roles: urgent → <code>role="alert"</code>, attention/info → <code>role="status"</code>, background → <span class="anchor">no role</span> (the silent badge never enters the region). Info auto-dismisses after 5s; the timer <span class="anchor">pauses on hover/focus</span>.</p>
     <div style="display:flex;gap:var(--s-sm);flex-wrap:wrap;margin-top:var(--s-md)">
       <button class="btn btn--secondary" data-toast="urgent">Show urgent</button>
       <button class="btn btn--secondary" data-toast="attention">Show attention</button>

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="print.css" media="print" />
 <script src="artificer-theme.js" defer></script>
 <style>
-  .page { max-width: 820px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
+  .page { max-width: 820px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
   .masthead { display: flex; flex-direction: column; gap: var(--s-md); padding-bottom: var(--s-xl); border-bottom: 1px solid var(--border); margin-bottom: var(--s-xl); position: relative; }
   .masthead .kicker { font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
   .masthead h1 { margin: 0; font-family: var(--font-mono); font-weight: 700; font-size: 52px; line-height: 1.05; letter-spacing: -0.02em; }
@@ -29,7 +29,7 @@
   .brand-row .bt { font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--fg); }
   .brand-row .bd { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.5; margin-top: 2px; max-width: 52ch; }
   .brand-row .chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-  .brand-row .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--fg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .brand-row .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--fg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .brand-row .chip .sw { width: 10px; height: 10px; border-radius: 2px; }
 
   /* Deco sunburst motif top-right — subtle */
@@ -49,16 +49,14 @@
   .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-sm); margin-top: var(--s-lg); }
   .nav-card { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); display: flex; flex-direction: column; gap: var(--s-xs); text-decoration: none; border: 1px solid transparent; transition: border-color var(--dur-fast) var(--ease); }
   .nav-card:hover { border-color: var(--accent); text-decoration: none; }
-  .nav-card .n { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.06em; }
+  .nav-card .n { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--accent); letter-spacing: 0.06em; }
   .nav-card .t { font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--fg); }
   .nav-card .d { font-family: var(--font-mono); font-size: 13px; color: var(--fg-secondary); line-height: 1.5; }
 
-  .callout { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); margin: var(--s-md) 0; }
-  .callout .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-xs); }
+  .callout { margin: var(--s-md) 0; }
   .callout p { margin: 0; max-width: 62ch; }
 
   .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); margin-top: var(--s-md); }
-  .do-dont .col { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
   .do-dont .col h4 { margin: 0 0 var(--s-md); font-family: var(--font-sans); font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
   .do-dont .col.do h4 { color: var(--success); }
   .do-dont .col.dont h4 { color: var(--urgent); }
@@ -66,15 +64,15 @@
   .do-dont .col li { margin-bottom: 6px; line-height: 1.5; }
 
   .principles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s-md); margin-top: var(--s-md); }
-  .principles .p { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-sm); }
-  .principles .p .n { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: var(--accent); }
+  .principles .p { display: flex; flex-direction: column; gap: var(--s-sm); }
+  .principles .p .n { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; letter-spacing: 0.14em; color: var(--accent); }
   .principles .p .t { font-family: var(--font-mono); font-weight: 700; font-size: 15px; }
   .principles .p .d { font-family: var(--font-mono); font-size: 13px; line-height: 1.55; color: var(--fg-secondary); }
 
   @media (max-width: 720px) {
     .nav-grid, .do-dont, .principles { grid-template-columns: 1fr; }
     .masthead h1 { font-size: 38px; }
-    .deco-mark { width: 48px; height: 48px; }
+    .deco-mark { width: var(--s-2xl); height: var(--s-2xl); }
   }
 </style>
 </head>
@@ -105,7 +103,7 @@
     <h1 class="wordmark" style="font-size:52px;letter-spacing:-0.02em">artificer</h1>
     <p class="lede">A <span class="anchor">dark-first</span>, <span class="anchor">monospace-first</span> design system for an AuDHD brain — built on Ghostty terminal defaults, wearing a Jazz Age Deco palette. Calm until something needs attention, then unmissable.</p>
     <div class="meta-row">
-      <span>v0.25.0</span><span>2026</span><span>WCAG AAA</span><span>keyboard-first</span><span>dark + light</span>
+      <span>v0.27.0</span><span>2026</span><span>WCAG AAA</span><span>keyboard-first</span><span>dark + light</span>
     </div>
     <div class="brand-row">
       <img src="assets/cameron-logo.jpg" alt="Cameron personal mark" />
@@ -127,31 +125,31 @@
     <p>If you're picking a pretty theme for a marketing site, wrong system. If you're building <span class="anchor">tools</span> — command surfaces, dashboards, editors, agent interfaces — stay.</p>
 
     <div class="callout">
-      <div class="label">The core bet</div>
+      <div class="label callout__title eyebrow eyebrow--accent">The core bet</div>
       <p>A UI that does the triage so the brain doesn't have to. Ghostty dark grey as the foundation, <span class="anchor">burnished gold</span> as the one accent that means "act here." Color reserved exclusively for meaning.</p>
     </div>
   </section>
 
   <section>
     <h2><span class="num">02</span> The Jazz Age palette, explained</h2>
-    <p>The accents borrow from 1920s–50s screen-print poster work: <span class="anchor">burnished gold</span> (glamour, brass, the thing that glitters), <span class="anchor">vermillion</span> (lipstick, danger, neon), <span class="anchor">dusty rose</span> (silk, blush, the softer counterweight), and <span class="anchor">steel blue</span> (rivets, denim, the honest middle). Gold is the primary — the only color that means <em>you can act on this</em>.</p>
+    <p>The accents borrow from 1920s–50s screen-print poster work: <span class="anchor">burnished gold</span> (glamour, brass, the thing that glitters), <span class="anchor">brick</span> (lipstick, danger, neon), <span class="anchor">dusty rose</span> (silk, blush, the softer counterweight), and <span class="anchor">steel blue</span> (rivets, denim, the honest middle). Gold is the primary — the only color that means <em>you can act on this</em>.</p>
     <p>Every accent has two forms: a <span class="anchor">text-safe</span> value (tuned for AAA contrast on the current background) and a <span class="anchor">fill</span> value (the original saturated hex, used as button/badge background where legibility lives in the on-color text). Both themes map to the same semantic tokens.</p>
   </section>
 
   <section>
     <h2><span class="num">03</span> Three principles</h2>
     <div class="principles">
-      <div class="p">
+      <div class="p card">
         <span class="n">01 · SCAN</span>
         <span class="t">Anchors, not prose</span>
         <span class="d">Bold <span class="anchor">3–5 anchor words</span> per paragraph. A page scanned only for bolded words should still make sense.</span>
       </div>
-      <div class="p">
+      <div class="p card">
         <span class="n">02 · TRIAGE</span>
         <span class="t">Greyscale by default</span>
         <span class="d">Max 2 semantic colors on screen at once. Color means something. Decorative color is banned.</span>
       </div>
-      <div class="p">
+      <div class="p card">
         <span class="n">03 · RESTRAINT</span>
         <span class="t">Max 5–7 per list</span>
         <span class="d">Palette, sidebar, dropdown — everything capped. Beyond the cap: progressive disclosure or type-to-filter.</span>
@@ -216,7 +214,7 @@
       <a class="nav-card" href="a11y.html">
         <span class="n">11 · FOUNDATIONS</span>
         <span class="t">Accessibility</span>
-        <span class="d">WCAG 2.2 audit, focus rings, skip-links, the 12-point checklist before shipping.</span>
+        <span class="d">WCAG 2.2 audit, focus rings, skip-links, the 13-point checklist before shipping.</span>
       </a>
       <a class="nav-card" href="overlay.html">
         <span class="n">12 · PATTERNS</span>
@@ -301,7 +299,7 @@
   <section>
     <h2><span class="num">06</span> Do &amp; Don't</h2>
     <div class="do-dont">
-      <div class="col do">
+      <div class="col do card">
         <h4>Do</h4>
         <ul>
           <li>Use gold <span class="anchor">only</span> for interactive elements</li>
@@ -314,7 +312,7 @@
           <li>Honor <code>prefers-reduced-motion</code></li>
         </ul>
       </div>
-      <div class="col dont">
+      <div class="col dont card">
         <h4>Don't</h4>
         <ul>
           <li>Show more than <span class="anchor">2 semantic colors</span> at once</li>
@@ -335,7 +333,7 @@
     <p>Artificer's copy is <span class="anchor">literal, direct, and lightly deadpan</span>. Autism demands clarity — a sarcastic error is a confusing error. A metaphor-heavy tooltip is a broken tooltip.</p>
     <p>The wit lives in the restraint. A palette that shows the exact five things you need is funnier than any pun written into it.</p>
     <div class="callout">
-      <div class="label">Copy checklist</div>
+      <div class="label callout__title eyebrow eyebrow--accent">Copy checklist</div>
       <p>Is it <span class="anchor">literal</span>? Would the user know what to do from the first seven words? Does it name the thing instead of gesturing at it? If yes: ship. If no: rewrite.</p>
     </div>
   </section>

@@ -15,7 +15,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--md container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Layout</p>
   <h1 class="t-headline-lg">layout primitives.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Five composable utilities. <b class="anchor">Stack</b> for vertical rhythm, <b class="anchor">cluster</b> for horizontal flow, <b class="anchor">grid-auto</b> for responsive cards, <b class="anchor">container</b> for max-widths, <b class="anchor">page-shell</b> for sticky-header layouts.</p>
@@ -49,7 +49,7 @@
       <tr><td><code>.container--lg</code></td><td>1120px</td><td>Dashboards, tables, multi-column layouts.</td></tr>
     </tbody>
   </table>
-  <p class="meta" style="margin-top:var(--s-sm)">Size modifiers set only max-width. Always pair one with the base <code>.container</code>, which carries width, centering, and inline padding.</p>
+  <p class="meta" style="margin-top:var(--s-sm)">Size modifiers set only max-width. Always pair one with the base <code>.container</code>, which carries width, centering, and inline padding. Add <code>.container--page</code> on a top-level <code>&lt;main&gt;</code> for page block padding (<code>--s-2xl</code> top, <code>--s-3xl</code> bottom) — this page uses it.</p>
 
   <h2 class="section-title">.page-shell — sticky masthead</h2>
   <p class="meta">Two-row grid: header sticks, main scrolls. Header gets <code>z-index: var(--z-overlay)</code> automatically.</p>
@@ -101,9 +101,11 @@
   <span class="tok-keyword">&lt;/div&gt;</span>
   <span class="tok-keyword">&lt;p</span> class=<span class="tok-string">"colophon__fine"</span><span class="tok-keyword">&gt;</span>…<span class="tok-keyword">&lt;/p&gt;</span>
 <span class="tok-keyword">&lt;/footer&gt;</span></pre>
-  <p class="meta" style="margin-top:var(--s-sm)">Three zones, in order: a <code>.grid-auto</code> of <code>.colophon__label</code> sections, the <b class="anchor">spine</b>, then <code>.colophon__fine</code>. Zones 1 and 3 are optional — a site with only a sign-off and a site with a full disclosure grid use the same primitive and differ only in which zones they fill.</p>
-  <p class="meta" style="margin-top:var(--s-sm)">The <b class="anchor">spine</b> is the colophon's one row, and its three slots are <b class="anchor">positional</b> — first child starts, last child ends, middle is centred <em>on the page</em>. That centring is why it is a grid: <code>1fr auto 1fr</code> keeps the side columns equal, so a long copyright can't shove the sign-off off-centre the way <code>space-between</code> does. Any slot may be empty — keep the element to hold its column. Below 640px it stacks and centres.</p>
-  <p class="meta" style="margin-top:var(--s-sm)">Prose inside <code>.colophon</code> renders <code>--font-sans</code> even inside <code>.surface-tool</code>. For a prose island elsewhere in a tool surface, wrap it in <code>.surface-document</code> to flip the same escape on.</p>
+  <div class="stack stack--sm">
+    <p class="meta">Three zones, in order: a <code>.grid-auto</code> of <code>.colophon__label</code> sections, the <b class="anchor">spine</b>, then <code>.colophon__fine</code>. Zones 1 and 3 are optional — a site with only a sign-off and a site with a full disclosure grid use the same primitive and differ only in which zones they fill.</p>
+    <p class="meta">The <b class="anchor">spine</b> is the colophon's one row, and its three slots are <b class="anchor">positional</b> — first child starts, last child ends, middle is centred <em>on the page</em>. That centring is why it is a grid: <code>1fr auto 1fr</code> keeps the side columns equal, so a long copyright can't shove the sign-off off-centre the way <code>space-between</code> does. Any slot may be empty — keep the element to hold its column. Below 640px it stacks and centres.</p>
+    <p class="meta">Prose inside <code>.colophon</code> renders <code>--font-sans</code> even inside <code>.surface-tool</code>. For a prose island elsewhere in a tool surface, wrap it in <code>.surface-document</code> to flip the same escape on.</p>
+  </div>
 </main>
 </body>
 </html>

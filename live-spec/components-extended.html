@@ -23,7 +23,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-<main id="main" class="container container--md" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--md container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Components · Extended (v0.15.0)</p>
   <h1 class="t-headline-lg">components, extended<span style="color:var(--accent)">.</span></h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The Workstream-E mints: the option-popover keystone and what it unlocks, plus pagination, the persistent banner, and the tree. Built from existing tokens — no carves.</p>
@@ -33,7 +33,7 @@
   <p class="meta">The ONE floating option list. <code>.menu</code> = actions (role=menu); <code>.listbox</code> = selection (role=listbox + aria-selected). Both use <code>__option</code> rows. The keyboard cursor and hover are one visual (<code>.is-active</code>). Drop inside <code>.popover</code> to float it.</p>
   <div class="figure" style="display:flex;gap:var(--s-2xl);flex-wrap:wrap">
     <div>
-      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.menu</code> — actions</div>
+      <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.menu</code> — actions</div>
       <div class="popover" style="padding:0;max-width:260px">
         <div class="menu" role="menu" aria-label="Edit" data-options>
           <div class="menu__label" aria-hidden="true">Edit</div>
@@ -46,7 +46,7 @@
       </div>
     </div>
     <div>
-      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.listbox</code> — selection</div>
+      <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px"><code style="text-transform:none">.listbox</code> — selection</div>
       <div class="popover" style="padding:0;max-width:260px">
         <ul class="listbox" role="listbox" aria-label="Branch" id="branchList" data-options>
           <li class="listbox__option" role="option" aria-selected="true" tabindex="0">main</li>

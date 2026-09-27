@@ -7,16 +7,12 @@
 <link rel="stylesheet" href="artificer.css" />
 <script src="artificer-theme.js" defer></script>
 <style>
-  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
-  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); }
-  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
 
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .sec-num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .sec-num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
 
   .grid { display: grid; gap: var(--s-md); }
   .grid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -31,15 +27,12 @@
   .sw .chip b { position: absolute; top: 10px; left: 12px; font-family: var(--font-mono); font-weight: 700; font-size: 13px; mix-blend-mode: normal; }
   .sw .meta { padding: var(--s-sm) var(--s-md) var(--s-md); display: flex; flex-direction: column; gap: 2px; }
   .sw .name { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--fg); }
-  .sw .hex { font-family: var(--font-mono); font-size: 11px; color: var(--fg-secondary); }
-  .sw .role { font-family: var(--font-sans); font-size: 11px; color: var(--fg-secondary); line-height: 1.4; margin-top: 2px; }
+  .sw .hex { font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--fg-secondary); }
+  .sw .role { font-family: var(--font-sans); font-size: var(--t-label-xs-size); color: var(--fg-secondary); line-height: 1.4; margin-top: 2px; }
 
-  .rule { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); margin-bottom: var(--s-sm); }
+  .rule { margin-bottom: var(--s-sm); }
   .rule b { color: var(--fg); }
-  .rule .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-xs); }
   .rule p { margin: 0; max-width: 68ch; }
-
-  .demo-label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); }
 
   .squint-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-md); }
   .squint { padding: var(--s-lg); border-radius: var(--radius-md); min-height: 140px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; min-width: 0; overflow-wrap: anywhere; }
@@ -54,9 +47,9 @@
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Colors</div>
-  <h1>colors<span class="amp">.</span></h1>
-  <p class="lede">Ghostty dark grey as the foundation. Jazz-Age-Deco accents on top. <span class="anchor">Color reserved for meaning</span> — if it doesn't signal <em>act here</em>, <em>look here</em>, or <em>this is wrong</em>, it isn't allowed.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Colors</span></nav>
+  <h1 class="t-mono-headline-lg">colors<span class="amp">.</span></h1>
+  <p class="meta">Ghostty dark grey as the foundation. Jazz-Age-Deco accents on top. <span class="anchor">Color reserved for meaning</span> — if it doesn't signal <em>act here</em>, <em>look here</em>, or <em>this is wrong</em>, it isn't allowed.</p>
 
   <section>
     <h2><span class="sec-num">01</span> Surfaces</h2>
@@ -103,7 +96,7 @@
       <div class="sw">
         <div class="chip" style="background:#e8836f"><b style="color:#0d1b2a">STOP</b></div>
         <div class="meta">
-          <span class="name">--urgent · vermillion</span>
+          <span class="name">--urgent · brick</span>
           <span class="hex">text #E8836F · 5.26 AA</span>
           <span class="hex">fill #C4392A · ivory @ AAA</span>
           <span class="role">Blocking. Errors, destructive confirmations. Use sparingly.</span>
@@ -112,7 +105,7 @@
       <div class="sw">
         <div class="chip" style="background:#b7bd73"><b style="color:#0d1b2a">DONE</b></div>
         <div class="meta">
-          <span class="name">--success · olive</span>
+          <span class="name">--success · apothecary green</span>
           <span class="hex">#B7BD73</span>
           <span class="role">Completed. Flash briefly, fade to baseline.</span>
         </div>
@@ -139,10 +132,10 @@
 
   <section>
     <h2><span class="sec-num">04</span> The rules that keep triage working</h2>
-    <div class="rule"><div class="label">Rule 01</div><p><b>Max 2 semantic colors visible at once.</b> If gold + rose + vermillion all appear together, visual priority collapses and the brain checks out. Purple is brand, not semantic — it doesn't count against the cap.</p></div>
-    <div class="rule"><div class="label">Rule 02</div><p><b>Greyscale is the default state.</b> Color is reserved for meaning. Decorative color is banned. If you can't name what a color means on a page, delete it.</p></div>
-    <div class="rule"><div class="label">Rule 03</div><p><b>No pure black.</b> <code>#1D1F21</code> is the darkest value in the system. <code>#000</code> reads as a hole on Ghostty grey — it's visual noise.</p></div>
-    <div class="rule"><div class="label">Rule 04</div><p><b>Color meaning is consistent across screens.</b> Gold always means interactive. Rose always means attention. Vermillion always means error. No exceptions for aesthetics.</p></div>
+    <div class="rule callout"><div class="label callout__title eyebrow eyebrow--accent">Rule 01</div><p><b>Max 2 semantic colors visible at once.</b> If gold + rose + brick all appear together, visual priority collapses and the brain checks out. Purple is brand, not semantic — it doesn't count against the cap.</p></div>
+    <div class="rule callout"><div class="label callout__title eyebrow eyebrow--accent">Rule 02</div><p><b>Greyscale is the default state.</b> Color is reserved for meaning. Decorative color is banned. If you can't name what a color means on a page, delete it.</p></div>
+    <div class="rule callout"><div class="label callout__title eyebrow eyebrow--accent">Rule 03</div><p><b>No pure black.</b> <code>#1D1F21</code> is the darkest value in the system. <code>#000</code> reads as a hole on Ghostty grey — it's visual noise.</p></div>
+    <div class="rule callout"><div class="label callout__title eyebrow eyebrow--accent">Rule 04</div><p><b>Color meaning is consistent across screens.</b> Gold always means interactive. Rose always means attention. Vermillion always means error. No exceptions for aesthetics.</p></div>
   </section>
 
   <section>
@@ -150,12 +143,12 @@
     <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Squint at these two panes. The active one must be <span class="anchor">instantly obvious</span> from peripheral vision. If you have to compare to tell, contrast is too low.</p>
     <div class="squint-pair">
       <div class="squint active">
-        <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent)">Active pane</span>
+        <span style="font-family:var(--font-sans);font-size: var(--t-label-xs-size);letter-spacing:0.12em;text-transform:uppercase;color:var(--accent)">Active pane</span>
         <span style="font-family:var(--font-mono);font-weight:700;font-size:16px">agents/writer.md</span>
         <span class="meta" style="font-family:var(--font-mono);font-size:13px">Full brightness · accent border · 100% saturation.</span>
       </div>
       <div class="squint inactive">
-        <span style="font-family:var(--font-sans);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-secondary)">Inactive pane</span>
+        <span style="font-family:var(--font-sans);font-size: var(--t-label-xs-size);letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-secondary)">Inactive pane</span>
         <span style="font-family:var(--font-mono);font-weight:700;font-size:16px;color:var(--fg-secondary)">agents/editor.md</span>
         <span style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary)">55% opacity · desaturated · darker ground.</span>
       </div>
@@ -166,7 +159,7 @@
     <h2><span class="sec-num">06</span> On-color combos</h2>
     <p style="font-family:var(--font-mono);font-size:13px;color:var(--fg-secondary);line-height:1.6;max-width:62ch;margin-bottom:var(--s-md)">Filled buttons and badges need the right foreground. Here's what passes.</p>
     <div class="figure">
-      <div class="demo-label">Dark mode · fills</div>
+      <div class="eyebrow">Dark mode · fills</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <span class="onbg" style="background:#c4932a;color:#0d1b2a">Gold fill · navy text · 6.26</span>
         <span class="onbg" style="background:#c4392a;color:#f5ead0">Vermillion fill · ivory · 4.43</span>

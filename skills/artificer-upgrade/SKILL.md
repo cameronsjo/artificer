@@ -72,73 +72,45 @@ Try these in order; stop at the first that answers:
    `artificer.css` reads `Artificer v<x>`.
 5. **CDN:** the version is pinned in the `<link>` URL (`…/artificer@<x>/…`).
 
-**If `--art-version` is absent and no banner says ≥ 0.9.0**, treat the project as
-**0.8.x or earlier** — the token was minted in the v0.9.0 baseline contract.
+**If the version remains unknown**, report that uncertainty. An absent
+`--art-version` can mean an older baseline or an incomplete token subset; it
+does not establish a release number. Recover provenance before choosing the
+version range, or explicitly inspect all potentially relevant boundaries.
 
 Confirm the **target** version (usually current `main` / latest npm). State both
 plainly: "You're on X, moving to Y."
 
-## Step 1A — Detect the consumption shape (fast path)
+## Step 1A — Identify the consumption shape
 
-Before walking the full ledger, check whether this is a
-**hand-authored-subset consumer** — one that maintains its own `:root`
-token block without vendoring `artificer.css`. Two confirmed examples:
-blog → 0.10.1 (#75), cameronsjo.github.io → 0.9.0 (#76).
+Determine whether the consumer vendors the runtime, imports npm/CDN assets, or
+maintains a hand-authored token subset. Inspect the entrypoints, dependency lock,
+and configured vendor directory; an empty search is not proof of a subset.
 
-Run each check with the grep provided. Do not assume inapplicability — verify.
+Run these to establish what the consumer actually uses. They gather evidence for
+Steps 2 and 3; a clean result never skips either step.
 
-**Check 1 — No vendored source.**
-```
+```bash
+# vendored source or npm dependency
 grep -r 'artificer\.css' . --include='*.{html,js,ts,json,astro,svelte,vue}'
 grep '"@cameronsjo/artificer"' package.json 2>/dev/null
-```
-Zero hits on both = hand-authored consumer. Any hit = vendored; skip
-ahead to Step 2.
-
-**Check 2 — Hex values match canonical.** Diff a sample of the project's
-`:root` tokens (accent, fg, bg, status quartet, brand-purple) against the
-target. A value that has drifted from canonical is a manual override — exit
-the fast path and work it through Step 2.
-
-**Check 3 — Theme key is the dot form.** Only applies if the project uses
-the hyphen key (`'artificer-theme'`).
-```
+# hyphen theme key (dot-form boundary applies when this hits)
 grep -r "'artificer-theme'" . --include='*.{js,ts,astro,svelte,vue,html}'
-```
-Zero hits = boundary N/A.
-
-**Check 4 — No `px` type-scale overrides.** Only applies if the project
-overrides `--t-*-size` tokens in `px`.
-```
+# px type-scale overrides (rem boundary applies when a match is in px)
 grep -r -- '--t-.*-size:' . --include='*.css'
-```
-Zero hits (or every match already in `rem`) = boundary N/A.
-
-**Check 5 — No keyword token bindings.** Only applies if the project
-binds `.code-block .tok-keyword` to Artificer tokens.
-```
+# keyword token bindings (tok-keyword boundary applies when this hits)
 grep -r 'tok-keyword' . --include='*.{css,html,astro,svelte,vue}'
 ```
-Zero hits = boundary N/A.
 
-**All five pass → skip Steps 2 and 4.** The *migration* reduces to the
-**provenance-stamp checklist** below (it stands in for Step 4's output):
+Also diff a sample of the project's `:root` tokens (accent, fg, bg, status
+quartet, brand-purple) against the target; a drifted value is a manual override
+to carry through Step 2.
 
-- [ ] **Stamp `--art-version`.** Add or update in `:root`:
-  `--art-version: "X.Y.Z";` (target version).
-- [ ] **Verify the status quartet is complete.** Baseline contract (0.9.0+)
-  requires all four: `--success`, `--attention`, `--urgent`, `--brand-purple`.
-- [ ] **Refresh the palette-origin comment** (if present) — update the
-  version note above `:root` to match the new stamp.
-- [ ] Verify: `--art-version` reads correctly in DevTools, theme persists
-  across reload, no FOUC.
-
-**Then run Step 3 anyway — the sweep is NOT skippable.** This is the
-v0.2 → v0.3 fix: a value-current subset consumer has nothing to *migrate* but
-may still be **hand-rolling primitives the system has since minted** (the blog
-false-negative — its tokens were current while it hand-rolled what the
-behavior modules ship). The sweep is the point of the crossing, not an
-optional extra. Then Step 5.
+Subset consumers still walk every crossed version in Step 2 and run the adoption
+sweep in Step 3. A sample of matching hex values cannot establish that every
+breaking change is irrelevant. Mark a boundary inapplicable only after checking
+its actual use in this consumer. If none apply, the migration checklist may be
+just the version/provenance stamp, complete status tokens, theme persistence, and
+no-flash verification; the adoption map remains required.
 
 ## Step 2 — Walk the ledger between current and target
 
@@ -170,8 +142,7 @@ don't re-derive):
 
 ## Step 3 — Adoption sweep (the map, not the merge)
 
-For each primitive in **minted-since** (fast-path consumers: every primitive
-whose `minted` is newer than the current version):
+For each primitive in **minted-since**, including for subset consumers:
 
 1. Run its `adoption.signals[].grep` — a JS-flavored regex, case-sensitive —
    over the consumer tree, **excluding** the vendor dest (`public/artificer/`
@@ -237,29 +208,14 @@ file/grep/edit, not a generality. End with the **verify** list: `--art-version`
 correct, theme persists, no FOUC, keywords legible, text scales with zoom, focus
 rings present.
 
-## Step 5 — Report back (not optional)
+## Step 5 — Report back
 
-An upgrade **is** consumer usage of Artificer, so once the migration lands, you
-**MUST** invoke `/artificer-feedback` — per the standing early-and-often mandate.
-The skill does the assembly — you **MUST NOT** draft the issue or de-dupe against
-existing ones first. Don't wait for a gap "worth reporting": which version pair
-you crossed, what bit, and **what the ledger got right or wrong** — a missing
-`breaking[]` event, a too-noisy adoption signal, a vintage that surprised you —
-is the highest-signal feedback the design system can get. You **MUST NOT** pause
-to ask permission — standing pre-approval covers it. You **SHOULD** run it in
-the background (fork / subagent) so it never interrupts the work;
-fire-and-forget, **MUST NOT** batch or curate. (Waived only when Cameron
-*unprompted* declines, or you're working inside the `artificer-design-system`
-repo itself.)
+After the migration lands, invoke
+[`artificer-feedback`](../artificer-feedback/SKILL.md). Its when-to-ask
+rule, one-issue-per-pivot cadence, and in-repo and decline exceptions apply. Invoke before drafting or deduplicating; prefer a background agent so the
+upgrade continues. Include the version pair, observed problems, and what the
+ledger got right or missed. Do not manufacture friction.
 
-## Notes
-
-- **Closes #199's delta-legibility gap; partially addresses #35:** Step 1's
-  provenance detection is the provenance lever, and Step 2's ledger walk
-  replaces the v0.2 hardcoded 0.7→0.10.1 matrix that dead-ended seven releases
-  behind the repo.
-- A recommendation that cites a hex without a **contrast ratio** is incomplete —
-  the same cultural rule the design system holds internally.
-- This skill reasons about the consumer's code; it does not modify the Artificer
-  source. If you discover a gap where Artificer made the upgrade harder than it
-  should be, file it back with `/artificer-feedback`.
+This skill changes the consumer, not Artificer's source. Any system gap goes back
+through feedback. A recommendation that cites a hex also carries its measured
+contrast ratio.

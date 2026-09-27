@@ -7,32 +7,27 @@
 <link rel="stylesheet" href="artificer.css" />
 <script src="artificer-theme.js" defer></script>
 <style>
-  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
-  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 60ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .sec-num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
-  .sb { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); }
-  .sb .label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
+  h2 .sec-num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  .sb { margin-bottom: var(--s-sm); }
+  .sb .label { margin-bottom: var(--s-md); }
   .row { display: flex; gap: var(--s-sm); flex-wrap: wrap; align-items: center; }
-  .col2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  @media (max-width:640px){.col2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Components</div>
-  <h1>components<span class="amp">.</span></h1>
-  <p class="lede">The primitives — buttons, cards, inputs, badges. One <span class="anchor">primary CTA per screen</span>; everything else is visually demoted.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Components</span></nav>
+  <h1 class="t-mono-headline-lg">components<span class="amp">.</span></h1>
+  <p class="meta">The primitives — buttons, cards, inputs, badges. One <span class="anchor">primary CTA per screen</span>; everything else is visually demoted.</p>
 
   <section>
     <h2><span class="sec-num">01</span> Buttons</h2>
-    <div class="sb">
-      <div class="label">Variants · default state</div>
+    <div class="sb card">
+      <div class="label eyebrow">Variants · default state</div>
       <div class="row">
         <button class="btn btn--primary">Primary · act</button>
         <button class="btn btn--secondary">Secondary</button>
@@ -41,15 +36,15 @@
         <button class="btn" disabled>Disabled</button>
       </div>
     </div>
-    <div class="sb">
-      <div class="label">With keyboard affordance</div>
+    <div class="sb card">
+      <div class="label eyebrow">With keyboard affordance</div>
       <div class="row">
         <button class="btn btn--primary">Commit <kbd>⌘ ↵</kbd></button>
         <button class="btn btn--secondary">Cancel <kbd>Esc</kbd></button>
       </div>
     </div>
-    <div class="sb">
-      <div class="label">Size axis — <code>.btn--sm</code> / <code>.btn--lg</code> · compose with any role</div>
+    <div class="sb card">
+      <div class="label eyebrow">Size axis — <code>.btn--sm</code> / <code>.btn--lg</code> · compose with any role</div>
       <div class="row" style="align-items:center">
         <button class="btn btn--secondary btn--sm">Small</button>
         <button class="btn btn--secondary">Default</button>
@@ -66,7 +61,7 @@
 
   <section>
     <h2><span class="sec-num">02</span> Cards</h2>
-    <div class="col2">
+    <div class="grid-2">
       <div class="card">
         <div class="t-label-md" style="color:var(--fg-secondary);margin-bottom:6px">Default</div>
         <div class="t-headline-md" style="font-size:17px;margin-bottom:6px">agents/writer.md</div>
@@ -93,8 +88,8 @@
 
   <section>
     <h2><span class="sec-num">03</span> Inputs &amp; forms</h2>
-    <div class="sb">
-      <div class="col2" style="gap:var(--s-lg)">
+    <div class="sb card">
+      <div class="grid-2" style="gap:var(--s-lg)">
         <div class="field">
           <label for="f1">Agent name</label>
           <input id="f1" class="input" type="text" value="writer" />
@@ -126,8 +121,8 @@
 
   <section>
     <h2><span class="sec-num">04</span> Badges &amp; status dots</h2>
-    <div class="sb">
-      <div class="label">Filled badges · use for counts and states</div>
+    <div class="sb card">
+      <div class="label eyebrow">Filled badges · use for counts and states</div>
       <div class="row">
         <span class="badge badge--accent">action</span>
         <span class="badge badge--attention">review · 2</span>
@@ -137,8 +132,8 @@
         <span class="badge badge--steel">v0.24</span>
       </div>
     </div>
-    <div class="sb">
-      <div class="label">Status dots · use when count would be noise</div>
+    <div class="sb card">
+      <div class="label eyebrow">Status dots · use when count would be noise</div>
       <div class="row" style="font-family:var(--font-mono);font-size:13px">
         <span class="row" style="gap:8px"><span class="dot dot--accent"></span>active</span>
         <span class="row" style="gap:8px"><span class="dot dot--attention"></span>waiting</span>
@@ -151,7 +146,7 @@
 
   <section>
     <h2><span class="sec-num">05</span> Focus panes</h2>
-    <div class="col2" style="gap:var(--s-md)">
+    <div class="grid-2" style="gap:var(--s-md)">
       <div class="pane--active" style="background:var(--bg);padding:var(--s-lg);border-radius:var(--radius-md);min-height:160px">
         <div class="t-label-md" style="color:var(--accent);margin-bottom:var(--s-sm)">Active pane</div>
         <div class="t-body-md">Full brightness. Full saturation. Gold left-border. <span class="anchor">Syntax highlighting rendered</span>.</div>
@@ -166,8 +161,8 @@
   </section>
   <section>
     <h2><span class="sec-num">06</span> Avatars &amp; accordion</h2>
-    <div class="sb">
-      <div class="label">Avatar · image or initials · 24 / 32 / 48 / 64px</div>
+    <div class="sb card">
+      <div class="label eyebrow">Avatar · image or initials · 24 / 32 / 48 / 64px</div>
       <div class="row" style="align-items:center;gap:var(--s-md)">
         <span class="avatar avatar--sm">CS</span>
         <span class="avatar">CS</span>
@@ -176,8 +171,8 @@
         <span class="avatar avatar--lg avatar--square">#4</span>
       </div>
     </div>
-    <div class="sb">
-      <div class="label">Accordion · native &lt;details&gt; · keyboard + a11y for free, no JS</div>
+    <div class="sb card">
+      <div class="label eyebrow">Accordion · native &lt;details&gt; · keyboard + a11y for free, no JS</div>
       <div class="accordion" style="max-width:520px">
         <details open>
           <summary>What surface is this?</summary>

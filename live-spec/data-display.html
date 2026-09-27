@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="artificer.css"/>
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
+<script src="artificer-icons.js" defer></script>
 <style>
   /* .stat / .stat__* promoted to core artificer.css (v0.15.0) — inline removed */
 </style>
@@ -14,7 +15,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--lg container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Data display</p>
   <h1 class="t-headline-lg">data display.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">Tables for rows, key-value lists for records, stat cards for headlines. <b class="anchor">Always tabular-nums</b> for numbers — alignment is information.</p>
@@ -73,6 +74,19 @@
   </div>
   <pre class="code-block"><span class="tok-keyword">&lt;dl</span> class=<span class="tok-string">"kv"</span><span class="tok-keyword">&gt;</span>
   <span class="tok-keyword">&lt;dt&gt;</span>Label<span class="tok-keyword">&lt;/dt&gt;&lt;dd&gt;</span>Value<span class="tok-keyword">&lt;/dd&gt;</span>
+<span class="tok-keyword">&lt;/dl&gt;</span></pre>
+
+  <h3 class="subsection-title" id="props">Properties block — .kv--props</h3>
+  <p class="meta">A note or document's metadata: an icon per key, a divider per row, tag values as <code>.badge--steel</code>. It is a <code>.kv</code> modifier, so the markup stays a <code>&lt;dl&gt;</code>.</p>
+  <dl class="kv kv--props">
+    <dt><i data-icon="clock" aria-hidden="true"></i>Created</dt><dd class="num">2026-09-26</dd>
+    <dt><i data-icon="list" aria-hidden="true"></i>Tags</dt><dd><span class="badge badge--steel">design</span><span class="badge badge--steel">tokens</span></dd>
+    <dt><i data-icon="folder" aria-hidden="true"></i>Path</dt><dd>docs/plans/audit.md</dd>
+    <dt><i data-icon="user" aria-hidden="true"></i>Owner</dt><dd>cameron</dd>
+  </dl>
+  <pre class="code-block"><span class="tok-keyword">&lt;dl</span> class=<span class="tok-string">"kv kv--props"</span><span class="tok-keyword">&gt;</span>
+  <span class="tok-keyword">&lt;dt&gt;&lt;i</span> data-icon=<span class="tok-string">"list"</span><span class="tok-keyword">&gt;&lt;/i&gt;</span>Tags<span class="tok-keyword">&lt;/dt&gt;</span>
+  <span class="tok-keyword">&lt;dd&gt;&lt;span</span> class=<span class="tok-string">"badge badge--steel"</span><span class="tok-keyword">&gt;</span>design<span class="tok-keyword">&lt;/span&gt;&lt;/dd&gt;</span>
 <span class="tok-keyword">&lt;/dl&gt;</span></pre>
 
   <h2 class="section-title">Stat cards</h2>

@@ -8,11 +8,8 @@
 <script src="artificer-theme.js" defer></script>
 <style>
   .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
-  .bc { font-family: var(--font-sans); font-size: var(--t-label-xs-size); letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); } .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-mono); font-size: 15px; line-height: 1.65; color: var(--fg-secondary); max-width: 62ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 20px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
   h2 .sec-num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
   /* Keep multi-key combos on one line with even spacing */
@@ -25,9 +22,9 @@
 <body>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Keyboard</div>
-  <h1>Keyboard<span class="amp">.</span></h1>
-  <p class="lede">Artificer is <b class="anchor">keyboard-first</b>: every command reachable <b class="anchor">without the mouse</b>, the <b class="anchor">same gesture</b> meaning the same thing everywhere. This is the <b class="anchor">canonical keymap</b> — the muscle memory the whole system shares.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Keyboard</span></nav>
+  <h1 class="t-mono-headline-lg">Keyboard<span class="amp">.</span></h1>
+  <p class="meta">Artificer is <b class="anchor">keyboard-first</b>: every command reachable <b class="anchor">without the mouse</b>, the <b class="anchor">same gesture</b> meaning the same thing everywhere. This is the <b class="anchor">canonical keymap</b> — the muscle memory the whole system shares.</p>
 
   <section>
     <h2><span class="sec-num">01</span> The canonical keymap</h2>

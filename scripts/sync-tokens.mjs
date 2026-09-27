@@ -77,8 +77,15 @@ export const EXCEPTIONS = new Set([
 export const PALETTE_ONLY = new Set([
   'ansiBlack',
   'ansiBrightBlack', // terminal ANSI-8, split off fgDisabled (ADR 0036) — terminal-only, no CSS var
+  'ansiRose',        // terminal ANSI-4 (normal blue), rose per #444 — terminal-only, no CSS var
+  'ansiBrightRose',  // terminal ANSI-12 (bright blue), rose per #444 — terminal-only, no CSS var
+  'ansiRed',         // terminal ANSI-1 (ADR 0042) — terminal-only text red; urgent stays the fill/web red
+  'ansiBrightRed',   // terminal ANSI-9 + Claude Code error text (ADR 0042) — equals urgentText by design
+  'ansiGreen',       // terminal ANSI-2 + Claude Code success text (ADR 0042) — success stays the fill/web green
+  'ansiBrightGreen', // terminal ANSI-10 (ADR 0042)
   'terminalBg',      // the terminal's elevation (ADR 0036) — a terminal fact, not a web surface
-  'bgFloat',         // 4th elevation rung, currently terminal-only (Claude Code chip hover). If the web ever needs a float surface, promote it to a tokens.json leaf + --bg-float.
+  'bgFloat',         // 4th elevation rung, currently terminal-only (Claude Code chip). If the web ever needs a float surface, promote it to a tokens.json leaf + --bg-float.
+  'bgFloatHover',    // hover partner of bgFloat, NOT a 5th rung (v0.21.0, #332) — Claude Code chip hover only, no CSS var
   'selectionFill', // terminal selection fill (v0.20.0, #278) — no --selection-fill CSS var, so no tokens.json leaf
   'attentionAlt',
   'urgentBright',

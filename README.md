@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.25.0 · 2026** — the browser wears it too: generated Chrome/Edge (`themes/chromium/`) and Firefox (`themes/firefox/`) themes, sideloadable today, packed by `npm run pack:browser`. The comparison-matrix pass hardens the wide-table story — `.tabs` loses its phantom vertical scrollbar, `.table--sticky-col` covers `<th scope="row">` row headers, `.table--responsive` promotes row headers to card titles and guards unlabeled cells, `.scroll-x--fade` mints the edge-fade scroll affordance, and `.badge--steel` lands the meta badge tier as a rated whisper tint. Plus the JetBrains theme plugin (twentieth generator), light-mode `onAccent` ink parity for Claude Code / VS Code, and herdr's focused-row colors. See `CHANGELOG.md` for what changed.
+**v0.27.0 · 2026** — new layout and doc-chrome primitives: `.container--page` for page padding, `.eyebrow`, `.subsection-title`, `.callout`, a `.kv--props` properties block, and an embed card on `.figure`. The shipped skills and reference drop stale guidance (AA contrast floor, current colour names, a boilerplate that follows the Hard rules), and every live-spec page now uses the system classes and tokens it used to hand-roll. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -252,7 +252,7 @@ You don't need to reinvent any of this. Just don't undo it.
 - Selection color (`::selection`) themed
 - Scrollbar styled to match (Webkit + Firefox)
 
-The `live-spec/a11y.html` page (in the live system) has the 12-point shipping checklist.
+The `live-spec/a11y.html` page (in the live system) has the 13-point shipping checklist.
 
 ---
 
@@ -298,6 +298,7 @@ lives — same palette, every surface. The editors and agent CLIs:
 - **VS Code / Cursor** — `themes/vscode/` (sideload or `vsce package`)
 - **Helix** — `themes/helix/artificer-{dark,light}.toml` (+ `-opaque` twins)
 - **Neovim** — `themes/neovim/colors/artificer.lua` (one file, both modes)
+- **Zed** — `themes/zed/artificer.json` (one theme family, both variants)
 - **JetBrains IDEs** — `themes/jetbrains/` (IntelliJ Platform theme plugin; `npm run pack:jetbrains` → install the jar from disk)
 - **Codex CLI** — `themes/codex/artificer-{dark,light}.tmTheme`
 - **Obsidian** — `themes/obsidian/Artificer/` (drop-in theme folder, hand-authored sister)
@@ -310,7 +311,7 @@ And the browser:
 `npm run pack:browser` builds the store zips; sideload straight from the
 directory without packing at all.
 
-Plus the terminal and TUI surfaces around them — Ghostty, tmux, gitmux, cmux,
+Plus the terminal and TUI surfaces around them — Ghostty, WezTerm, tmux, gitmux, cmux,
 bat/delta, glamour, gum, fzf, eza, starship, yazi, lazygit, gh-dash, herdr, and
 flux. **`themes/README.md` carries the full list**; it is the one place that
 enumerates them, so this section never has to be counted again.

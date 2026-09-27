@@ -7,26 +7,16 @@
 <link rel="stylesheet" href="artificer.css" />
 <script src="artificer-theme.js" defer></script>
 <style>
-  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) 96px; }
-  .bc { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-secondary); margin-bottom: var(--s-md); }
-  .bc a { color: var(--fg-secondary); }
-  .bc .sep { margin: 0 8px; color: var(--fg-disabled); }
-  h1 { font-family: var(--font-mono); font-weight: 700; font-size: 40px; line-height: 1.1; letter-spacing: -0.015em; margin: 0 0 var(--s-md); }
+  .page { max-width: 960px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
+  h1 { margin: 0 0 var(--s-md); }
   h1 .amp { color: var(--accent); }
-  .lede { font-family: var(--font-sans); font-size: 17px; line-height: 1.6; color: var(--fg-secondary); max-width: 62ch; }
   h2 { font-family: var(--font-mono); font-weight: 700; font-size: 22px; margin: var(--s-2xl) 0 var(--s-md); display: flex; align-items: baseline; gap: var(--s-md); }
-  h2 .num { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
+  h2 .num { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--accent); letter-spacing: 0.14em; }
   h2 .sub { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--fg-secondary); letter-spacing: 0; text-transform: none; }
   .section-intro { font-family: var(--font-sans); font-size: 14px; color: var(--fg-secondary); line-height: 1.6; max-width: 62ch; margin: 0 0 var(--s-md); }
 
   /* ── Typeface cards ── */
-  .face {
-    background: var(--bg-raised);
-    border-radius: var(--radius-md);
-    border-left: 2px solid var(--accent);
-    padding: var(--s-lg) var(--s-xl);
-    margin-bottom: var(--s-md);
-  }
+  .face { padding: var(--s-lg) var(--s-xl); margin-bottom: var(--s-md); }
   .face__header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--s-sm); margin-bottom: var(--s-md); }
   .face__name { font-family: var(--font-sans); font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; }
   .face__role { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); }
@@ -52,50 +42,47 @@
 
   /* ── Surface decision card ── */
   .surface-pick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  .surface-pick .surf { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
-  .surface-pick .surf__kind { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+  .surface-pick .surf__kind { margin-bottom: var(--s-sm); }
   .surface-pick .surf__name { font-family: var(--font-mono); font-weight: 700; font-size: 22px; margin-bottom: var(--s-sm); color: var(--fg); }
   .surface-pick .surf__sample { padding: var(--s-md); background: var(--bg); border-radius: var(--radius-sm); margin-bottom: var(--s-sm); }
   .surface-pick .surf__sample.tool { font-family: var(--font-mono); font-size: 14px; line-height: 1.55; color: var(--fg); }
-  .surface-pick .surf__sample.tool .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; color: var(--fg-secondary); letter-spacing: 0.04em; }
+  .surface-pick .surf__sample.tool .label { font-family: var(--font-sans); font-size: var(--t-label-xs-size); font-weight: 500; color: var(--fg-secondary); letter-spacing: 0.04em; }
   .surface-pick .surf__sample.tool .val { color: var(--accent); }
   .surface-pick .surf__sample.doc { font-family: var(--font-sans); font-size: 15px; line-height: 1.6; color: var(--fg); }
   .surface-pick .surf__rule { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); line-height: 1.55; }
   @media (max-width:760px) { .surface-pick { grid-template-columns: 1fr; } }
 
   /* ── Scale ── */
-  .spec { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); display: grid; grid-template-columns: 240px 1fr; gap: var(--s-lg); align-items: center; margin-bottom: var(--s-sm); }
+  .spec { display: grid; grid-template-columns: 240px 1fr; gap: var(--s-lg); align-items: center; margin-bottom: var(--s-sm); }
   .spec .meta { font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); line-height: 1.55; }
   .spec .meta b { color: var(--fg); display: block; font-family: var(--font-sans); font-weight: 700; font-size: 13px; }
   .spec .meta .stack { display: block; color: var(--fg-secondary); margin-top: 4px; }
-  .spec .meta .vars { color: var(--accent); display: block; margin-top: 6px; font-size: 11px; }
+  .spec .meta .vars { color: var(--accent); display: block; margin-top: 6px; font-size: var(--t-label-xs-size); }
   @media (max-width:640px) { .spec { grid-template-columns: 1fr; } }
 
   /* ── Anchor demo ── */
-  .anchor-demo { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); margin-bottom: var(--s-sm); }
+  .anchor-demo { margin-bottom: var(--s-sm); }
   .anchor-demo p { margin: 0 0 var(--s-md); font-family: var(--font-sans); font-size: 15px; line-height: 1.6; max-width: 62ch; }
   .anchor-demo p:last-child { margin-bottom: 0; }
-  .anchor-demo .label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+  .anchor-demo .label { margin-bottom: var(--s-sm); }
 
   /* ── Scan test ── */
   .scan-test { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  .scan-test .col { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
-  .scan-test .label { font-family: var(--font-sans); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: var(--s-md); font-weight: 500; }
+  .scan-test .label { margin-bottom: var(--s-md); }
   .scan-test .bad .label { color: var(--urgent); }
   .scan-test .good .label { color: var(--success); }
   .scan-test p { font-family: var(--font-sans); font-size: 14px; line-height: 1.6; margin: 0; }
   @media (max-width:640px) { .scan-test { grid-template-columns: 1fr; } }
 
   /* ── Rules block ── */
-  .rules { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-lg); }
+  .rules { padding: var(--s-lg); }
   .rules ul { margin: 0; padding-left: 18px; }
   .rules li { margin-bottom: 8px; font-family: var(--font-sans); font-size: 14px; line-height: 1.6; }
   .rules li::marker { color: var(--accent); }
 
   /* ── Numerals comparison ── */
   .nums-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  .nums-col { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
-  .nums-col .label { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--s-sm); }
+  .nums-col .label { margin-bottom: var(--s-sm); }
   .nums-col .sub { font-family: var(--font-sans); font-size: 12px; color: var(--fg-secondary); margin-bottom: var(--s-md); }
   .nums-col table { width: 100%; border-collapse: collapse; }
   .nums-col td { padding: 6px 0; font-size: 17px; color: var(--fg); border-bottom: 1px solid var(--border); }
@@ -115,16 +102,16 @@
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
 <main class="page">
-  <div class="bc"><a href="README.html">Artificer</a><span class="sep">/</span>Typography</div>
-  <h1>typography<span class="amp">.</span></h1>
-  <p class="lede">Two families, two surfaces. <span class="anchor" style="font-family:var(--font-mono)">JetBrains Mono</span> for tools — terminals, dashboards, configuration. <span class="anchor">iA Writer Quattro V</span> for document prose, <span class="anchor">Quattro S</span> for interface chrome. Pick by <span class="anchor">surface kind</span> before you pick by element.</p>
+  <nav class="crumb" aria-label="Breadcrumb"><a href="README.html">Artificer</a><span class="crumb__sep">·</span><span aria-current="page">Typography</span></nav>
+  <h1 class="t-mono-headline-lg">typography<span class="amp">.</span></h1>
+  <p class="meta">Two families, two surfaces. <span class="anchor" style="font-family:var(--font-mono)">JetBrains Mono</span> for tools — terminals, dashboards, configuration. <span class="anchor">iA Writer Quattro V</span> for document prose, <span class="anchor">Quattro S</span> for interface chrome. Pick by <span class="anchor">surface kind</span> before you pick by element.</p>
 
   <section>
     <h2><span class="num">01</span> The first decision <span class="sub">— is this a tool or a document?</span></h2>
     <p class="section-intro">Body face is set by surface kind, not by element. If the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro V. If it's mostly chrome around data, it's a tool — set body in JetBrains. Mixing within a project is normal.</p>
     <div class="surface-pick">
-      <div class="surf">
-        <div class="surf__kind">Tool surface</div>
+      <div class="card">
+        <div class="surf__kind eyebrow eyebrow--accent">Tool surface</div>
         <div class="surf__name">JetBrains Mono</div>
         <div class="surf__sample tool">
           <div><span class="label">build/main</span> · <span class="val">v0.6.1</span> · 12 commits ahead</div>
@@ -133,8 +120,8 @@
         </div>
         <p class="surf__rule">Dashboards, terminals, settings panels, command palettes, data tables, IDE chrome. Labels and microcopy still stay in Quattro S for readability — that's the only proportional intrusion.</p>
       </div>
-      <div class="surf">
-        <div class="surf__kind">Document surface</div>
+      <div class="card">
+        <div class="surf__kind eyebrow eyebrow--accent">Document surface</div>
         <div class="surf__name" style="font-family:'iA Writer Quattro V', serif; font-size:24px;">iA Writer Quattro V</div>
         <div class="surf__sample doc">
           The system rests on a two-face rule. Tool surfaces lean on monospace rhythm; document surfaces use Quattro V's humanist sans. The two faces share the same x-height and a similar vertical weight, so switching mid-page doesn't break the line.
@@ -148,7 +135,7 @@
     <h2><span class="num">02</span> The faces</h2>
     <p class="section-intro">Both self-hosted as WOFF2 in <code>src/assets/fonts/</code>. SIL OFL 1.1 — bundle freely. The CSS chains gracefully: if Quattro S or V isn't installed, Iowan Old Style and Charter take over before system-ui.</p>
 
-    <div class="face face--jetbrains">
+    <div class="face face--jetbrains callout">
       <div class="face__header">
         <div>
           <div class="face__name">JetBrains Mono</div>
@@ -166,7 +153,7 @@
       </div>
     </div>
 
-    <div class="face face--quattro-s">
+    <div class="face face--quattro-s callout">
       <div class="face__header">
         <div>
           <div class="face__name">iA Writer Quattro S</div>
@@ -184,7 +171,7 @@
       </div>
     </div>
 
-    <div class="face face--quattro-v">
+    <div class="face face--quattro-v callout">
       <div class="face__header">
         <div>
           <div class="face__name">iA Writer Quattro V</div>
@@ -206,7 +193,7 @@
     <p class="section-intro">Scale entries pick their face from <code>var(--font-mono)</code>, <code>var(--font-body)</code>, or <code>var(--font-interface)</code>, so wrapping a region in <code>.surface-tool</code> swaps the body face without touching individual rules. Sizes below show the dark-mode rendering at typical desktop.</p>
     <p class="section-intro"><code>.surface-document</code> is the inverse escape: a prose island — a colophon, a legal notice, a help panel — dropped inside a <code>.surface-tool</code> region opts back to <code>--font-body</code> with <code>&lt;div class="surface-document"&gt;…&lt;/div&gt;</code>, no per-element overrides.</p>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Headline · lg</b>
         <span class="stack">JetBrains Mono 700 · 28 / 1.3 / -0.01em</span>
@@ -215,7 +202,7 @@
       <div class="t-headline-lg">Every screen has one H1.</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Headline · md</b>
         <span class="stack">JetBrains Mono 700 · 22 / 1.35</span>
@@ -224,7 +211,7 @@
       <div class="t-headline-md">Section anchors scan first.</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Body · lg</b>
         <span class="stack">Quattro 400 · 16 / 1.65 · max 62ch</span>
@@ -233,7 +220,7 @@
       <div class="t-body-lg">Reserve body-lg for the <span class="anchor">lede paragraph</span> — the thing the scanner lands on before anything else.</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Body · md</b>
         <span class="stack">Quattro 400 · 14 / 1.6 · max 62ch</span>
@@ -242,7 +229,7 @@
       <div class="t-body-md">Default body copy. Lines capped at 50–70 characters, left-aligned, never justified. <span class="anchor">Rivers</span> in justified text break ADHD reading.</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Label · md</b>
         <span class="stack">Quattro 500 · 13 / 1.3</span>
@@ -251,7 +238,7 @@
       <div class="t-label-md">Sidebar Labels · Tab Titles · Form Fields</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Label · sm</b>
         <span class="stack">Quattro 400 · 12 / 1.3</span>
@@ -260,7 +247,7 @@
       <div class="t-label-sm">Hints, helper text, sub-labels.</div>
     </div>
 
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>Code</b>
         <span class="stack">JetBrains Mono 400 · 14 · accent-colored</span>
@@ -274,8 +261,8 @@
     <h2><span class="num">04</span> Numerals <span class="sub">— when to reach for Quattro S</span></h2>
     <p class="section-intro">Quattro V's default figures are proportional — beautiful in running prose, bad in stacked columns. Quattro S keeps the outlines, fixes the widths. Always pair tabular figures with right-aligned numeric columns, and add <code>font-variant-numeric: tabular-nums</code> to the parent.</p>
     <div class="nums-row">
-      <div class="nums-col prop">
-        <div class="label">Proportional · iA Writer Quattro V</div>
+      <div class="nums-col prop card">
+        <div class="label eyebrow eyebrow--accent">Proportional · iA Writer Quattro V</div>
         <div class="sub">Runs cleanly in body text. Notice digits don't line up vertically.</div>
         <table>
           <tr><td>Subscription</td><td>1,247.83</td></tr>
@@ -285,8 +272,8 @@
           <tr><td><b>Total</b></td><td><b>2,276.40</b></td></tr>
         </table>
       </div>
-      <div class="nums-col tab">
-        <div class="label">Tabular · iA Writer Quattro S</div>
+      <div class="nums-col tab card">
+        <div class="label eyebrow eyebrow--accent">Tabular · iA Writer Quattro S</div>
         <div class="sub">Columns align. Compare the <code>1</code>s and <code>3</code>s with the left card.</div>
         <table>
           <tr><td>Subscription</td><td>1,247.83</td></tr>
@@ -303,28 +290,28 @@
     <h2><span class="num">05</span> The scan hierarchy</h2>
     <p class="section-intro">Five levels of emphasis, in priority order. Use them deliberately — mixing levels within a paragraph is how meaning collapses.</p>
 
-    <div class="anchor-demo">
-      <div class="label">01 · Bold anchors</div>
+    <div class="anchor-demo card">
+      <div class="label eyebrow eyebrow--accent">01 · Bold anchors</div>
       <p>A paragraph with <span class="anchor">anchor words</span> highlighted. A reader scanning <span class="anchor">only the bolded words</span> should still get the sentence. Bold <span class="anchor">3–5 per paragraph</span> — more than 5 and nothing is emphasized.</p>
     </div>
 
-    <div class="anchor-demo">
-      <div class="label">02 · Code styling</div>
+    <div class="anchor-demo card">
+      <div class="label eyebrow eyebrow--accent">02 · Code styling</div>
       <p>Identifiers, paths, and values render as <code>accent-colored mono</code> — the user's eye learns that <code>styled tokens</code> are things they might copy or reference, the same way terminals train that reflex.</p>
     </div>
 
-    <div class="anchor-demo">
-      <div class="label">03 · Bold + accent = actionable</div>
+    <div class="anchor-demo card">
+      <div class="label eyebrow eyebrow--accent">03 · Bold + accent = actionable</div>
       <p>Reserve <a href="#" style="font-weight:700">bold + gold</a> for things the user can actually click or press. Overloading this level makes clickable items invisible.</p>
     </div>
 
-    <div class="anchor-demo">
-      <div class="label">04 · Regular weight · default</div>
+    <div class="anchor-demo card">
+      <div class="label eyebrow eyebrow--accent">04 · Regular weight · default</div>
       <p>Body text lives here. Plain, calm, left-aligned, capped at 50–70 characters per line. Nothing to scan for — the bolded anchors carried the weight.</p>
     </div>
 
-    <div class="anchor-demo">
-      <div class="label">05 · Secondary color · receded</div>
+    <div class="anchor-demo card">
+      <div class="label eyebrow eyebrow--accent">05 · Secondary color · receded</div>
       <p style="color:var(--fg-secondary)">Timestamps, byline, metadata, captions. Visually present but clearly demoted — the brain can skip these on first pass and come back on a second read.</p>
     </div>
   </section>
@@ -333,12 +320,12 @@
     <h2><span class="num">06</span> Scan test</h2>
     <p class="section-intro">Squint. Read only the bolded words. Does each paragraph make sense?</p>
     <div class="scan-test">
-      <div class="col bad">
-        <div class="label">No anchors</div>
+      <div class="col bad card">
+        <div class="label eyebrow">No anchors</div>
         <p>The writer agent tailed the editor agent from the kitchen. It waited for the response, then sent the draft upstream for review before the build completed.</p>
       </div>
-      <div class="col good">
-        <div class="label">Bolded anchors</div>
+      <div class="col good card">
+        <div class="label eyebrow">Bolded anchors</div>
         <p>The <span class="anchor">writer agent</span> tailed the <span class="anchor">editor</span> from the kitchen. It <span class="anchor">waited</span> for the response, then sent the <span class="anchor">draft upstream</span> for review before the build completed.</p>
       </div>
     </div>
@@ -346,7 +333,7 @@
 
   <section>
     <h2><span class="num">07</span> Paragraph rules</h2>
-    <div class="rules">
+    <div class="rules callout">
       <ul>
         <li><span class="anchor">Max 2–4 sentences</span> per paragraph. Longer paragraphs collapse into walls.</li>
         <li><span class="anchor">Letter-spacing ≥ 0.01em</span>, <span class="anchor">word-spacing ≥ 0.16em</span> (WCAG 1.4.12).</li>
@@ -363,7 +350,7 @@
 
   <section>
     <h2><span class="num">08</span> Font stack fallbacks</h2>
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>--font-body</b>
         <span class="stack">iA Writer Quattro V · Iowan Old Style · Charter · Source Sans 3 · system-ui · -apple-system · sans-serif</span>
@@ -371,7 +358,7 @@
       </div>
       <div class="t-body-md">Body face on document surfaces. <code>--font-sans</code> is a legacy alias of this token, kept resolvable for public-API back-compat.</div>
     </div>
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>--font-interface</b>
         <span class="stack">iA Writer Quattro S · Iowan Old Style · Charter · Source Sans 3 · system-ui · -apple-system · sans-serif</span>
@@ -379,7 +366,7 @@
       </div>
       <div class="t-body-md">Interface chrome face — on both tool AND document surfaces. Tabular figures, and a real bold weight unlike Quattro V.</div>
     </div>
-    <div class="spec">
+    <div class="spec card">
       <div class="meta">
         <b>--font-mono</b>
         <span class="stack">JetBrains Mono · Berkeley Mono · ui-monospace · SF Mono · Menlo · monospace</span>
@@ -387,6 +374,38 @@
       </div>
       <div class="t-body-md" style="font-family:var(--font-mono)">Always used for code blocks, paths, and numeric IDs. Also the body face when a region is wrapped in <code>.surface-tool</code> — the surface swap is one class, not per-element.</div>
     </div>
+  </section>
+
+  <section id="doc-chrome">
+    <h2><span class="num">09</span> Doc-page chrome</h2>
+    <p class="meta">Page-level type classes for document surfaces: <code>.eyebrow</code> over a heading or demo,
+      <code>.subsection-title</code> under a <code>.section-title</code>, and <code>.callout</code> for a
+      standing note. The title names the tier in text; the edge color never carries it alone.</p>
+    <p class="eyebrow">Eyebrow · default</p>
+    <p class="eyebrow eyebrow--accent">Eyebrow · accent</p>
+    <h3 class="subsection-title">Subsection title</h3>
+    <div class="stack">
+      <div class="callout">
+        <p class="callout__title eyebrow eyebrow--accent">Note</p>
+        <p>Default callout: accent edge on a raised surface.</p>
+      </div>
+      <div class="callout callout--steel">
+        <p class="callout__title eyebrow">Info</p>
+        <p>Steel tier for neutral reference notes.</p>
+      </div>
+      <div class="callout callout--attention">
+        <p class="callout__title eyebrow">Attention</p>
+        <p>Attention tier: look when you can.</p>
+      </div>
+      <div class="callout callout--urgent">
+        <p class="callout__title eyebrow">Urgent</p>
+        <p>Urgent tier: read before you act.</p>
+      </div>
+    </div>
+    <pre class="code-block">&lt;div class="callout callout--attention"&gt;
+  &lt;p class="callout__title eyebrow"&gt;Attention&lt;/p&gt;
+  &lt;p&gt;…&lt;/p&gt;
+&lt;/div&gt;</pre>
   </section>
 </main>
 

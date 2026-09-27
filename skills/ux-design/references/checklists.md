@@ -118,7 +118,7 @@ designed in from the start — it is the miss instinct most often skips.
 
 ---
 
-## Accessibility as experience (the 12-point check)
+## Accessibility as experience (the shipping check)
 
 Disability is a **mismatch the design creates or removes**, not a deficit. Solve for
 the most-constrained user and you've built the best default for everyone.

@@ -1,9 +1,13 @@
 # Artificer · Editor & Terminal Themes
 
-Same Jazz Age palette, twenty-four surfaces. Each ships dark + ivory-paper
-light — except `cmux/`, `gitmux/`, `flux/`, `neovim/` and `firefox/`, which
-carry a single file (flux, neovim and firefox hold both modes in one, because
-those hosts switch at runtime rather than picking a file).
+Same Jazz Age palette, twenty-eight surfaces. Each ships dark + ivory-paper
+light — except `cmux/`, `gitmux/`, `flux/`, `neovim/`, `firefox/`, `zed/` and
+`stylus/`, which carry a single file (flux, neovim, firefox, zed and stylus
+hold both modes in one, because those hosts switch at runtime rather than
+picking a file — Vikunja toggles its `.dark` class from a user setting, same
+shape as daisyUI's). `wezterm/` is the one mixed shape: a dark/light pair plus
+a mode-independent `artificer-window-frame.lua` both variants share. `hermes/`
+is dark-only.
 
 The tree below is the whole set — one entry per directory `build.mjs` emits, and
 `npm run check:install` fails if a generator lands with no disposition in
@@ -28,31 +32,79 @@ themes/
 ├── jetbrains/              META-INF/plugin.xml + artificer-{dark,light}.theme.json + .xml  (IDE plugin source; pack to a jar)
 ├── starship/               artificer-{dark,light}.toml         ([palettes.artificer] merge layer)
 ├── yazi/                   artificer-{dark,light}.toml         (third merge layer)
+├── zed/                    artificer.json                      (BOTH modes, one theme family)
+├── wezterm/                artificer-{dark,light}.toml + artificer-window-frame.lua  (scheme; tab bar is Lua-only)
 ├── tmux/                   artificer-{dark,light}.conf
 ├── gitmux/                 artificer.yml
 ├── lazygit/                artificer-{dark,light}.yml          (block fragment)
 ├── gh-dash/                artificer-{dark,light}.yml          (block fragment)
 ├── herdr/                  artificer-{dark,light}.toml         (block fragment)
+├── hermes/                 artificer-dark.yaml                (native dashboard theme; dark only)
+├── stylus/                 vikunja.user.css                   (Stylus UserCSS; BOTH modes, one file)
 ├── vscode/                 package.json + themes/*.json        (installable extension)
 ├── chromium/               artificer-{dark,light}/manifest.json (Chrome + Edge extension; one package per mode)
 ├── firefox/                artificer/manifest.json             (BOTH modes, one file, via `dark_theme`)
 └── obsidian/Artificer/     manifest.json + theme.css           (drop-in theme folder)
 ```
 
-**`./install.sh` places fourteen of these** — Claude Code, Ghostty, Helix,
-Neovim, glamour, gum, fzf, eza, bat, codex, tmux, gitmux, VS Code, Obsidian —
+**`./install.sh` places sixteen of these** — Claude Code, Ghostty, Helix,
+Neovim, glamour, gum, fzf, eza, bat, codex, tmux, gitmux, Zed, WezTerm, VS Code, Obsidian —
 as **copies** (`--symlink` if you'd rather repo edits propagate live). The other
-ten are deliberately manual: `cmux`, `lazygit`, `gh-dash` and `herdr` splice
+twelve are deliberately manual: `cmux`, `lazygit`, `gh-dash` and `herdr` splice
 into a config file you also own, `starship` and `yazi` merge into one you
-maintain, `flux` targets another repo's build output, `jetbrains` is an IDE
-plugin you install from a jar, and `chromium` and `firefox` load through the
-browser's own extension surface.
+maintain, `flux` targets another repo's build output, `stylus` loads by
+pasting into the Stylus browser extension (`themes/stylus/README.md`),
+`jetbrains` is an IDE plugin you install from a jar, and `chromium` and
+`firefox` load through the browser's own extension surface. `hermes` targets
+the dashboard process's configuration home, which may be on a remote
+container volume.
 
 Because they're copies, a repo change doesn't reach an installed theme until
 you re-run `./install.sh` — and `./install.sh --verify` prints the actual diff
 for anything that drifted, so a local tweak shows up as a change rather than a
 silent divergence. Re-running is a no-op for targets already current; a
 `.bak.<timestamp>` appears only where a real tweak was overwritten.
+
+## Hermes dashboard
+
+`hermes/artificer-dark.yaml` is a native, dark-only theme for Hermes Agent's
+v0.20.1 dashboard. The generated file uses JSON syntax, a valid YAML subset.
+Copy it to **the dashboard process's** `$HERMES_HOME/dashboard-themes/` (default
+`~/.hermes/dashboard-themes/`), reload the dashboard, select **Artificer Dark**
+in the theme picker, and leave the font picker on **Theme default**. Selection
+persists through Hermes's existing `PUT /api/dashboard/theme` endpoint.
+
+```bash
+mkdir -p "${HERMES_HOME:-$HOME/.hermes}/dashboard-themes"
+cp themes/hermes/artificer-dark.yaml "${HERMES_HOME:-$HOME/.hermes}/dashboard-themes/"
+```
+
+For containers, place it in the host directory backing that process's home;
+copying to the laptop's home will not affect the container. No restart, image
+rebuild, relay modification or extra endpoint is needed. To roll back, choose
+another theme before removing this file.
+
+The theme maps graphite canvas and raised surfaces, gold actions, canonical
+status text, and Artificer's tool/interface font stacks. Fonts use local
+fallbacks without remote requests; install JetBrains Mono and iA Writer
+Quattro S locally to see those exact faces. The supported native `customCSS`
+field repairs the pinned build's compiled Tailwind utilities, which bypass
+`colorOverrides` for cards and status text. It also maps secondary text and
+chart series, and keeps keyboard focus visible. Hermes removes this CSS on
+theme switch. This is a visual theme; it does not change available features.
+
+Preview against extracted **pinned** dashboard assets with synthetic cron jobs:
+
+```bash
+node scripts/hermes-preview.mjs /path/to/hermes_cli/web_dist /tmp/hermes-preview
+node --test scripts/hermes-theme.test.mjs
+```
+
+The preview renders Hermes's real bundle through intercepted local requests,
+checks palette application and theme-switch cleanup, and captures desktop,
+picker and narrow views. It does not contact a live dashboard or exercise
+real administration APIs. Recheck the compiled CSS and native loader when
+upgrading Hermes: the theme intentionally targets v0.20.1's contract.
 
 ## Distribution — these files are NOT on npm
 
@@ -108,15 +160,22 @@ Pick from `/theme` inside Claude Code, or set in `~/.claude/settings.json`:
 ```
 
 The `overrides` block carries the full documented token surface — text/inverseText,
-permission/suggestion/remember (steel + lifted purple), all mode borders
-(planMode, autoAccept, bashBorder, ide, fastMode), full diff palette,
+permission/suggestion/remember (steel + lifted purple), mode accents and
+borders (planMode, autoAccept, bashBorder, ide, fastMode, effortUltra, skill),
+full diff palette,
 fullscreen-mode backgrounds, rate-limit meter, brief-label speakers, the
 clawd mascot, all 8 subagent colors, and the 7-color rainbow + shimmer pairs
 that color the `ultrathink` keyword in the prompt input. Unknown tokens are
 silently ignored, so the file is forward-compatible.
 
 `base: dark-ansi` / `light-ansi` falls back to the Ghostty palette for any
-unmapped token — so the two stay coherent automatically.
+unmapped token — so the two stay coherent automatically. **That holds for
+foreground tokens only.** ANSI carries no surface slots, so an unmapped
+*background* key lands on whatever text color its slot holds: an unset
+`composerSidebarBackground` resolved to `ansi:blackBright` and painted the
+`/diff` panel in the dim-text grey. Every background key must be bound
+explicitly — see `claude-code/THEME-REFERENCE.md` § Background fills have no
+ANSI fallback.
 
 ## Ghostty
 
@@ -264,6 +323,16 @@ the one with a live upstream fix path.
    style file *or* from `glow.yml`. The ask therefore belongs on glow, not
    glamour, where it would be a request for something already shipped: filed as
    `charmbracelet/glow#1018`. Inline `code` is unaffected — not a Chroma path.
+
+   Measured 2026-09-05: a Go harness counted distinct `38;5;N` values in
+   glamour's rendered output for the same fenced block — 8 under the default
+   `terminal256` formatter, exactly 1 under
+   `WithChromaFormatter("terminal16m")`. A no-language-tag control fence also
+   produced that one surviving `38;5;` value, confirming it is glamour's own
+   block padding rather than an unconverted token — so `terminal16m` clears this
+   ceiling completely once something calls it. Posted as a comparison table
+   with an offer to open a PR adding a config key to `charmbracelet/glow#1018`
+   (2026-09-05); no maintainer response yet.
 2. **The code-block canvas cannot be painted cleanly.** Not because the key is
    unwired — `codeblock.go` does pass `Chroma.Background` through `chromaStyle`
    as a `bg:<hex>`. It dead-ends one layer down: Chroma's `terminal256`
@@ -418,6 +487,82 @@ traps are the expensive part:
 A mechanical port that dropped those comments would look identical and be worth
 much less.
 
+## Zed
+
+`themes/zed/artificer.json` is a **theme family** — one JSON document carrying both variants, not a dark file and a light file. Zed resolves the two by name out of that single family, so splitting them would show up as two unrelated entries in the theme selector.
+
+Installed by `install.sh` to `~/.config/zed/themes/artificer.json`. Activate by following the OS:
+
+```json
+{ "theme": { "mode": "system", "light": "Artificer Light", "dark": "Artificer Dark" } }
+```
+
+**Restart Zed after installing.** Local `~/.config/zed/themes` drop-ins do not reliably hot-reload, and in some versions have failed to appear at all until a restart. A `theme not found` error in the startup log is also expected noise — a startup race checks the registry before extensions finish loading, so it is not a signal that the theme failed.
+
+**A key Zed does not recognise is dropped without a warning** — no error, just a colour quietly falling back to the built-in default. That is why the build validates every emitted style key against the pinned v0.2.0 schema rather than trusting the key names to be right. It caught three on the way in: `version_control.added` / `.modified` / `.deleted` do not exist in that schema in any spelling, and would have shipped looking like git-status coverage while painting nothing. `created` / `modified` / `deleted` carry that job instead.
+
+The same fallback is also used deliberately: any key with no semantic source in the palette is **omitted** rather than guessed, because Zed's default is a saner baseline than an invented value. For the same reason the syntax entries emit `font_style` and `font_weight` only when they carry a value — an explicit `null` and an absent key mean the same thing to Zed.
+
+`$schema` is pinned for editor autocomplete only. It is not a runtime gate — Zed deserializes without `deny_unknown_fields`, so it has no bearing on which keys load.
+
+**Syntax keys are tree-sitter capture names, not a schema list.** A capture paints only if the active grammar emits it, and Zed's built-in grammars use a divergent subset, so the captures here mirror Zed's own One theme rather than any external tree-sitter standard. Coverage varies per language by design.
+
+`accents[]` is not decoration: indent-guide cycling and rainbow brackets read from that array, not from the `editor.indent_guide` keys.
+
+The `terminal.ansi.*` keys paint Zed's integrated terminal and come off the same canonical 16-slot map as Ghostty and WezTerm — see **The ANSI sixteen** below.
+
+## WezTerm
+
+`themes/wezterm/artificer-{dark,light}.toml` are two separate colour schemes. WezTerm has no single-file dual-variant mechanism — one file, one palette — which is the opposite of Zed above.
+
+TOML rather than Lua on purpose: a Lua scheme is executable code and a TOML one is inert data, which is WezTerm's own stated reason to prefer TOML for anything distributed.
+
+Installed by `install.sh` to `~/.config/wezterm/colors/`, which WezTerm reads with no `color_scheme_dirs` configuration at all.
+
+```lua
+config.color_scheme = "Artificer Dark"
+```
+
+**Select by the scheme's `[metadata]` name, never the filename.** Pointing `color_scheme` at the file stem (`artificer-dark`) silently fails to load — an easy one to hit when the files were generated programmatically.
+
+To follow the OS, guard the appearance call. `wezterm.gui` is nil when the mux server evaluates the config, so an unguarded call breaks config load entirely:
+
+```lua
+local function scheme_for_appearance()
+  if not wezterm.gui then return 'Artificer Dark' end
+  return wezterm.gui.get_appearance():find('Dark') and 'Artificer Dark' or 'Artificer Light'
+end
+config.color_scheme = scheme_for_appearance()
+```
+
+WezTerm auto-reloads on OS appearance change, so no restart is needed.
+
+**The tab bar is not themed by the scheme file, and cannot be.** `use_fancy_tab_bar` defaults to `true`, and the fancy bar ignores `[colors.tab_bar]` entirely — it reads `window_frame` from Lua instead. Emitting a `tab_bar` block into the TOML would look like coverage while painting nothing, so it is deliberately absent.
+
+`themes/wezterm/artificer-window-frame.lua` carries it instead, generated from the same palette and gated by `check:themes` like every other emitted file. Drop it next to your `wezterm.lua`:
+
+```lua
+local frame = require 'artificer-window-frame'
+config.window_frame = frame.dark          -- or frame.light
+```
+
+Two more things a scheme file cannot reach: applications emit OSC sequences that override `cursor_bg`/`cursor_fg` inside them (a themed cursor can look wrong inside nvim regardless of this file), and under ssh/tls multiplexing the palette comes from the **mux server's** config, so a client-only install does not change remote-domain panes.
+
+## The ANSI sixteen
+
+Ghostty, WezTerm and Zed's integrated terminal all paint the same sixteen slots, so they all read one table — `ANSI_SLOTS` in `themes/build.mjs`. Splitting that per target is how the three drift, and the values do not survive being re-derived from token names.
+
+Two slots read backwards from their names, which is the whole reason the table is written out rather than inferred. (This is the list of names that mislead — not the same list as the slots a first cut of the Zed/WezTerm generators actually got wrong, which were yellow, blue and white. Blue used to be on this list too — its steel pair was slot-inverted until #444 rebound slots 4/12 to the straight-named `ansiRose`/`ansiBrightRose` rose pair.)
+
+| Slot | Token | Why it surprises |
+|---|---|---|
+| yellow | `accent` | not `attention` — `accent` is the warm amber the prompt already uses |
+| magenta | `brandPurple` | `$notes.brandPurpleBrightDirection` records the direction |
+
+Slots 0 and 8 follow Ghostty rather than VS Code — `ansiBlack` and `ansiBrightBlack`, the ADR 0001 lift re-derived in ADR 0036 and lifted again to `#9aa2b3` in ADR 0042, preserving the invariant that slot 0 reads **dimmer** than slot 8. That lift is scoped to terminals as a class (ADR 0041); VS Code's integrated terminal stays on `bg`/`fgDisabled` deliberately.
+
+Slots 1/9 and 2/10 are likewise terminal-only text keys, not the shared fills: `ansiRed`/`ansiBrightRed` and `ansiGreen`/`ansiBrightGreen` (ADR 0042). `urgent` and `success` are tuned to carry text *on top of them*, so they read 2.0:1 and 3.0:1 as text on `terminalBg`; the terminal keys are the same hues lifted to AA. Light mode binds them to the fills unchanged.
+
 ## bat / delta
 
 Both link [syntect](https://github.com/trishume/syntect), which only reads the
@@ -561,6 +706,8 @@ and `build.mjs` records which ones and why.
 > terminal-wide condition rather than introducing one. Use the `-opaque` variant
 > to get every floor back. The durable fix is a Lane 1 lift of `fgMuted` and
 > `urgentBright`, which would repair Helix and Ghostty's ANSI 9 together.
+> *(ADR 0042 repaired the Ghostty half: ANSI 9 now reads `ansiBrightRed #e6a8a2`, 6.1:1.
+> Helix still binds `urgentBright`; its half of the lift is still owed.)*
 
 ## Neovim
 
@@ -711,7 +858,9 @@ Loading a theme applies it immediately; there is no picker step. Swapping modes
 means removing one and loading the other — Chrome allows exactly one theme at a
 time. After a `node themes/build.mjs` rebuild, hit **Reload** on the card in
 `chrome://extensions` (or remove and re-load it) — Chrome caches the theme pack
-and will otherwise keep painting the old colours.
+and will otherwise keep painting the old colours. That cache is a
+`Cached Theme.pak` file Chrome writes into the loaded package directory; it is
+gitignored, never a source file.
 
 **Edge takes this package unchanged.** `edge://extensions` sideloads it the same
 way, and Microsoft Partner Center accepts the same artifact — two listings, one
@@ -722,6 +871,12 @@ For store upload rather than sideload:
 ```bash
 npm run pack:browser   # → dist/artificer-chromium-{dark,light}.zip
 ```
+
+The Chrome Web Store **hard-rejects** a manifest `description` over 132
+characters at upload (the first live submission bounced on 215). The blurb is
+the single-line `BROWSER_BLURB` literal in `build.mjs`, shared with Firefox;
+`build.mjs` throws past the cap and `scripts/browser-theme.test.mjs` asserts
+both the cap and that every committed manifest carries that exact literal.
 
 Bound to Chromium's `kOverwritableColorTable`
 (`chrome/browser/themes/browser_theme_pack.cc`). Chrome does not publish that
@@ -781,6 +936,31 @@ discloses nothing, at no cost — Gecko treats the id as an opaque string and ne
 resolves or fetches it.
 
 The same `icon-128.png` note under **Chromium** applies here.
+
+## Stylus (Vikunja)
+
+The one theme in this tree that doesn't own its host — Vikunja (`vikunja.example.com`)
+is upstream code with no server-side theming hook, so this ships as a Stylus
+UserCSS style: author-origin CSS injected into the page by the
+[Stylus](https://github.com/openstyles/stylus) browser extension (Chromium +
+Firefox natively; Safari via [Cascadea](https://apps.apple.com/us/app/cascadea/id1432182561)).
+See `docs/research/theming/stylus-usercss.md` for the format research and
+`themes/stylus/README.md` for install steps.
+
+`vikunja.user.css` maps Artificer tokens onto Vikunja's own ~349 CSS custom
+properties (v2.5.0) rather than its selector classes — mostly a ten-step grey
+scale and five HSL-triplet brand hues (`--primary-h/-s/-l` etc.), both
+resolved lazily by the browser, so overriding the atomic token cascades into
+every consumer without a matching upstream selector per token. **The dark
+selector is Vikunja's own `.dark` user-setting class** — not `html.dark`, not
+`prefers-color-scheme` — confirmed by reading the shipped stylesheet. No logo
+rule ships here: a `content:` swap on a replaced `<img>` is unreliable, so
+the logo is a separate follow-up via Vikunja's own `service.customlogourl`.
+
+One file, both modes — Vikunja toggles `.dark` from a user setting at
+runtime rather than shipping separate dark/light builds, so a per-mode split
+would leave whichever mode wasn't installed on stock Bulma (the same reason
+`flux/`, `neovim/`, `firefox/` and `zed/` are single files).
 
 ## Obsidian
 

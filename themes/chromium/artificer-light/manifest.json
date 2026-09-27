@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Artificer Light",
-  "version": "0.25.0",
-  "description": "Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in the dark, sienna on ivory paper in the light. Generated from the same palette as the Artificer design system's editor and terminal themes.",
+  "version": "0.27.0",
+  "description": "Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in the dark, sienna on ivory paper in the light.",
   "icons": {
     "128": "icon-128.png"
   },
@@ -34,9 +34,9 @@
         208
       ],
       "toolbar": [
-        237,
-        220,
-        192
+        228,
+        212,
+        176
       ],
       "ntp_header": [
         237,
@@ -69,9 +69,9 @@
         156
       ],
       "omnibox_background": [
-        228,
-        212,
-        176
+        245,
+        234,
+        208
       ],
       "tab_text": [
         32,

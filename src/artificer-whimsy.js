@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Whimsy helper · v0.25.0
+   ARTIFICER · Whimsy helper · v0.27.0
    ─────────────────────────────────────────────────────────────────────────
    Tiny, dependency-free. Pairs with artificer-whimsy.css. Exposes window.Whimsy.
 
@@ -35,7 +35,16 @@
      Whimsy.run(el, opts)           ignite el, then settle after opts.loops
                                     hue-cycles. For long "thinking" states.
                                     opts = { loops?, settle? }
-     Whimsy.scheduleSettle(el, n, mode)  rest el after n loops; returns cancel().
+     Whimsy.scheduleSettle(el, n, mode, opts?)  rest el after n loops; returns
+                                    cancel(). opts = { seconds?, group? }.
+     Whimsy.starfield(el, opts?)    render a seeded starfield into a night sky
+                                    ([data-whimsy~="sky"] hydrates on its own)
+                                    and rest it with its wordmark on one timer.
+                                    opts = { seed?, count?, sparkles?, clear?,
+                                             loops?, settle? }
+     Whimsy.starPositions(seed, opts?)  PURE — the star placement behind
+                                    starfield(). Deterministic per seed.
+     Whimsy.mulberry32(seed)        PURE — the seeded PRNG starPositions draws.
      Whimsy.settle(el, mode) / .unsettle(el)   manual rest / wake.
                                     mode: "static" (default) | "glacial".
      Whimsy.ignite(el) / .clear(el) manual toggle.
@@ -110,12 +119,21 @@
   }
 
   /* Rest `el` after `loops` hue-cycles. loops <= 0 / Infinity = never settle.
-     mode: "static" (default) | "glacial". Returns a cancel() fn. */
-  function scheduleSettle(el, loops, mode) {
+     mode: "static" (default) | "glacial". Returns a cancel() fn.
+     opts = { seconds?, group? } — seconds overrides the cycle length (default:
+     the element's live --whimsy-speed); group also settles every .whimsy-star
+     and .whimsy inside el on the same tick, so a sky and the wordmark it
+     frames rest together as one whimsy moment (#501). */
+  function scheduleSettle(el, loops, mode, opts) {
     if (!el || !loops || loops === Infinity || loops <= 0) return function () {};
+    opts = opts || {};
+    var seconds = opts.seconds > 0 ? opts.seconds : flowSeconds(el);
     var id = window.setTimeout(function () {
       settle(el, mode);
-    }, flowSeconds(el) * loops * 1000);
+      if (!opts.group) return;
+      var inner = el.querySelectorAll(".whimsy-star, .whimsy");
+      for (var i = 0; i < inner.length; i++) settle(inner[i], mode);
+    }, seconds * loops * 1000);
     return function cancel() { window.clearTimeout(id); };
   }
 
@@ -149,6 +167,198 @@
     el.dataset.whimsyHydrated = "1";
   }
 
+  /* ── Night sky ── seeded starfield (#501) ──────────────────────────────────
+     The algorithm is a contract: a starfield spec describes it draw by draw
+     so native ports reproduce the same sky from the same seed, and a
+     conformance table pins it. Change the draw order here and both must move
+     with it. */
+
+  // Tints are token ROLE names; CSS resolves each through
+  // color-mix(in oklab, var(--<role>) 70%, var(--fg)). Index order is part of
+  // the contract — a draw picks by index.
+  var STAR_TINTS = ["accent", "attention", "brand-purple-bright", "steel", "success"];
+  // Star radii in px at 1×, the stars2.py set (duplicates weight the draw).
+  var STAR_SIZES = [1.3, 1.4, 1.7, 1.7, 2.0, 2.3, 2.6];
+  var SPARKLE_RADIUS = 11;
+  var MAX_ATTEMPTS = 5000;
+  var MAX_SPARKLE_PICKS = 100;
+  var SKY_DEFAULTS = {
+    count: 48,
+    sparkles: 4,
+    spacing: 0.034,            // min distance between star centers, 0–1 units
+    topBias: 0.15,             // density falloff: accept if draw <= 1 + topBias - t
+    bounds: [0.04, 0.03, 0.96, 0.97],  // x0, y0, x1, y1 — where stars may land
+    clear: null                // { cx, cy, rx, ry } ellipse kept empty, or null
+  };
+
+  /* PURE — mulberry32, integer-only (Math.imul + >>>) so every language with
+     wrapping 32-bit multiply reproduces it exactly. Returns a draw fn → [0, 1). */
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6d2b79f5) >>> 0;
+      var t = Math.imul(a ^ (a >>> 15), a | 1);
+      t = (t + Math.imul(t ^ (t >>> 7), t | 61)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function quantize(v) { return Math.round(v * 1e6) / 1e6; }
+
+  function toSeed(seed) {
+    var n = typeof seed === "string" && seed.trim() !== "" ? Number(seed) : seed;
+    if (typeof n !== "number" || !isFinite(n) || Math.floor(n) !== n) {
+      throw new TypeError("Whimsy.starPositions: seed must be an integer, got " + JSON.stringify(seed));
+    }
+    return n >>> 0;
+  }
+
+  /* PURE — place a seeded starfield. Returns
+     [{ x, y, r, o, tint, sparkle, phase, period }]: x/y in 0–1 of the sky box,
+     r in px at 1×, o = base opacity, tint = a STAR_TINTS role, phase in [0, 1)
+     and period in seconds (4–9) for the twinkle. Stops at MAX_ATTEMPTS, so an
+     over-packed request returns fewer stars instead of hanging. */
+  function starPositions(seed, opts) {
+    var o = {};
+    var k;
+    for (k in SKY_DEFAULTS) o[k] = SKY_DEFAULTS[k];
+    for (k in (opts || {})) if (opts[k] !== undefined) o[k] = opts[k];
+    var b = o.bounds;
+    if (!(o.count >= 0) || Math.floor(o.count) !== o.count) {
+      throw new RangeError("Whimsy.starPositions: count must be a non-negative integer, got " + o.count);
+    }
+    if (!(o.sparkles >= 0)) {
+      throw new RangeError("Whimsy.starPositions: sparkles must be >= 0, got " + o.sparkles);
+    }
+    if (!b || b.length !== 4 || !(b[0] < b[2]) || !(b[1] < b[3])) {
+      throw new RangeError("Whimsy.starPositions: bounds must be [x0, y0, x1, y1] with x0 < x1 and y0 < y1, got " + JSON.stringify(b));
+    }
+    var rand = mulberry32(toSeed(seed));
+    var stars = [];
+    for (var tries = 0; stars.length < o.count && tries < MAX_ATTEMPTS; tries++) {
+      var x = b[0] + (b[2] - b[0]) * rand();
+      var y = b[1] + (b[3] - b[1]) * rand();
+      var t = (y - b[1]) / (b[3] - b[1]);
+      if (rand() > 1 + o.topBias - t) continue;          // thinner toward the bottom
+      if (o.clear) {
+        var ex = (x - o.clear.cx) / o.clear.rx;
+        var ey = (y - o.clear.cy) / o.clear.ry;
+        if (ex * ex + ey * ey < 1) continue;               // keep the focal zone clear
+      }
+      var crowded = false;
+      for (var i = 0; i < stars.length && !crowded; i++) {
+        crowded = Math.hypot(x - stars[i].x, y - stars[i].y) < o.spacing;
+      }
+      if (crowded) continue;
+      stars.push({
+        x: x, y: y,
+        r: STAR_SIZES[Math.floor(rand() * STAR_SIZES.length)],
+        o: 0.35 + 0.5 * rand(),
+        tint: STAR_TINTS[Math.floor(rand() * STAR_TINTS.length)],
+        sparkle: false,
+        phase: rand(),
+        period: 4 + 5 * rand()
+      });
+    }
+    var want = Math.min(o.sparkles, stars.length);
+    for (var s = 0, picks = 0; s < want && picks < MAX_SPARKLE_PICKS; picks++) {
+      var star = stars[Math.floor(rand() * stars.length)];
+      if (star.sparkle) continue;
+      star.sparkle = true;
+      star.r = SPARKLE_RADIUS;
+      s++;
+    }
+    return stars.map(function (st) {
+      return { x: quantize(st.x), y: quantize(st.y), r: st.r, o: quantize(st.o),
+               tint: st.tint, sparkle: st.sparkle,
+               phase: quantize(st.phase), period: quantize(st.period) };
+    });
+  }
+
+  // el → cancel() for its pending sky settle, so a re-render re-arms one timer.
+  var skySettles = new WeakMap();
+
+  function readInt(v, fallback) {
+    var n = parseInt(v, 10);
+    return isNaN(n) ? fallback : n;
+  }
+
+  /* DOM — render a seeded starfield into a .whimsy-sky element and arm the
+     shared settle. Stars are aria-hidden decoration; CSS hides them in light
+     mode, so a theme toggle needs no re-render. Idempotent: the same options
+     on an already-rendered sky do nothing; different options replace the
+     field. opts = { seed?, count?, sparkles?, clear?, loops?, settle? } —
+     omitted values read data-whimsy-seed / -stars / -loops / -settle.
+     settle: "glacial" (default) | "static" | "none". */
+  function starfield(el, opts) {
+    if (!el) return;
+    opts = opts || {};
+    var d = el.dataset;
+    var seed = opts.seed != null ? opts.seed : (d.whimsySeed || 1);
+    var placement = {
+      count: opts.count != null ? opts.count : readInt(d.whimsyStars, SKY_DEFAULTS.count),
+      sparkles: opts.sparkles,
+      clear: opts.clear
+    };
+    var mode = opts.settle || d.whimsySettle || "glacial";
+    var loops = opts.loops != null ? opts.loops : readInt(d.whimsyLoops, 3);
+    var signature = JSON.stringify([seed, placement, mode, loops]);
+    // Its own flag, not whimsyHydrated: a node marked data-whimsy="sky wave"
+    // must still get its wave split (splitWave skips whimsyHydrated nodes).
+    if (d.whimsySky === signature) return;
+
+    var stars;
+    try {
+      stars = starPositions(seed, placement);
+    } catch (err) {
+      // Bad data-* on a decorative layer must not break the page: say what
+      // was wrong and render the default field instead.
+      console.warn("Whimsy.starfield: " + err.message + " — rendering the default field.");
+      stars = starPositions(1);
+    }
+
+    el.classList.add("whimsy-sky");
+    // Read the cycle length before writing the stars, so the style read does
+    // not force a recalc over freshly inserted nodes.
+    var seconds = parseMs(getComputedStyle(el).getPropertyValue("--whimsy-sky-speed")) / 1000;
+    var layer = el.querySelector(":scope > .whimsy-sky__stars");
+    if (layer) layer.textContent = "";
+    else {
+      layer = document.createElement("div");
+      layer.className = "whimsy-sky__stars";
+      layer.setAttribute("aria-hidden", "true");
+      el.insertBefore(layer, el.firstChild);
+    }
+    var batch = document.createDocumentFragment();
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var span = document.createElement("span");
+      span.className = s.sparkle ? "whimsy-star whimsy-star--sparkle" : "whimsy-star";
+      span.style.left = (s.x * 100).toFixed(4) + "%";
+      span.style.top = (s.y * 100).toFixed(4) + "%";
+      span.style.setProperty("--star-r", s.r + "px");
+      span.style.setProperty("--star-o", String(s.o));
+      span.style.setProperty("--star-tint", "var(--" + s.tint + ")");
+      span.style.setProperty("--star-period", s.period.toFixed(3) + "s");
+      span.style.setProperty("--d", (-s.phase * s.period).toFixed(3) + "s");
+      batch.appendChild(span);
+    }
+    layer.appendChild(batch);
+
+    // One timer for the whole moment: the sky, its stars, and any .whimsy
+    // wordmark inside rest together after `loops` sky cycles.
+    var prior = skySettles.get(el);
+    if (prior) prior();
+    unsettle(el);
+    var inner = el.querySelectorAll(".whimsy");
+    for (var j = 0; j < inner.length; j++) unsettle(inner[j]);
+    if (mode !== "none") {
+      skySettles.set(el, scheduleSettle(el, loops, mode,
+        { seconds: seconds > 0 ? seconds : 40, group: true }));
+    }
+    d.whimsySky = signature;
+  }
+
   function hydrate(root) {
     root = root || document;
     var waves = root.querySelectorAll('[data-whimsy~="wave"]');
@@ -164,6 +374,14 @@
     for (var j = 0; j < plain.length; j++) {
       if (plain[j].dataset.whimsyCleared === "1") continue;
       plain[j].classList.add("whimsy");
+    }
+    // Skies last: splitWave rewrites textContent, which would wipe a stars
+    // layer already inserted into a node marked data-whimsy="sky wave".
+    var skies = root.querySelectorAll('[data-whimsy~="sky"]');
+    for (var s = 0; s < skies.length; s++) {
+      if (skies[s].dataset.whimsyCleared === "1") continue;
+      if (skies[s].dataset.whimsySky) continue;
+      starfield(skies[s]);
     }
   }
 
@@ -419,6 +637,10 @@
     settle: settle,
     unsettle: unsettle,
     scheduleSettle: scheduleSettle,
+    starfield: starfield,
+    starPositions: starPositions,
+    mulberry32: mulberry32,
+    STAR_TINTS: STAR_TINTS.slice(),
     ignite: igniteEl,
     clear: clearEl
   };

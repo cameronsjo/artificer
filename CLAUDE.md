@@ -7,14 +7,14 @@
 > layer, and the form / a11y / voice checklists.
 >
 > New here? Read **`QUICKSTART.md`** first (files → a working themed button in
-> ~25 lines), then this file and **`reference/SKILL.md`** (the exhaustive
+> ~25 lines), then this file and **`reference/SKILL.md`** (the single-file
 > cheatsheet). Open any page under **`live-spec/`** in a browser for the live
 > visual reference.
 
 ## Hard rules — do not break
 
 1. **Use existing tokens.** Never write hex codes, hardcoded `px` for spacing, or invented `cubic-bezier` curves. If the value isn't in `artificer.css` (search for `--`), don't use it. *(The sole exception is the **Whimsy** layer — see § Whimsy — which is opt-in, bounded, and the one place full-spectrum color and looping motion are sanctioned.)*
-2. **Use existing utility classes.** `.stack`, `.cluster`, `.grid-auto`, `.container`, `.btn`, `.card`, `.field`, `.notif`, etc. Don't recreate them with bespoke flexbox. Size-modifier classes (e.g. `.container--*`) require their base class alongside them — the base carries the box (width, centering, padding); the modifier only tunes max-width.
+2. **Use existing utility classes.** `.stack`, `.cluster`, `.grid-auto`, `.container`, `.btn`, `.card`, `.field`, `.notif`, etc. Don't recreate them with bespoke flexbox. Modifier classes (e.g. `.container--*`) require their base class alongside them — the base carries the box (width, centering, inline padding); a size modifier only tunes max-width, and `.container--page` adds page-level block padding.
 3. **One primary CTA per view.** `.btn--primary` shows up at most once per visible screen — zero is valid too; a read-only surface owes no CTA. Secondary actions use `.btn--secondary` or `.btn--ghost`.
 4. **Lists cap at 7 visible items** (default 5). Beyond that: progressive disclosure, search, or grouping. A primary data table isn't a "list" — it's governed by the table recipes, not this cap.
 5. **Anchor words bold** — 3–5 `<b class="anchor">` per paragraph in body content. This is the system's primary scan mechanism, not optional emphasis. When prose arrives as data rather than markup, mark anchors as `**…**` in the data and promote each marked span to `<b class="anchor">` at render — single-level only, never nested.
@@ -64,7 +64,7 @@ Before you write any CSS, decide: **is this a tool surface or a document surface
 
 **Why this matters.** Monospace gives every glyph the same horizontal slot. That's an asset for column-aligned numbers and code, and a liability for prose: it kills kerning cues, mutes bold/italic contrast, and flattens the anchor-word scan mechanism that Artificer's whole reading model depends on. When the *whole page* is mono, **nothing stands out** — which defeats the point.
 
-**Anti-pattern that bit us once.** A written analysis with embedded data tables, set in mono throughout, with three explicit overrides back to sans (`.meta`, `h3`, `th`). That's the tell: if you're spending the type budget *escaping* the body face, the body face is wrong. Flip it — sans body, mono only on the identifiers and numbers — and the overrides disappear.
+**Anti-pattern.** A written analysis with embedded data tables, set in mono throughout, with three explicit overrides back to sans (`.meta`, `h3`, `th`). That's the tell: if you're spending the type budget *escaping* the body face, the body face is wrong. Flip it — sans body, mono only on the identifiers and numbers — and the overrides disappear.
 
 ## Token cheatsheet
 
@@ -83,9 +83,9 @@ var(--accent-bright) /* hover/focus accent */
 var(--accent-fill) /* button bg, filled badges — SMALL controls only; never a selected-card/surface bg (pair only with --on-accent) */
 var(--on-accent) /* text on accent-fill */
 var(--brand-purple) /* Cameron's purple — wordmark, brand surfaces; pair with --brand-purple-bright for hover */
-var(--success) /* sage green */
-var(--attention) /* burnished amber */
-var(--urgent) /* terracotta red */
+var(--success) /* apothecary green */
+var(--attention) /* dusty rose */
+var(--urgent) /* brick red */
 var(--border) /* dividers, input borders */
 
 /* Spacing */
@@ -208,6 +208,8 @@ core scale or tool UI.
 | "Wide table / diff / anything wider than the phone" | `<div class="scroll-x" tabindex="0">` — the content scrolls inside it, never the page; the `tabindex="0"` is load-bearing (axe `scrollable-region-focusable`). Add `.scroll-x--fade` for "there's more" edge shadows that self-hide at scroll end. |
 | "Wide comparison matrix (tools × features)" | Two treatments, never both below 640px. Row-per-item matrices (glyph/text cells): `.table--responsive` + `data-label` + `<th scope="row">` card headers. Interactive or score grids (cell buttons, heatmaps — the grid gestalt is the point): stay a table inside `.scroll-x.scroll-x--fade` + `.table--sticky-col` (covers `tbody th:first-child` row headers too). |
 | "Key-value list" | `.kv` — mono `<dl>` grid for metadata pairs; `.table` for real data. |
+| "Properties / metadata block" | `.kv.kv--props` — bordered raised `<dl>`, one divider per row, optional `<i data-icon>` on each key, `.badge--steel` tag values. |
+| "Embedded diagram / media card" | `.figure.figure--frame` + `.figure__bar` (`.eyebrow` kind label, optional `.btn--ghost.btn--icon` reset with `aria-label`) + `.figure__body` (centered content). |
 | "Tabs / view switcher" | `.tabs` + `role=tablist`/`tab`/`tabpanel` + `aria-controls`; then `ArtificerTabs.enhance(el)` (or `data-tabs` + `observe()`) for the APG keyboard model — the CSS alone is style-only. NOT `.timerange`. |
 | "Segmented control / view-param switch" | `.timerange` (time window, density) — NOT `.tabs` (tabs switch the whole view) |
 | "Filter bar" | `.filter-bar` + `.grow` — ALL filters in one top bar, never sprinkled into panels. |
@@ -236,6 +238,9 @@ core scale or tool UI.
 | "Syntax-highlighted code block" | `.code-block` + the `.tok-*` roles. |
 | "Tabular number" | `.num` utility — sets `font-variant-numeric: tabular-nums`. Drop on the cell, or on the parent for a whole table. |
 | "Short hint paragraph under a figure or field" | `.note` — sister of `.meta`, smaller (label-sm). Inherits the body face — **mono on tool surfaces, sans on document surfaces** — so each surface's character carries through. Use for one-sentence asides; escalate to `.meta` when it grows past a sentence. |
+| "Eyebrow / overline label" | `.eyebrow` (+ `.eyebrow--accent`) — interface face, `--t-label-xs-size`, uppercase, `.08em` tracking, `--fg-secondary`. A label over a heading, block, or demo; never body copy. |
+| "Doc-page subsection header" | `<h3 class="subsection-title">` — mono 700 at `--t-body-md-size`, `--fg`; the sibling under a `.section-title`. |
+| "Callout / standing note" | `.callout` + `.callout__title` (compose with `.eyebrow`) — raised note with an accent edge; `--steel` / `--attention` / `--urgent` recolor the edge. The title names the tier in text. Not a toast or banner: no action, no dismissal. |
 | "Dashboard shell" | `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`) — one frame, five recipes (§ Composition). |
 | "Chart / sparkline / gauge" | `.chart` scaffold, `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge`; series via `--series-1..5` (§ Charts). |
 | "Architecture / flow diagram" | `.dia-node`/`.dia-edge` on inline SVG (§ Diagrams). |
@@ -400,6 +405,7 @@ animation — point it here.
 | Focus ring on a control (on explicit request) | `.whimsy-focus` — spins *over* the focus outline, never replaces it |
 | Flowing rainbow underline under a `.whimsy` link/wordmark | `.whimsy-underline` — tiling sine draws in on hover/focus, in lockstep with the mark's flow (the sanctioned replacement for a flat underline) |
 | Brushed-metal gold fill (cousin of silver) | `.whimsy--gold` — slow (16s) near-static metal; add `.whimsy--no-flow` for a still gold fill |
+| Night sky behind a hero or header band (flowing field + seeded stars) | `data-whimsy="sky"` (`data-whimsy-seed` picks the sky) or `.whimsy-sky` + `Whimsy.starfield(el)` — dark only, the backdrop form of whimsy; the wordmark inside rests with it |
 | Your own palette | override `--whimsy-gradient` in one line |
 | Maximum saturation (rare) | `.whimsy--vivid` |
 | Whimsy in a static SVG (README card, OG image, email) | No DOM, no JS — `.whimsy--brand`'s CSS+JS mechanism doesn't port. See `docs/recipes/whimsy-static-svg.md` for the `<linearGradient>` + keyframed `stop-color` recipe. |
@@ -433,18 +439,20 @@ Whimsy.watch(input, opts)        // ignite a target when a trigger word is typed
 Whimsy.celebrate(el, ms?)        // one-shot, auto-clears
 Whimsy.run(el, {loops, settle})  // ignite, then settle after N loops
 Whimsy.settle(el, mode) / .unsettle(el)   // mode: "static" | "glacial"
+Whimsy.starfield(el, opts?)      // seeded stars in a night sky; one settle timer for sky + wordmark
+Whimsy.starPositions(seed, opts?)  // PURE — the same seed always gives the same stars
 Whimsy.ignite(el) / .clear(el)   // manual toggle
 ```
 
 ### Doctrine — do not break
 
 1. **Opt-in only.** Never on chrome, nav, or anything automatic.
-2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper. The API doesn't coordinate flowing slots for you — exclusivity is the caller's responsibility, same as one-primary-CTA.
-3. **Never on load-bearing UI.** No whimsy on errors, destructive actions, status, or data. **One sanctioned exception:** the `.whimsy-focus` ring (artificer-whimsy.css) — a burnished ring that *augments* a control's standard `:focus-visible` outline on **hover or focus**, never replacing it (the outline still carries the WCAG focus signal). Opt-in, on explicit request only, one per view, reduced-motion holds it still-but-visible.
+2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper. The API doesn't coordinate flowing slots for you — exclusivity is the caller's responsibility, same as one-primary-CTA. A **night sky and the wordmark it frames are one moment**, and they rest on one timer.
+3. **Never on load-bearing UI.** No whimsy on errors, destructive actions, status, or data. **One sanctioned exception:** the `.whimsy-focus` ring (artificer-whimsy.css) — a burnished ring that *augments* a control's standard `:focus-visible` outline on **hover or focus**, never replacing it (the outline still carries the WCAG focus signal). Opt-in, on explicit request only, one per view, reduced-motion holds it still-but-visible. The **night sky** sits only behind a header or hero band — never behind data, status, errors, or body copy — and the text on it stays on solid ground.
 4. **Burnished by default.** `.whimsy--vivid` is a conscious choice, not a reflex.
-5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy.
+5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy. This governs gradient *text*. The night sky (`.whimsy-sky`) is a non-text backdrop: `aria-hidden` stars, **dark only** (light mode shows plain `--bg`), and never stacked with a texture. It is still whimsy, not a fourth carve.
 6. **Reduced-motion is sacred.** Flow stops, burnish stays. Already wired — don't undo it.
-7. **Whimsy rests.** Anything long-lived settles. A rainbow that never stops is just noise.
+7. **Whimsy rests.** Anything long-lived settles. A rainbow that never stops is just noise. The **night sky rests** too: after N sky cycles (default 3 × 40s) the drift goes glacial (or static) and the stars stop twinkling, together with the wordmark inside.
 
 ---
 
@@ -549,7 +557,7 @@ Design for the most-constrained user first — that constraint anchors the best 
 
 - `README.md` (this folder) — system overview, install paths
 - `docs/STATE.md` — maturity baseline (clay / materials / rooms / trust), re-assessed each minor version
-- `reference/SKILL.md` — exhaustive token cheatsheet, recipe table, anti-patterns
+- `reference/SKILL.md` — single-file handoff (token cheatsheet, recipe table, anti-patterns); the `artificer-design-system` skill is canonical
 - `live-spec/` — every HTML preview page, copied verbatim from the source project. Open any of them in a browser alongside `src/artificer.css`.
-- `themes/` — Artificer ported to Claude Code, Ghostty, and VS Code. Same palette across all three; install paths in `themes/README.md`.
+- `themes/` — Artificer ported to editors, terminals, and CLI tools, all generated from one palette; install paths in `themes/README.md`.
 - `gradients/` — language-agnostic perceptual (OKLab) gradient primitive for terminal text. `SPEC.md` is the contract, `reference.mjs` the runnable proof + CLI (`npm run gradient -- --list`/`--swatch`), `presets.json` the data, `conformance.json` the cross-language test table. Repo-only — not part of the published `src/` bundle.

@@ -125,7 +125,7 @@ const claudeCodeTheme = (mode) => {
       inverseText: onAccent,
       inactive: P.fgSecondary,
       inactiveShimmer: mode === 'dark' ? '#d5d8d6' : '#6a5a3f',
-      subtle: P.fgDisabled,
+      subtle: P.ansiBrightBlack, // dark 2.1:1 on terminalBg as fgDisabled; the terminal grey clears AA (ADR 0042)
       background: P.cyan,
 
       permission: P.steel,
@@ -133,20 +133,39 @@ const claudeCodeTheme = (mode) => {
       remember: P.brandPurple,
       suggestion: P.brandPurple,
 
-      success: P.success,
-      error: P.urgent,
+      // Status TEXT on terminalBg: success #4a8a5e read 3.0:1 and urgent #a04540 2.0:1,
+      // so both rebind to the terminal-only text keys (ADR 0042). urgent/success
+      // themselves stay the fills every other surface uses.
+      success: P.ansiGreen,
+      // urgentText is "urgent, as running text" in BOTH modes: dark #e6a8a2
+      // (= ansiBrightRed), light #8a2418 (= urgent, today's value) — so light
+      // stays byte-identical without a mode ternary.
+      error: P.urgentText,
       warning: P.attention,
       warningShimmer: P.attentionAlt,
       merged: P.steel,
 
-      promptBorder: P.border,
-      promptBorderShimmer: P.borderLifted,
+      // border #4a4f5c was 1.5:1 on terminalBg — the box was invisible. Owner-ruled
+      // 2026-09-02 onto the terminal grey; the shimmer needs a lighter partner (ADR 0042).
+      // Dark-only: the ruling was made on the dark canvas; light keeps its bindings.
+      promptBorder: mode === 'dark' ? P.ansiBrightBlack : P.border,
+      promptBorderShimmer: mode === 'dark' ? P.fgSecondary : P.borderLifted,
       planMode: P.brandPurple,
-      autoAccept: P.success,
+      autoAccept: P.ansiGreen,
+      autoAcceptShimmer: P.ansiBrightGreen, // shimmer is autoAccept's lighter sibling, same as every other *Shimmer pair
       bashBorder: P.accent,
       ide: P.steel,
       fastMode: P.attention,
       fastModeShimmer: P.attentionAlt,
+      // The `ultracode` tag on the input border — a mode accent, sibling of planMode.
+      effortUltra: P.brandPurpleBright,
+      // Skill-invocation accent. Stock doubles it onto autoAccept's violet; cyan is
+      // the one semantic hue Artificer does not already spend on a MODE — but it is
+      // not unspent: `background` above is P.cyan too (status labels, diamond icons,
+      // dialog borders), so a skill line and a status label land on the same hex.
+      // Accepted for now — both are quiet status accents that rarely sit adjacent —
+      // but this is a collision, not a free slot.
+      skill: P.cyan,
 
       diffAdded: P.diffAddBg,
       diffRemoved: P.diffDelBg,
@@ -155,12 +174,50 @@ const claudeCodeTheme = (mode) => {
       diffAddedWord: P.diffAddWord,
       diffRemovedWord: P.diffDelWord,
 
-      // The canvas under this chip is terminalBg (ADR 0036), so the chip lifts a
-      // rung: at bgRaised it would be identical to the canvas and vanish. Dark-only
-      // — light's elevation inverts and stays as it was.
-      userMessageBackground: mode === 'dark' ? P.bgOverlay : P.bgRaised,
-      userMessageBackgroundHover: mode === 'dark' ? P.bgFloat : P.bgOverlay,
-      messageActionsBackground: mode === 'dark' ? '#2a2d36' : '#e8d8b8',
+      // The canvas under this chip is terminalBg (ADR 0036), so the chip lifts
+      // TWO rungs to bgFloat, both modes: measured against the real canvas the
+      // old dark binding (bgOverlay) sat at 1.20:1 and light (bgRaised) at
+      // 1.13:1 — below the ~1.2 island floor cited below, on a band whose whole
+      // job is to be seen. Hover goes to bgFloatHover (a hover partner, not a
+      // fifth rung). Lane-1 ruling v0.21.0 (#332) — $notes.userMessageBandSeparation.
+      // Re-ruled 2026-09-02 on a live beta (ADR 0042): the owner judged bgFloat too
+      // loud in daily use and picked bgOverlay by eye, hover on bgFloat. The 1.20:1
+      // separation #332 measured is accepted as the owner's preference.
+      // Dark-only, same reason; light keeps the #332 lift (its separation is already the weaker mode).
+      userMessageBackground: mode === 'dark' ? P.bgOverlay : P.bgFloat,
+      userMessageBackgroundHover: mode === 'dark' ? P.bgFloat : P.bgFloatHover,
+      // The /diff panel fill. Left unset, dark-ansi resolves this to
+      // ansi:blackBright (#9aa2b3) — the dim-TEXT grey — and paints the whole
+      // panel light. ANSI has no surface slots, so a background key falls
+      // through to whatever text color the slot carries. Lifts one rung off
+      // terminalBg in both modes; light's ladder inverts, so "one rung up" is
+      // bgOverlay in dark and bgRaised in light. Separation is 1.20:1 dark /
+      // 1.13:1 light — the same figures the owner accepted for the user-message
+      // band (ADR 0042). Recession was rejected: light bg == terminalBg, so
+      // there is no rung below the canvas in light and the modes would disagree.
+      //
+      // Text inside the panel is measured against the PANEL, not the canvas —
+      // and the right comparator is the other raised surface already shipping,
+      // not terminalBg. In dark the panel is the same hex as
+      // userMessageBackground, so the dim tokens land on the exact ratios in
+      // production today: `subtle` 3.97, `success` 3.90 (both under AA, both
+      // the accepted ADR 0042 posture for a raised surface, and both a large-AA
+      // and 1.4.11 pass). In light the panel is BETTER than that band —
+      // `subtle` 2.89 vs 2.44, `success` 5.95 vs 5.02. `fg` clears AA on the
+      // panel outright (8.16 dark / 11.66 light). Raising `subtle` is a palette
+      // decision for the owner and reaches both surfaces, not a binding here.
+      //
+      // That sub-AA `subtle` is the PRICE OF THE HUNKS, and the trade is settled.
+      // A recessed dark panel (P.bg #292c33) lifts every text token over AA —
+      // `subtle` 5.45, `success` 5.36 — and was trialled live on 2026-09-11.
+      // The owner declined it: the diff hunks are themselves DARK fills, so a
+      // dark panel swallows them. Measured against each candidate panel,
+      // diffAddBg 1.22 -> 1.13, diffRemovedBg 1.48 -> 1.08 (invisible),
+      // diffAddedDimmed 1.48 -> 1.08, diffRemovedDimmed 1.66 -> 1.21. The panel's
+      // job is to be the field the hunks sit ON, which means it has to be
+      // LIGHTER than them; text legibility on the panel is the secondary
+      // constraint, not the primary one. Do not "fix" this to a darker fill.
+      composerSidebarBackground: mode === 'dark' ? P.bgOverlay : P.bgRaised,
       bashMessageBackgroundColor: mode === 'dark' ? '#2e2b25' : '#e4d4a8',
       memoryBackgroundColor: mode === 'dark' ? '#252a30' : '#dcc99c',
       selectionBg: P.accentFill,
@@ -177,26 +234,26 @@ const claudeCodeTheme = (mode) => {
       clawd_body: P.accent,
       clawd_background: P.terminalBg, // blends with the canvas Claude Code paints on (ADR 0036)
 
-      red_FOR_SUBAGENTS_ONLY: P.urgent,
+      red_FOR_SUBAGENTS_ONLY: P.urgentText,
       blue_FOR_SUBAGENTS_ONLY: P.steel,
-      green_FOR_SUBAGENTS_ONLY: P.success,
+      green_FOR_SUBAGENTS_ONLY: P.ansiGreen,
       yellow_FOR_SUBAGENTS_ONLY: P.accent,
       purple_FOR_SUBAGENTS_ONLY: P.brandPurple,
       orange_FOR_SUBAGENTS_ONLY: mode === 'dark' ? '#b87333' : '#a04500',
       pink_FOR_SUBAGENTS_ONLY: P.attention,
       cyan_FOR_SUBAGENTS_ONLY: P.cyan,
 
-      rainbow_red: P.urgent,
+      rainbow_red: P.urgentText,
       rainbow_orange: mode === 'dark' ? '#b87333' : '#a04500',
       rainbow_yellow: P.accent,
-      rainbow_green: P.success,
+      rainbow_green: P.ansiGreen,
       rainbow_blue: P.steel,
       rainbow_indigo: P.brandPurple,
       rainbow_violet: P.attention,
-      rainbow_red_shimmer: P.urgentBright,
+      rainbow_red_shimmer: P.ansiBrightRed,
       rainbow_orange_shimmer: mode === 'dark' ? '#cc8845' : '#b85a18',
       rainbow_yellow_shimmer: P.accentBright,
-      rainbow_green_shimmer: P.successBright,
+      rainbow_green_shimmer: P.ansiBrightGreen,
       rainbow_blue_shimmer: P.steelBright,
       rainbow_indigo_shimmer: P.brandPurpleBright,
       rainbow_violet_shimmer: P.attentionAlt
@@ -213,6 +270,20 @@ write('claude-code/artificer-light.json', JSON.stringify(claudeCodeTheme('light'
 
 const ghosttyTheme = (mode) => {
   const P = mode === 'dark' ? D : L;
+  // Boundary guard (ADR 0042 review): _palette.json is Lane 1's artifact, not
+  // repo-authored, and this template writes a Ghostty config file. A value with
+  // a newline would emit an attacker-chosen directive. Every sibling emitter
+  // validates the shape at the boundary; this one strips a '#' and nothing else.
+  const hex = (value, what) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
+      throw new Error(
+        `ghosttyTheme: ${what} resolved to ${JSON.stringify(value)}, which is not a `
+        + 'six-digit hex colour. Refusing to emit it into a Ghostty config file.'
+      );
+    }
+    return value;
+  };
+  const slot = (value, what) => hex(value, what).slice(1);
   const title = mode === 'dark' ? 'Artificer Dark' : 'Artificer Light';
   const subtitle = mode === 'dark' ? 'Ghostty-rooted spine, Jazz Age accents' : 'Ivory paper, midnight indigo ink';
   return `# ${title} — Ghostty theme
@@ -225,50 +296,46 @@ const ghosttyTheme = (mode) => {
 # background is terminalBg, NOT bg. The terminal is a RAISED surface — an app
 # running on the desktop, not the desktop itself (ADR 0036). Do not "fix" this
 # to P.bg; bg is the substrate (VS Code's editor, Obsidian's note surface).
-background = ${P.terminalBg.replace('#','')}
-foreground = ${P.fg.replace('#','')}
+background = ${slot(P.terminalBg, "P.terminalBg")}
+foreground = ${slot(P.fg, "P.fg")}
 
-cursor-color = ${P.accent.replace('#','')}
-cursor-text  = ${P.terminalBg.replace('#','')}
+cursor-color = ${slot(P.accent, "P.accent")}
+cursor-text  = ${slot(P.terminalBg, "P.terminalBg")}
 
-selection-background = ${P.selectionFill.replace('#','')}
-selection-foreground = ${(mode === 'dark' ? P.fg : P.ink).replace('#','')}
+selection-background = ${slot(P.selectionFill, "P.selectionFill")}
+selection-foreground = ${slot(mode === 'dark' ? P.fg : P.ink, 'selection-foreground')}
 
 # ANSI 0–7 (normal)
 # Invariant: positions 4 (normal blue) and 12 (bright blue) must be a
-# brightness pair on the same hue. Markdown renderers emit bright-blue
-# for inline code; sibling hues (e.g. rose + peach) make inline code
-# render a visibly different color than surrounding text.
-#
-# steelBright in slot 4 and steel in slot 12 is NOT a transposition — read
-# the values, not the names. steel #b8cad4 is LIGHTER than steelBright
-# #9fb6c4 on dark (relative luminance .572 vs .448), so this puts the dimmer
-# hue in normal-blue and the lighter one in bright-blue, which is the right
-# way round. Artificer's *Bright suffix names a ROLE ("more emphasis than
-# base on the current surface"), not a lightness direction —
-# $notes.brandPurpleBrightDirection says so for the purple, and the same
-# holds here. Reasoning from the token name alone gets this backwards.
-palette = 0=${P.ansiBlack.replace('#','')}
-palette = 1=${P.urgent.replace('#','')}
-palette = 2=${P.success.replace('#','')}
-palette = 3=${P.accent.replace('#','')}
-palette = 4=${P.steelBright.replace('#','')}
-palette = 5=${P.brandPurple.replace('#','')}
-palette = 6=${P.cyan.replace('#','')}
-palette = 7=${P.fg.replace('#','')}
+# brightness pair on the same hue — a rose pair since #444 (markdown
+# renderers emit bright-blue for inline code; sibling hues, e.g. gold +
+# peach, make inline code render a visibly different color than the text
+# around it). \`ansiBrightRose\` names the SLOT (bright blue, 12), not a
+# lightness — lighter member on dark, darker on light, per ANSI light-theme
+# convention; the direction lives entirely in the hexes, never in a mode
+# conditional here. Full derivation: $notes.ansiRose / $notes.ansiBrightRose
+# in _palette.json.
+palette = 0=${slot(P.ansiBlack, "P.ansiBlack")}
+palette = 1=${slot(P.ansiRed, "P.ansiRed")}
+palette = 2=${slot(P.ansiGreen, "P.ansiGreen")}
+palette = 3=${slot(P.accent, "P.accent")}
+palette = 4=${slot(P.ansiRose, "P.ansiRose")}
+palette = 5=${slot(P.brandPurple, "P.brandPurple")}
+palette = 6=${slot(P.cyan, "P.cyan")}
+palette = 7=${slot(P.fg, "P.fg")}
 
 # ANSI 8–15 (bright)
 # Invariant (ADR 0001, re-derived ADR 0036): slot 0 must read DIMMER than slot 8.
 # Slot 8 is ansiBrightBlack, not fgDisabled — the lifted canvas compressed both
 # ends, and fgDisabled is shared with VS Code + the web, so it can't move.
-palette = 8=${P.ansiBrightBlack.replace('#','')}
-palette = 9=${P.urgentBright.replace('#','')}
-palette = 10=${P.successBright.replace('#','')}
-palette = 11=${P.accentBright.replace('#','')}
-palette = 12=${P.steel.replace('#','')}
-palette = 13=${P.brandPurpleBright.replace('#','')}
-palette = 14=${P.cyanBright.replace('#','')}
-palette = 15=${(mode === 'dark' ? P.ivory : P.fg).replace('#','')}
+palette = 8=${slot(P.ansiBrightBlack, "P.ansiBrightBlack")}
+palette = 9=${slot(P.ansiBrightRed, "P.ansiBrightRed")}
+palette = 10=${slot(P.ansiBrightGreen, "P.ansiBrightGreen")}
+palette = 11=${slot(P.accentBright, "P.accentBright")}
+palette = 12=${slot(P.ansiBrightRose, "P.ansiBrightRose")}
+palette = 13=${slot(P.brandPurpleBright, "P.brandPurpleBright")}
+palette = 14=${slot(P.cyanBright, "P.cyanBright")}
+palette = 15=${slot(mode === 'dark' ? P.ivory : P.fg, 'palette 15')}
 `;
 };
 
@@ -413,7 +480,7 @@ const vscodeTheme = (mode) => {
       'terminal.ansiRed': P.urgent,
       'terminal.ansiGreen': P.success,
       'terminal.ansiYellow': P.accent,
-      'terminal.ansiBlue': P.steelBright,
+      'terminal.ansiBlue': P.ansiRose,
       'terminal.ansiMagenta': P.brandPurple,
       'terminal.ansiCyan': P.cyan,
       'terminal.ansiWhite': P.fg,
@@ -421,7 +488,7 @@ const vscodeTheme = (mode) => {
       'terminal.ansiBrightRed': P.urgentBright,
       'terminal.ansiBrightGreen': P.successBright,
       'terminal.ansiBrightYellow': P.accentBright,
-      'terminal.ansiBrightBlue': P.steel,
+      'terminal.ansiBrightBlue': P.ansiBrightRose,
       'terminal.ansiBrightMagenta': P.brandPurpleBright,
       'terminal.ansiBrightCyan': P.cyanBright,
       'terminal.ansiBrightWhite': mode === 'dark' ? P.ivory : P.fg,
@@ -753,9 +820,9 @@ const jetbrainsScheme = (mode) => {
   // incl. its ANSI-0 = bg exemption (ADR 0001 scoped the lift to Ghostty).
   const ansi = [
     ['BLACK', 'bg'], ['RED', 'urgent'], ['GREEN', 'success'], ['YELLOW', 'accent'],
-    ['BLUE', 'steelBright'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['GRAY', 'fg'],
+    ['BLUE', 'ansiRose'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['GRAY', 'fg'],
     ['DARKGRAY', 'fgDisabled'], ['RED_BRIGHT', 'urgentBright'], ['GREEN_BRIGHT', 'successBright'],
-    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'steel'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
+    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'ansiBrightRose'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
     ['CYAN_BRIGHT', 'cyanBright'], ['WHITE', mode === 'dark' ? 'ivory' : 'fg'],
   ];
 
@@ -803,9 +870,9 @@ const jetbrainsScheme = (mode) => {
   // BLACK/RED/…/WHITE + _BRIGHT, no GRAY/DARKGRAY aliases.
   const blockTerminal = [
     ['BLACK', 'bg'], ['RED', 'urgent'], ['GREEN', 'success'], ['YELLOW', 'accent'],
-    ['BLUE', 'steelBright'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['WHITE', 'fg'],
+    ['BLUE', 'ansiRose'], ['MAGENTA', 'brandPurple'], ['CYAN', 'cyan'], ['WHITE', 'fg'],
     ['BLACK_BRIGHT', 'fgDisabled'], ['RED_BRIGHT', 'urgentBright'], ['GREEN_BRIGHT', 'successBright'],
-    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'steel'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
+    ['YELLOW_BRIGHT', 'accentBright'], ['BLUE_BRIGHT', 'ansiBrightRose'], ['MAGENTA_BRIGHT', 'brandPurpleBright'],
     ['CYAN_BRIGHT', 'cyanBright'], ['WHITE_BRIGHT', mode === 'dark' ? 'ivory' : 'fg'],
   ];
 
@@ -1822,20 +1889,19 @@ end
 vim.g.terminal_color_1 = ${t('urgent')}
 vim.g.terminal_color_2 = ${t('success')}
 vim.g.terminal_color_3 = ${t('accent')}
--- Invariant: slots 4 and 12 must be a brightness pair on the same hue.
--- Markdown renderers emit bright-blue for inline code; sibling hues make it
--- render a visibly different color than the text around it. steelBright in 4
--- and steel in 12 is not a transposition: \`steel\` is the LIGHTER of the two
--- on dark (#b8cad4 vs #9fb6c4), because \`*Bright\` names a role, not a
--- lightness direction. Ghostty ships the same pairing.
-vim.g.terminal_color_4 = ${t('steelBright')}
+-- Invariant: slots 4 and 12 are a brightness pair on the same rose hue
+-- (#444). \`ansiBrightRose\` names the SLOT (bright blue, 12), not a
+-- lightness — lighter member on dark, darker on light; the direction lives
+-- entirely in the hexes. Ghostty ships the same pair; full derivation in
+-- _palette.json $notes.ansiRose.
+vim.g.terminal_color_4 = ${t('ansiRose')}
 vim.g.terminal_color_5 = ${t('brandPurple')}
 vim.g.terminal_color_6 = ${t('cyan')}
 vim.g.terminal_color_7 = ${t('fg')}
 vim.g.terminal_color_9 = ${t('urgentBright')}
 vim.g.terminal_color_10 = ${t('successBright')}
 vim.g.terminal_color_11 = ${t('accentBright')}
-vim.g.terminal_color_12 = ${t('steel')}
+vim.g.terminal_color_12 = ${t('ansiBrightRose')}
 vim.g.terminal_color_13 = ${t('brandPurpleBright')}
 vim.g.terminal_color_14 = ${t('cyanBright')}
 -- The one slot with no single token: ivory IS the light canvas, so bright
@@ -2088,6 +2154,12 @@ set -g status-right-style "fg=${P.fgSecondary}"
 
 setw -g window-status-style "fg=${P.fgSecondary}"
 setw -g window-status-current-style "fg=colour13,bold"
+# Load-bearing: tmux defaults both of these to \`reverse\`, which swaps fg/bg and
+# paints a light slab over the status bar. The window list is deliberately
+# two-state — active or not — so activity and bell match the inactive style
+# exactly. Do not "restore" a distinct treatment here.
+setw -g window-status-activity-style "fg=${P.fgSecondary}"
+setw -g window-status-bell-style "fg=${P.fgSecondary}"
 
 set -g pane-border-style "fg=${P.border}"
 set -g pane-active-border-style "fg=colour13"
@@ -2916,6 +2988,497 @@ write('starship/artificer-dark.toml',  starshipTheme('dark'));
 write('starship/artificer-light.toml', starshipTheme('light'));
 
 // ─────────────────────────────────────────────────────────────────────
+// ANSI 16 — the shared terminal sub-palette
+// ─────────────────────────────────────────────────────────────────────
+//
+// Zed's `terminal.ansi.*` keys and WezTerm's `ansi`/`brights` arrays are the
+// same sixteen slots in two spellings, so the token choice is made once here
+// rather than twice below. A terminal has no syntax layer: every program that
+// colours its own output (bat, ls, vim) is painting into these sixteen slots,
+// which makes this table the whole syntax bridge for both targets.
+//
+// This is the CANONICAL 16-slot map, not a new one: it matches ghosttyTheme's
+// `palette = N=` block slot for slot. Do not re-derive it from token names —
+// yellow reads backwards that way (it is `accent`, not `attention`), and
+// $notes.brandPurpleBrightDirection records why for the purple. (Blue used
+// to be the third trap — steel's pair was slot-inverted here until #444
+// rebound slots 4/12 to the straight-named `ansiRose`/`ansiBrightRose` rose
+// pair; $notes.ansiRose records the derivation.)
+//
+// It follows Ghostty rather than VS Code on exactly two slots, both the ADR
+// 0001 lift (re-derived in ADR 0036): slot 0 is `ansiBlack` and slot 8 is
+// `ansiBrightBlack`, preserving the invariant that slot 0 reads DIMMER than
+// slot 8. That lift is scoped to terminals, and both consumers here are one —
+// WezTerm outright, and Zed's `terminal.ansi.*` keys paint its integrated
+// terminal. VS Code's own map stays on `bg`/`fgDisabled` deliberately.
+//
+// One table, not two, because the normal and bright rows are indexed
+// POSITIONALLY by both consumers: split tables let a reorder in one silently
+// shift every colour in the other. Order is the fixed ANSI one and must stay
+// exactly eight entries.
+//
+// Bright white is the one mode-dependent slot — an object, resolved per mode.
+const ANSI_SLOTS = [
+  // [name, normal token, bright token]
+  ['black',   'ansiBlack',   'ansiBrightBlack'],
+  ['red',     'ansiRed',     'ansiBrightRed'],   // ADR 0042 — text-legible terminal reds
+  ['green',   'ansiGreen',   'ansiBrightGreen'], // ADR 0042 — text-legible terminal greens
+  ['yellow',  'accent',      'accentBright'],
+  ['blue',    'ansiRose',    'ansiBrightRose'],
+  ['magenta', 'brandPurple', 'brandPurpleBright'],
+  ['cyan',    'cyan',        'cyanBright'],
+  ['white',   'fg',          { dark: 'ivory', light: 'fg' }],
+];
+
+const ansiBrightToken = (bright, mode) => (typeof bright === 'string' ? bright : bright[mode]);
+
+// ─────────────────────────────────────────────────────────────────────
+// Zed — one theme FAMILY file carrying both variants
+// ─────────────────────────────────────────────────────────────────────
+//
+// Every other target in this file emits a dark file and a light file. Zed does
+// not work that way: a theme family is ONE JSON document with a `themes` array,
+// and the OS-appearance switch (`theme: {mode: "system", light, dark}` in the
+// user's settings.json) resolves variants BY NAME out of that one family. Two
+// files would show up as two unrelated families in the selector, so the shape
+// here is one write() call, not two. See docs/research/theming/zed.md.
+//
+// Two silent-failure modes shape what gets emitted:
+//
+//   1. An omitted key falls back to Zed's compile-time default theme rather
+//      than erroring (the Refineable trait). A typo therefore produces a
+//      wrong-but-plausible colour with nothing in the log. That cuts both
+//      ways, and the research's ruling is to lean on it: omit any key with no
+//      semantic source instead of inventing a value, because Zed's default is
+//      a saner baseline than a guess.
+//   2. Syntax keys are tree-sitter CAPTURE names, not a schema enum. A capture
+//      only paints if the active grammar emits it, and Zed's built-in grammars
+//      use a divergent subset — so these mirror assets/themes/one/one.json
+//      rather than any external tree-sitter standard.
+//
+// $schema is pinned for editor autocomplete only. It is NOT a runtime gate:
+// Zed deserializes without deny_unknown_fields, so a wrong key name is dropped
+// silently regardless of what $schema says.
+const ZED_SCHEMA = 'https://zed.dev/schema/themes/v0.2.0.json';
+
+// Alpha is appended at emit time on overlay roles only. Solid roles stay
+// six-digit for readability; both widths are valid in the same file.
+// The alpha byte is asserted, matching the guard the other emitters put on
+// theirs: a typo'd literal ('3D' uppercase, a three-char value) would otherwise
+// concatenate into a malformed colour that Zed drops silently at parse time,
+// which is the one failure this whole target has to stay ahead of.
+const withAlpha = (hex, alpha) => {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) {
+    throw new Error(
+      `zedTheme: base colour ${JSON.stringify(hex)} is not a six-digit hex. `
+      + 'Refusing to emit a malformed colour.'
+    );
+  }
+  if (!/^[0-9a-f]{2}$/.test(alpha)) {
+    throw new Error(
+      `zedTheme: alpha byte "${alpha}" is not two lowercase hex digits. `
+      + 'Refusing to emit a malformed colour.'
+    );
+  }
+  return `${hex}${alpha}`;
+};
+
+// One Artificer token fanned across every dotted style key that should carry
+// it. Written as token → keys (not key → token) because the fan-out is the
+// point: `bg` reaching six surfaces is the statement worth reading.
+const ZED_SOLID_KEYS = [
+  ['bg', [
+    'background',
+    'editor.background',
+    'editor.gutter.background',
+    'terminal.background',
+    'panel.background',
+    'surface.background',
+    'status_bar.background',
+    'toolbar.background',
+    'scrollbar.track.background',
+  ]],
+  ['bgRaised', [
+    'elevated_surface.background',
+    'title_bar.background',
+    'tab_bar.background',
+    'tab.active_background',
+    'editor.active_line.background',
+  ]],
+  ['bgInactive', [
+    'tab.inactive_background',
+  ]],
+  ['fg', [
+    'text',
+    'editor.foreground',
+    'terminal.foreground',
+    // terminal.ansi.* is owned by the ANSI_SLOTS loop below — listing a slot
+    // here too would shadow it, and the two would drift apart silently the
+    // first time one side's token changed.
+    'icon',
+    'editor.active_line_number',
+  ]],
+  ['fgSecondary', [
+    'text.muted',
+    'icon.muted',
+    'editor.line_number',
+  ]],
+  ['fgDisabled', [
+    'text.disabled',
+    'icon.disabled',
+    'text.placeholder',
+    'editor.invisible',
+  ]],
+  ['accent', [
+    'text.accent',
+    'icon.accent',
+    'border.focused',
+    'border.selected',
+    'link_text.hover',
+  ]],
+  ['border', [
+    'border',
+    'border.variant',
+    'border.disabled',
+    'editor.indent_guide',
+    'scrollbar.thumb.border',
+    'pane.focused_border',
+  ]],
+  ['borderLifted', [
+    'border.transparent',
+    'editor.indent_guide_active',
+  ]],
+  ['success', [
+    'success',
+    'success.border',
+    'created',
+    'created.border',
+  ]],
+  ['attention', [
+    'warning',
+    'warning.border',
+    'modified',
+    'modified.border',
+  ]],
+  ['urgent', [
+    'error',
+    'error.border',
+    'deleted',
+    'deleted.border',
+    'conflict',
+    'conflict.border',
+  ]],
+  ['steel', [
+    'info',
+    'info.border',
+    'hint',
+    'hint.border',
+  ]],
+];
+
+// Overlay roles — a translucent fill painted OVER a surface. These carry the
+// alpha byte; everything above stays opaque.
+const ZED_ALPHA_KEYS = [
+  ['selectionFill', '66', ['element.selected', 'editor.document_highlight.read_background']],
+  ['accentFill',    '33', ['element.hover', 'element.active', 'ghost_element.hover', 'ghost_element.active']],
+  ['attentionFill', '40', ['warning.background', 'modified.background', 'editor.document_highlight.write_background']],
+  ['successFill',   '40', ['success.background', 'created.background']],
+  ['urgentBright',  '33', ['error.background', 'deleted.background', 'conflict.background']],
+  ['steelFill',     '40', ['info.background', 'hint.background']],
+  ['border',        '80', ['scrollbar.thumb.background', 'drop_target.background']],
+];
+
+// Tree-sitter capture → [palette token, optional font_style, optional weight].
+// Captures mirror Zed's built-in One theme; a capture the active grammar never
+// emits is simply inert, which is why the list leans coarse (`variable` covers
+// grammars lacking a finer capture, per Zed's right-to-left capture fallback).
+const ZED_SYNTAX = [
+  ['keyword',                    syntaxToken('keyword')],
+  ['operator',                   syntaxToken('operator')],
+  ['string',                     syntaxToken('string')],
+  ['string.escape',              syntaxToken('constant')],
+  ['string.regex',               syntaxToken('constant')],
+  ['string.special',             syntaxToken('constant')],
+  ['string.special.symbol',      syntaxToken('constant')],
+  ['comment',                    syntaxToken('comment'), 'italic'],
+  ['comment.doc',                syntaxToken('comment'), 'italic'],
+  ['type',                       syntaxToken('type')],
+  ['enum',                       syntaxToken('type')],
+  ['constructor',                syntaxToken('type')],
+  ['constant',                   syntaxToken('constant')],
+  ['boolean',                    syntaxToken('constant')],
+  ['number',                     syntaxToken('constant')],
+  ['function',                   syntaxToken('function')],
+  ['function.method',            syntaxToken('function')],
+  ['variable',                   syntaxToken('variable')],
+  ['variable.special',           syntaxToken('parameter')],
+  ['property',                   syntaxToken('parameter')],
+  ['attribute',                  syntaxToken('parameter')],
+  ['label',                      syntaxToken('namespace')],
+  ['primary',                    syntaxToken('namespace')],
+  ['tag',                        syntaxToken('tag')],
+  ['preproc',                    syntaxToken('keyword')],
+  ['embedded',                   syntaxToken('namespace')],
+  ['link_text',                  syntaxToken('function'), 'italic'],
+  ['link_uri',                   syntaxToken('namespace')],
+  ['title',                      syntaxToken('type'), null, 'bold'],
+  ['emphasis',                   syntaxToken('variable'), 'italic'],
+  ['emphasis.strong',            syntaxToken('variable'), null, 'bold'],
+  ['text.literal',               syntaxToken('string')],
+  ['punctuation',                'fgSecondary'],
+  ['punctuation.bracket',        'fgSecondary'],
+  ['punctuation.delimiter',      'fgSecondary'],
+  ['punctuation.list_marker',    syntaxToken('keyword')],
+  ['punctuation.special',        syntaxToken('keyword')],
+  ['hint',                       'steel', 'italic'],
+  ['predictive',                 'fgDisabled', 'italic'],
+];
+
+// Collaborator cursors. Zed indexes this array positionally and wraps, so the
+// LOCAL user is always players[0] — accent belongs first or your own cursor
+// takes a peer's colour. Selections carry alpha; cursors do not.
+const ZED_PLAYER_TOKENS = [
+  'accent', 'success', 'brandPurpleBright', 'cyan',
+  'attentionAlt', 'urgentBright', 'steelBright', 'accentBright',
+];
+
+const zedVariant = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  // shellHexValue returns '' for a FALSY TOKEN NAME rather than throwing — an
+  // early return other emitters rely on for genuinely optional slots. This
+  // emitter has no optional slots, and it is the first whose token names are
+  // not all repo-authored literals: ZED_SYNTAX derives its tokens through
+  // syntaxToken(), a lookup into _palette.json's $roles.syntax. A missing role
+  // there would resolve to '' and emit `"color": ""`, which Zed drops silently.
+  // So an empty result is an error here, even though it is not one upstream.
+  //
+  // Honest note on what this is worth today: it has never been observed firing,
+  // because the jetbrains emitter runs first (write() at ~:1157 vs ~:3246) and
+  // its own unknown-token check rejects an empty syntax role before this one is
+  // reached. That makes this defence-in-depth against emitter ORDER, which is
+  // not a contract anyone declared — retire jetbrains, or move it below Zed,
+  // and this becomes the only arm left.
+  const hex = (token, where) => {
+    const value = shellHexValue(token, where, P, 'zedTheme');
+    if (!value) {
+      throw new Error(`zedTheme: ${where} resolved to an empty colour (token ${JSON.stringify(token)}).`);
+    }
+    return value;
+  };
+  const style = {};
+
+  for (const [token, keys] of ZED_SOLID_KEYS) {
+    const value = hex(token, `style.${keys[0]} (+${keys.length - 1} more)`);
+    for (const key of keys) style[key] = value;
+  }
+
+  for (const [token, alpha, keys] of ZED_ALPHA_KEYS) {
+    const value = withAlpha(hex(token, `style.${keys[0]} (alpha)`), alpha);
+    for (const key of keys) style[key] = value;
+  }
+
+  // One pass over the shared slot table. dim_* is Zed-specific and has no ANSI
+  // equivalent, so it reuses the normal row at reduced alpha rather than
+  // inventing eight more hues — emitted here so a slot can never gain a normal
+  // row and silently miss its dim twin.
+  for (const [name, normal, bright] of ANSI_SLOTS) {
+    const base = hex(normal, `terminal.ansi.${name}`);
+    style[`terminal.ansi.${name}`] = base;
+    style[`terminal.ansi.dim_${name}`] = withAlpha(base, 'b3');
+    style[`terminal.ansi.bright_${name}`] =
+      hex(ansiBrightToken(bright, mode), `terminal.ansi.bright_${name}`);
+  }
+
+  style.syntax = Object.fromEntries(ZED_SYNTAX.map(([capture, token, fontStyle, weight]) => {
+    // Only emit the keys that carry a value. An explicit null and an absent key
+    // mean the same thing to Zed's Refineable fallback, so emitting nulls would
+    // add ~140 lines to the file saying nothing.
+    const entry = { color: hex(token, `syntax.${capture}`) };
+    if (fontStyle) entry.font_style = fontStyle;
+    if (weight === 'bold') entry.font_weight = 700;
+    return [capture, entry];
+  }));
+
+  style.players = ZED_PLAYER_TOKENS.map((token, i) => {
+    const cursor = hex(token, `players[${i}].cursor`);
+    return { cursor, background: cursor, selection: withAlpha(cursor, '3d') };
+  });
+
+  // Indent-guide cycling and rainbow brackets read from this array, NOT from
+  // the editor.indent_guide keys above — omitting it leaves both on defaults
+  // that clash with the palette. Derived from players rather than re-resolved,
+  // so the two can never drift to different hues for the same token.
+  style.accents = style.players.map((p) => p.cursor);
+
+  return {
+    name: mode === 'dark' ? 'Artificer Dark' : 'Artificer Light',
+    appearance: mode,
+    style,
+  };
+};
+
+const zedTheme = () => JSON.stringify({
+  $schema: ZED_SCHEMA,
+  name: 'Artificer',
+  author: 'Cameron Sjo',
+  themes: [zedVariant('dark'), zedVariant('light')],
+}, null, 2) + '\n';
+
+write('zed/artificer.json', zedTheme());
+
+// ─────────────────────────────────────────────────────────────────────
+// WezTerm — a TOML colour scheme per mode
+// ─────────────────────────────────────────────────────────────────────
+//
+// TOML rather than Lua on purpose: a Lua scheme is executable code, a TOML one
+// is inert data, and WezTerm's own save_scheme docs make that the reason to
+// prefer TOML for anything distributed.
+//
+// The trap worth stating loudly, because it is invisible at generate time:
+// WezTerm selects a scheme by its [metadata] `name`, NOT by filename. Setting
+// color_scheme to the file stem ("artificer-dark") silently fails to load. The
+// footer of each generated file therefore quotes the name, not the path.
+//
+// Two files, not one: unlike Zed, WezTerm has no single-file dual-variant
+// mechanism — a scheme file holds exactly one palette. Dark/light follows the
+// OS through a scheme_for_appearance() snippet in the user's own wezterm.lua,
+// which is why this target is a Cat-1 file plus a Cat-3 paste rather than a
+// pure drop-in.
+//
+// Not emitted here, deliberately: [colors.tab_bar] is ignored by the DEFAULT
+// fancy tab bar (use_fancy_tab_bar defaults to true), which reads window_frame
+// from Lua instead. Emitting a tab_bar block into the TOML would look like
+// coverage while painting nothing, so the tab bar is documented as a Lua
+// fragment in themes/README.md rather than faked here.
+const WEZTERM_COLORS = [
+  // [TOML key, token, why]
+  ['background',      'terminalBg', null],
+  ['foreground',      'fg',         null],
+  // cursor_bg must differ from cursor_fg or the cell under the cursor goes
+  // invisible — a known I-beam bug, not a contrast preference.
+  ['cursor_bg',       'accent',     'must differ from cursor_fg'],
+  ['cursor_fg',       'bg',         null],
+  ['cursor_border',   'accentBright', null],
+  ['selection_bg',    'selectionFill', null],
+  ['selection_fg',    'fg',         null],
+  ['scrollbar_thumb', 'border',     null],
+  ['split',           'border',     null],
+  ['compose_cursor',  'attentionAlt', null],
+];
+
+const weztermScheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  const title = mode === 'dark' ? 'Dark' : 'Light';
+  const hex = (token, where) => shellHexValue(token, where, P, 'weztermScheme');
+
+  const rows = WEZTERM_COLORS.map(([key, token, why]) => {
+    const line = `${key.padEnd(16)}= "${hex(token, `[colors] ${key}`)}"`;
+    return why ? `${line}  # ${why}` : line;
+  });
+
+  // Exactly eight entries each, positionally indexed — WezTerm fills palette
+  // slots 0-7 from ansi and 8-15 from brights, so a short row misaligns every
+  // colour after the gap rather than erroring. Both rows come off the same
+  // slot table, which is what keeps them the same length and the same order.
+  const ansiRow = (pick, label) => ANSI_SLOTS
+    .map(([name, normal, bright]) => {
+      const token = pick === 'bright' ? ansiBrightToken(bright, mode) : normal;
+      return `  "${hex(token, `${label}.${name}`)}",  # ${name}`;
+    })
+    .join('\n');
+
+  return `# Artificer · ${title} — WezTerm colour scheme
+# Generated from themes/_palette.json — edit there + re-run build.mjs.
+#
+# Install: drop this file in ~/.config/wezterm/colors/ (no config needed), then
+# in wezterm.lua:
+#
+#   config.color_scheme = "Artificer ${title}"
+#
+# Select by the [metadata] NAME above, never the filename — pointing
+# color_scheme at the file stem silently fails to load the scheme.
+#
+# The tab bar is NOT themed by this file. WezTerm's default fancy tab bar
+# ignores [colors.tab_bar] entirely and reads window_frame from Lua; see the
+# WezTerm section of themes/README.md for that fragment.
+
+[metadata]
+name = "Artificer ${title}"
+author = "Cameron Sjo"
+origin_url = "https://github.com/cameronsjo/artificer-design-system"
+
+[colors]
+${rows.join('\n')}
+
+# Terminal programs have no syntax layer — these sixteen slots are where bat,
+# ls, vim and everything else land their colour.
+ansi = [
+${ansiRow('normal', 'ansi')}
+]
+
+brights = [
+${ansiRow('bright', 'brights')}
+]
+`;
+};
+
+write('wezterm/artificer-dark.toml',  weztermScheme('dark'));
+write('wezterm/artificer-light.toml', weztermScheme('light'));
+
+// The tab bar, as the one thing the scheme file structurally cannot carry.
+//
+// This is GENERATED rather than pasted into themes/README.md as prose, which
+// is where it started. Two hand-typed hexes in a doc are two values nothing
+// gates: `check:themes` regenerates and diffs emitted files, and it would
+// never have read a README code block, so a palette edit would have left the
+// titlebar stale with every gate green. Emitting it puts both modes under the
+// same drift check as everything else — and supplies the light variant, which
+// the prose version silently lacked.
+const weztermWindowFrame = () => {
+  const row = (mode) => {
+    const P = mode === 'dark' ? D : L;
+    const hex = (token) => shellHexValue(token, `window_frame.${mode}.${token}`, P, 'weztermWindowFrame');
+    return `M.${mode} = {
+  active_titlebar_bg   = '${hex('bgRaised')}',
+  inactive_titlebar_bg = '${hex('bg')}',
+}`;
+  };
+
+  return `-- Artificer — WezTerm window_frame (the fancy tab bar + titlebar)
+-- Generated from themes/_palette.json — edit there + re-run build.mjs.
+--
+-- Why this is separate from the colour scheme: use_fancy_tab_bar defaults to
+-- true, and the fancy bar ignores [colors.tab_bar] entirely, reading these
+-- window_frame keys instead. A scheme file cannot reach them at any value, so
+-- the TOML deliberately emits no tab_bar block rather than one that paints
+-- nothing.
+--
+-- Drop this next to your wezterm.lua, then:
+--
+--   local frame = require 'artificer-window-frame'
+--   config.window_frame = frame.dark          -- or frame.light
+--
+-- To follow the OS, guard the appearance call — wezterm.gui is nil when the
+-- MUX SERVER evaluates the config, and an unguarded call breaks config load
+-- entirely rather than falling back:
+--
+--   local wezterm = require 'wezterm'
+--   local dark = not wezterm.gui or wezterm.gui.get_appearance():find 'Dark'
+--   config.window_frame = dark and frame.dark or frame.light
+
+local M = {}
+
+${row('dark')}
+
+${row('light')}
+
+return M
+`;
+};
+
+write('wezterm/artificer-window-frame.lua', weztermWindowFrame());
+
+// ─────────────────────────────────────────────────────────────────────
 // yazi — theme.toml, third merge layer over preset → flavor
 // ─────────────────────────────────────────────────────────────────────
 //
@@ -3356,6 +3919,304 @@ ${block('light')}
 write('flux/artificer-flux.css', fluxTheme());
 
 // ─────────────────────────────────────────────────────────────────────
+// stylus/vikunja — Stylus UserCSS override for an upstream board we don't own
+// ─────────────────────────────────────────────────────────────────────
+//
+// Vikunja (vikunja.example.com, v2.5.0) is Vue + a Bulma-derived CSS variable
+// system: its shipped stylesheet carries ~349 custom properties across
+// `:root` and `.dark`. Two mechanics make that reachable without touching a
+// single upstream selector class:
+//
+//   1. Bulma composes most brand colors from HSL triplets — `--primary-h`,
+//      `--primary-s`, `--primary-l` feed `hsla(...)` for --primary itself
+//      AND for --primary-light/-dark (fixed lightness offsets Vikunja
+//      already tuned for contrast). Overriding the TRIPLET, not the
+//      composed leaf, lets Vikunja's own derivation keep producing
+//      correctly-related light/dark variants from OUR hue instead of us
+//      reinventing each one.
+//   2. Everything else (surfaces, text, borders) resolves through a
+//      ten-step grey scale (`--grey-50`..`--grey-900`) that most other
+//      properties reference via `var()`. CSS custom properties resolve
+//      lazily at used-value time, so overriding the ATOMIC grey step
+//      cascades into every var() consumer of it without restating each
+//      one by name.
+//
+// The dark selector is Vikunja's own user-setting class, `.dark` — verified
+// by reading the shipped CSS directly (`.dark{--grey-900-hsl:...}` etc.),
+// NOT `html.dark` and NOT a `prefers-color-scheme` media query, either of
+// which would only ever match one of Vikunja's two user-toggleable modes.
+//
+// No logo rule: a `content:` swap on a replaced `<img>` is unreliable. The
+// logo is a deliberate follow-up via Vikunja's own `service.customlogourl`.
+//
+// Known gap, not chased here: a handful of derived properties compose from
+// `--grey-100-hsl`, which Vikunja itself never defines (only grey-50 and
+// grey-900 carry an -hsl sibling) — those references are already inert
+// upstream and stay that way. `--border-hover` / `--border-light-hover` /
+// `--link-hover-border` / `--link-active-border` are hardcoded literals in
+// Vikunja's own CSS (identical across both modes upstream), so they're
+// listed as explicit per-mode overrides below rather than reached via the
+// grey cascade.
+
+// Hex → {h, s, l} in the same units Vikunja's own HSL triplets use
+// (h in degrees, s/l in percent) — lets our accent hex drive Vikunja's own
+// hsla() composition for primary/-light/-dark/-invert instead of us
+// restating every derived shade by hand.
+const hexToHsl = (hex) => {
+  const h6 = hex.replace('#', '');
+  // A shorthand (#333) or alpha (#RRGGBBAA) hex would silently parse to NaN and
+  // serialize as an invalid custom-property value the browser drops — the one
+  // variable then reverts to Vikunja's own default with nothing to show for it.
+  // Fail the build instead.
+  if (!/^[0-9a-fA-F]{6}$/.test(h6)) {
+    throw new Error(`hexToHsl: expected a 6-digit hex, got ${JSON.stringify(hex)}`);
+  }
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h6.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  let hue = 0;
+  let s = 0;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) hue = (g - b) / d + (g < b ? 6 : 0);
+    else if (max === g) hue = (b - r) / d + 2;
+    else hue = (r - g) / d + 4;
+    hue *= 60;
+  }
+  return {
+    h: Math.round(hue * 10) / 10,
+    s: Math.round(s * 1000) / 10,
+    l: Math.round(l * 1000) / 10,
+  };
+};
+
+// The atomic grey scale most of Vikunja's ~349 properties compose FROM via
+// var() — text, borders, surfaces, dropdown/table hover fills, tag color,
+// the logo (dark mode). Verified against the shipped CSS: --text:var(--grey-800),
+// --text-strong/--scheme-invert:var(--grey-900), --text-muted:var(--grey-500),
+// --border:var(--grey-200), --scheme-main-bis/-ter and dropdown/table hovers:
+// var(--grey-100). Vikunja's own scale is semantically inverted between modes
+// (grey-900 is near-black in light, near-white in dark) rather than one ramp
+// read backwards — so each step below is mapped independently per mode onto
+// Artificer's own surface/text ramp rather than mirrored arithmetically.
+const VIKUNJA_GREYS = [
+  // [Vikunja step, dark token, light token]
+  ['grey-50', 'bg', 'bg'], // page background (scheme-main -> white -> grey-50)
+  ['grey-100', 'bgRaised', 'bgRaised'], // scheme-main-bis/-ter, dropdown/table hover
+  ['grey-200', 'bgOverlay', 'bgOverlay'], // --border
+  ['grey-300', 'border', 'border'], // --text-light, --tag-color
+  ['grey-400', 'borderLifted', 'borderLifted'], // shared neutral mid-tone upstream
+  // --text-muted. Dark uses fgSecondary, not fgMuted: fgMuted-on-bgRaised
+  // measures 2.68:1 (below even the 3:1 UI floor; contrast-audit finding,
+  // #481) — and Vikunja's OWN dark grey-500 is a light grey (~65% HSL
+  // lightness) closer to fgSecondary's register than fgMuted's teal
+  // mid-tone, so this also tracks upstream's intent more faithfully.
+  // fgSecondary clears 7.26:1 on bgRaised / 8.29:1 on bg — verified higher on
+  // BOTH surfaces than fgMuted was, so the light-mode-adjacent bg case (which
+  // already passed at 3.05:1) is not put at risk by this dark-only change.
+  ['grey-500', 'fgSecondary', 'fgMuted'],
+  ['grey-600', 'fgSecondary', 'fgSecondary'], // button hover accents
+  ['grey-700', 'fgSecondary', 'fgSecondary'], // logo-text-color (light), misc hovers
+  ['grey-800', 'fg', 'fg'], // --text (primary body text)
+  ['grey-900', 'fg', 'fg'], // --text-strong, --scheme-invert
+];
+
+// Brand hues Vikunja composes via HSL triplet + a hardcoded #fff `-invert`.
+// invertRole picks ink/ivory per mode: dark.accent/attentionAlt/steel are
+// light-ish fills needing dark (ink) text, their light counterparts are
+// dark-ish fills needing light (ivory) text. danger and success are the
+// exception — both modes' urgent/success hexes are dark/saturated enough
+// that Artificer's own onUrgent/onSuccess notes ($notes in _palette.json)
+// call for ivory in BOTH modes, so those two pin invertRole to 'ivory'.
+const VIKUNJA_BRAND = [
+  // [Vikunja prefix, dark token, light token, invertRole]
+  ['primary', 'accent', 'accent', 'byMode'],
+  ['danger', 'urgent', 'urgent', 'ivory'],
+  ['warning', 'attentionAlt', 'attentionAlt', 'byMode'],
+  // Dark uses successFill, not bare success: ivory-on-dark-success measures
+  // 3.45:1 (below the 4.5:1 text floor; contrast-audit finding, #481) — the
+  // palette's own successFill note already names this exact failure and
+  // names successFill (5.67:1 ivory-on) as the fix. Light success already
+  // clears (successFill and success are the same hex in light mode).
+  ['success', 'successFill', 'success', 'ivory'],
+  ['info', 'steel', 'steel', 'byMode'],
+];
+
+// Hardcoded literals in Vikunja's own CSS that are NOT var()-composed (so
+// the grey-scale cascade above doesn't reach them) and NOT identical across
+// modes in spirit even though Vikunja ships one literal value for both today.
+const VIKUNJA_MISC = [
+  // [Vikunja property, dark token, light token]
+  ['border-hover', 'borderLifted', 'borderLifted'],
+  ['border-light', 'border', 'border'],
+  ['border-light-hover', 'borderLifted', 'borderLifted'],
+  ['link-hover-border', 'borderLifted', 'borderLifted'],
+  ['link-active-border', 'fg', 'fg'],
+];
+
+const stylusVikunjaTheme = () => {
+  const block = (mode) => {
+    const P = mode === 'dark' ? D : L;
+    const tok = (dTok, lTok) => P[mode === 'dark' ? dTok : lTok];
+
+    const greys = VIKUNJA_GREYS
+      .map(([step, dTok, lTok]) => `  --${step}: ${tok(dTok, lTok)};`)
+      .join('\n');
+
+    // grey-50 and grey-900 are the only two steps Vikunja also composes as an
+    // -hsl triplet (`hsla(var(--grey-900-hsl), .6)` for --input-placeholder-color
+    // etc.) — restate them as a triplet too so those derived properties track
+    // the same override rather than silently keeping Vikunja's original hue.
+    const bgHsl = hexToHsl(tok('bg', 'bg'));
+    const fgHsl = hexToHsl(tok('fg', 'fg'));
+    const greyHsl = [
+      `  --grey-50-hsl: ${bgHsl.h}, ${bgHsl.s}%, ${bgHsl.l}%;`,
+      `  --grey-900-hsl: ${fgHsl.h}, ${fgHsl.s}%, ${fgHsl.l}%;`,
+    ].join('\n');
+
+    const brand = VIKUNJA_BRAND
+      .map(([prefix, dTok, lTok, invertRole]) => {
+        const hex = tok(dTok, lTok);
+        const { h, s, l } = hexToHsl(hex);
+        const invert = invertRole === 'ivory' ? P.ivory : (mode === 'dark' ? P.ink : P.ivory);
+        return (
+          `  --${prefix}-h: ${h}deg;\n` +
+          `  --${prefix}-s: ${s}%;\n` +
+          `  --${prefix}-l: ${l}%;\n` +
+          `  --${prefix}-invert: ${invert};`
+        );
+      })
+      .join('\n');
+
+    const misc = VIKUNJA_MISC
+      .map(([prop, dTok, lTok]) => `  --${prop}: ${tok(dTok, lTok)};`)
+      .join('\n');
+
+    // Text selection isn't variable-driven in Bulma's system, so it's a
+    // plain per-mode rule alongside the custom-property block rather than
+    // something the grey/brand overrides above can reach.
+    const selector = mode === 'dark' ? '.dark' : ':root';
+    const selection =
+      `${selector} ::selection {\n` +
+      `  background: ${P.selectionFill};\n` +
+      `  color: ${P.fg};\n` +
+      `}`;
+
+    return `${selector} {\n${greys}\n${greyHsl}\n${brand}\n${misc}\n}\n\n${selection}`;
+  };
+
+  const header = `/* ==UserStyle==
+@name         Artificer — Vikunja
+@namespace    artificer
+@version      ${version}
+@description  Artificer's Jazz Age palette for vikunja.example.com (Vikunja v2.5.0)
+@author       Cameron Sjo
+@license      Apache-2.0
+@preprocessor default
+==/UserStyle== */`;
+
+  return `${header}
+
+@-moz-document domain("vikunja.example.com") {
+
+/* Generated from themes/_palette.json — edit there + re-run build.mjs.
+ *
+ * Vikunja composes most of its ~349 custom properties from a ten-step grey
+ * scale and five HSL-triplet brand hues (primary/danger/warning/success/info).
+ * Overriding those atoms cascades into every var() consumer without
+ * restating each one — see the comment above stylusVikunjaTheme() in
+ * build.mjs for the full reasoning and the known residual gap.
+ */
+
+${block('light')}
+
+${block('dark')}
+
+}
+`;
+};
+
+write('stylus/vikunja.user.css', stylusVikunjaTheme());
+
+// Hermes v0.20.1 native dashboard YAML. JSON is a YAML subset, which keeps the
+// generator dependency-free and lets tests consume the exact shipped artifact.
+// The pinned dashboard compiles Tailwind @theme inline: colorOverrides alone
+// cannot reach utilities such as bg-card / text-success. Its native customCSS
+// hook supplies these narrow aliases and removes them when switching themes.
+const hermesTheme = () => {
+  const mono = "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace";
+  const chrome = "'iA Writer Quattro S', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui, -apple-system, sans-serif";
+  const colors = {
+    card: D.bgRaised, cardForeground: D.fg,
+    popover: D.bgOverlay, popoverForeground: D.fg,
+    primary: D.accentFill, primaryForeground: D.ink,
+    secondary: D.bgOverlay, secondaryForeground: D.fg,
+    muted: D.bgRaised, mutedForeground: D.fgSecondary,
+    accent: D.bgOverlay, accentForeground: D.fg,
+    destructive: D.urgentText, destructiveForeground: D.ink,
+    success: D.ansiBrightGreen, warning: D.accent,
+    border: D.border, input: D.borderLifted, ring: D.accentBright,
+  };
+  const kebab = (key) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+  const aliases = Object.entries(colors).flatMap(([key, color]) => {
+    const slot = kebab(key);
+    return [`.bg-${slot} { background-color: ${color}; }`,
+      `.text-${slot} { color: ${color}; }`,
+      `.border-${slot} { border-color: ${color}; }`];
+  });
+  return {
+    name: 'artificer-dark', label: 'Artificer Dark',
+    description: 'Graphite surfaces, warm gold, quiet readable contrast.',
+    palette: {
+      background: { hex: D.bg, alpha: 1 },
+      midground: { hex: D.fg, alpha: 1 },
+      foreground: { hex: D.accent, alpha: 0 },
+      warmGlow: D.brandPurpleBright, noiseOpacity: 0,
+    },
+    // Artificer tool body, canonical interface face for headings/controls.
+    // Local stacks deliberately avoid an external font stylesheet request.
+    typography: { fontSans: mono, fontMono: mono, fontDisplay: chrome,
+      baseSize: '100%', lineHeight: '1.6', letterSpacing: '0' },
+    layout: { radius: '8px', density: 'comfortable' },
+    layoutVariant: 'standard', colorOverrides: colors,
+    componentStyles: { card: { background: D.bgRaised } },
+    customCSS: `/* Generated from Artificer tokens. Hermes removes this on theme switch. */
+:root {
+  color-scheme: dark;
+  --text-primary: ${D.fg};
+  --text-secondary: ${D.fgSecondary};
+  --text-tertiary: ${D.steelBright};
+  --text-disabled: ${D.fgDisabled};
+  --series-input-token: ${D.steel};
+  --series-output-token: ${D.ansiBrightGreen};
+  --font-rules-compressed: var(--theme-font-display);
+  --font-rules-expanded: var(--theme-font-display);
+  --font-mondwest: var(--theme-font-display);
+}
+body { font-variant-numeric: tabular-nums; }
+button, input, select, textarea, label, nav { font-family: var(--theme-font-display); }
+.font-courier { font-family: var(--theme-font-mono); }
+.font-compressed, .font-expanded, .text-display { letter-spacing: 0; }
+button.bg-midground { background-color: ${D.accentFill}; color: ${D.ink}; }
+button.bg-midground:hover { background-color: ${D.accent}; }
+a[aria-current="page"] { color: ${D.accent}; border-color: ${D.accent}; }
+.bg-success\\/15 { background-color: ${D.diffAddBg}; }
+.bg-warning\\/15 { background-color: ${D.bgOverlay}; }
+.bg-background-base\\/95, .bg-background-base\\/98 { background-color: ${D.bgOverlay}; }
+${aliases.join('\n')}
+.bg-card\\/50 { background-color: ${D.bgRaised}; }
+:is(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid ${D.accentBright}; outline-offset: 2px;
+}
+::selection { background: ${D.selectionFill}; color: ${D.fg}; }
+`,
+  };
+};
+write('hermes/artificer-dark.yaml', JSON.stringify(hermesTheme(), null, 2) + '\n');
+
+// ─────────────────────────────────────────────────────────────────────
 // Browsers — Chrome / Edge (Chromium) + Firefox
 // ─────────────────────────────────────────────────────────────────────
 //
@@ -3396,9 +4257,12 @@ const BROWSER_SLOTS = [
   ['frame_incognito_inactive',              'bgInactive',    'chromium', 'unfocused incognito frame'],
   ['ntp_background',                        'bg',            'both',     'the new-tab page — its own surface, not the toolbar\'s'],
 
-  // the toolbar strip and the selected tab sit one rung up, as raised chrome
-  ['toolbar',                               'bgRaised',      'both',     'the toolbar strip and the selected tab'],
-  ['tab_selected',                          'bgRaised',      'firefox',  'selected tab (Chromium derives it from `toolbar`)'],
+  // the toolbar strip and the selected tab sit two rungs up, so the selected tab
+  // reads against the frame; one rung (bgRaised) was ~1.1:1 and invisible
+  ['toolbar',                               'bgOverlay',     'both',     'the toolbar strip and the selected tab'],
+  ['tab_selected',                          'bgOverlay',     'firefox',  'selected tab (Chromium derives it from `toolbar`)'],
+
+  // other raised chrome stays one rung up
   ['sidebar',                               'bgRaised',      'firefox',  'sidebar panel background'],
   ['ntp_card_background',                   'bgRaised',      'firefox',  'new-tab-page cards'],
   ['ntp_header',                            'bgRaised',      'chromium', 'new-tab-page header band'],
@@ -3410,12 +4274,14 @@ const BROWSER_SLOTS = [
   ['background_tab_incognito',              'bg',            'chromium', 'unselected incognito tab'],
   ['background_tab_incognito_inactive',     'bgInactive',    'chromium', 'unselected incognito tab, unfocused window'],
 
-  // the URL bar and popups are the overlay rung
-  ['toolbar_field',                         'bgOverlay',     'firefox',  'the URL bar'],
-  ['toolbar_field_focus',                   'bgOverlay',     'firefox',  'the URL bar while focused'],
-  ['omnibox_background',                    'bgOverlay',     'chromium', 'the URL bar (Chromium spelling)'],
-  ['popup',                                 'bgOverlay',     'firefox',  'autocomplete + doorhanger panels'],
-  ['button_background_hover',               'bgOverlay',     'firefox',  'toolbar button hover'],
+  // the URL bar is a sunken field in the lifted toolbar
+  ['toolbar_field',                         'bg',            'firefox',  'the URL bar'],
+  ['toolbar_field_focus',                   'bg',            'firefox',  'the URL bar while focused'],
+  ['omnibox_background',                    'bg',            'chromium', 'the URL bar (Chromium spelling)'],
+
+  // popups and toolbar-button hover go one step past the toolbar they sit on
+  ['popup',                                 'bgFloat',       'firefox',  'autocomplete + doorhanger panels'],
+  ['button_background_hover',               'bgFloat',       'firefox',  'toolbar button hover'],
 
   // primary text, everywhere it lands on bg / bgRaised / bgOverlay
   ['tab_text',                              'fg',            'both',     'selected-tab text'],
@@ -3480,10 +4346,20 @@ const rgbArray = (hex) => {
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
 };
 
-const BROWSER_BLURB =
-  'Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in '
-  + 'the dark, sienna on ivory paper in the light. Generated from the same '
-  + 'palette as the Artificer design system\'s editor and terminal themes.';
+// The Chrome Web Store hard-rejects a manifest `description` over 132
+// characters (UTF-16 units — the store's own count matched .length). Firefox
+// has no cap but shares the blurb so both listings say the same thing. The
+// literal stays on ONE line on purpose: scripts/browser-theme.test.mjs reads
+// it out of this file as text to prove the committed manifests match it —
+// they are drift: false, so nothing else regenerates and diffs them.
+const BROWSER_BLURB_MAX = 132;
+const BROWSER_BLURB = 'Artificer — a Jazz Age palette for tool surfaces: burnished gold on slate in the dark, sienna on ivory paper in the light.';
+const browserDescription = () => {
+  if (BROWSER_BLURB.length > BROWSER_BLURB_MAX) {
+    throw new Error(`BROWSER_BLURB is ${BROWSER_BLURB.length} chars; the Chrome Web Store caps manifest description at ${BROWSER_BLURB_MAX}`);
+  }
+  return BROWSER_BLURB;
+};
 
 // The 128×128 mark committed in every package directory (rendered from
 // src/assets/favicon.svg). Both manifests must NAME it: pack-browser.mjs puts
@@ -3502,7 +4378,7 @@ const chromiumTheme = (mode) => {
     manifest_version: 3,
     name: mode === 'dark' ? 'Artificer Dark' : 'Artificer Light',
     version,
-    description: BROWSER_BLURB,
+    description: browserDescription(),
     icons: BROWSER_ICONS,
     theme: { colors },
   }, null, 2) + '\n';
@@ -3536,7 +4412,7 @@ const firefoxTheme = () => {
     manifest_version: 2,
     name: 'Artificer',
     version,
-    description: BROWSER_BLURB,
+    description: browserDescription(),
     icons: BROWSER_ICONS,
     browser_specific_settings: {
       gecko: { id: FIREFOX_ADDON_ID, strict_min_version: FIREFOX_MIN_VERSION },

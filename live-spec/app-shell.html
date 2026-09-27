@@ -17,7 +17,7 @@
   /* full-bleed demo strip — a horizontal scroll-snap filmstrip reaching the pane edge */
   .strip { display: flex; gap: var(--s-md); overflow-x: auto; scroll-snap-type: x mandatory;
            padding: var(--s-md) var(--s-lg); background: var(--bg-inactive); }
-  .strip > * { scroll-snap-align: start; flex: 0 0 240px; height: 96px; border-radius: var(--radius-md);
+  .strip > * { scroll-snap-align: start; flex: 0 0 240px; height: var(--s-3xl); border-radius: var(--radius-md);
                background: var(--bg-raised); border: 1px solid var(--border); display: grid; place-items: center;
                color: var(--fg-secondary); }
   /* a deliberately wide child — the overflow stress test */

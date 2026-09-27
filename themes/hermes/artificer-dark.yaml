@@ -1,0 +1,61 @@
+{
+  "name": "artificer-dark",
+  "label": "Artificer Dark",
+  "description": "Graphite surfaces, warm gold, quiet readable contrast.",
+  "palette": {
+    "background": {
+      "hex": "#292c33",
+      "alpha": 1
+    },
+    "midground": {
+      "hex": "#e8e6e1",
+      "alpha": 1
+    },
+    "foreground": {
+      "hex": "#dbbb6f",
+      "alpha": 0
+    },
+    "warmGlow": "#b095e0",
+    "noiseOpacity": 0
+  },
+  "typography": {
+    "fontSans": "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+    "fontMono": "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+    "fontDisplay": "'iA Writer Quattro S', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui, -apple-system, sans-serif",
+    "baseSize": "100%",
+    "lineHeight": "1.6",
+    "letterSpacing": "0"
+  },
+  "layout": {
+    "radius": "8px",
+    "density": "comfortable"
+  },
+  "layoutVariant": "standard",
+  "colorOverrides": {
+    "card": "#313540",
+    "cardForeground": "#e8e6e1",
+    "popover": "#3c4150",
+    "popoverForeground": "#e8e6e1",
+    "primary": "#c4932a",
+    "primaryForeground": "#20203e",
+    "secondary": "#3c4150",
+    "secondaryForeground": "#e8e6e1",
+    "muted": "#313540",
+    "mutedForeground": "#c5c8c6",
+    "accent": "#3c4150",
+    "accentForeground": "#e8e6e1",
+    "destructive": "#e6a8a2",
+    "destructiveForeground": "#20203e",
+    "success": "#7ab88c",
+    "warning": "#dbbb6f",
+    "border": "#4a4f5c",
+    "input": "#5a606e",
+    "ring": "#e3c885"
+  },
+  "componentStyles": {
+    "card": {
+      "background": "#313540"
+    }
+  },
+  "customCSS": "/* Generated from Artificer tokens. Hermes removes this on theme switch. */\n:root {\n  color-scheme: dark;\n  --text-primary: #e8e6e1;\n  --text-secondary: #c5c8c6;\n  --text-tertiary: #9fb6c4;\n  --text-disabled: #666666;\n  --series-input-token: #b8cad4;\n  --series-output-token: #7ab88c;\n  --font-rules-compressed: var(--theme-font-display);\n  --font-rules-expanded: var(--theme-font-display);\n  --font-mondwest: var(--theme-font-display);\n}\nbody { font-variant-numeric: tabular-nums; }\nbutton, input, select, textarea, label, nav { font-family: var(--theme-font-display); }\n.font-courier { font-family: var(--theme-font-mono); }\n.font-compressed, .font-expanded, .text-display { letter-spacing: 0; }\nbutton.bg-midground { background-color: #c4932a; color: #20203e; }\nbutton.bg-midground:hover { background-color: #dbbb6f; }\na[aria-current=\"page\"] { color: #dbbb6f; border-color: #dbbb6f; }\n.bg-success\\/15 { background-color: #1f3a28; }\n.bg-warning\\/15 { background-color: #3c4150; }\n.bg-background-base\\/95, .bg-background-base\\/98 { background-color: #3c4150; }\n.bg-card { background-color: #313540; }\n.text-card { color: #313540; }\n.border-card { border-color: #313540; }\n.bg-card-foreground { background-color: #e8e6e1; }\n.text-card-foreground { color: #e8e6e1; }\n.border-card-foreground { border-color: #e8e6e1; }\n.bg-popover { background-color: #3c4150; }\n.text-popover { color: #3c4150; }\n.border-popover { border-color: #3c4150; }\n.bg-popover-foreground { background-color: #e8e6e1; }\n.text-popover-foreground { color: #e8e6e1; }\n.border-popover-foreground { border-color: #e8e6e1; }\n.bg-primary { background-color: #c4932a; }\n.text-primary { color: #c4932a; }\n.border-primary { border-color: #c4932a; }\n.bg-primary-foreground { background-color: #20203e; }\n.text-primary-foreground { color: #20203e; }\n.border-primary-foreground { border-color: #20203e; }\n.bg-secondary { background-color: #3c4150; }\n.text-secondary { color: #3c4150; }\n.border-secondary { border-color: #3c4150; }\n.bg-secondary-foreground { background-color: #e8e6e1; }\n.text-secondary-foreground { color: #e8e6e1; }\n.border-secondary-foreground { border-color: #e8e6e1; }\n.bg-muted { background-color: #313540; }\n.text-muted { color: #313540; }\n.border-muted { border-color: #313540; }\n.bg-muted-foreground { background-color: #c5c8c6; }\n.text-muted-foreground { color: #c5c8c6; }\n.border-muted-foreground { border-color: #c5c8c6; }\n.bg-accent { background-color: #3c4150; }\n.text-accent { color: #3c4150; }\n.border-accent { border-color: #3c4150; }\n.bg-accent-foreground { background-color: #e8e6e1; }\n.text-accent-foreground { color: #e8e6e1; }\n.border-accent-foreground { border-color: #e8e6e1; }\n.bg-destructive { background-color: #e6a8a2; }\n.text-destructive { color: #e6a8a2; }\n.border-destructive { border-color: #e6a8a2; }\n.bg-destructive-foreground { background-color: #20203e; }\n.text-destructive-foreground { color: #20203e; }\n.border-destructive-foreground { border-color: #20203e; }\n.bg-success { background-color: #7ab88c; }\n.text-success { color: #7ab88c; }\n.border-success { border-color: #7ab88c; }\n.bg-warning { background-color: #dbbb6f; }\n.text-warning { color: #dbbb6f; }\n.border-warning { border-color: #dbbb6f; }\n.bg-border { background-color: #4a4f5c; }\n.text-border { color: #4a4f5c; }\n.border-border { border-color: #4a4f5c; }\n.bg-input { background-color: #5a606e; }\n.text-input { color: #5a606e; }\n.border-input { border-color: #5a606e; }\n.bg-ring { background-color: #e3c885; }\n.text-ring { color: #e3c885; }\n.border-ring { border-color: #e3c885; }\n.bg-card\\/50 { background-color: #313540; }\n:is(button, a, input, select, textarea, [tabindex]):focus-visible {\n  outline: 2px solid #e3c885; outline-offset: 2px;\n}\n::selection { background: #7a5a10; color: #e8e6e1; }\n"
+}

@@ -60,7 +60,7 @@ You need, at minimum: **`artificer.css`**. Add `artificer-theme.js` (toggle),
   <!-- Leave the button EMPTY — artificer-theme.js injects the glyph and
        narrates state (dark → light → auto) on aria-label/title. -->
   <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-  <main class="container container--md" style="padding:48px 24px">
+  <main class="container container--md container--page">
     <h1 class="t-headline-lg">It works.</h1>
     <p class="t-body-md" style="color:var(--fg-secondary)">A first surface, themed.</p>
     <button class="btn btn--primary">Primary action</button>

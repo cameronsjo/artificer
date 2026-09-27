@@ -53,7 +53,7 @@ Per mode, map `_palette.json` tokens onto the 16-slot ANSI table plus the four e
 - `red` ← `urgent`; `brightRed` ← `urgentBright`
 - `green` ← `success`; `brightGreen` ← `successBright` (`string` role)
 - `yellow` ← `accentFill`/`accent`; `brightYellow` ← `accentBright` (`function`/`constant`)
-- `blue` ← `steelFill`/`brandPurple`; `brightBlue` ← `steelBright`/`brandPurpleBright` (`parameter`)
+- `blue` ← `ansiRose`; `brightBlue` ← `ansiBrightRose` — the canonical slot 4/12 binding since #444 (`ANSI_SLOTS` in `themes/build.mjs`); this doc's original steel/purple suggestion predates the rose rebind
 - `purple` ← `brandPurple`; `brightPurple` ← `brandPurpleBright` (`keyword` → WT's slot-5 magenta)
 - `cyan` ← `cyan`; `brightCyan` ← `cyanBright` (`namespace`)
 - `white` ← `fgSecondary`; `brightWhite` ← `fg`
@@ -77,7 +77,7 @@ No claims were **refuted** outright; two `[verified]` claims carried *sub-detail
 ## Tips & tricks
 
 - Ship the scheme as a **JSON Fragment Extension** (Cat 1) rather than asking users to hand-edit `settings.json` — it survives settings resets and is chezmoi-templatable to the AppData Fragments path.
-- Reuse Artificer's existing ANSI-ish roles directly: `cyan`→cyan, `urgent`→red, `success`→green, `accent` (gold/sienna)→yellow, `brandPurple`→purple, `steel`→blue. The palette already thinks in these terms, so the 16-slot map is near-mechanical.
+- Reuse Artificer's existing ANSI-ish roles directly: `cyan`→cyan, `urgent`→red, `success`→green, `accent` (gold/sienna)→yellow, `brandPurple`→purple, `ansiRose`→blue (rose since #444 — not steel). The palette already thinks in these terms, so the 16-slot map is near-mechanical; take the whole table from `ANSI_SLOTS` in `themes/build.mjs` rather than re-deriving it.
 - Put `intenseTextStyle: "bold"` (or `"all"`) in the install instructions / `updates` block for light mode — the scheme alone can't keep bold text readable.
 - Always set explicit `cursorColor` and `selectionBackground`, especially for light mode. Never rely on WT defaults.
 - The 12 Artificer syntax roles collapse into 16 ANSI slots — WT can't do per-token syntax colors. Accept the loss, pick closest slots, and document that syntax fidelity comes from the shell/app (bat, lazygit), not the terminal scheme.

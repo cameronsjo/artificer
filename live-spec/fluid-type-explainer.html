@@ -7,22 +7,20 @@
 <link rel="stylesheet" href="artificer.css" />
 <style>
   body { margin: 0; }
-  main { max-width: 920px; margin: 0 auto; padding: 48px 24px 96px; }
-  .lede { color: var(--fg-secondary); max-width: 64ch; }
+  main { max-width: 920px; margin: 0 auto; padding: var(--s-2xl) var(--s-lg) var(--s-3xl); }
 
   /* The control */
   .control { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); margin: var(--s-xl) 0; }
   .control__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-md); margin-bottom: var(--s-sm); }
   .control__label { font-family: var(--font-sans); font-size: var(--t-label-md-size); font-weight: 500; }
   .control__val { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-  .ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--fg-disabled); margin-top: 6px; }
+  .ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: var(--t-label-xs-size); color: var(--fg-disabled); margin-top: 6px; }
 
   /* Side-by-side */
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
   .col { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); min-height: 220px; display: flex; flex-direction: column; }
   .col--fluid { border-color: var(--accent); }
-  .col__tag { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; margin-bottom: var(--s-xs); }
+  .col__tag { margin-bottom: var(--s-xs); }
   .col--fixed .col__tag { color: var(--fg-secondary); }
   .col--fluid .col__tag { color: var(--accent); }
   .col__note { font-family: var(--font-sans); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin: 0 0 var(--s-lg); min-height: 2.6em; }
@@ -30,15 +28,12 @@
   .readout { font-family: var(--font-mono); font-size: var(--t-label-sm-size); color: var(--fg-secondary); margin-top: var(--s-lg); font-variant-numeric: tabular-nums; }
   .readout b { color: var(--fg); }
 
-  h2 { font-family: var(--font-mono); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-secondary); margin: var(--s-2xl) 0 var(--s-md); padding-bottom: var(--s-sm); border-bottom: 1px solid var(--border); }
   .tradeoff { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
   @media (max-width: 720px) { .tradeoff { grid-template-columns: 1fr; } }
-  .td { background: var(--bg-raised); border-radius: var(--radius-md); padding: var(--s-lg); }
   .td h3 { font-family: var(--font-mono); font-size: 14px; margin: 0 0 var(--s-sm); }
   .td ul { margin: 0; padding-left: 1.2em; color: var(--fg-secondary); font-size: var(--t-body-md-size); line-height: 1.7; }
   .td li b { color: var(--fg); }
-  .ruling { background: var(--bg-raised); border-left: 2px solid var(--accent); border-radius: var(--radius-md); padding: var(--s-md) var(--s-lg); margin-top: var(--s-md); }
-  .ruling .k { font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .ruling { margin-top: var(--s-md); }
   code { font-family: var(--font-mono); font-size: .9em; color: var(--accent); }
 </style>
 </head>
@@ -46,7 +41,7 @@
 <main>
   <p class="crumb">Artificer · Decision aid · Fixed vs fluid type</p>
   <h1 class="t-headline-lg">what "fluid type" means.</h1>
-  <p class="t-body-lg lede">Same headline, two sizing rules. <b class="anchor">Drag the slider</b> to simulate a viewport — phone to wide desktop — and watch what each does. The fixed one never moves; the fluid one breathes with the screen.</p>
+  <p class="t-body-lg meta">Same headline, two sizing rules. <b class="anchor">Drag the slider</b> to simulate a viewport — phone to wide desktop — and watch what each does. The fixed one never moves; the fluid one breathes with the screen.</p>
 
   <div class="control">
     <div class="control__row">
@@ -57,24 +52,24 @@
     <div class="ticks"><span>360 phone</span><span>800 tablet</span><span>1280 laptop</span><span>1600 wide</span></div>
   </div>
 
-  <div class="cols">
+  <div class="grid-2">
     <div class="col col--fixed">
-      <div class="col__tag">Fixed scale · today</div>
+      <div class="col__tag eyebrow">Fixed scale · today</div>
       <p class="col__note">One value, every screen. The system's current rule.</p>
       <p class="sample" id="fixedSample" style="font-size:28px">Quarterly review.</p>
       <div class="readout">size: <b id="fixedSize">28px</b> · always</div>
     </div>
     <div class="col col--fluid">
-      <div class="col__tag">Fluid · proposed (editorial only)</div>
+      <div class="col__tag eyebrow">Fluid · proposed (editorial only)</div>
       <p class="col__note">Scales between a floor and a ceiling with the viewport: <code>clamp(22px, …, 40px)</code>.</p>
       <p class="sample" id="fluidSample" style="font-size:30px">Quarterly review.</p>
       <div class="readout">size: <b id="fluidSize">30px</b> · 22px → 40px</div>
     </div>
   </div>
 
-  <h2>The tradeoff</h2>
+  <h2 class="section-title">The tradeoff</h2>
   <div class="tradeoff">
-    <div class="td">
+    <div class="td card">
       <h3>Fixed (keep)</h3>
       <ul>
         <li><b>Predictable.</b> 28px is 28px — in a dense table header, a modal, a phone, a 4K monitor.</li>
@@ -82,7 +77,7 @@
         <li><b>Cost:</b> on a very wide screen a hero title can feel a touch small; on a phone it's fine.</li>
       </ul>
     </div>
-    <div class="td">
+    <div class="td card">
       <h3>Fluid (the option)</h3>
       <ul>
         <li><b>Presence.</b> A title grows on big screens (more impact) and shrinks on phones (less cramped).</li>
@@ -92,8 +87,8 @@
     </div>
   </div>
 
-  <div class="ruling">
-    <div class="k">Proposed ruling</div>
+  <div class="ruling callout">
+    <div class="k callout__title eyebrow eyebrow--accent">Proposed ruling</div>
     <p style="margin:0;color:var(--fg-secondary)">Keep the <b style="color:var(--fg)">fixed scale for everything operational</b> (tools, data, chrome, the core <code>--t-*</code> tokens). Allow fluid <b style="color:var(--fg)">only on editorial hero titles</b> — long-form reading surfaces (<code>.surface-editorial</code>), where reading, not operating, makes "presence on a big screen" worth the unpredictability. Written as a carve when the editorial surface lands (v0.9.0 PR B).</p>
   </div>
 </main>

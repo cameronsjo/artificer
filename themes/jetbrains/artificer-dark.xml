@@ -45,7 +45,7 @@
 		<option name="CONSOLE_RED_OUTPUT" value="a04540" />
 		<option name="CONSOLE_GREEN_OUTPUT" value="4a8a5e" />
 		<option name="CONSOLE_YELLOW_OUTPUT" value="dbbb6f" />
-		<option name="CONSOLE_BLUE_OUTPUT" value="9fb6c4" />
+		<option name="CONSOLE_BLUE_OUTPUT" value="c4808a" />
 		<option name="CONSOLE_MAGENTA_OUTPUT" value="9070d0" />
 		<option name="CONSOLE_CYAN_OUTPUT" value="7da6a4" />
 		<option name="CONSOLE_GRAY_OUTPUT" value="e8e6e1" />
@@ -53,7 +53,7 @@
 		<option name="CONSOLE_RED_BRIGHT_OUTPUT" value="b85a55" />
 		<option name="CONSOLE_GREEN_BRIGHT_OUTPUT" value="5fa073" />
 		<option name="CONSOLE_YELLOW_BRIGHT_OUTPUT" value="e3c885" />
-		<option name="CONSOLE_BLUE_BRIGHT_OUTPUT" value="b8cad4" />
+		<option name="CONSOLE_BLUE_BRIGHT_OUTPUT" value="d9a6ae" />
 		<option name="CONSOLE_MAGENTA_BRIGHT_OUTPUT" value="b095e0" />
 		<option name="CONSOLE_CYAN_BRIGHT_OUTPUT" value="9bc1bf" />
 		<option name="CONSOLE_WHITE_OUTPUT" value="f5ead0" />
@@ -494,7 +494,7 @@
 		</option>
 		<option name="BLOCK_TERMINAL_BLUE">
 			<value>
-				<option name="FOREGROUND" value="9fb6c4" />
+				<option name="FOREGROUND" value="c4808a" />
 			</value>
 		</option>
 		<option name="BLOCK_TERMINAL_MAGENTA">
@@ -534,7 +534,7 @@
 		</option>
 		<option name="BLOCK_TERMINAL_BLUE_BRIGHT">
 			<value>
-				<option name="FOREGROUND" value="b8cad4" />
+				<option name="FOREGROUND" value="d9a6ae" />
 			</value>
 		</option>
 		<option name="BLOCK_TERMINAL_MAGENTA_BRIGHT">

@@ -9,9 +9,8 @@
 <link rel="stylesheet" href="print.css" media="print"/>
 <script src="artificer-theme.js" defer></script>
 <style>
-  h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); }
-  @media (max-width: 720px) { .row2 { grid-template-columns: 1fr; } }
+
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
   .swatch { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-secondary); }
   .swatch i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
   .palette { display: flex; gap: var(--s-sm); flex-wrap: wrap; }
@@ -24,7 +23,7 @@
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
-<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--lg container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Charts</p>
   <h1 class="t-headline-lg">charts.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">
@@ -37,10 +36,10 @@
   <h2 class="section-title">Three modes</h2>
   <p class="meta">Default to <b class="anchor">sparse</b>. Switch to <b class="anchor">editorial</b> when a single chart needs to make a point. Switch to <b class="anchor">console</b> when you're showing dense multi-series data to an operator.</p>
 
-  <div class="row2">
+  <div class="grid-2">
     <!-- Sparse -->
     <div>
-      <h3>Sparse <span style="color:var(--fg-disabled);font-weight:400">— default</span></h3>
+      <h3 class="subsection-title">Sparse <span style="color:var(--fg-disabled);font-weight:400">— default</span></h3>
       <div class="figure">
         <div class="chart">
           <div class="chart__header"><h5 class="chart__title">Requests · 7d</h5><div class="chart__value">12.4k</div></div>
@@ -60,7 +59,7 @@
 
     <!-- Editorial -->
     <div>
-      <h3>Editorial <span style="color:var(--fg-disabled);font-weight:400">— annotated</span></h3>
+      <h3 class="subsection-title">Editorial <span style="color:var(--fg-disabled);font-weight:400">— annotated</span></h3>
       <div class="figure">
         <div class="chart">
           <div class="chart__header"><h5 class="chart__title">Active users</h5><div class="chart__value">8,420</div></div>
@@ -80,7 +79,7 @@
     </div>
   </div>
 
-  <h3>Console <span style="color:var(--fg-disabled);font-weight:400">— dense multi-series, ops</span></h3>
+  <h3 class="subsection-title">Console <span style="color:var(--fg-disabled);font-weight:400">— dense multi-series, ops</span></h3>
   <div class="figure">
     <div class="chart">
       <div class="chart__header">
@@ -122,7 +121,7 @@
   <h2 class="section-title">Color rules</h2>
   <p class="meta">Three modes, one rule for each. <b class="anchor">Don't blend modes in the same chart.</b></p>
 
-  <h3>1 · Grayscale + accent <span style="color:var(--fg-disabled);font-weight:400">— hierarchy mode</span></h3>
+  <h3 class="subsection-title">1 · Grayscale + accent <span style="color:var(--fg-disabled);font-weight:400">— hierarchy mode</span></h3>
   <p class="meta">Use when one series is the answer and the others are context. Series 1 is the accent; the rest are gray.</p>
   <div class="figure">
     <div class="palette">
@@ -133,7 +132,7 @@
     </div>
   </div>
 
-  <h3>2 · Categorical 5 <span style="color:var(--fg-disabled);font-weight:400">— peer mode</span></h3>
+  <h3 class="subsection-title">2 · Categorical 5 <span style="color:var(--fg-disabled);font-weight:400">— peer mode</span></h3>
   <p class="meta">Use when series are peers (services, regions, products). Cap at 5 — beyond that, regroup.</p>
   <div class="figure">
     <div class="palette">
@@ -145,7 +144,7 @@
     </div>
   </div>
 
-  <h3>3 · Sequential ramp <span style="color:var(--fg-disabled);font-weight:400">— quantitative encoding</span></h3>
+  <h3 class="subsection-title">3 · Sequential ramp <span style="color:var(--fg-disabled);font-weight:400">— quantitative encoding</span></h3>
   <p class="meta">Use when color encodes a number (heatmap, choropleth, density). Single hue, 5 stops.</p>
   <div class="figure">
     <div class="ramp">
@@ -155,12 +154,12 @@
       <i style="background:var(--ramp-4)"></i>
       <i style="background:var(--ramp-5)"></i>
     </div>
-    <div class="cluster" style="margin-top:var(--s-sm);font-family:var(--font-mono);font-size:11px;color:var(--fg-secondary)">
+    <div class="cluster" style="margin-top:var(--s-sm);font-family:var(--font-mono);font-size: var(--t-label-xs-size);color:var(--fg-secondary)">
       <span>0</span><span style="margin-left:auto">1.0</span>
     </div>
   </div>
 
-  <h3>Diverging (signed deltas) <span style="color:var(--fg-disabled);font-weight:400">— bonus</span></h3>
+  <h3 class="subsection-title">Diverging (signed deltas) <span style="color:var(--fg-disabled);font-weight:400">— bonus</span></h3>
   <div class="figure">
     <div class="palette">
       <span class="swatch"><i style="background:var(--diverge-low)"></i> negative</span>
@@ -196,10 +195,10 @@
   <!-- Catalog -->
   <h2 class="section-title">Catalog · pick by question</h2>
 
-  <div class="row2">
+  <div class="grid-2">
     <!-- Sparkline -->
     <div>
-      <h3>Sparkline <span style="color:var(--fg-disabled);font-weight:400">— "is it trending?"</span></h3>
+      <h3 class="subsection-title">Sparkline <span style="color:var(--fg-disabled);font-weight:400">— "is it trending?"</span></h3>
       <div class="figure">
         <table class="table">
           <thead><tr><th>Service</th><th>P95</th><th>Trend (1h)</th></tr></thead>
@@ -215,17 +214,17 @@
 
     <!-- Sparkbars -->
     <div>
-      <h3>Sparkbars <span style="color:var(--fg-disabled);font-weight:400">— "is it spiky?"</span></h3>
+      <h3 class="subsection-title">Sparkbars <span style="color:var(--fg-disabled);font-weight:400">— "is it spiky?"</span></h3>
       <div class="figure">
         <div class="cluster" style="--gap:var(--s-lg)">
           <div>
-            <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Hourly volume</div>
+            <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase">Hourly volume</div>
             <span class="sparkbars" role="img" aria-label="hourly volume">
               <span style="height:8px"></span><span style="height:14px"></span><span style="height:10px"></span><span style="height:18px"></span><span style="height:6px"></span><span style="height:12px"></span><span style="height:20px"></span><span style="height:16px"></span><span style="height:9px"></span><span style="height:22px"></span><span style="height:11px"></span><span style="height:7px"></span>
             </span>
           </div>
           <div>
-            <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Errors / min</div>
+            <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase">Errors / min</div>
             <span class="sparkbars" role="img" aria-label="errors per minute">
               <span style="height:2px"></span><span style="height:1px"></span><span style="height:3px"></span><span style="height:0px"></span><span style="height:1px"></span><span style="height:14px;background:var(--urgent)"></span><span style="height:6px;background:var(--urgent)"></span><span style="height:2px"></span><span style="height:1px"></span><span style="height:0px"></span><span style="height:0px"></span><span style="height:1px"></span>
             </span>
@@ -235,7 +234,7 @@
     </div>
   </div>
 
-  <h3>Bar — vertical <span style="color:var(--fg-disabled);font-weight:400">— "compare quantities"</span></h3>
+  <h3 class="subsection-title">Bar — vertical <span style="color:var(--fg-disabled);font-weight:400">— "compare quantities"</span></h3>
   <p class="meta">The default chart. Reach for it before line, before pie, before anything fancy.</p>
   <div class="figure">
     <div class="chart">
@@ -267,7 +266,7 @@
     <p class="meta" style="font-size:12px;margin-top:var(--s-sm)">Weekend bars dimmed to show "different category" without a separate legend entry.</p>
   </div>
 
-  <h3>Bar — horizontal <span style="color:var(--fg-disabled);font-weight:400">— "compare with long labels"</span></h3>
+  <h3 class="subsection-title">Bar — horizontal <span style="color:var(--fg-disabled);font-weight:400">— "compare with long labels"</span></h3>
   <div class="figure">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Top failure reasons · 24h</h5></div>
@@ -297,7 +296,7 @@
     <p class="meta" style="font-size:12px;margin-top:var(--s-sm)">Sorted descending. Numeric labels right-aligned at the end of bars, not inside them.</p>
   </div>
 
-  <h3>Stacked bar <span style="color:var(--fg-disabled);font-weight:400">— "what's the mix?"</span></h3>
+  <h3 class="subsection-title">Stacked bar <span style="color:var(--fg-disabled);font-weight:400">— "what's the mix?"</span></h3>
   <div class="figure">
     <div class="chart">
       <div class="chart__header">
@@ -329,7 +328,7 @@
     </div>
   </div>
 
-  <h3>Distribution <span style="color:var(--fg-disabled);font-weight:400">— "where's the spread?"</span></h3>
+  <h3 class="subsection-title">Distribution <span style="color:var(--fg-disabled);font-weight:400">— "where's the spread?"</span></h3>
   <div class="figure">
     <div class="chart">
       <div class="chart__header"><h5 class="chart__title">Latency distribution</h5><div class="chart__value">P95 <span class="num">312ms</span></div></div>
@@ -364,7 +363,7 @@
     </div>
   </div>
 
-  <h3>Gauge <span style="color:var(--fg-disabled);font-weight:400">— "are we close to the cap?"</span></h3>
+  <h3 class="subsection-title">Gauge <span style="color:var(--fg-disabled);font-weight:400">— "are we close to the cap?"</span></h3>
   <p class="meta">Used sparingly — only when there's a single bounded metric and a reference threshold matters. Cap usage at 1 per dashboard.</p>
   <div class="figure">
     <div class="cluster" style="--gap:var(--s-2xl)">
@@ -374,7 +373,7 @@
           <path class="fill"  d="M 12 60 A 48 48 0 0 1 108 60" stroke-dasharray="151" stroke-dashoffset="60"/>
         </svg>
         <div class="t-mono-headline-lg num" style="margin-top:var(--s-sm)">60%</div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Quota</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase">Quota</div>
       </div>
       <div style="text-align:center">
         <svg class="gauge" viewBox="0 0 120 66">
@@ -382,7 +381,7 @@
           <path class="fill"  d="M 12 60 A 48 48 0 0 1 108 60" stroke-dasharray="151" stroke-dashoffset="20" style="stroke:var(--urgent)"/>
         </svg>
         <div class="t-mono-headline-lg num" style="margin-top:var(--s-sm);color:var(--urgent)">87%</div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">Disk</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase">Disk</div>
       </div>
     </div>
   </div>
@@ -391,9 +390,9 @@
   <h2 class="section-title">The no-pie rule</h2>
   <div class="figure" style="border-color:var(--urgent)">
     <p class="t-body-lg" style="margin:0 0 var(--s-md)"><b class="anchor" style="color:var(--urgent)">Pie/donut charts are permitted only at n ≤ 3 slices,</b> and only when "parts of a whole" is the entire point. For everything else — including parts-of-whole with 4+ slices — use a bar chart.</p>
-    <div class="row2">
+    <div class="grid-2">
       <div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--s-sm);color:var(--success)">OK · n = 3</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--s-sm);color:var(--success)">OK · n = 3</div>
         <svg viewBox="0 0 120 120" width="160" height="160" aria-label="Pass / fail / pending breakdown">
           <circle cx="60" cy="60" r="50" fill="var(--bg-inactive)"/>
           <path d="M 60 10 A 50 50 0 0 1 109.6 65 L 60 60 Z" class="series-1" fill="currentColor"/>
@@ -407,7 +406,7 @@
         </div>
       </div>
       <div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--s-sm);color:var(--urgent)">NOT OK · n = 7</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:var(--s-sm);color:var(--urgent)">NOT OK · n = 7</div>
         <svg viewBox="0 0 120 120" width="160" height="160" aria-hidden="true">
           <circle cx="60" cy="60" r="50" fill="var(--bg-inactive)"/>
           <g><path d="M 60 10 A 50 50 0 0 1 95 25 L 60 60 Z" fill="var(--series-1)"/>
@@ -438,7 +437,7 @@
           <circle cx="200" cy="32" r="4" class="series-1" fill="currentColor"/>
         </svg>
         <div class="popover tooltip-demo" style="position:absolute;top:0;left:42%;max-width:220px">
-          <div style="font-family:var(--font-sans);font-size:11px;color:var(--fg-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">12:00 UTC</div>
+          <div style="font-family:var(--font-sans);font-size: var(--t-label-xs-size);color:var(--fg-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">12:00 UTC</div>
           <div class="cluster" style="--gap:var(--s-sm);justify-content:space-between"><span>active runs</span><span class="num" style="color:var(--fg);font-weight:700">68</span></div>
           <div class="cluster" style="--gap:var(--s-sm);justify-content:space-between"><span>vs 1h ago</span><span class="num" style="color:var(--success)">+24%</span></div>
         </div>
@@ -464,7 +463,7 @@
 
   <h2 class="section-title">Library mappings</h2>
   <p class="meta">If you're not drawing SVG by hand, forward Artificer tokens into your chart library's theme config.</p>
-  <h3>ECharts</h3>
+  <h3 class="subsection-title">ECharts</h3>
   <pre class="code-block">{
   color: [
     getComputedStyle(document.documentElement).getPropertyValue('--series-1'),
@@ -476,14 +475,14 @@
   xAxis: { axisLine: { lineStyle: { color: 'var(--chart-axis)' } } },
   yAxis: { splitLine: { lineStyle: { color: 'var(--chart-grid)' } } },
 }</pre>
-  <h3>Recharts (React)</h3>
+  <h3 class="subsection-title">Recharts (React)</h3>
   <pre class="code-block">&lt;LineChart&gt;
   &lt;CartesianGrid stroke="var(--chart-grid)" vertical={false} /&gt;
   &lt;XAxis stroke="var(--chart-axis)" tick={{ fontFamily: 'var(--font-mono)' }} /&gt;
   &lt;YAxis stroke="var(--chart-axis)" /&gt;
   &lt;Line dataKey="v" stroke="var(--series-1)" strokeWidth={1.6} dot={false} /&gt;
 &lt;/LineChart&gt;</pre>
-  <h3>Observable Plot</h3>
+  <h3 class="subsection-title">Observable Plot</h3>
   <pre class="code-block">Plot.plot({
   style: { background: 'transparent', fontFamily: 'JetBrains Mono', color: 'var(--fg-secondary)' },
   marks: [
@@ -491,7 +490,7 @@
     Plot.line(data, { x: 't', y: 'v', stroke: 'var(--series-1)', strokeWidth: 1.6 }),
   ],
 })</pre>
-  <h3>Chart.js</h3>
+  <h3 class="subsection-title">Chart.js</h3>
   <pre class="code-block">Chart.defaults.color    = getCss('--fg-secondary');
 Chart.defaults.borderColor = getCss('--chart-grid');
 Chart.defaults.font.family = 'JetBrains Mono';

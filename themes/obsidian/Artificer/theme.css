@@ -6,7 +6,7 @@
    ARTIFICER · An Obsidian theme
    Cameron's personal design system, ported to Obsidian.
    AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
-   v0.25.0 · 2026
+   v0.27.0 · 2026
    ═══════════════════════════════════════════════════════════════════════════
 
    How this is structured:
@@ -604,6 +604,20 @@
   --h6-weight:  500;
   --h6-line-height: 1.4;
 
+  /* Heading face — Obsidian's app.css reads --hN-font on BOTH reading-view
+     h1…h6 and Live Preview .cm-header-N (default `inherit`, i.e. the body
+     face). Remapping the var reaches every surface at Obsidian's own
+     specificity, the way style D does with --hN-color. The inline title is a
+     div, not an h1; it reads its own pair. */
+  --h1-font: var(--art-font-mono);
+  --h2-font: var(--art-font-mono);
+  --h3-font: var(--art-font-mono);
+  --h4-font: var(--art-font-mono);
+  --h5-font: var(--art-font-mono);
+  --h6-font: var(--art-font-mono);
+  --inline-title-font: var(--art-font-mono);
+  --inline-title-weight: 700;
+
   --line-height-normal: 1.6;
   --line-height-tight:  1.3;
 
@@ -613,9 +627,9 @@
   --radius-l: 12px;
   --radius-xl: 16px;
 
-  /* Heading style — A is default. Switch via Style Settings or by adding
-     theme-heading-b / theme-heading-c on <body>. */
-  --heading-style: 'a-mono';
+  /* Heading style — D (all-gold) is default. Switch via Style Settings or by
+     adding theme-heading-a / theme-heading-b / theme-heading-c on <body>. */
+  --heading-style: 'd-gold';
 }
 
 
@@ -772,14 +786,28 @@ body.artificer-translucent .workspace-split.mod-right-split {
   background-color: var(--art-bg-inactive);
 }
 
-/* Headings: three swappable styles. Default "a-mono" is plain Artificer
-   scale. Use body class theme-heading-b / theme-heading-c to switch. */
+/* Headings: four swappable styles. Default is "d-gold" (all headings in the
+   burnished accent); the mono/700 A base still applies underneath every
+   style. Use body class theme-heading-a / -b / -c to switch. */
 
 /* A · all mono, 700, scale down (Artificer headlineLg/Md exact) */
 .theme-heading-a-mono :is(h1, h2, h3, h4, h5, h6),
 :not(.theme-heading-b):not(.theme-heading-c) :is(.markdown-rendered, .markdown-preview-view, .markdown-source-view) :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--art-font-mono);
   font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Live Preview headings are .cm-header-N spans, not h1…h6; the inline
+   title is a div. Both fall through the element-keyed rule above. The
+   --hN-font / --inline-title-font vars carry the face; this belt carries
+   the A-base letter-spacing (no var for it) and keeps the face on builds
+   that read the var late. Low specificity on purpose. No font-weight: it
+   flows from --hN-weight / --inline-title-weight. Styles B and C target
+   only real h1…h6, so they have no Live Preview arm to protect here. */
+.cm-s-obsidian .cm-header,
+.inline-title {
+  font-family: var(--art-font-mono);
   letter-spacing: -0.01em;
 }
 
@@ -819,13 +847,39 @@ body.theme-heading-c :is(.markdown-rendered, .markdown-preview-view) h6::before 
    headings in reading view AND Live Preview from --h1..--h6-color, so
    remapping the six vars covers both without selector fights; the A-style
    mono/700 base still applies underneath. */
-body.theme-heading-d {
+body.theme-heading-d,
+body:not(.theme-heading-a):not(.theme-heading-b):not(.theme-heading-c) {
   --h1-color: var(--art-accent);
   --h2-color: var(--art-accent);
   --h3-color: var(--art-accent);
   --h4-color: var(--art-accent);
   --h5-color: var(--art-accent);
   --h6-color: var(--art-accent);
+}
+
+/* Gold whimsy H1 — owner override 2026-09-05 ("keep that"): the note title
+   and every H1 take the still brushed-metal ramp of .whimsy--gold
+   (artificer-whimsy.css, .whimsy--no-flow form). Whimsy doctrine sanctions
+   metal fills only on display-size bold text, one per view; an H1 is both.
+   No motion, so reduced-motion needs nothing. Style Settings toggle
+   `art-h1-gold-whimsy` (default on) drops back to the flat accent. */
+body.art-h1-gold-whimsy :is(.markdown-rendered, .markdown-preview-view) h1,
+body.art-h1-gold-whimsy .inline-title,
+body.art-h1-gold-whimsy .cm-s-obsidian .cm-header-1 {
+  background-image: linear-gradient(100deg,
+    oklch(0.72 0.12 82), oklch(0.90 0.10 92), oklch(0.66 0.13 72),
+    oklch(0.95 0.06 96), oklch(0.72 0.12 82));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+body.theme-light.art-h1-gold-whimsy :is(.markdown-rendered, .markdown-preview-view) h1,
+body.theme-light.art-h1-gold-whimsy .inline-title,
+body.theme-light.art-h1-gold-whimsy .cm-s-obsidian .cm-header-1 {
+  background-image: linear-gradient(100deg,
+    oklch(0.56 0.12 72), oklch(0.68 0.13 84), oklch(0.47 0.12 66),
+    oklch(0.73 0.11 88), oklch(0.56 0.12 72));
 }
 
 /* Bold anchor words — Artificer rule #4. Slightly heavier and inherits fg */
@@ -1152,9 +1206,20 @@ body.artificer-translucent .status-bar { background: transparent; }
 /* ═══════════════════════════════════════════════════════════════════════
    SETTINGS PANEL
    ═══════════════════════════════════════════════════════════════════════ */
+/* Obsidian 1.14 paints every .setting-item as a card: --setting-items-background
+   defaults to --background-primary-alt (our inactive-pane shade, darker than the
+   page) with a 12px radius and an 8px gap between rows. Artificer's settings are
+   a flat list with hairline dividers, so the card is flattened here: transparent
+   fill, no radius, rows sit flush so the border-top divider reads as intended. */
+body {
+  --setting-items-background: transparent;
+  --setting-items-border-width: 0;
+  --setting-items-radius: 0;
+}
 .modal.mod-settings {
   font-family: var(--font-interface, var(--art-font-mono));
 }
+.setting-item { margin-bottom: 0; }
 .modal.mod-settings .vertical-tab-header {
   background: var(--art-bg-raised);
   border-right: 1px solid var(--art-border);
@@ -1228,8 +1293,9 @@ body.artificer-translucent .status-bar { background: transparent; }
 
    Driven by the yaae POS-tagging plugin (.yaae-pos-{adjective|noun|adverb|
    verb|conjunction} + custom lists .yaae-list-{name}); no-op without it.
-   Colour is one intensity-aware OKLCH ramp (hue per category + shared L/C
-   from --art-prose-intensity). Default palette = Cameron ★. See PALETTE.md.
+   Default palette = Artificer ★ (fixed tokens — ADR 0040); the opt-in ramp
+   presets (Cameron, …) paint one intensity-aware OKLCH ramp (hue per
+   category + shared L/C from --art-prose-intensity). See PALETTE.md.
    Lane-2 origination / do-not-auto-sync boundary: ADR 0023.
    ═══════════════════════════════════════════════════════════════════════ */
 
@@ -1245,7 +1311,8 @@ body.artificer-translucent .status-bar { background: transparent; }
                                         (both clear AA-large 3.0) — dial this slider
                                         down for a higher ratio. */
 
-  /* Cameron ★ — per-category OKLCH hue (deg). Palette presets remap these. */
+  /* Cameron — per-category OKLCH hue (deg) for the RAMP presets; the
+     token-bound Artificer ★ default ignores these. Presets remap them. */
   --art-prose-adjective-h:    78;
   --art-prose-noun-h:         32;
   --art-prose-adverb-h:      300;
@@ -1282,6 +1349,28 @@ body.artificer-translucent .status-bar { background: transparent; }
   --yaae-pos-verb-color-light:        oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-verb-h));
   --yaae-pos-conjunction-color-light: oklch(var(--art-prose-l) var(--art-prose-c) var(--art-prose-conjunction-h));
   --yaae-dimmed-color-light:          var(--art-fg-disabled);
+}
+
+/* Artificer ★ — the DEFAULT scheme (Lane 2 v0.9.0, mirrored per its ruling
+   2026-09-01). Token-bound, not ramp-bound: fixed palette tokens per category,
+   noun/conjunction unpainted; the intensity slider does not apply by
+   construction. Class-less :not() arm = the no-Style-Settings default, same
+   pattern as the D-heading default. Light verb rides --art-accent-fill
+   (#b07820, 3.16:1 on cream — text-AA fail, AA-large pass): owner ruling
+   2026-09-01 ("Lane A all day"), an eyes-open AA-floor override per the
+   ADR 0002 posture — see ADR 0040. */
+body.art-prose-artificer,
+body:not(.art-prose-cameron):not(.art-prose-apothecary):not(.art-prose-spectral):not(.art-prose-dusk):not(.art-prose-botanical) {
+  --yaae-pos-adjective-color-dark:   var(--art-steel);
+  --yaae-pos-noun-color-dark:        currentColor;
+  --yaae-pos-adverb-color-dark:      var(--art-attention);
+  --yaae-pos-verb-color-dark:        var(--art-accent);
+  --yaae-pos-conjunction-color-dark: currentColor;
+  --yaae-pos-adjective-color-light:   var(--art-steel-fill); /* Lane 2 v0.9.1: full steel #1d3a4a read as ink-adjacent; steel-fill #4a6878 = 4.96:1 on cream, AA pass */
+  --yaae-pos-noun-color-light:        currentColor;
+  --yaae-pos-adverb-color-light:      var(--art-attention);
+  --yaae-pos-verb-color-light:        var(--art-accent-fill);
+  --yaae-pos-conjunction-color-light: currentColor;
 }
 
 /* Palette presets — one class remaps all five hues (Style Settings select). */
@@ -1776,7 +1865,10 @@ body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); 
   font-variant-numeric: tabular-nums;
 }
 
-/* Mermaid */
+/* Mermaid — mermaid measures every label in --font-mermaid before laying out
+   the boxes, so the measuring face must be the rendering face or text clips at
+   the right edge. Point Obsidian's hook at the mono we render in. */
+body { --font-mermaid: var(--font-monospace); }
 .markdown-rendered .mermaid {
   background: var(--background-primary-alt);
   border: 1px solid var(--background-modifier-border);
@@ -1784,22 +1876,74 @@ body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); 
   padding: 24px; /* tuned */
   margin: var(--size-4-4) 0;
 }
-.mermaid .node rect, .mermaid .node circle, .mermaid .node polygon,
-.mermaid .cluster rect {
-  fill: var(--background-secondary) !important;
-  stroke: var(--text-accent) !important;
+/* Obsidian inverts the whole SVG in dark mode (`.theme-dark .mermaid > svg
+   { filter: invert(100%) hue-rotate(180deg) saturate(1.25) }`) because stock
+   mermaid renders light. Every token painted below would be inverted after
+   the fact — dark surfaces come out lavender, text comes out black. The theme
+   paints real dark tokens, so the inversion is switched off. */
+.theme-dark .mermaid > svg { filter: none !important; }
+/* Nodes read the system's .dia-node recipe (artificer.css § Diagrams): a
+   raised surface with a hairline border, never a gold outline on every box —
+   gold is reserved for the ONE accent node, which mermaid marks with
+   `classDef accent` / `:::accent` or `style X stroke:...`. */
+.mermaid .node rect, .mermaid .node circle, .mermaid .node ellipse,
+.mermaid .node polygon, .mermaid .node path, .mermaid .cluster rect {
+  fill: var(--art-bg-raised) !important;
+  stroke: var(--art-border) !important;
+  stroke-width: 1px !important;
+}
+.mermaid .node rect { rx: var(--radius-m); ry: var(--radius-m); }
+/* mermaid sizes each label's foreignObject from a measurement in its own
+   proportional face; mono renders a few px wider and the box clips the last
+   glyph. The node rect carries padding around the box, so letting the label
+   overflow keeps it inside the shape with nothing cut. */
+.mermaid foreignObject, .mermaid foreignObject > div { overflow: visible !important; }
+.mermaid .node.accent rect, .mermaid .node.accent polygon, .mermaid .node.accent path,
+.mermaid .node.accent circle {
+  stroke: var(--art-accent) !important;
   stroke-width: 1.5px !important;
 }
-.mermaid .nodeLabel, .mermaid .edgeLabel, .mermaid text {
+.mermaid .cluster rect {
+  fill: transparent !important;
+  stroke-dasharray: 4 3;
+}
+.mermaid .cluster-label, .mermaid .cluster-label span, .mermaid .cluster-label p {
+  font-family: var(--font-interface, var(--art-font-mono)) !important;
+  font-size: 11px !important;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--art-fg-secondary) !important;
+  fill: var(--art-fg-secondary) !important;
+}
+.mermaid .nodeLabel, .mermaid .edgeLabel, .mermaid .label, .mermaid text,
+.mermaid span, .mermaid p {
   font-family: var(--font-monospace) !important;
-  fill: var(--text-normal) !important;
-  color: var(--text-normal) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  fill: var(--art-fg) !important;
+  color: var(--art-fg) !important;
 }
-.mermaid .edgePath path, .mermaid .flowchart-link {
-  stroke: var(--text-muted) !important;
-  stroke-width: 1.2px !important;
+/* mermaid 11 draws edge labels as HTML inside a foreignObject; its default
+   sheet gives them a light-grey backing that reads as a black slab on a dark
+   panel. Back them with the panel's own surface so they mask the edge line,
+   and set them quieter than node text, like .dia-edge-label. */
+.mermaid .edgeLabel, .mermaid .edgeLabel p, .mermaid .edgeLabel span, .mermaid .labelBkg {
+  background-color: var(--background-primary-alt) !important;
+  color: var(--art-fg-secondary) !important;
+  fill: var(--art-fg-secondary) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
 }
-.mermaid .arrowheadPath { fill: var(--text-muted) !important; }
+.mermaid .edgePath path, .mermaid .flowchart-link, .mermaid .edge-thickness-normal {
+  stroke: var(--art-fg-muted, var(--art-fg-secondary)) !important;
+  stroke-width: 1.25px !important;
+}
+.mermaid .edge-pattern-dotted, .mermaid .edge-pattern-dashed { stroke-dasharray: 4 3 !important; }
+.mermaid .arrowheadPath, .mermaid .marker {
+  fill: var(--art-fg-muted, var(--art-fg-secondary)) !important;
+  stroke: var(--art-fg-muted, var(--art-fg-secondary)) !important;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    FOOTNOTES
@@ -1819,6 +1963,9 @@ body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); 
   font-size: 13px;
   color: var(--text-muted);
 }
+/* Obsidian's renderer opens the section with its own <hr> — doubled against
+   the border-top above. The theme owns the divider; drop the renderer's. */
+.markdown-rendered .footnotes > hr { display: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    DATAVIEW
@@ -1975,6 +2122,24 @@ body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); 
    Every class-toggle and class-select in the @settings block below has a
    matching rule here. Style Settings adds the class to <body>; we react.
    ═══════════════════════════════════════════════════════════════════════ */
+
+/* Dataview font — vault toggle (body class, :where() keeps it at (0,2,1),
+   below the per-note classes at (0,3,0)), then per-note cssclasses override.
+   Obsidian applies frontmatter cssclasses to .markdown-preview-view and
+   .markdown-source-view, so a descendant selector reaches the table in both
+   views. The th rule stays: `.markdown-rendered th` sets the face directly
+   on the element, which beats inheritance from the table in either mode. */
+body:where(.art-dataview-prose) :is(.dataview.table-view-table, table.dataview),
+.art-dv-prose :is(.dataview.table-view-table, table.dataview) {
+  font-family: var(--font-text, var(--art-font-sans));
+  font-size: 14px;
+  font-variant-numeric: normal;
+}
+.art-dv-mono :is(.dataview.table-view-table, table.dataview) {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Tab style — filled (vanilla-Obsidian feel). Default in theme is underline. */
 body.theme-tabs-filled .workspace-tab-header {
@@ -2153,12 +2318,12 @@ settings:
     id: art-heading-style
     title: Heading style
     description: |
-      A — pure mono, 700 weight (default).
+      A — pure mono, 700 weight.
       B — gold rule under H1, steel hierarchy for H3-H6.
       C — source-mode markers (#, ##, ###) prepended in muted gold.
-      D — every heading in the burnished accent (the "OG gold" look).
+      D — every heading in the burnished accent (the "OG gold" look, default).
     type: class-select
-    default: theme-heading-a
+    default: theme-heading-d
     allowEmpty: false
     options:
       - label: A · Pure mono
@@ -2169,6 +2334,22 @@ settings:
         value: theme-heading-c
       - label: D · All gold
         value: theme-heading-d
+  -
+    id: art-h1-gold-whimsy
+    title: Gold whimsy H1
+    description: Note title and H1 take a still brushed-gold fill (the whimsy gold ramp, no motion). Off = flat accent.
+    type: class-toggle
+    default: true
+    addCommand: true
+  -
+    id: art-dataview-prose
+    title: Dataview tables in the body face
+    description: |
+      Off = JetBrains Mono (the tool-surface default). On = dataview tables use the body face (iA Writer Quattro).
+      Per note, add cssclasses art-dv-prose or art-dv-mono to the frontmatter to override this for that note.
+    type: class-toggle
+    default: false
+    addCommand: true
   -
     id: h1-size
     title: H1 size
@@ -2495,16 +2676,22 @@ settings:
     description: |
       Colours every word by its part of speech so structural habits surface as
       you read. Needs the yaae POS-tagging plugin (wraps tokens in .yaae-pos-*);
-      no-op without it. Five categories on one intensity-aware OKLCH ramp.
+      no-op without it. Default binds fixed palette tokens (Artificer ★);
+      the ramp presets paint five categories on one intensity-aware OKLCH ramp.
   -
     id: art-prose-palette
     title: Palette
-    description: Hue assignment per category. Cameron ★ is the house default.
+    description: Colour assignment per category. Artificer ★ is the house default — fixed palette tokens (verb gold, adjective steel, adverb rose/sienna; noun and conjunction unpainted); the intensity slider applies to the ramp presets only.
     type: class-select
-    default: art-prose-cameron
+    # Mirrors Lane 2 v0.9.0 (its ruling 2026-09-01): art-prose-artificer is
+    # the shipped default — do NOT "correct" it back to a ramp preset in a
+    # catch-up packet. CLAUDE.md § Known divergences → Prose-lens default.
+    default: art-prose-artificer
     allowEmpty: false
     options:
-      - label: Cameron ★
+      - label: Artificer ★
+        value: art-prose-artificer
+      - label: Cameron
         value: art-prose-cameron
       - label: Apothecary
         value: art-prose-apothecary

@@ -1,0 +1,112 @@
+/* ==UserStyle==
+@name         Artificer — Vikunja
+@namespace    artificer
+@version      0.27.0
+@description  Artificer's Jazz Age palette for vikunja.example.com (Vikunja v2.5.0)
+@author       Cameron Sjo
+@license      Apache-2.0
+@preprocessor default
+==/UserStyle== */
+
+@-moz-document domain("vikunja.example.com") {
+
+/* Generated from themes/_palette.json — edit there + re-run build.mjs.
+ *
+ * Vikunja composes most of its ~349 custom properties from a ten-step grey
+ * scale and five HSL-triplet brand hues (primary/danger/warning/success/info).
+ * Overriding those atoms cascades into every var() consumer without
+ * restating each one — see the comment above stylusVikunjaTheme() in
+ * build.mjs for the full reasoning and the known residual gap.
+ */
+
+:root {
+  --grey-50: #f5ead0;
+  --grey-100: #eddcc0;
+  --grey-200: #e4d4b0;
+  --grey-300: #cbb88a;
+  --grey-400: #b8a674;
+  --grey-500: #5a7a8a;
+  --grey-600: #4a3f2a;
+  --grey-700: #4a3f2a;
+  --grey-800: #20203e;
+  --grey-900: #20203e;
+  --grey-50-hsl: 42.2, 64.9%, 88.8%;
+  --grey-900-hsl: 240, 31.9%, 18.4%;
+  --primary-h: 41.9deg;
+  --primary-s: 76.8%;
+  --primary-l: 27.1%;
+  --primary-invert: #f5ead0;
+  --danger-h: 6.3deg;
+  --danger-s: 70.4%;
+  --danger-l: 31.8%;
+  --danger-invert: #f5ead0;
+  --warning-h: 25.9deg;
+  --warning-s: 100%;
+  --warning-l: 31.4%;
+  --warning-invert: #f5ead0;
+  --success-h: 140deg;
+  --success-s: 36.4%;
+  --success-l: 25.9%;
+  --success-invert: #f5ead0;
+  --info-h: 201.8deg;
+  --info-s: 32.4%;
+  --info-l: 26.7%;
+  --info-invert: #f5ead0;
+  --border-hover: #b8a674;
+  --border-light: #cbb88a;
+  --border-light-hover: #b8a674;
+  --link-hover-border: #b8a674;
+  --link-active-border: #20203e;
+}
+
+:root ::selection {
+  background: #c4932a;
+  color: #20203e;
+}
+
+.dark {
+  --grey-50: #292c33;
+  --grey-100: #313540;
+  --grey-200: #3c4150;
+  --grey-300: #4a4f5c;
+  --grey-400: #5a606e;
+  --grey-500: #c5c8c6;
+  --grey-600: #c5c8c6;
+  --grey-700: #c5c8c6;
+  --grey-800: #e8e6e1;
+  --grey-900: #e8e6e1;
+  --grey-50-hsl: 222, 10.9%, 18%;
+  --grey-900-hsl: 42.9, 13.2%, 89.6%;
+  --primary-h: 42.2deg;
+  --primary-s: 60%;
+  --primary-l: 64.7%;
+  --primary-invert: #20203e;
+  --danger-h: 3.1deg;
+  --danger-s: 42.9%;
+  --danger-l: 43.9%;
+  --danger-invert: #f5ead0;
+  --warning-h: 22.8deg;
+  --warning-s: 56.8%;
+  --warning-l: 62.7%;
+  --warning-invert: #20203e;
+  --success-h: 144.2deg;
+  --success-s: 38.8%;
+  --success-l: 28.8%;
+  --success-invert: #f5ead0;
+  --info-h: 201.4deg;
+  --info-s: 24.6%;
+  --info-l: 77.6%;
+  --info-invert: #20203e;
+  --border-hover: #5a606e;
+  --border-light: #4a4f5c;
+  --border-light-hover: #5a606e;
+  --link-hover-border: #5a606e;
+  --link-active-border: #e8e6e1;
+}
+
+.dark ::selection {
+  background: #7a5a10;
+  color: #e8e6e1;
+}
+
+}

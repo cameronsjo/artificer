@@ -76,10 +76,10 @@ The theme is written against six rules:
 ## Heading styles
 
 ```
-A  Pure mono            Default. All headings JetBrains Mono 700, body color.
+A  Pure mono            All headings JetBrains Mono 700, body color.
 B  Gold rule + steel    H1 has a gold underline; H3-H6 in steel.
 C  Source-mode markers  '#', '##', '###' prefix in muted gold.
-D  All gold             Every heading H1-H6 in the burnished accent ("OG gold").
+D  All gold             Default. Every heading H1-H6 in the burnished accent ("OG gold").
 ```
 
 Switch in Style Settings → Typography → Heading style, or apply `theme-heading-{a,b,c,d}` to `<body>` directly.
@@ -110,7 +110,7 @@ Out-of-the-box styled:
 - yaae (parts-of-speech reading lens — `.yaae-pos-*` painted in-palette)
 - Kanban
 - Excalidraw
-- Dataview
+- Dataview — tables default to mono; Style Settings → Typography → "Dataview tables in the body face" flips the vault to Quattro, and a note's `cssclasses: art-dv-prose` / `cssclasses: art-dv-mono` overrides the toggle for that note
 - Tasks (via standard checkbox styles)
 - Calendar (via Obsidian's native variables)
 - Iconize / lucide icons

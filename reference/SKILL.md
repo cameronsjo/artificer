@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.25.0
+# Artificer · v0.27.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -31,7 +31,6 @@ Don't use Artificer for:
 |---|---|
 | `artificer.css` | All tokens + utility classes. The only stylesheet you need. |
 | `artificer-theme.js` | Persistent theme control — dark / light / auto (auto follows the OS live); hydrates the empty canonical `.theme-toggle` button. |
-| `assets/cameron-logo.jpg` | Personal mark — only used on Cameron-branded surfaces. |
 | `README.html` | System overview, principles, do/don't. |
 | `colors.html` · `typography.html` · `spacing.html` | Foundations specs. |
 | `components.html` · `patterns.html` · `notifications.html` | Live component specs. |
@@ -41,14 +40,14 @@ Don't use Artificer for:
 | `forms-extended.html` | Field anatomy, validation, fieldsets, helper/error text. The twelve non-negotiable rules. |
 | `data-display.html` | Tables, key-value lists, stat cards, progress. Tabular-nums everywhere. |
 | `states.html` | Empty, loading, error — by duration. Skeleton sizing rules. |
-| `a11y.html` | WCAG 2.2 audit, contrast ratios, focus rings, the 12-point shipping checklist. |
+| `a11y.html` | WCAG 2.2 audit, contrast ratios, focus rings, the a11y shipping checklist. |
 | `artificer-icons.js` | Lucide-rooted icon set, Lucide-canonical names (legacy names alias; unknown names render a dashed placeholder). Auto-hydrates `<i data-icon="…">` placeholders. |
 | `artificer-focus.js` | `ArtificerFocus.trap(el, {onEscape})` — focus-trap helper for modals/dialogs. |
 | `icons.html` | Icon catalog + usage rules (16px viewBox, 1.5 stroke, inherit color). |
 | `voice-and-tone.html` | Microcopy spec — empty states, errors, success, loading. 7-point checklist. |
 | `tokens.json` | Machine-readable token export (for Tailwind, Figma, non-CSS consumers). |
 | `print.css` | Print stylesheet. Forces ivory/navy paper mode, strips chrome. Load `media="print"`. |
-| `assets/favicon.svg` · `assets/og-image.svg` | Favicon (32px) and Open Graph card (1200×630). SVG, themeable. |
+| `assets/favicon.svg` · `assets/og-image.png` | Favicon (32px, SVG) and Open Graph card (1200×630, PNG; `og-image.svg` is its source). |
 
 ---
 
@@ -65,7 +64,7 @@ Don't use Artificer for:
        light. Key 'artificer.theme' (dot); dark-first. See QUICKSTART.md. -->
   <script>(function(){try{var s=localStorage.getItem('artificer.theme');var p=s==='light'||s==='dark';var l=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches;document.documentElement.setAttribute('data-theme',p?s:(l?'light':'dark'));}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <meta property="og:image" content="assets/og-image.svg" />
+  <meta property="og:image" content="assets/og-image.png" />
   <link rel="stylesheet" href="artificer.css" />
   <link rel="stylesheet" href="print.css" media="print" />
   <script src="artificer-theme.js" defer></script>
@@ -73,7 +72,7 @@ Don't use Artificer for:
 </head>
 <body>
   <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
-  <main style="max-width:820px;margin:0 auto;padding:48px 24px">
+  <main class="container container--md container--page">
     <!-- your content -->
   </main>
 </body>
@@ -102,7 +101,7 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Confirmation dialog / modal | `overlay.html` — `.scrim` + `.modal`, wire `ArtificerFocus.trap()` for focus-trap |
 | Tooltip / popover | `overlay.html` — `.tooltip` (label) or `.popover` (body content). Reveal on hover + keyboard focus: wrap trigger + `.tooltip` in `.has-tooltip`; place/arrow via `.tooltip--top/bottom/left/right`. Bare `.tooltip` stays a static box |
 | Horizontal bar / meter / usage bar | `charts.html` — `.bar` + `.bar__track` + `.bar__fill` (width inline; fill bg any semantic token; fill bakes `display:block;height:100%` so it never collapses). Determinate % → `.progress` |
-| Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container` + `.container--{sm\|md\|lg}` (the base class is required — it carries width, centering, and inline padding; the size modifier only sets max-width) |
+| Page layout (sidebar/main) | `layout.html` — `.page-shell`, `.container` + `.container--{sm\|md\|lg}` (the base class is required — it carries width, centering, and inline padding; the size modifier only sets max-width; add `.container--page` on a top-level `<main>` for page block padding) |
 | Blog / editorial / document top nav / masthead | `.masthead` (`artificer-editorial.css`) — non-sticky, no border; document counterpart to `.appbar`. Brand via `.wordmark`, toggle via `.theme-toggle--inline` — `navigation.html` |
 | Stacking children | `layout.html` — `.stack` (vertical), `.cluster` (horizontal wrap) |
 | Card grid | `layout.html` — `.grid-auto` with `--min: 240px`, never hand-rolled flexbox |
@@ -137,6 +136,8 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Wide table / diff / wider-than-phone block | `<div class="scroll-x" tabindex="0">…</div>` — content scrolls inside, never the page; `tabindex="0"` is load-bearing (axe scrollable-region-focusable). `.scroll-x--fade` adds self-hiding edge shadows — `keyboard.html` |
 | Wide comparison matrix (tools × features) | Row-per-item + glyph/text cells → `.table--responsive` cards; interactive/score grids (cell buttons, heatmaps) → stay a table in `.scroll-x.scroll-x--fade` + `.table--sticky-col` (pins `tbody th:first-child` too). Never both below 640px — `data-display.html` |
 | Key-value list | `.kv`; mono `<dl>` grid for metadata pairs, `.table` for real data — `data-display.html` |
+| Properties / metadata block | `.kv.kv--props`; icon per key, divider per row, `.badge--steel` tags — `data-display.html#props` |
+| Embedded diagram / media card | `.figure.figure--frame` + `.figure__bar` (`.eyebrow` + reset) + `.figure__body` — `diagrams.html#embed` |
 | Live data indicator | `.live-tick` (pulsing dot) + `.last-updated` (timestamp); auto-updating regions still need an in-UI pause — `composition.html` |
 | Stat card / KPI strip / headline numbers (KPIs) | `.stat` — `.stat__label` + `.stat__value` (mono, tabular) + `.stat__row` + `.stat__delta`(`.down`); the cell of a `.kpi-strip`, max 4 per row — `data-display.html` |
 | Dashboard shell | `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`) — one frame, five recipes — `composition.html` |
@@ -147,9 +148,13 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Theme toggle | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph |
 | Tabular number | `.num` utility — sets `font-variant-numeric: tabular-nums`; drop on the cell, or the parent for a whole table — `data-display.html` |
 | Short hint paragraph under a figure or field | `.note` — sister of `.meta`, smaller (label-sm); inherits the body face, mono on tool surfaces / sans on document surfaces |
+| Eyebrow / overline label | `.eyebrow` (+ `.eyebrow--accent`) — uppercase label over a heading, block, or demo — `typography.html#doc-chrome` |
+| Doc-page subsection header | `<h3 class="subsection-title">` — mono 700 body-md; sibling under `.section-title` — `typography.html#doc-chrome` |
+| Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`); the title names the tier in text — `typography.html#doc-chrome` |
 | Doc-page section header | `<h2 class="section-title">` — mono, uppercase, `--fg-secondary`, border-bottom rule; doc/spec chrome — `data-display.html` |
 | Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers — `data-display.html` |
 | Make it fun / playful / celebratory / rainbow | The sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors — `whimsy.html` |
+| Night sky behind a hero or header band | `data-whimsy="sky"` / `.whimsy-sky` + `Whimsy.starfield()` — flowing brand field + seeded stars, dark only, rests with its wordmark on one timer; never behind data/status/errors/body copy — `whimsy.html` pattern 10 |
 | Make it feel like paper / give it grain / material / texture / depth | `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors — `texture.html` |
 | Empty state / error / loading copy | `voice-and-tone.html` — never improvise microcopy |
 | Loading state / UI | `states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
@@ -157,7 +162,7 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Refreshing a value in place | `.live-value[data-refreshing]` recedes the stale value + `.live-value__dot` pulses — NOT `.skeleton` (would blank it) — `composition.html` |
 | Animation / transition | `motion.html` — `--dur-fast` + `--ease`. Don't invent durations. |
 | z-index | `motion.html` / `overlay.html` — six rungs only: `--z-{base\|raised\|overlay\|popover\|modal\|toast}` |
-| Pre-ship a11y check | `a11y.html` — 12-point checklist before merging |
+| Pre-ship a11y check | `a11y.html` — a11y shipping checklist before merging |
 | Token in non-CSS context | Read `tokens.json` |
 | PDF / print output | Add `<link rel="stylesheet" href="print.css" media="print">` |
 | Hero/landing page | **Don't** — wrong system. Suggest a brand-marketing system instead. |
@@ -196,11 +201,11 @@ use the lifecycle API:
 1. **Dark is default.** Light mode is a paper alternative, not the primary.
 2. **Max 2 semantic colors on screen at once.** Brand purple + gold = one "Cameron" signal, doesn't count.
 3. **Bold 3–5 anchor words per paragraph.** Use `class="anchor"` or `<b>`. Primary scanning mechanism. When prose arrives as data, mark anchors as `**…**` in the source and promote each marked span to `<b class="anchor">` at render — single-level only, never nested.
-4. **One primary CTA per screen.** Always. Everything else is `.btn--secondary` or `.btn--ghost`.
+4. **At most one primary CTA per screen** — zero is valid. Everything else is `.btn--secondary` or `.btn--ghost`.
 5. **5–7 items max** in any list/palette/menu before progressive disclosure.
 6. **No pure black.** `#1D1F21` is the darkest value in the system.
 7. **Honor `prefers-reduced-motion`** — durations collapse to 0ms (already wired in CSS).
-8. **WCAG AAA** for body text (7:1). Text-safe accent variants already hit this.
+8. **WCAG 2.2 AA floor** — 4.5:1 for body text. Run `scripts/contrast.mjs` on any new pairing.
 9. **Never mix rounded and sharp corners** in one view.
 10. **Voice is literal, direct, lightly deadpan.** No metaphor, sarcasm, or figurative copy. Autism demands clarity.
 
@@ -233,18 +238,18 @@ budgets-with-exemptions, not exceptions that swallow the rule:
 SURFACES --bg / --bg-raised / --bg-overlay / --bg-inactive
 TEXT --fg / --fg-secondary / --fg-muted / --fg-disabled / --border
 
-INTERACTIVE --accent gold text (AAA) — links, focus, secondary buttons
+INTERACTIVE --accent gold text — links, focus, secondary buttons
                 --accent-bright hover state
                 --accent-fill gold background — SMALL controls only (buttons, badges);
                     never a selected-card/surface bg, pairs only with --on-accent
 
-ATTENTION --attention rose text (AAA) — "look when you can"
+ATTENTION --attention dusty rose text — "look when you can"
                 --attention-fill rose background
 
-URGENT --urgent vermillion text — errors, blocking
-                --urgent-fill vermillion background
+URGENT --urgent brick red text — errors, blocking
+                --urgent-fill brick red background
 
-SUCCESS --success olive — completed
+SUCCESS --success apothecary green — completed
 META --steel / --steel-fill — chrome, secondary UI
 
 BRAND --brand-purple / --brand-purple-fill — wordmarks, masthead, NOT semantic
@@ -401,7 +406,7 @@ there is no `.dash-*` class):
 - **9 nodes ceiling.** Group beyond that.
 - **Mermaid:** initialize with `theme:'base'` + `themeVariables` reading CSS vars (snippet in `live-spec/diagrams.html`).
 - **React Flow:** wrap in `.rf-artificer`.
-- **Excalidraw palette:** strokes `#ffffff #c5c8c6 #e0b558 #e8836f` · fills `#292c33 #313540 #3c4150`. "Architect" roughness for system maps; "artist" for sketches.
+- **Excalidraw palette:** take stroke and fill hexes from the dark block of `tokens.json` (strokes `fg`, `fgSecondary`, `accent`, `attention`; fills `bg`, `bgRaised`, `bgOverlay`). "Architect" roughness for system maps; "artist" for sketches.
 - **`<defs>` ids are document-scoped.** Namespace per instance (`arrow-<id>`) when repeating a diagram component; never hard-code one inside it.
 - **Interactive nodes:** `tabindex="0"` + `role="button"` + `aria-label` + Enter/Space. Focus ring free from the global catch-all.
 
@@ -422,4 +427,4 @@ there is no `.dash-*` class):
 - **v0.1** · 2026 · personal use, no license required for Cameron's projects.
 - Palette inspired by 1920s–50s Jazz Age Deco screen-print posters.
 - Surface scale rooted in [Ghostty](https://ghostty.org) terminal defaults.
-- AAA contrast values pre-tuned; don't substitute hexes without re-running contrast checks.
+- Contrast values are pre-tuned; don't substitute hexes without re-running contrast checks.

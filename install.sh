@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Installs Artificer themes for VS Code, Ghostty, Claude Code, Helix, Neovim,
-# tmux, gitmux, glamour, gum, fzf, eza, bat, codex, and Obsidian.
+# tmux, gitmux, glamour, gum, fzf, eza, bat, codex, Zed, WezTerm, and Obsidian.
 #
 # Default mode: copy. The installed theme is an independent file, so nothing
 # else that manages these paths (chezmoi deploys most of them) is fighting a
@@ -18,8 +18,12 @@
 # visible as a change rather than merely reported as "differs". That is the
 # thing that makes copy mode honest: staleness is loud, not silent.
 #
-# Existing symlinks (from an older --symlink install) are replaced without a
-# backup — a link has no content of its own to preserve.
+# Existing symlinks that point INTO this repo (from an older --symlink install)
+# are replaced without a backup — a link has no content of its own to preserve.
+# A symlink that points anywhere else (e.g. a chezmoi `symlink_` source into a
+# dotfiles repo) is left alone: writing over it would replace the link with a
+# file and orphan the real copy (#470). The installer prints where it resolves
+# so the operator updates that file, and --verify reports it the same way.
 #
 # Obsidian vault path resolution: $ARTIFICER_OBSIDIAN_VAULT > ~/Documents/Obsidian.
 # Skipped (with a warning) if no vault is found.
@@ -38,6 +42,12 @@ if [[ -z "$VSCODE_VERSION" || "$VSCODE_VERSION" == *$'\n'* ]]; then
   echo "Could not read one VS Code extension version from $THEMES/vscode/package.json" >&2
   exit 2
 fi
+# The version becomes a path suffix that place() now rsyncs --delete into; a
+# separator or dot-dot in it would aim that at the wrong directory.
+if [[ "$VSCODE_VERSION" == */* || "$VSCODE_VERSION" == *..* ]]; then
+  echo "VS Code extension version '$VSCODE_VERSION' is not a plain version string" >&2
+  exit 2
+fi
 VSCODE_EXT="$HOME/.vscode/extensions/cameron.artificer-theme-$VSCODE_VERSION"
 GHOSTTY_DIR="$HOME/.config/ghostty/themes"
 CLAUDE_DIR="$HOME/.claude/themes"
@@ -50,6 +60,8 @@ FZF_DIR="$HOME/.config/fzf"
 EZA_DIR="$HOME/.config/eza"
 BAT_DIR="$HOME/.config/bat/themes"
 CODEX_DIR="$HOME/.codex/themes"
+ZED_DIR="$HOME/.config/zed/themes"
+WEZTERM_DIR="$HOME/.config/wezterm/colors"
 TMUX_DIR="$HOME/.config/tmux"
 GITMUX_DIR="$HOME/.config/tmux"
 OBSIDIAN_VAULT="${ARTIFICER_OBSIDIAN_VAULT:-$HOME/Documents/Obsidian}"
@@ -75,6 +87,15 @@ ACTIVATIONS=(
   "eza:$HOME/.zshrc:eza/artificer"
   "bat:$HOME/.config/bat/config:theme = \"artificer"
   "codex:$HOME/.codex/config.toml:theme = \"artificer"
+  # Anchored to the theme NAME as a quoted value. A bare "Artificer" substring
+  # false-matches a project path Zed records in its own settings (e.g. a folder
+  # under ~/Projects/artificer/) — the same trap the codex and claude-code
+  # probes above are already anchored around.
+  "zed:$HOME/.config/zed/settings.json:\"Artificer (Dark|Light)\""
+  # WezTerm selects by the scheme's [metadata] name, never the filename, so the
+  # probe looks for that NAME. Quoted on both sides because Lua takes either
+  # quote style, and an unquoted match would hit a comment or a path.
+  "wezterm:$HOME/.config/wezterm/wezterm.lua:['\"]Artificer (Dark|Light)['\"]"
   # Anchored to an UNcommented source-file line — a bare "tmux/artificer"
   # substring also lives in this repo's own path (~/Projects/.../tmux/...),
   # which a looser pattern would false-match on some checkouts.
@@ -125,14 +146,19 @@ TARGETS
   eza          ~/.config/eza/artificer-{dark,light}.sh
   bat          ~/.config/bat/themes/artificer-{dark,light}.tmTheme  (also read by delta)
   codex        ~/.codex/themes/artificer-{dark,light}.tmTheme
+  Zed          ~/.config/zed/themes/artificer.json   (one family, both modes)
+  WezTerm      ~/.config/wezterm/colors/artificer-{dark,light}.toml
+               + ~/.config/wezterm/artificer-window-frame.lua  (frame module, next to wezterm.lua)
   tmux         ~/.config/tmux/artificer-{dark,light}.conf
   gitmux       ~/.config/tmux/gitmux.yml
   Obsidian     <vault>/.obsidian/themes/Artificer/   (vault from
                $ARTIFICER_OBSIDIAN_VAULT or ~/Documents/Obsidian)
 
-Not installed here, on purpose: cmux, lazygit, and gh-dash splice their
-colors into a config file you also own, so installing the whole file would
-clobber your own settings; flux installs into another repo's build output;
+Not installed here, on purpose: cmux, lazygit, gh-dash, starship, yazi, and
+herdr splice their colors into a config file you also own, so installing the
+whole file would clobber your own settings; flux installs into another
+repo's build output; stylus installs by pasting into the Stylus browser
+extension (see themes/stylus/README.md);
 JetBrains is an IDE plugin, installed from the packed jar (npm run pack:jetbrains).
 
 Chrome, Edge and Firefox are browser extensions, not config files: load them
@@ -155,6 +181,49 @@ case "${1:-}" in
   "") ;;
   *) echo "Unknown flag: $1" >&2; usage >&2; exit 2 ;;
 esac
+
+REPO_REAL="$(cd "$REPO" && pwd -P)"
+
+# Prints the fully resolved path of $1, following a chain of symlinks. Plain
+# bash + readlink (no `readlink -f`), so it works on stock macOS as well.
+resolve_path() {
+  local p="$1" link dir hops=0
+  while [[ -L "$p" ]] && ((hops < 40)); do
+    link="$(readlink "$p")"
+    [[ "$link" == /* ]] || link="$(dirname "$p")/$link"
+    p="$link"
+    ((++hops))
+  done
+  if dir="$(cd -P "$(dirname "$p")" 2>/dev/null && pwd -P)"; then
+    printf '%s/%s\n' "$dir" "$(basename "$p")"
+  else
+    printf '%s\n' "$p"
+  fi
+}
+
+# True when $1 is a symlink that resolves outside this repo — a path some other
+# tool manages, which this installer must not replace. Two shapes are NOT
+# foreign, so the normal replace path still handles them:
+#   - a broken link: there is no content to orphan, and skipping it would
+#     leave a dead link that `--verify` tells you to fix with a rerun.
+#   - a link into another artificer checkout: its target ends in the source's
+#     repo-relative path ($2), e.g. an old `--symlink` install from a clone or
+#     worktree that should follow this checkout now.
+is_foreign_link() {
+  [[ -L "$1" && -e "$1" ]] || return 1
+  local target rel root
+  target="$(resolve_path "$1")"
+  [[ "$target" == "$REPO_REAL"/* || "$target" == "$REPO"/* ]] && return 1
+  if [[ -n "${2:-}" ]]; then
+    rel="${2#"$REPO"/}"
+    root="${target%/"$rel"}"
+    # A suffix alone is not proof: a chezmoi `dot_claude/commands/x.md` ends
+    # the same way as our `commands/x.md`. The root must look like a checkout.
+    [[ "$rel" != "$2" && "$target" == */"$rel" \
+      && -f "$root/install.sh" && -d "$root/themes" ]] && return 1
+  fi
+  return 0
+}
 
 # True when dst already holds exactly what src would install. -r covers the
 # directory targets (VS Code, Obsidian) as well as plain files.
@@ -197,6 +266,16 @@ verify_target() {
   if [[ ! -e "$dst" ]]; then
     echo "  MISSING  $dst"
     return 1
+  elif is_foreign_link "$dst" "$src"; then
+    local target
+    target="$(resolve_path "$dst")"
+    if same_content "$src" "$dst"; then
+      echo "  ok       $dst -> $target (symlink managed outside this repo, matches source)"
+    else
+      echo "  STALE    $dst -> $target (symlink managed outside this repo; update $target)"
+      print_capped_diff "$src" "$target"
+      return 1
+    fi
   elif [[ -L "$dst" ]]; then
     local actual
     actual="$(readlink "$dst")"
@@ -267,6 +346,14 @@ if [[ "$mode" == "verify" ]]; then
   verify_target "codex-dark" "$THEMES/codex/artificer-dark.tmTheme" "$CODEX_DIR/artificer-dark.tmTheme" || ((++fails))
   verify_target "codex-light" "$THEMES/codex/artificer-light.tmTheme" "$CODEX_DIR/artificer-light.tmTheme" || ((++fails))
 
+  echo "==> Zed"
+  verify_target "zed" "$THEMES/zed/artificer.json" "$ZED_DIR/artificer.json" || ((++fails))
+
+  echo "==> WezTerm"
+  verify_target "wezterm-dark" "$THEMES/wezterm/artificer-dark.toml" "$WEZTERM_DIR/artificer-dark.toml" || ((++fails))
+  verify_target "wezterm-light" "$THEMES/wezterm/artificer-light.toml" "$WEZTERM_DIR/artificer-light.toml" || ((++fails))
+  verify_target "wezterm-frame" "$THEMES/wezterm/artificer-window-frame.lua" "$HOME/.config/wezterm/artificer-window-frame.lua" || ((++fails))
+
   echo "==> tmux"
   verify_target "tmux-dark" "$THEMES/tmux/artificer-dark.conf" "$TMUX_DIR/artificer-dark.conf" || ((++fails))
   verify_target "tmux-light" "$THEMES/tmux/artificer-light.conf" "$TMUX_DIR/artificer-light.conf" || ((++fails))
@@ -319,6 +406,21 @@ fi
 place() {
   local src="$1" dst="$2"
 
+  if is_foreign_link "$dst" "$src"; then
+    # Another tool owns this path. Replacing the link with a file would leave
+    # that tool's copy stale and report the path as modified, so leave it and
+    # say where the real file is.
+    local target
+    target="$(resolve_path "$dst")"
+    if [[ -e "$dst" ]] && same_content "$src" "$dst"; then
+      echo "  ok      $dst -> $target (symlink managed outside this repo, already current)"
+    else
+      echo "  SKIP    $dst is a symlink to $target, managed outside this repo."
+      echo "          Update that file (copy $src there), or remove the link and re-run."
+    fi
+    return 0
+  fi
+
   if [[ -L "$dst" ]]; then
     # A link carries no content of its own, so there is nothing a backup could
     # preserve — replace it outright.
@@ -334,7 +436,18 @@ place() {
     local bak
     bak="$dst.bak.$(date +%Y%m%d-%H%M%S)"
     echo "  backup  $dst -> $bak"
-    mv "$dst" "$bak"
+    if [[ "$mode" == "copy" && -d "$dst" && ! -L "$dst" ]]; then
+      # Directory targets are updated IN PLACE below, so the backup is a copy
+      # and the live directory never disappears. Obsidian watches its themes
+      # folder: a move-then-recreate makes the theme vanish for a moment, and
+      # the watcher can miss the reappearance — the edit then "does not
+      # register" until a full reload. An in-place overwrite is a plain modify
+      # event on theme.css, which is what the watcher (and Style Settings,
+      # which re-parses on css-change) reliably sees.
+      cp -R "$dst" "$bak"
+    else
+      mv "$dst" "$bak"
+    fi
   fi
 
   if [[ "$mode" == "symlink" ]]; then
@@ -342,7 +455,22 @@ place() {
     echo "  link    $dst -> $src"
   else
     if [[ -d "$src" ]]; then
-      cp -R "$src" "$dst"
+      if [[ -d "$dst" ]]; then
+        # rsync overwrites files in place and removes what the repo no longer
+        # ships, so same_content agrees afterwards and the next run is a no-op.
+        # `--delete` matches what the old move-then-copy did to the live tree
+        # (anything not in the repo ended up only in the .bak) — every
+        # directory target, VS Code included, gets the same result as before.
+        # Without rsync (a minimal container) fall back to an in-place copy;
+        # a file the repo dropped then survives and the next run backs up again.
+        if command -v rsync >/dev/null 2>&1; then
+          rsync -a --delete "$src/" "$dst/"
+        else
+          cp -R "$src/." "$dst/"
+        fi
+      else
+        cp -R "$src" "$dst"
+      fi
     else
       cp "$src" "$dst"
     fi
@@ -436,6 +564,19 @@ mkdir -p "$CODEX_DIR"
 place "$THEMES/codex/artificer-dark.tmTheme"  "$CODEX_DIR/artificer-dark.tmTheme"
 place "$THEMES/codex/artificer-light.tmTheme" "$CODEX_DIR/artificer-light.tmTheme"
 
+echo "==> Zed"
+# Both dirs are green-field on a fresh machine, so the mkdir is load-bearing:
+# place()'s cp would fail under `set -euo pipefail` and abort the install.
+mkdir -p "$ZED_DIR"
+place "$THEMES/zed/artificer.json" "$ZED_DIR/artificer.json"
+
+echo "==> WezTerm"
+mkdir -p "$WEZTERM_DIR"
+place "$THEMES/wezterm/artificer-dark.toml"  "$WEZTERM_DIR/artificer-dark.toml"
+place "$THEMES/wezterm/artificer-light.toml" "$WEZTERM_DIR/artificer-light.toml"
+# The frame module sits next to wezterm.lua (Lua require resolves there), not in colors/.
+place "$THEMES/wezterm/artificer-window-frame.lua" "$HOME/.config/wezterm/artificer-window-frame.lua"
+
 echo "==> tmux"
 mkdir -p "$TMUX_DIR"
 place "$THEMES/tmux/artificer-dark.conf"  "$TMUX_DIR/artificer-dark.conf"
@@ -479,6 +620,12 @@ Done. Activate:
   delta       'syntax-theme = artificer-dark' in the [delta] section of
               ~/.gitconfig (delta reads bat's theme registry, same cache)
   codex       'theme = "artificer-dark"' under [tui] in ~/.codex/config.toml
+  Zed         "theme": {"mode": "system", "light": "Artificer Light",
+              "dark": "Artificer Dark"} in ~/.config/zed/settings.json
+              (drop-ins do not hot-reload reliably — restart Zed)
+  WezTerm     config.color_scheme = "Artificer Dark" in ~/.config/wezterm/wezterm.lua
+              — select by that NAME, not the filename, or it silently fails to
+              load; the fancy tab bar needs a window_frame block (themes/README.md)
   tmux        add 'source-file ~/.config/tmux/artificer-dark.conf' to ~/.tmux.conf
   gitmux      already referenced by gitmux.yml path convention
   Obsidian    Settings → Appearance → Themes → Artificer

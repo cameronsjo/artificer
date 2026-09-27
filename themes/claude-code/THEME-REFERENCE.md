@@ -1,6 +1,6 @@
 # Claude Code Theme Reference
 
-A complete reference for the `~/.claude/themes/*.json` schema, including all 73 reachable tokens. Pairs with [`theme.schema.json`](./theme.schema.json) for editor validation and autocomplete.
+A complete reference for the `~/.claude/themes/*.json` schema, including all 72 reachable tokens. Pairs with [`theme.schema.json`](./theme.schema.json) for editor validation and autocomplete.
 
 > Custom themes require Claude Code v2.1.118 or later.
 
@@ -133,16 +133,15 @@ Badges:
 
 ### Fullscreen mode (background fills)
 
-These apply only when `/tui fullscreen` rendering is active.
+These apply when `/tui fullscreen` rendering is active, except `composerSidebarBackground`, which also paints the `/diff` side panel outside fullscreen.
 
 | Token | Status | Controls |
 | :--- | :--- | :--- |
 | `userMessageBackground` | Documented | Background behind user messages |
 | `userMessageBackgroundHover` | Documented | Hover variant of `userMessageBackground` |
-| `messageActionsBackground` | Internal | Per-message action affordance backgrounds. Absent from the preset since v2.1.140 |
 | `bashMessageBackgroundColor` | Documented | Background for shell-command messages |
 | `memoryBackgroundColor` | Documented | Background for memory / `CLAUDE.md` annotations |
-| `composerSidebarBackground` | Internal | Fullscreen composer sidebar fill |
+| `composerSidebarBackground` | Internal | Fill of the side panel container — the slab `/diff` renders into (v2.1.269), and the composer sidebar in fullscreen. Must be bound: see [Background fills have no ANSI fallback](#background-fills-have-no-ansi-fallback) |
 | `selectionBg` | Documented | Mouse-selection background (terminal text selection highlight) |
 
 ### Subagent palette
@@ -229,9 +228,17 @@ aliased or wrapped to.
 
 Any future token added by Anthropic will appear in those preset literals first; rerun this extraction against a newer binary to refresh the catalog.
 
-**Last verified against v2.1.226 — 72 preset keys, identical across all six presets.** Our schema lists 73; the extra (`messageActionsBackground`) was present in v2.1.126 but dropped in v2.1.140. Runtime silently ignores unknown tokens, so we continue to emit it harmlessly.
+**Last verified against v2.1.269 — 72 preset keys, identical across all six presets.** Our schema lists the same 72, with no extras. `messageActionsBackground` was dropped from the binary in v2.1.140 and from our schema in the release that carries this note; the runtime silently discards unknown keys, so emitting it did nothing either way.
 
 ## Artificer-specific notes
+
+### Background fills have no ANSI fallback
+
+A sparse `dark-ansi` theme degrades gracefully for **foreground** tokens: an unset text key falls through to a sensible ANSI slot. Background keys do not. ANSI has no surface slots, so an unbound fill lands on whatever **text** color the slot happens to carry.
+
+`composerSidebarBackground` is the worked case. Left unset, `dark-ansi` resolves it to `ansi:blackBright` — Ghostty `palette = 8`, `#9aa2b3`, the dim-text grey Artificer also uses for `subtle`. The v2.1.269 `/diff` panel painted that across half the terminal, so file paths and context lines sat at near-zero contrast and the correctly-themed dark hunks read as black islands on a pale field.
+
+The general rule: **every new background key Anthropic ships arrives broken here until someone binds it.** When the extraction above reports a new token, check whether its name ends in `Background`/`Bg`/`BackgroundColor` before assuming the default is safe.
 
 ### Base preset: `dark-ansi` required
 

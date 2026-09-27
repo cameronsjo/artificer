@@ -10,7 +10,6 @@
 <script src="artificer-theme.js" defer></script>
 <style>
   /* page chrome — matches data-display.html */
-  h3 { font-family: var(--font-mono); font-weight: 700; font-size: 14px; margin-top: var(--s-lg); margin-bottom: var(--s-sm); color: var(--fg); }
 
   /* Dashboard frame — sits inside .demo to look like a real screen */
   .dash {
@@ -49,10 +48,10 @@
     font-family: var(--font-sans); font-size: 12px;
   }
   .tweaks.open { display: flex; }
-  .tweaks__title { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-xs); }
+  .tweaks__title { font-family: var(--font-mono); font-size: var(--t-label-xs-size); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-secondary); margin: 0 0 var(--s-xs); }
   .tweaks__row   { display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm); }
   .tweaks__row > span:first-child { color: var(--fg-secondary); }
-  .tweaks .timerange button { padding: 4px 8px; font-size: 11px; }
+  .tweaks .timerange button { padding: 4px 8px; font-size: var(--t-label-xs-size); }
   .tweaks__open-btn {
     position: fixed; right: 16px; bottom: 16px; z-index: var(--z-raised);
     background: var(--bg-overlay); color: var(--fg); border: 1px solid var(--border);
@@ -65,7 +64,7 @@
 <a href="#main" class="skip-link">Skip to content</a>
 <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
 
-<main id="main" class="container container--lg" style="padding-top:48px;padding-bottom:96px">
+<main id="main" class="container container--lg container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Patterns · Composition</p>
   <h1 class="t-headline-lg">composition.</h1>
   <p class="t-body-lg" style="color:var(--fg-secondary);max-width:60ch">
@@ -79,7 +78,7 @@
   <p class="meta">Pick by <b class="anchor">primary task</b>, not by aesthetic. Each skeleton has a job. If yours doesn't fit one of these, push back on the brief — usually two pages in a trench coat.</p>
 
   <!-- 1. KPI dashboard -->
-  <h3>1 · KPI dashboard <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "what's the headline?"</span></h3>
+  <h3 class="subsection-title">1 · KPI dashboard <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "what's the headline?"</span></h3>
   <p class="meta">Big numbers up top, supporting chart, recent activity. Use when the user came to <i>check status</i>, not investigate.</p>
   <div class="figure figure--frame">
     <section class="dash density-cozy" data-dash="kpi" aria-label="KPI dashboard example">
@@ -133,7 +132,7 @@
   </div>
 
   <!-- 2. Ops console -->
-  <h3>2 · Ops console <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "something is wrong, where?"</span></h3>
+  <h3 class="subsection-title">2 · Ops console <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "something is wrong, where?"</span></h3>
   <p class="meta">Dense table of recent activity, filter row, log stream. Use when the user came to <i>investigate</i>. Compact density. Sticky table header.</p>
   <div class="figure figure--frame">
     <section class="dash density-compact" aria-label="Ops console example">
@@ -192,7 +191,7 @@
   </div>
 
   <!-- 3. Split-pane / browse-and-detail -->
-  <h3>3 · Split pane <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "browse a list, look at one"</span></h3>
+  <h3 class="subsection-title">3 · Split pane <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "browse a list, look at one"</span></h3>
   <p class="meta">Sidebar = the list. Main = the detail. Settings, inbox, audit log, file browser. Cozy density.</p>
   <div class="figure figure--frame">
     <section class="dash density-cozy" style="grid-template-rows:auto 1fr" aria-label="Split-pane example">
@@ -235,7 +234,7 @@
   </div>
 
   <!-- 4. Table-first -->
-  <h3>4 · Table-first <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "show me everything"</span></h3>
+  <h3 class="subsection-title">4 · Table-first <span style="color:var(--fg-disabled);font-weight:400;margin-left:8px">— "show me everything"</span></h3>
   <p class="meta">The table <i>is</i> the page. Filter row pinned, sticky headers, group rows, footer totals, comfortable on the eyes.</p>
   <div class="figure figure--frame">
     <section class="dash density-cozy" aria-label="Table-first example">
@@ -320,7 +319,7 @@
   <h2 class="section-title">Density modes</h2>
   <p class="meta">Same content, three densities. Pick by surface: <b class="anchor">compact</b> for ops/console, <b class="anchor">cozy</b> for default product, <b class="anchor">comfortable</b> for documents.</p>
 
-  <h3>Compact <span style="color:var(--fg-disabled);font-weight:400">— 4px row, 10px gutter</span></h3>
+  <h3 class="subsection-title">Compact <span style="color:var(--fg-disabled);font-weight:400">— 4px row, 10px gutter</span></h3>
   <div class="figure">
     <div class="density-compact" style="overflow-x:auto" tabindex="0">
       <table class="table">
@@ -334,7 +333,7 @@
     </div>
   </div>
 
-  <h3>Cozy <span style="color:var(--fg-disabled);font-weight:400">— 8px row, 16px gutter (default)</span></h3>
+  <h3 class="subsection-title">Cozy <span style="color:var(--fg-disabled);font-weight:400">— 8px row, 16px gutter (default)</span></h3>
   <div class="figure">
     <div class="density-cozy" style="overflow-x:auto" tabindex="0">
       <table class="table">
@@ -348,7 +347,7 @@
     </div>
   </div>
 
-  <h3>Comfortable <span style="color:var(--fg-disabled);font-weight:400">— 14px row, 20px gutter</span></h3>
+  <h3 class="subsection-title">Comfortable <span style="color:var(--fg-disabled);font-weight:400">— 14px row, 20px gutter</span></h3>
   <div class="figure">
     <div class="density-comfortable" style="overflow-x:auto" tabindex="0">
       <table class="table">
@@ -368,18 +367,18 @@
   <div class="figure">
     <div class="cluster" style="--gap:var(--s-xl)">
       <div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live tick</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live tick</div>
         <div class="cluster" style="--gap:var(--s-md)">
           <span class="live-tick">live</span>
           <span class="live-tick">streaming</span>
         </div>
       </div>
       <div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Last-updated</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Last-updated</div>
         <span class="last-updated" id="liveStamp">14:32:08 UTC</span>
       </div>
       <div>
-        <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live value</div>
+        <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Live value</div>
         <span class="t-mono-headline-lg num live-value" id="liveValue" aria-live="polite" aria-atomic="true">42</span>
       </div>
     </div>
@@ -391,7 +390,7 @@
   <p class="meta">Three patterns, in order of complexity. Start with chips. Add time-range when the data is temporal. Reach for a faceted sidebar only when the dataset has &gt;3 axes worth filtering on.</p>
   <div class="figure stack stack--lg">
     <div>
-      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Chips</div>
+      <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Chips</div>
       <div class="cluster">
         <button class="chip" aria-pressed="true">All <span class="chip__count">128</span></button>
         <button class="chip">Active <span class="chip__count">42</span></button>
@@ -400,7 +399,7 @@
       </div>
     </div>
     <div>
-      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Time range</div>
+      <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Time range</div>
       <div class="timerange" role="group" aria-label="Time range">
         <button type="button">15m</button>
         <button type="button">1h</button>
@@ -411,7 +410,7 @@
       </div>
     </div>
     <div>
-      <div class="meta" style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Faceted</div>
+      <div class="meta" style="font-size: var(--t-label-xs-size);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Faceted</div>
       <div class="filter-bar">
         <button class="chip" aria-pressed="true">All</button>
         <button class="chip">Compute</button>
@@ -451,7 +450,7 @@
 
 <!-- Tweaks panel — wired by the script below; toggled from the toolbar via __edit_mode_available -->
 <aside class="tweaks" id="tweaksPanel" aria-label="Tweaks">
-  <h3 class="tweaks__title">Tweaks</h3>
+  <h3 class="tweaks__title subsection-title">Tweaks</h3>
   <div class="tweaks__row"><span>Density</span>
     <div class="timerange" role="group" aria-label="Density">
       <button type="button" data-density="compact">compact</button>
