@@ -157,19 +157,19 @@
         <input class="input" type="search" placeholder="search by run id, branch, author…" style="max-width:280px"/>
       </div>
 
-      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:var(--s-md);min-height:0">
-        <div style="overflow:auto;max-height:280px;border:1px solid var(--border);border-radius:var(--radius-sm)">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:var(--s-md);min-height:0">
+        <div tabindex="0" role="region" aria-label="Run history" style="overflow:auto;max-height:280px;border-top:1px solid var(--border)">
           <table class="table table--sticky-head">
             <thead><tr><th>Run</th><th>Status</th><th>Branch</th><th>Started</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
             <tbody>
-              <tr><td>build-1284</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:32</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
-              <tr><td>build-1283</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:28</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
-              <tr><td>build-1282</td><td><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td>fix/auth</td><td>14:25</td><td class="num">—</td><td class="num">$0.08</td></tr>
-              <tr><td>build-1281</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:20</td><td class="num">2m 21s</td><td class="num">$0.44</td></tr>
-              <tr><td>build-1280</td><td><span class="badge badge--attention"><span class="dot dot--attention"></span>throttled</span></td><td>chore/deps</td><td>14:14</td><td class="num">3m 02s</td><td class="num">$0.49</td></tr>
-              <tr><td>build-1279</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:09</td><td class="num">2m 11s</td><td class="num">$0.42</td></tr>
-              <tr><td>build-1278</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:02</td><td class="num">2m 16s</td><td class="num">$0.43</td></tr>
-              <tr><td>build-1277</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>13:58</td><td class="num">2m 13s</td><td class="num">$0.42</td></tr>
+              <tr><td style="white-space:nowrap">build-1284</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:32</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+              <tr><td style="white-space:nowrap">build-1283</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:28</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+              <tr><td style="white-space:nowrap">build-1282</td><td><span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span></td><td>fix/auth</td><td>14:25</td><td class="num">—</td><td class="num">$0.08</td></tr>
+              <tr><td style="white-space:nowrap">build-1281</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:20</td><td class="num">2m 21s</td><td class="num">$0.44</td></tr>
+              <tr><td style="white-space:nowrap">build-1280</td><td><span class="badge badge--attention"><span class="dot dot--attention"></span>throttled</span></td><td>chore/deps</td><td>14:14</td><td class="num">3m 02s</td><td class="num">$0.49</td></tr>
+              <tr><td style="white-space:nowrap">build-1279</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:09</td><td class="num">2m 11s</td><td class="num">$0.42</td></tr>
+              <tr><td style="white-space:nowrap">build-1278</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>14:02</td><td class="num">2m 16s</td><td class="num">$0.43</td></tr>
+              <tr><td style="white-space:nowrap">build-1277</td><td><span class="badge badge--success"><span class="dot dot--success"></span>passed</span></td><td>main</td><td>13:58</td><td class="num">2m 13s</td><td class="num">$0.42</td></tr>
             </tbody>
           </table>
         </div>
@@ -325,9 +325,9 @@
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
-          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
-          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
-          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+          <tr><td style="white-space:nowrap">build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td style="white-space:nowrap">build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td style="white-space:nowrap">build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
         </tbody>
       </table>
     </div>
@@ -339,9 +339,9 @@
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
-          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
-          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
-          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+          <tr><td style="white-space:nowrap">build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td style="white-space:nowrap">build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td style="white-space:nowrap">build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
         </tbody>
       </table>
     </div>
@@ -353,9 +353,9 @@
       <table class="table">
         <thead><tr><th>Run</th><th>Status</th><th class="num">Dur</th><th class="num">Cost</th></tr></thead>
         <tbody>
-          <tr><td>build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
-          <tr><td>build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
-          <tr><td>build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
+          <tr><td style="white-space:nowrap">build-1284</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 14s</td><td class="num">$0.42</td></tr>
+          <tr><td style="white-space:nowrap">build-1283</td><td><span class="dot dot--success"></span> passed</td><td class="num">2m 09s</td><td class="num">$0.41</td></tr>
+          <tr><td style="white-space:nowrap">build-1282</td><td><span class="dot dot--urgent"></span> failed</td><td class="num">—</td><td class="num">$0.08</td></tr>
         </tbody>
       </table>
     </div>

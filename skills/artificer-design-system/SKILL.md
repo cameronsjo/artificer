@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.27.0
+# Artificer · v0.28.0
 
 Design calm, scannable tools and documents for Cameron using Artificer's tokens,
 components, and interaction patterns. The system is dark-first, Ghostty-rooted,
@@ -25,8 +25,8 @@ Choose per page before writing CSS; one project may contain both kinds.
 
 | Surface | Body | Size | Other text |
 |---|---|---|---|
-| Tool: dashboards, consoles, settings, tables | `--font-mono` (JetBrains Mono) | 14px | Labels and controls use `--font-interface` (Quattro S) |
-| Document: reports, READMEs, onboarding, prose | `--font-body` (Quattro V) | 15–16px | Code, paths, identifiers, and numerals stay mono |
+| Tool: dashboards, consoles, settings, tables | `--font-mono` (JetBrains Mono) | 14px | Labels and controls use `--font-interface` (Recursive) |
+| Document: reports, READMEs, onboarding, prose | `--font-body` (Bricolage Grotesque) | 15–16px | Code, paths, identifiers, and numerals stay mono |
 
 If a prose page needs repeated overrides from mono back to sans, change its body
 face. Match the existing color, type, interaction states, density, and shadows
@@ -84,8 +84,8 @@ Load only the references needed for the current surface.
 - [Source](../../src/): CSS, theme persistence, icons, focus, and other behavior
   modules. The theme key is `artificer.theme`; use the shipped module contract.
 - [Framework adapters](../../framework-adapters/) and [fonts](../../FONTS.md):
-  Tailwind, React, Vue, and font loading. Quattro S/V are self-hosted WOFF2,
-  not Google Fonts or Fontsource fonts.
+  Tailwind, React, Vue, and font loading. Recursive and Bricolage Grotesque ship
+  as bundled variable WOFF2 files.
 - [Bundle index](../../INDEX.md), [README](../../README.md), and
   [offline preview](../../system-preview-offline.html): distribution and read order.
 - [Single-file handoff](../../reference/SKILL.md): standalone reference; this skill

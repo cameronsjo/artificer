@@ -8,7 +8,7 @@
   <id>lol.sjo.artificer.jetbrains</id>
   <name>Artificer Theme</name>
   <vendor>Cameron Sjo</vendor>
-  <version>0.27.0</version>
+  <version>0.28.0</version>
   <idea-version since-build="252" />
   <depends>com.intellij.modules.platform</depends>
   <description><![CDATA[

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Texture · v0.12.0  (the third — and ceiling — sanctioned carve)
+   ARTIFICER · Texture · v0.12.0 → drafting v0.28  (the third — and ceiling — sanctioned carve)
    ─────────────────────────────────────────────────────────────────────────
    Artificer's surfaces are flat solid fills by doctrine. This file is the
    bounded place that relaxes that — material honesty, not decoration. Read
@@ -28,26 +28,30 @@
 
 :root {
   /* ── knobs ─────────────────────────────────────────────────────────────── */
-  --tex-dot-gap:        14px;   /* dot-matrix lattice pitch. Sweet spot 14; 12–16. */
-  --tex-fiber-strength: 0.5;   /* document-fiber intensity (0–1).               */
-  --tex-paper-grain:    0.22;  /* page-grain level. 0.22 = Faint · 0.45 = Whisper. */
-  --tex-line-ink:       var(--border);  /* deco lines are token ink, never raw color. */
-  --tex-line-a:         70%;   /* line ink alpha (dark).                */
+  --tex-dot-gap:        14px; /* @kind spacing */   /* dot-matrix lattice pitch. Sweet spot 14; 12–16. */
+  --tex-fiber-strength: 0.5; /* @kind other */   /* document-fiber intensity (0–1).               */
+  --tex-paper-grain:    0.22; /* @kind other */  /* page-grain level. 0.22 = Faint · 0.45 = Whisper (drawn ×0.71 on ink). */
+  --tex-line-ink:       var(--border); /* @kind color */  /* deco lines are token ink, never raw color. */
+  --tex-line-a:         70%; /* @kind other */   /* line ink alpha (dark).                */
+  --tex-grid-minor:     8px; /* @kind spacing */   /* drafting grid minor pitch = --s-sm.   */
+  --tex-grid-major:     40px; /* @kind spacing */  /* drafting grid major pitch (5 minors). */
+  --tex-ruled-lh:       1.7em; /* @kind other */   /* ledger line pitch; text + rules share it. */
+  --tex-perf-ground:    var(--bg); /* @kind color */ /* what the perforation notches punch through to. */
 
   /* Desaturated fiber noise — the paper/ink tooth. No hue, blended into surface. */
-  --tex-noise-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-noise-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); /* @kind other */
   /* Page-grain speckle — noise baked as ALPHA so it shows with normal
      compositing (blend-mode independent, renders reliably). Light grains on
      ink; the light-theme block below swaps to ink grains on paper. */
-  --tex-speckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  --tex-speckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"); /* @kind other */
 }
 
 /* Light (paper) retunes — the lines read too strong on cream with the dark
    --border at full alpha and pick up a bluish cast; ride the border ink softer.
    The page-grain speckle inverts to ink grains so it shows on paper. */
 :root[data-theme="light"] {
-  --tex-line-a: 68%;
-  --tex-speckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.20 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  --tex-line-a: 68%; /* @kind other */
+  --tex-speckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.12 0 0 0 0 0.11 0 0 0 0 0.20 1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.1' intercept='-0.45'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E"); /* @kind other */
 }
 
 /* ═══ 1 · GRAIN ═══════════════════════════════════════════════════════════
@@ -91,6 +95,13 @@
   opacity: var(--tex-paper-grain);
 }
 .tex-paper--whisper { --tex-paper-grain: 0.45; }
+/* Whisper is capped lower on ink: at 0.45 the light speckle on a dark floor
+   read as dust/static, so the ink floor draws it at ~0.32 (0.45 × 0.71).
+   Paper keeps the full level — ink grains on cream read as tooth. Scaled on
+   the pseudo-element so no new custom property is declared per theme. */
+.tex-paper--whisper::before { opacity: calc(var(--tex-paper-grain) * 0.71); }
+:root[data-theme="light"] .tex-paper--whisper::before { opacity: var(--tex-paper-grain); }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) .tex-paper--whisper::before { opacity: var(--tex-paper-grain); } }
 
 /* ═══ 3 · DECO LINE-TEXTURE (ink, not material) ═══════════════════════════
    Hatch / cross / flute / pinstripe — drawn ONLY from token ink, so they add
@@ -114,20 +125,24 @@
     repeating-linear-gradient(45deg,  transparent 0 7px, color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 7px 8px),
     repeating-linear-gradient(-45deg, transparent 0 7px, color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 7px 8px);
 }
-/* flute — paired vertical hairlines, the speakeasy column */
+/* flute — paired vertical hairlines, the speakeasy column. 28px period, a
+   4px pair gap: wide enough that the doubling reads at a glance (the old
+   17px/2px pitch was indistinguishable from pinstripe). */
 .tex-line--flute::after {
   background-image: repeating-linear-gradient(90deg,
-    transparent 0 13px,
-    color-mix(in oklab, var(--fg) 9%, transparent) 13px 14px,
-    transparent 14px 16px,
-    color-mix(in oklab, var(--fg) 9%, transparent) 16px 17px);
+    transparent 0 20px,
+    color-mix(in oklab, var(--fg) 9%, transparent) 20px 21px,
+    transparent 21px 25px,
+    color-mix(in oklab, var(--fg) 9%, transparent) 25px 26px,
+    transparent 26px 28px);
 }
 :root[data-theme="light"] .tex-line--flute::after {
   background-image: repeating-linear-gradient(90deg,
-    transparent 0 13px,
-    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 13px 14px,
-    transparent 14px 16px,
-    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 16px 17px);
+    transparent 0 20px,
+    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 20px 21px,
+    transparent 21px 25px,
+    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 25px 26px,
+    transparent 26px 28px);
 }
 /* pinstripe — even single hairlines, tailoring not architecture */
 .tex-line--pinstripe::after {
@@ -139,14 +154,105 @@
 /* ═══ 4 · RAISED (outer-glow depth) ═══════════════════════════════════════
    The one sanctioned elevation beyond the functional --shadow-overlay. The
    card FACE stays flat (no interior gradient — that "uniform glow" look is a
-   canonical no); depth is a soft halo bleeding to the bottom-right, entirely
-   outside the border. A raised tile lit from outside. */
+   canonical no); depth is a soft halo falling straight down, entirely outside
+   the border — lit from above, the same light as the app icon (v0.28; was
+   bottom-right). */
 .tex-raised {
-  box-shadow: 4px 6px 14px 1px rgba(0,0,0,.20), 9px 12px 30px 2px rgba(0,0,0,.14);
+  box-shadow: 0 6px 14px 1px rgba(0,0,0,.20), 0 14px 30px 2px rgba(0,0,0,.14);
 }
 :root[data-theme="light"] .tex-raised {
-  box-shadow: 4px 6px 14px 1px rgba(32,32,62,.13), 9px 12px 30px 2px rgba(32,32,62,.09);
+  box-shadow: 0 6px 14px 1px rgba(32,32,62,.13), 0 14px 30px 2px rgba(32,32,62,.09);
 }
+
+/* ═══ 5 · DRAFTING (v0.28) — the maker's bench ════════════════════════════
+   Six textures from the drafting table the compass icon comes off. Same
+   bounds as everything above: token ink only, no hue, no motion, never on
+   data/status/errors, one per surface.
+     .tex-grid        engineering paper — tool canvases, layout previews
+     .tex-line--arc   scribed compass arcs from a corner — empty states
+     .tex-line--ray   deco sunburst from bottom-centre — ONE launch moment
+     .tex-ruled       ledger rules locked to the text — notes, journals
+     .tex-perf        a perforated tear line — receipt / ticket cards
+     .tex-deboss      pressed-in display type — decorative ONLY */
+
+/* drafting grid — minor on the 8px spacing unit, major every 5 minors. */
+.tex-grid { position: relative; isolation: isolate; }
+.tex-grid::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    linear-gradient(to right,  color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 1px, transparent 1px),
+    linear-gradient(to right,  color-mix(in oklab, var(--tex-line-ink) calc(var(--tex-line-a) * .45), transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tex-line-ink) calc(var(--tex-line-a) * .45), transparent) 1px, transparent 1px);
+  background-size:
+    var(--tex-grid-major) var(--tex-grid-major), var(--tex-grid-major) var(--tex-grid-major),
+    var(--tex-grid-minor) var(--tex-grid-minor), var(--tex-grid-minor) var(--tex-grid-minor);
+  background-position: -1px -1px;
+}
+:root[data-theme="light"] .tex-grid::after { opacity: 0.8; }
+
+/* scribed arcs — concentric compass arcs swung from the bottom-right corner,
+   masked so they fade before reaching the content. Composes with .tex-line. */
+.tex-line--arc::after {
+  background-image: repeating-radial-gradient(circle at 100% 100%,
+    transparent 0 17px,
+    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 17px 18px);
+  -webkit-mask-image: radial-gradient(circle at 100% 100%, #000 30%, transparent 85%);
+          mask-image: radial-gradient(circle at 100% 100%, #000 30%, transparent 85%);
+}
+
+/* deco sunburst — hairline rays fanned from bottom-centre. A single-moment
+   texture (release banner, launch hero): never a repeated surface. */
+.tex-line--ray::after {
+  background-image: repeating-conic-gradient(from -90deg at 50% 100%,
+    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 0 .5deg,
+    transparent .5deg 7.5deg);
+  -webkit-mask-image: radial-gradient(ellipse 70% 95% at 50% 100%, #000 25%, transparent 80%);
+          mask-image: radial-gradient(ellipse 70% 95% at 50% 100%, #000 25%, transparent 80%);
+}
+
+/* ledger rule — the element owns its line-height, and each rule sits at the
+   bottom of the em box: (line-height + 1em) / 2 from the top of every line
+   box, just under the baseline (the baseline sits 0.33–0.36em below the
+   line box's middle for Bricolage Grotesque, Recursive and JetBrains Mono,
+   so the rule at +0.5em clears it). Rules start at the content box, so
+   padding never shifts them; local attachment keeps them under the text when
+   a <textarea> scrolls. Set the font-size on the element itself. */
+.tex-ruled {
+  line-height: var(--tex-ruled-lh);
+  background-image: linear-gradient(to bottom,
+    transparent 0 calc((var(--tex-ruled-lh) + 1em) / 2 - 1px),
+    color-mix(in oklab, var(--tex-line-ink) var(--tex-line-a), transparent) 0 calc((var(--tex-ruled-lh) + 1em) / 2),
+    transparent 0);
+  background-size: 100% var(--tex-ruled-lh);
+  background-origin: content-box;
+  background-attachment: local;
+}
+
+/* perforation — a tear line between two padded sections of a card. The card
+   needs overflow: hidden and no side padding on the line itself; the notches
+   punch through to --tex-perf-ground (set it to the card's backdrop). */
+.tex-perf {
+  height: 16px; margin: 0 -1px; border: 0;
+  background:
+    radial-gradient(circle at 0 50%,    var(--tex-perf-ground) 7px, var(--border) 7.5px 8.5px, transparent 9px) left  / 50% 100% no-repeat,
+    radial-gradient(circle at 100% 50%, var(--tex-perf-ground) 7px, var(--border) 7.5px 8.5px, transparent 9px) right / 50% 100% no-repeat,
+    repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 12px) center / calc(100% - 32px) 1px no-repeat;
+}
+
+/* letterpress — display type pressed into its surface: the text IS the
+   surface color, drawn by a 1px light edge below and a 1px shadow edge above.
+   Below text contrast BY DESIGN — decorative only (colophons, empty-page
+   watermarks). Always aria-hidden or duplicated in readable text. */
+.tex-deboss {
+  color: var(--bg);
+  text-shadow: 0 1px 0 rgba(255,255,255,.07), 0 -1px 0 rgba(0,0,0,.55);
+}
+:root[data-theme="light"] .tex-deboss {
+  color: var(--bg-overlay);
+  text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(32,32,62,.18);
+}
+@media (forced-colors: active) { .tex-deboss { color: GrayText; text-shadow: none; } }
 
 /* ═══ Reduced-motion ══════════════════════════════════════════════════════
    Texture is static by design, so there is nothing to stop. Page-grain travels

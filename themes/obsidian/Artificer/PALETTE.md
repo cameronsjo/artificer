@@ -31,8 +31,8 @@ handling in the past:
 - v0.5 → v0.6 softened `urgent` from `#e8836f` to `#c08070`. Adopted —
   fits the cream-mode contrast goal.
 - v0.5 → v0.6 swapped success olive → apothecary green. Adopted in dark
-  and light, but I checked that callouts (which use success as TODO)
-  still read as advisory rather than urgent. They do.
+  and light. Callouts used olive (not success) for tip and success until
+  PR #563 moved them onto `--art-success`; TODO callouts are steel.
 
 ## Obsidian-specific divergences
 
@@ -45,8 +45,40 @@ These are intentional. Don't flatten them unless we discuss it.
 | Attention (dark) | Burnt gold | Dusty rose (`#e5afb7`) | Gold is taken by accent; rose carries "non-destructive caution" without confusion (ADR 0020) |
 | Inactive pane treatment | Subtle desaturation | Dramatic 0.55 opacity / 0.6 saturate | Obsidian's split-view is core to focus; recession needs to be visible at a glance (ADR 0021) |
 | Light-mode root | `body` selector | `.workspace` selector | Obsidian's editor surface is `.workspace`; `body` doesn't actually paint behind it |
-| Callout color contract | Hex tokens | RGB-tuple tokens (`r, g, b`) | Obsidian wraps callout colors in `rgba(…)` at runtime; hex breaks the wrap |
+| Callout color contract | Hex tokens | Full colors (`var(--art-*)`) | Obsidian 1.15 reads `--callout-color` in `color-mix(…)` and `color:`; the pre-1.15 `r, g, b` tuples are invalid there |
+| Callout success tier | No success tier (`--success` misses 3:1 on raised) | `--art-success` for tip/success/check/done | Approved deviation (PR #563): this theme's `--art-success` is lighter, 3.95:1 dark / 4.69:1 light on raised |
+| Callout brand-purple tier | Not a callout tier | `--art-brand-purple` for quote/example/cite | Approved deviation (PR #563): Obsidian has more callout types than the system's four tiers |
+| Light note callouts | Accent (gold) | `--art-steel-fill` | Light accent and attention are both brown on cream; see § Callout tiers |
 | Prose-highlight tokens | n/a (no codegen) | OKLCH **hue** tokens + shared L/C (`--art-prose-*-h` + `--art-prose-l/c`) | The intensity slider must retune chroma *and* contrast together; flat hex can't do that. See § Prose below (ADR 0023) |
+
+### Callout tiers (PR #563)
+
+The tier shows only as the inset rule and the icon; titles are `--art-fg`.
+Each rule is non-text, so it must reach 3:1 on `--art-bg-raised` and differ
+visibly from every other tier (pairwise OKLab ΔE ≥ 0.07; one just-noticeable
+step is about 0.02). Ratios from `scripts/contrast.mjs`; ΔE is the Euclidean
+distance between the two tokens in OKLab (sRGB → linear → OKLab, Ottosson's
+matrices). `scripts/obsidian-callouts.test.mjs` pins the token-only contract.
+
+| Callout types | Dark token | Dark ratio | Light token | Light ratio |
+|---|---|---|---|---|
+| info, todo, summary, abstract, tldr, unknown | `--art-steel` | 5.81:1 | `--art-steel` | 9.02:1 |
+| note, question, help, faq | `--art-accent` | 6.37:1 | `--art-steel-fill` | 4.47:1 |
+| warning, important, caution, attention | `--art-attention` | 6.50:1 | `--art-attention` | 5.25:1 |
+| failure, error, bug, fail, missing, danger | `--art-urgent` | 3.83:1 | `--art-urgent` | 8.06:1 |
+| tip, success, hint, check, done | `--art-success` | 3.95:1 | `--art-success` | 4.69:1 |
+| quote, example, cite | `--art-brand-purple` | 6.57:1 | `--art-brand-purple` | 9.77:1 |
+
+Residuals, recorded rather than fixed (no other token holds 3:1 and stays
+distinct): dark attention / brand-purple ΔE 0.076 and steel / brand-purple
+0.081; light steel-fill / success 0.084. Dark error uses `--art-urgent` for
+the rule; `--art-urgent-text` (6.12:1) was the same pink as attention
+(ΔE 0.028). In light, `--art-accent` and `--art-attention` are both brown on
+cream (ΔE 0.038), so the note family takes `--art-steel-fill` there.
+
+Known limit: a plugin that defines its own callout type with a pre-1.15
+`--callout-color: r, g, b` triplet renders with a transparent rule and a
+`currentColor` frame. The theme cannot repair a plugin's own declaration.
 
 ## Prose highlighting (Lane-2 addition, v0.7.0)
 
@@ -122,9 +154,8 @@ lands or the right test case forces my hand.
   default since v0.6.4; opted-in users see no change).
 - **`--layer-*` tokens.** Intentional theme-internal helpers, not a
   public API. Plugin authors should not override these.
-- **iA Writer Quattro S/V bundle weight.** Six woff2 files bundled in
-  v0.6.3. If repo size becomes a concern, S and V can move to an
-  optional download.
+- **Body face is Bricolage Grotesque (ADR 0046).** One variable woff2
+  replaces the ten iA Writer Quattro / S / V files.
 
 ## Variable contract
 
@@ -135,8 +166,9 @@ Four contracts to remember when editing `theme.css`:
 2. **Obsidian's native `--background-*`, `--text-*`, `--interactive-*`
    etc.** — must be hex or `color-mix(...)`. Set in the mapping block.
 3. **Obsidian's callout vars (`--callout-info`, `--callout-warning`,
-   etc.)** — must be **comma-separated `r, g, b` tuples**, not hex.
-   Obsidian wraps them in `rgba(...)` for background tint and border.
+   etc.)** — must be **full colors** (`var(--art-*)`). Obsidian 1.15 reads
+   them in `color-mix(...)` and `color:`; the older `r, g, b` tuples are
+   invalid there and the callout falls back to a `currentColor` border.
 4. **Font / size / weight variables** — component overrides use
    fallback chains: `var(--font-interface, var(--art-font-mono))`,
    `var(--font-text, var(--art-font-sans))`,

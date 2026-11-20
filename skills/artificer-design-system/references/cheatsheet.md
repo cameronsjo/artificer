@@ -33,10 +33,10 @@ TYPE       --font-mono JetBrains Mono
                   data tables, settings panels)
                 · ALWAYS for code, identifiers, file paths, numerals —
                   including inside documents
-           --font-body iA Writer Quattro V
+           --font-body Bricolage Grotesque
                 · BODY FACE for document surfaces (writeups, READMEs,
                   reports, design docs)
-           --font-interface iA Writer Quattro S
+           --font-interface Recursive
                 · Labels, controls, badges, form fields, nav —
                   on both tool AND document surfaces
                 · --font-sans is a legacy alias of --font-body
@@ -133,7 +133,7 @@ THEME      <button class="theme-toggle" data-theme-toggle aria-label="Toggle the
   <p>Pro: fast. Con: pricier.</p>
 </div>
 
-<!-- PATTERN: .card--active — background stays put, accent marks the edge -->
+<!-- PATTERN: .card--active — background stays put, a full accent ring marks it -->
 <div class="card card--active">
   <p>Pro: fast. Con: pricier.</p>
 </div>

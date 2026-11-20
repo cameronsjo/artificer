@@ -89,9 +89,10 @@
     border: 1px solid #cbb88a !important;
     break-inside: avoid;
   }
-  .card--active { border-left: 3px solid #7a5a10 !important; }
-  .card--attention { border-left: 3px solid #8a6618 !important; }
-  .card--urgent { border-left: 3px solid #8a2418 !important; }
+  .card--active { border: 2px solid #7a5a10 !important; }
+  .card--attention { border: 2px solid #8a6618 !important; }
+  .card--urgent { border: 2px solid #8a2418 !important; }
+  .card--success { border: 2px solid #2a5a3a !important; }
   .pane--inactive { opacity: 0.6 !important; filter: none !important; }
 
   /* Buttons read as bracketed tokens on paper */

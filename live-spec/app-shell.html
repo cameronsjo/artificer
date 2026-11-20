@@ -12,7 +12,7 @@
   /* Page chrome only — .app-shell / .full-bleed / .bleed-grid / .media-fit are canonical.
      Section heads use canonical .section-title (#138 — .demo-h was a stale
      pre-mint shadow of it, 16px vs the canonical scale). */
-  body { margin: 0; font-family: var(--font-mono); }
+  body { margin: 0; }
   .card { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--s-lg); }
   /* full-bleed demo strip — a horizontal scroll-snap filmstrip reaching the pane edge */
   .strip { display: flex; gap: var(--s-md); overflow-x: auto; scroll-snap-type: x mandatory;
@@ -51,8 +51,10 @@
   </nav>
 
   <main class="app-shell__content" id="content">
-    <h1 class="t-headline-lg">app shell.</h1>
-    <p class="meta">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width. <b class="anchor">Tune with knobs, never redefine the grid</b>: <code>--shell-rail</code> sets the rail width, <code>--shell-gap</code> opens a rail↔content gap, and <code>.sidenav--sticky</code> pins the rail while the content scrolls (<code>--sidenav-sticky-top</code> clears sticky chrome above it). The bar row is optional — a shell without an <code>.appbar</code> child collapses the row to zero.</p>
+    <header class="stack stack--sm">
+    <h1 class="t-headline-lg" style="margin:0">app shell.</h1>
+    <p class="meta" style="margin:0">The responsive scaffold under every Artificer tool-SPA: an <b class="anchor">appbar</b> across the top, a <b class="anchor">sidebar</b> that collapses to the off-canvas drawer at <code>--bp-tablet</code> (resize narrow to see it), and a content track that is <b class="anchor">overflow-safe by construction</b> — <code>minmax(0,1fr)</code>, not bare <code>1fr</code>. Tools fill; nothing here caps width. <b class="anchor">Tune with knobs, never redefine the grid</b>: <code>--shell-rail</code> sets the rail width, <code>--shell-gap</code> opens a rail↔content gap, and <code>.sidenav--sticky</code> pins the rail while the content scrolls (<code>--sidenav-sticky-top</code> clears sticky chrome above it). The bar row is optional — a shell without an <code>.appbar</code> child collapses the row to zero.</p>
+    </header>
 
     <div class="card">
       <h2 class="section-title" style="margin-top:0">Normal content</h2>

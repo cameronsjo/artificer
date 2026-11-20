@@ -1,6 +1,6 @@
 # Artificer · Editor & Terminal Themes
 
-Same Jazz Age palette, twenty-eight surfaces. Each ships dark + ivory-paper
+Same Jazz Age palette, twenty-nine surfaces. Each ships dark + ivory-paper
 light — except `cmux/`, `gitmux/`, `flux/`, `neovim/`, `firefox/`, `zed/` and
 `stylus/`, which carry a single file (flux, neovim, firefox, zed and stylus
 hold both modes in one, because those hosts switch at runtime rather than
@@ -39,6 +39,7 @@ themes/
 ├── lazygit/                artificer-{dark,light}.yml          (block fragment)
 ├── gh-dash/                artificer-{dark,light}.yml          (block fragment)
 ├── herdr/                  artificer-{dark,light}.toml         (block fragment)
+├── herdr-app/              artificer-{dark,light}.json         (herdr desktop app theme file)
 ├── hermes/                 artificer-dark.yaml                (native dashboard theme; dark only)
 ├── stylus/                 vikunja.user.css                   (Stylus UserCSS; BOTH modes, one file)
 ├── vscode/                 package.json + themes/*.json        (installable extension)
@@ -47,8 +48,8 @@ themes/
 └── obsidian/Artificer/     manifest.json + theme.css           (drop-in theme folder)
 ```
 
-**`./install.sh` places sixteen of these** — Claude Code, Ghostty, Helix,
-Neovim, glamour, gum, fzf, eza, bat, codex, tmux, gitmux, Zed, WezTerm, VS Code, Obsidian —
+**`./install.sh` places seventeen of these** — Claude Code, Ghostty, Helix,
+Neovim, glamour, gum, fzf, eza, bat, codex, tmux, gitmux, Zed, WezTerm, herdr-app, VS Code, Obsidian —
 as **copies** (`--symlink` if you'd rather repo edits propagate live). The other
 twelve are deliberately manual: `cmux`, `lazygit`, `gh-dash` and `herdr` splice
 into a config file you also own, `starship` and `yazi` merge into one you
@@ -63,7 +64,56 @@ Because they're copies, a repo change doesn't reach an installed theme until
 you re-run `./install.sh` — and `./install.sh --verify` prints the actual diff
 for anything that drifted, so a local tweak shows up as a change rather than a
 silent divergence. Re-running is a no-op for targets already current; a
-`.bak.<timestamp>` appears only where a real tweak was overwritten.
+`.bak.<timestamp>` appears only where a real tweak was overwritten. The
+Obsidian target's backups go to `~/.local/state/artificer/obsidian-baks/`
+(`$XDG_STATE_HOME` if set; override `ARTIFICER_VAULT_BAK_DIR`) instead of the vault, because Obsidian Sync would carry a backup theme folder
+to every device. `./install.sh --only obsidian` (with or without `--verify`)
+installs or checks the Obsidian theme alone.
+
+## herdr-app
+
+`herdr-app/artificer-{dark,light}.json` are theme files for the
+[herdr desktop app](https://github.com/herdrdev/herdr-app), the GPUI app built
+on herdr-core. It is a different program from the herdr TUI below: it reads
+whole theme files, so `./install.sh` copies these to `themes/` in the app's
+home: `$HERDR_APP_HOME`, else `$XDG_CONFIG_HOME/herdr-app`, else
+`~/.config/herdr-app`. Pick one in Settings, or follow the system's light and
+dark mode from `settings.json` in that home:
+
+```json
+{ "theme": { "light": "artificer-light", "dark": "artificer-dark" } }
+```
+
+A layout that names its own theme wins over `settings.json`. The shipped
+Herdr layout leaves it unset, but picking a theme in Settings writes it to the
+shown layout, so after a pick, change it there.
+
+The terminal half is the Ghostty theme slot for slot, so a pane reads exactly
+like Ghostty. The panel half pins the roles the app would otherwise derive off
+the ladder, and gives `chrome` (sidebar, tab bar, status bar), `canvas` (the
+gutters around the work body) and `surface` (the terminal) a rung each:
+
+| | chrome | canvas | surface | raised (active tab, row) | popover |
+|---|---|---|---|---|---|
+| dark | `bgInactive` | `bg` | `terminalBg` | `bgOverlay` | `bgOverlay` |
+| light | `bgRaised` | `bgOverlay` | `terminalBg` | `bg` | `bgOverlay` |
+
+On dark the chrome recedes and the terminal comes forward, the same order as
+the app's own default. On light the terminal sits as paper in a deeper tan
+well, and chrome stays on `bgRaised` so `dim` text keeps 4.5:1 on the bars.
+The active tab goes lighter while the app's hover goes darker, so the two
+never look alike.
+
+`dim` (branch names, hints, counts) holds 4.5:1 on the bars and the terminal
+and 3:1 on every other surface it sits on, including under the app's selected
+overlay (tightest: 3.03 on a selected raised row, dark). Dark uses
+`ansiBrightBlack` (6.45:1 on chrome, 4.78 on the terminal), light uses
+`steelBright` (4.82 on chrome, 5.43 on the terminal). The status dots are gold
+for working, the text-tier red for blocked, green for done; `idle` and
+`unknown` take the same color as `dim` and hold 3:1 even on a selected row.
+The primary button (`solid`) and the focus ring are pinned as well. Hover,
+selected, border and input fills stay the app's own alpha overlays.
+`scripts/herdr-app-theme.test.mjs` enforces the hexes, floors and rung order.
 
 ## Hermes dashboard
 
@@ -86,8 +136,8 @@ another theme before removing this file.
 
 The theme maps graphite canvas and raised surfaces, gold actions, canonical
 status text, and Artificer's tool/interface font stacks. Fonts use local
-fallbacks without remote requests; install JetBrains Mono and iA Writer
-Quattro S locally to see those exact faces. The supported native `customCSS`
+fallbacks without remote requests; install JetBrains Mono and Recursive
+locally to see those exact faces. The supported native `customCSS`
 field repairs the pinned build's compiled Tailwind utilities, which bypass
 `colorOverrides` for cards and status text. It also maps secondary text and
 chart series, and keeps keyboard focus visible. Hermes removes this CSS on
@@ -991,10 +1041,9 @@ dashed → solid on hover), unresolved links (rose/brick italic), tags
 settings toggles, graph view, collapse arrows, title bar, status bar.
 
 **Callouts:** the full Obsidian callout surface is mapped to Artificer
-semantics. The values must be **`r, g, b` tuples** (Obsidian wraps them
-in `rgba(var(--callout-foo), 0.1)` for the tint and `rgba(..., 0.25)`
-for the border). Already emitted correctly; if you hand-edit the CSS
-later, don't refactor them into hex.
+semantics. The values are **full colors** (`var(--art-*)`): Obsidian ≥ 1.15
+reads them in `color-mix(…)` and `color:`, where the older `r, g, b` tuples
+are invalid. `scripts/obsidian-callouts.test.mjs` enforces the form.
 
 See `obsidian/README.md` for the full coverage list, variable contracts,
 and known limitations.

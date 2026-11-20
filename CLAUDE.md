@@ -101,10 +101,10 @@ var(--font-mono) /* JetBrains Mono — code, identifiers, file paths,
                           numerals, dense UI chrome (toolbars, status bars,
                           terminals). Default body face for TOOL surfaces:
                           dashboards, consoles, log views, data tables. */
-var(--font-body) /* iA Writer Quattro V — prose. Default body face for DOCUMENT
+var(--font-body) /* Bricolage Grotesque — prose. Default body face for DOCUMENT
                           surfaces: writeups, READMEs, reports, settings
                           explainers, marketing-adjacent content. */
-var(--font-interface) /* iA Writer Quattro S — labels, controls, badges, form
+var(--font-interface) /* Recursive — labels, controls, badges, form
                           fields, nav. Chrome, not prose — on BOTH tool and
                           document surfaces. --font-sans is a legacy alias of
                           --font-body, kept resolvable for public-API back-compat. */
@@ -115,8 +115,8 @@ var(--font-interface) /* iA Writer Quattro S — labels, controls, badges, form
                           max-width 66ch), .note (sister of .meta — label-sm
                           fg-secondary; INHERITS the body face, so it's mono on
                           tool surfaces and --font-body on document surfaces), .num
-                          (tabular-nums), .section-title (mono 22px/--t-headline-md-size uppercase
-                          fg-secondary border-bottom — doc-page h2 chrome). */
+                          (tabular-nums), .section-title (mono 500 22px/--t-headline-md-size mixed case
+                          --fg border-bottom — doc-page h2 chrome). */
 
 /* Radius */
 var(--radius-sm) /* 4 — inputs, badges */
@@ -215,6 +215,7 @@ core scale or tool UI.
 | "Filter bar" | `.filter-bar` + `.grow` — ALL filters in one top bar, never sprinkled into panels. |
 | "Blog / editorial / document top nav / masthead" | `.masthead` (artificer-editorial.css) + `.masthead__brand`/`__nav`/`__meta` — non-sticky document counterpart to `.appbar`; compose brand with `.wordmark`, toggle with `.theme-toggle--inline`; `[aria-current="page"]` marks the page. |
 | "Brand wordmark" | `.wordmark` (renders `artificer.` — § Brand). |
+| "Brand critter / mascot / Sploot" | `<span data-sploot="stand">` + `artificer-sploot.js` — Sploot the corgi, drawn in block glyphs; poses `stand`/`droopy`/`sleep`/`sniff`/`mini`, sizes `.sploot--mini`/`--sm`/`--lg`, `data-sploot-helmet`; `ArtificerSploot.markup()` for static builds. One per view (§ Brand). |
 | "Theme toggle" | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph. |
 | "Stat card" | `.stat` (core) — `.stat__label` (mono small caps) + `.stat__value` (mono large tabular) + `.stat__row` + `.stat__delta`(`.down`). The cell of a `.kpi-strip`. |
 | "KPI strip" | `.kpi-strip` of `.stat` cells over a chart — the KPI dashboard recipe's top band. |
@@ -230,11 +231,11 @@ core scale or tool UI.
 | "Pagination" | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends. Counted, jumpable ranges only — unbounded sets use "load more". |
 | "Persistent page banner" | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions`. A standing layout band (read-only mode, degraded nodes), NOT the transient toast-tier `.notif`. Color encodes tier; texture never does. |
 | "Footer / colophon / fine print / attribution" | **Three zones, in order — 1 and 3 optional, the spine always present.** (1) a `.grid-auto` of `.colophon__label` sections; (2) `.colophon__spine` — three POSITIONAL slots, **identity · sign-off · links** (first child starts, last ends, middle centres *on the page*, so a long identity can't shove the sign-off off-centre); (3) `.colophon__fine` for the legal tier. Every site uses the same primitive and differs only in which zones it fills. Any slot may be empty — keep the element to hold its column. In the links slot use `<a>` to navigate and `<button class="btn btn--link">` for a control that *acts* — never an `<a>` carrying a click handler, which makes the a11y tree announce a link that doesn't link. Prose auto-flips to `--font-body` even inside `.surface-tool`; `.surface-document` flips a prose island elsewhere back to `--font-body`. |
-| "Selected card / selected row / active choice" | Mark it on the edge, not as a fill: `.card--active` (`background: var(--bg)` + `border-left: 2px solid var(--accent)`) for a card, the option-list `.is-active` treatment (`background: var(--bg-raised)`) for a row. NEVER `--accent-fill` as a large surface background — its only rated text color is `--on-accent`, so default body text on it fails contrast. |
+| "Selected card / selected row / active choice" | Mark it on the edge, not as a fill: `.card--active` (`background: var(--bg)` + a full 1px accent ring — never a `border-left` on a rounded box) for a card, the option-list `.is-active` treatment (`background: var(--bg-raised)`) for a row. NEVER `--accent-fill` as a large surface background — its only rated text color is `--on-accent`, so default body text on it fails contrast. |
 | "File upload / dropzone" | `.file-field` (click-to-browse) → add `.file-field--drop` for a drag well; toggle `.is-dragover` on drag events. Color marks the drag state, not texture. |
 | "Animation" | Only animate state changes. `transition: prop var(--dur-fast) var(--ease)`. Never invent durations. |
 | "Live-spec / doc-page example container" | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>`. Modifiers: `.figure--frame` (relative-positioned, padding 0), `.figure--flush` (padding 0, edge-to-edge). Captions reuse canonical `.meta`. |
-| "Doc-page section header" | `<h2 class="section-title">` — mono, `--t-headline-md-size` (22px), uppercase, `--fg-secondary`, border-bottom rule. Doc/spec chrome; on tool surfaces prefer the structural `h2` already styled. |
+| "Doc-page section header" | `<h2 class="section-title">` — mono 500, `--t-headline-md-size` (22px), mixed case, `--fg`, border-bottom rule (uppercase tracking is for small labels only). Doc/spec chrome; on tool surfaces prefer the structural `h2` already styled. |
 | "Syntax-highlighted code block" | `.code-block` + the `.tok-*` roles. |
 | "Tabular number" | `.num` utility — sets `font-variant-numeric: tabular-nums`. Drop on the cell, or on the parent for a whole table. |
 | "Short hint paragraph under a figure or field" | `.note` — sister of `.meta`, smaller (label-sm). Inherits the body face — **mono on tool surfaces, sans on document surfaces** — so each surface's character carries through. Use for one-sentence asides; escalate to `.meta` when it grows past a sentence. |
@@ -246,7 +247,7 @@ core scale or tool UI.
 | "Architecture / flow diagram" | `.dia-node`/`.dia-edge` on inline SVG (§ Diagrams). |
 | "User-defined fun element / celebration / long 'thinking' state / brand wordmark" | `.whimsy` + `artificer-whimsy.css` & `.js` — the ONE sanctioned exception to the motion + raw-color rules. **See § Whimsy.** Never reach for it on chrome, status, data, or errors. |
 | "Make it fun / playful / celebratory / rainbow" | The **Whimsy** layer — see § Whimsy. `.whimsy` / `data-whimsy="wave"` / `Whimsy.celebrate()`. Don't hand-roll a one-off. |
-| "Make it feel like paper / give it grain / material / texture / depth" | The **Texture** layer (`artificer-texture.css`) — see § Texture. `.tex-grain` / `.tex-dots` / `.tex-line--hatch` / `.tex-paper` / `.tex-raised`. Hueless + motionless; never on data/status/errors. |
+| "Make it feel like paper / give it grain / material / texture / depth" | The **Texture** layer (`artificer-texture.css`) — see § Texture. `.tex-grain` / `.tex-dots` / `.tex-line--hatch` / `.tex-grid` / `.tex-ruled` / `.tex-perf` / `.tex-paper` / `.tex-raised`. Hueless + motionless; never on data/status/errors. |
 | "HTML diagram node / React Flow node / boxes-and-arrows in DOM" | `.dia-box` — the HTML/CSS twin of the SVG `.dia-node`, reading the same `--dia-*` tokens. `--accent` (one per diagram), `--ghost` (planned/optional, dashed), `--tab` + `style="--dia-tab: var(--series-3)"` (any series token) for a colored type-edge. Inline SVG diagrams stay on `.dia-node`. |
 | "Flow / pipeline / horizontal step-chain" | `.flow` (row) + `.flow__step` (each IS a `.dia-box`) + `.flow__link` (connector, mirrors `.dia-edge`; `--dashed` for async/return) + `.flow-frame` (dashed, labeled phase-group). Left-to-right chain — for a vertical numbered timeline of grouped steps use `.spine`/`.phase`. |
 | "Phased timeline / numbered stages where each step is a set" | `.spine` (rail down the marker gutter) + `.phase` (`.phase__marker` numbered badge + `.phase__body` holding a `.stack` of `.dia-box` nodes) + `.phase--accent` (the pivotal station, accent marker + ring, one per timeline). Vertical + grouped — for a horizontal single-node chain use `.flow`. |
@@ -348,7 +349,7 @@ When you're past primitives and assembling product surfaces, three more rule-set
 
 ---
 
-## Brand — the wordmark
+## Brand — the wordmark and Sploot
 
 The mark is **`artificer.`** — lowercase, set in `--font-mono`, tight
 tracking, closed by a **burnished full stop** (the period in `--accent`).
@@ -369,6 +370,49 @@ burnished full stop ("navigation.", "accessibility.", "data display.") is a
 mark, so it's set lowercase. Section headers and labels that *don't* take the
 stop are ordinary sentence-case/uppercase and stay as they are — the period
 is the tell.
+
+### Sploot — the critter
+
+The system's face is **Sploot**, a Pembroke corgi named for the flat-out,
+back-legs-behind lounge corgis are known for. Sploot is **real text**:
+quadrant block glyphs, two by two pixels per character, rendered in JetBrains
+Mono (the block glyphs ship as a unicode-range subset of the family) and
+copy-pasteable into a terminal. `artificer-sploot.js` hydrates a host;
+`.sploot` in `artificer.css` styles it. Full reference: `live-spec/sploot.html`.
+
+```html
+<script src="artificer-sploot.js" defer></script>
+<span data-sploot="sleep"></span>
+```
+
+| Ask | Use |
+|---|---|
+| Sploot, standing | `data-sploot="stand"` (the default) |
+| Tired / low energy | `data-sploot="droopy"` |
+| Empty state | `data-sploot="sleep"` — the namesake sploot, with z's |
+| Not-found page | `data-sploot="sniff"` — nose down on a scent |
+| A marker beside a label (e.g. the current TOC entry) | `data-sploot="mini"` + `data-sploot-decorative` |
+| Space / astronaut | `data-sploot-helmet` on any pose |
+| Smaller or larger | `.sploot--sm` (15px) / `.sploot--lg` (25px); default 20px |
+| Static build, no client JS | `import '@cameronsjo/artificer/sploot.js'` then `ArtificerSploot.markup(pose, opts)` |
+
+**Rules:**
+
+1. **One Sploot per view.** It's the brand's face, not wallpaper.
+2. **Never on load-bearing UI** — errors, status, data, destructive actions.
+   Empty states and not-found pages are fine; the copy stays literal (§ Voice)
+   and Sploot carries the mood.
+3. **Always `--accent`, single-tone.** Costumes (the helmet, the winter scarf in
+   `--brand-purple`) are overlay layers in existing tokens, never a recolor.
+4. **Static.** The hover hop is the only motion — a one-shot state change on
+   `--dur-max`, off under reduced motion. Hover a `.sploot-host` ancestor to
+   hop from a larger target.
+5. **The four sizes only.** The `--sploot-*` knobs are set by the size
+   modifiers; any other value breaks the whole-pixel arithmetic that keeps the
+   glyphs seamless.
+6. **New poses are new grids** in `artificer-sploot.js` — never a hand-drawn
+   variant. Keep the side view and its five cues: body about 3× longer than
+   tall, wide-based triangle ears, pointed snout, one-row legs, rounded rump.
 
 ## Whimsy — the sanctioned exception
 
@@ -405,6 +449,7 @@ animation — point it here.
 | Focus ring on a control (on explicit request) | `.whimsy-focus` — spins *over* the focus outline, never replaces it |
 | Flowing rainbow underline under a `.whimsy` link/wordmark | `.whimsy-underline` — tiling sine draws in on hover/focus, in lockstep with the mark's flow (the sanctioned replacement for a flat underline) |
 | Brushed-metal gold fill (cousin of silver) | `.whimsy--gold` — slow (16s) near-static metal; add `.whimsy--no-flow` for a still gold fill |
+| Just the personal pair — gold + purple (wordmark, footer) | `.whimsy--signature` |
 | Night sky behind a hero or header band (flowing field + seeded stars) | `data-whimsy="sky"` (`data-whimsy-seed` picks the sky) or `.whimsy-sky` + `Whimsy.starfield(el)` — dark only, the backdrop form of whimsy; the wordmark inside rests with it |
 | Your own palette | override `--whimsy-gradient` in one line |
 | Maximum saturation (rare) | `.whimsy--vivid` |
@@ -420,8 +465,9 @@ Toggle any layer off independently: `.whimsy--no-flow`, `.whimsy--no-bob`. Freez
 
 ### Palettes (color, not motion)
 
-- **Spectrum** (default) — burnished full-spectrum, generated in oklch at the palette's own chroma; hue stops land on Artificer's brand colors.
-- **`.whimsy--brand`** — cycles the real semantic tokens (gold → rose → purple → steel → green); tracks light/dark for free.
+- **Spectrum** (default) — burnished full-spectrum, generated in oklch at the palette's own chroma; walks the palette's hues (gold, green, steel, purple, rose) with cyan and amber as bridges.
+- **`.whimsy--brand`** — cycles the real semantic tokens (gold → rose → purple-bright → steel); tracks light/dark for free. Deep purple (1.67:1) and green (3.39:1) stay out: too weak as gradient text on dark.
+- **`.whimsy--signature`** — gold + purple-bright only, the personal pair. Narrower than brand; for the wordmark and footer.
 - **`.whimsy--silver`** — near-neutral metal sheen: silver/grey on dark, warm graphite on cream. The most restrained variant — the only one calm enough to consider for headers (and only as a **static fill**: `.whimsy--silver.whimsy--no-flow`).
 - **`.whimsy--gold`** — brushed-metal gold, silver's warm cousin. Slow (16s) so it reads as near-static metal; pairs best with a CHARACTER gradient (per-glyph = faceted). Add `.whimsy--no-flow` for a still gold fill.
 
@@ -447,7 +493,7 @@ Whimsy.ignite(el) / .clear(el)   // manual toggle
 ### Doctrine — do not break
 
 1. **Opt-in only.** Never on chrome, nav, or anything automatic.
-2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper. The API doesn't coordinate flowing slots for you — exclusivity is the caller's responsibility, same as one-primary-CTA. A **night sky and the wordmark it frames are one moment**, and they rest on one timer.
+2. **One whimsy moment per view.** Like one-primary-CTA. Whimsy everywhere is wallpaper. The API doesn't coordinate flowing slots for you — exclusivity is the caller's responsibility, same as one-primary-CTA. A **night sky and the wordmark it frames are one moment**, and they rest on one timer. The **seasonal footer greeting** (`[data-whimsy-greeting]` in the colophon) is a **fleet fixture**, not a moment: every Artificer site carries it, and it does not count against the one. Off-season it is the glacial line; in June it is the "happy pride" wave.
 3. **Never on load-bearing UI.** No whimsy on errors, destructive actions, status, or data. **One sanctioned exception:** the `.whimsy-focus` ring (artificer-whimsy.css) — a burnished ring that *augments* a control's standard `:focus-visible` outline on **hover or focus**, never replacing it (the outline still carries the WCAG focus signal). Opt-in, on explicit request only, one per view, reduced-motion holds it still-but-visible. The **night sky** sits only behind a header or hero band — never behind data, status, errors, or body copy — and the text on it stays on solid ground.
 4. **Burnished by default.** `.whimsy--vivid` is a conscious choice, not a reflex.
 5. **Display + bold only.** Gradient text drops contrast — keep it large. Never body copy. This governs gradient *text*. The night sky (`.whimsy-sky`) is a non-text backdrop: `aria-hidden` stars, **dark only** (light mode shows plain `--bg`), and never stacked with a texture. It is still whimsy, not a fourth carve.
@@ -482,8 +528,12 @@ until you reach for a texture.
 | Engineered dot lattice for a **tool** surface | `.tex-dots` (pitch on `--tex-dot-gap`) |
 | Irregular paper tooth for a **document** surface | `.tex-grain` (strength on `--tex-fiber-strength`) |
 | Whole-page "printed on something" substrate | `.tex-paper` on the page wrapper (+ `.tex-paper--whisper` — the loudest that ships) |
-| Deco line-texture (ink only, no color) | `.tex-line` + `--hatch` / `--cross` / `--flute` / `--pinstripe` |
-| Raised tile (outer-glow depth, flat face) | `.tex-raised` |
+| Deco line-texture (ink only, no color) | `.tex-line` + `--hatch` / `--cross` / `--flute` / `--pinstripe` / `--arc` (compass arcs, empty states) / `--ray` (sunburst — one launch moment only) |
+| Raised tile (outer-glow depth, flat face, lit from above) | `.tex-raised` |
+| Engineering paper for a **tool** canvas | `.tex-grid` (`--tex-grid-minor` 8px / `--tex-grid-major` 40px) |
+| Notebook rules locked to the text (notes, journals) | `.tex-ruled` on the text element (`--tex-ruled-lh`) |
+| Tear line on a receipt / ticket card | `.tex-perf` between sections (`--tex-perf-ground` = the card's backdrop) |
+| Pressed-in display type (colophon, watermark) | `.tex-deboss` — decorative only, always `aria-hidden` |
 
 ### Bounds — do not break
 

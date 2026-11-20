@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.27.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.28.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -34,19 +34,19 @@
    DIAGRAMS      primitives for hand-drawn SVG
    NAVIGATION    the spine — .crumb (where am I) · .sidenav (what sections) ·
                  .appbar (global chrome) · .tabs (switch view within a surface)
-   BRAND         wordmark (lowercase "artificer." + burnished stop)
+   BRAND         wordmark (lowercase "artificer." + burnished stop) ·
+                 Sploot the corgi (block-glyph critter; artificer-sploot.js)
    RESPONSIVE    breakpoints · touch escalation · safe-area · table reflow
    PRIMITIVES    v0.10.0 — avatar · accordion · selectable rows · date/time
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Self-hosted fonts ──────────────────────────────────────────────────
    JetBrains Mono — code, identifiers, numerals, dense tool body
-   iA Writer Quattro S / V — the two roles split by surface (see FONTS.md):
-   S is interface chrome (labels, controls, tabular UI numerals), V is
-   body prose. No bare 'iA Writer Quattro' face ships — it was a duplicate
-   of S/V's own glyph set with no role of its own.
+   Recursive — interface chrome (labels, controls, tabular UI numerals)
+   Bricolage Grotesque — body prose (see FONTS.md for the role split)
    All SIL OFL 1.1. Files live in src/assets/fonts/. See FONTS.md for the
-   rationale and the Windows faux-bold disposition. */
+   rationale. Both are variable fonts: one file per family covers every
+   weight, so no weight is ever synthesized. */
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('assets/fonts/jetbrains-mono-400.woff2') format('woff2');
@@ -62,44 +62,57 @@
   src: url('assets/fonts/jetbrains-mono-700.woff2') format('woff2');
   font-weight: 700; font-style: normal; font-display: swap;
 }
-
-/* iA Writer Quattro S — tabular-numeral variant. Interface chrome: labels,
-   controls, badges, dense tabular UI numerals. Same metrics as Quattro, so
-   the fallback chain doesn't reflow when this variant is missing. */
+/* Box drawing, block elements, geometric shapes (U+2500–25FF). The three
+   faces above are Latin subsets without them, so text art — Sploot, `├──`
+   trees, `╭─╮` boxes, `●` dot matrices — fell back to the OS mono, whose
+   advance widths and block heights differ, and misaligned. One 3.4 KB file
+   (JetBrains Mono 2.304 Regular; block geometry is weight-independent)
+   extends the family by unicode-range, declared once per shipped weight: a
+   face whose weight descriptor differs lands in a separate matching group and
+   is never consulted for those weights. Regenerate: see FONTS.md. */
 @font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('assets/fonts/ia-writer-quattro-s-400.woff2') format('woff2');
+  font-family: 'JetBrains Mono';
+  src: url('assets/fonts/jetbrains-mono-blocks.woff2') format('woff2');
   font-weight: 400; font-style: normal; font-display: swap;
+  unicode-range: U+2500-25FF;
 }
 @font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('assets/fonts/ia-writer-quattro-s-400-italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
+  font-family: 'JetBrains Mono';
+  src: url('assets/fonts/jetbrains-mono-blocks.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+  unicode-range: U+2500-25FF;
 }
 @font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('assets/fonts/ia-writer-quattro-s-700.woff2') format('woff2');
+  font-family: 'JetBrains Mono';
+  src: url('assets/fonts/jetbrains-mono-blocks.woff2') format('woff2');
   font-weight: 700; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('assets/fonts/ia-writer-quattro-s-700-italic.woff2') format('woff2');
-  font-weight: 700; font-style: italic; font-display: swap;
+  unicode-range: U+2500-25FF;
 }
 
-/* iA Writer Quattro V — display variant (slightly tighter, more contrast).
-   Body prose face. Only 400 weight ships from iA — a bold body run
-   (headlines set on --font-body) synthesizes faux-bold in the browser,
-   same as any face missing a weight. */
+/* Recursive — interface chrome: labels, controls, badges, form fields, nav,
+   tabular UI numerals (its digits are fixed-width by default). Variable:
+   wght 300–1000 plus a slnt axis that serves italic as a true oblique.
+   Latin subset of the Sans Linear default (CASL 0, MONO 0). ONE face with
+   an oblique 0–15deg range covers upright and italic: a separate
+   `font-style: normal` face would tie with the range at 0deg, and the
+   browser would pick the later-declared one for upright text anyway. */
 @font-face {
-  font-family: 'iA Writer Quattro V';
-  src: url('assets/fonts/ia-writer-quattro-v-400.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
+  font-family: 'Recursive';
+  src: url('assets/fonts/recursive-variable.woff2') format('woff2-variations'),
+       url('assets/fonts/recursive-variable.woff2') format('woff2');
+  font-weight: 300 1000; font-style: oblique 0deg 15deg; font-display: swap;
 }
+
+/* Bricolage Grotesque — body prose: document surfaces, .meta, headline/body
+   type utilities. Variable: wght 200–800 plus an optical-size axis the
+   browser drives from font-size (font-optical-sizing: auto), so headlines
+   get the tighter display cut and body text the open text cut. No italic
+   ships upstream; italic prose is a synthesized slant. Latin subset. */
 @font-face {
-  font-family: 'iA Writer Quattro V';
-  src: url('assets/fonts/ia-writer-quattro-v-400-italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
+  font-family: 'Bricolage Grotesque';
+  src: url('assets/fonts/bricolage-grotesque-variable.woff2') format('woff2-variations'),
+       url('assets/fonts/bricolage-grotesque-variable.woff2') format('woff2');
+  font-weight: 200 800; font-style: normal; font-display: swap;
 }
 
 /* ─── DARK (default) ──────────────────────────────────────────────────── */
@@ -159,15 +172,14 @@
 
   /* Type, radii, spacing, motion — identical across themes */
   --font-mono:  'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  /* iA Writer Quattro V — display/body variant. Body prose face: document
-     surfaces, .meta, headline/body type utilities. Falls back to serif →
-     system-ui. */
-  --font-body:      'iA Writer Quattro V', 'Iowan Old Style', 'Charter',
-                    'Source Sans 3', system-ui, -apple-system, sans-serif;
-  /* iA Writer Quattro S — tabular-numeral variant. Interface chrome face:
-     labels, controls, badges, form fields, nav, tabular UI numerals. */
-  --font-interface: 'iA Writer Quattro S', 'Iowan Old Style', 'Charter',
-                    'Source Sans 3', system-ui, -apple-system, sans-serif;
+  /* Bricolage Grotesque — body prose face: document surfaces, .meta,
+     headline/body type utilities. Falls back to Source Sans 3 → system-ui. */
+  --font-body:      'Bricolage Grotesque', 'Source Sans 3', system-ui,
+                    -apple-system, sans-serif;
+  /* Recursive — interface chrome face: labels, controls, badges, form
+     fields, nav, tabular UI numerals. */
+  --font-interface: 'Recursive', 'Source Sans 3', system-ui,
+                    -apple-system, sans-serif;
   /* --font-sans is a legacy alias kept resolvable for public-API back-compat —
      new rules use --font-body or --font-interface directly (see FONTS.md). */
   --font-sans:  var(--font-body);
@@ -175,25 +187,25 @@
   /* Type sizes are REM (root = browser default, never overridden) so text
      honors the user's browser font-size preference, not just zoom. 1rem = 16px
      at default. Spacing/radii/component-internal px stay px on purpose. */
-  --t-headline-lg-size: 1.75rem;    --t-headline-lg-lh: 1.3;  --t-headline-lg-ls: -0.01em; /* 28px */
-  --t-headline-md-size: 1.375rem;   --t-headline-md-lh: 1.35;                               /* 22px */
-  --t-body-lg-size:     1rem;       --t-body-lg-lh:     1.65;                               /* 16px */
-  --t-body-md-size:     0.875rem;   --t-body-md-lh:     1.6;                                /* 14px */
-  --t-label-md-size:    0.8125rem;  --t-label-md-lh:    1.3;                                /* 13px */
-  --t-label-sm-size:    0.75rem;    --t-label-sm-lh:    1.3;                                /* 12px */
-  --t-label-xs-size:    0.6875rem;  --t-label-xs-lh:    1.3;                                /* 11px — micro-chrome (v0.9.0 tier; restored v0.10.1) */
-  --t-code-size:        0.875rem;   --t-code-lh:        1.5;                                /* 14px */
+  --t-headline-lg-size: 1.75rem;    --t-headline-lg-lh: 1.3; /* @kind other */  --t-headline-lg-ls: -0.01em; /* @kind other */ /* 28px */
+  --t-headline-md-size: 1.375rem;   --t-headline-md-lh: 1.35; /* @kind other */                               /* 22px */
+  --t-body-lg-size:     1rem;       --t-body-lg-lh:     1.65; /* @kind other */                               /* 16px */
+  --t-body-md-size:     0.875rem;   --t-body-md-lh:     1.6; /* @kind other */                                /* 14px */
+  --t-label-md-size:    0.8125rem;  --t-label-md-lh:    1.3; /* @kind other */                                /* 13px */
+  --t-label-sm-size:    0.75rem;    --t-label-sm-lh:    1.3; /* @kind other */                                /* 12px */
+  --t-label-xs-size:    0.6875rem;  --t-label-xs-lh:    1.3; /* @kind other */                                /* 11px — micro-chrome (v0.9.0 tier; restored v0.10.1) */
+  --t-code-size:        0.875rem;   --t-code-lh:        1.5; /* @kind other */                                /* 14px */
 
-  --letter-spacing-body: 0.01em;
-  --word-spacing-body:   0.16em;
+  --letter-spacing-body: 0.01em; /* @kind other */
+  --word-spacing-body:   0.16em; /* @kind other */
 
   --radius-sm: 4px;  --radius-md: 8px;  --radius-lg: 12px;  --radius-pill: 999px; /* fully-rounded pills: toggle track, chip */
 
   --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-2xl: 48px; --s-3xl: 96px;
 
-  --dur-instant: 80ms; --dur-fast: 160ms; --dur-max: 300ms;
-  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
-  --ease-linear: linear;          /* continuous translation only (motion pattern #02) */
+  --dur-instant: 80ms; /* @kind other */ --dur-fast: 160ms; /* @kind other */ --dur-max: 300ms; /* @kind other */
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1); /* @kind other */
+  --ease-linear: linear; /* @kind other */          /* continuous translation only (motion pattern #02) */
 
   /* Focus ring — tokenized so themes/consumers retune; a11y floor: never 0. */
   --focus-width: 2px;
@@ -205,15 +217,15 @@
   --shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.30);
 
   /* z-index scale — six rungs, no improvising */
-  --z-base:    1;     /* in-flow */
-  --z-raised:  10;    /* sticky elements, dropdown triggers */
-  --z-overlay: 100;   /* sidebars, theme toggle */
-  --z-popover: 1000;  /* tooltips, popovers, dropdowns */
-  --z-modal:   2000;  /* dialogs, scrim + content */
-  --z-toast:   3000;  /* always-on-top notifications */
+  --z-base:    1; /* @kind other */     /* in-flow */
+  --z-raised:  10; /* @kind other */    /* sticky elements, dropdown triggers */
+  --z-overlay: 100; /* @kind other */   /* sidebars, theme toggle */
+  --z-popover: 1000; /* @kind other */  /* tooltips, popovers, dropdowns */
+  --z-modal:   2000; /* @kind other */  /* dialogs, scrim + content */
+  --z-toast:   3000; /* @kind other */  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.27.0";
+  --art-version: "0.28.0"; /* @kind other */
 
   color-scheme: dark;
 }
@@ -312,7 +324,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-instant: 0ms; --dur-fast: 0ms; --dur-max: 0ms; }
+  :root { --dur-instant: 0ms; /* @kind other */ --dur-fast: 0ms; /* @kind other */ --dur-max: 0ms; /* @kind other */ }
 }
 
 /* ═══ Base ══════════════════════════════════════════════════════════════ */
@@ -361,12 +373,18 @@ body { font-size: var(--t-body-md-size); }
    to it, so they're re-declared explicitly below. */
 .surface-document, .surface-document * { font-family: var(--font-body); }
 /* code/kbd are bare-tag selectors ((0,0,1)) and lose to .surface-document *
-   ((0,1,0)) on specificity, not source order — re-declared here to hold mono. */
-.surface-document code, .surface-document kbd { font-family: var(--font-mono); }
+   ((0,1,0)) on specificity, not source order — re-declared here to hold mono.
+   The universal rule also reaches every element INSIDE them, so a highlighter's
+   token <span>s (chroma, Shiki, Prism) fell back to --font-body and a code
+   block's columns stopped lining up: pre and the descendants of pre/code/kbd
+   (and of their .code/.kbd class forms) hold mono too. */
+.surface-document code, .surface-document kbd, .surface-document pre,
+.surface-document pre *, .surface-document code *, .surface-document kbd *,
+.surface-document .code *, .surface-document .kbd * { font-family: var(--font-mono); }
 
 /* ═══ Type utilities ════════════════════════════════════════════════════
-   Headlines and body run on --font-body (Quattro V) by default — document
-   mode; label utilities run on --font-interface (Quattro S).
+   Headlines and body run on --font-body (Bricolage Grotesque) by default — document
+   mode; label utilities run on --font-interface (Recursive).
    On tool surfaces, wrap the surface in <… class="surface-tool"> to flip to mono.
    .t-mono-* are explicit mono utilities for code blocks and identifier displays. */
 .t-headline-lg { font-family: var(--font-body); font-weight: 700; font-size: var(--t-headline-lg-size); line-height: var(--t-headline-lg-lh); letter-spacing: var(--t-headline-lg-ls); color: var(--fg); }
@@ -387,10 +405,13 @@ body { font-size: var(--t-body-md-size); }
 
 /* Doc-page chrome — section header convention promoted from live-spec
    (10+ identical instances; same shape as the .crumb-at-14 promotion). */
+/* Mixed case, medium weight, full --fg: a heading that leads the section
+   instead of shouting over it. Uppercase tracking is reserved for small labels
+   (.eyebrow, .table th, .sidenav__group) — at 22px it read as a banner. */
 .section-title {
-  font-family: var(--font-mono); font-weight: 700; font-size: var(--t-headline-md-size);
-  letter-spacing: .04em; text-transform: uppercase;
-  color: var(--fg-secondary);
+  font-family: var(--font-mono); font-weight: 500; font-size: var(--t-headline-md-size);
+  line-height: var(--t-headline-md-lh); letter-spacing: -0.01em;
+  color: var(--fg); text-wrap: balance;
   margin: var(--s-2xl) 0 var(--s-md);
   padding-bottom: var(--s-sm);
   border-bottom: 1px solid var(--border);
@@ -411,20 +432,29 @@ body { font-size: var(--t-body-md-size); }
   color: var(--fg-secondary);
 }
 .eyebrow--accent { color: var(--accent); }
-/* Callout: a raised note with an accent edge (#461). Tier modifiers recolor
-   the edge only; the title (.callout__title) must name the tier in text, so
-   color never carries the meaning alone. No success tier: no success token
-   clears the 3:1 non-text floor on --bg-raised in dark. */
+/* Callout: a raised note with a tier rule (#461). Tier modifiers recolor the
+   rule only; the title (.callout__title) must name the tier in text, so color
+   never carries the meaning alone. No success tier: no success token clears
+   the 3:1 non-text floor on --bg-raised in dark.
+   The rule is an INSET bar with rounded ends, not a border-left: a left border
+   on a rounded box bends into the corner radius at both ends. */
 .callout {
+  position: relative;
   background: var(--bg-raised);
-  border-left: 2px solid var(--accent);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: var(--s-md) var(--s-lg);
+  padding: var(--s-md) var(--s-lg) var(--s-md) var(--s-xl);
+}
+.callout::before {
+  content: ""; position: absolute;
+  left: var(--s-md); top: var(--s-md); bottom: var(--s-md); width: 3px;
+  border-radius: 2px; background: var(--accent);
 }
 .callout__title { margin-bottom: var(--s-xs); }
-.callout--steel     { border-left-color: var(--steel); }
-.callout--attention { border-left-color: var(--attention); }
-.callout--urgent    { border-left-color: var(--urgent-text); }
+.callout--steel::before     { background: var(--steel); }
+.callout--attention::before { background: var(--attention); }
+.callout--urgent::before    { background: var(--urgent-text); }
+@media (forced-colors: active) { .callout::before { background: CanvasText; forced-color-adjust: none; } }
 
 code, .code {
   font-family: var(--font-mono);
@@ -518,10 +548,13 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
   border-radius: var(--radius-md); padding: var(--s-lg);
   border: 1px solid transparent;
 }
-.card--active    { background: var(--bg); border-left: 2px solid var(--accent); }
-.card--attention { background: var(--bg); border-left: 2px solid var(--attention); }
-.card--urgent    { background: var(--bg); border-left: 2px solid var(--urgent); }
-.card--success   { background: var(--bg); border-left: 2px solid var(--success); }
+/* State cards ring the whole card in the tier color (the base .card already
+   reserves a 1px transparent border, so nothing shifts). The old 2px left edge
+   bent into the corner radius at both ends. */
+.card--active    { background: var(--bg); border-color: var(--accent); }
+.card--attention { background: var(--bg); border-color: var(--attention); }
+.card--urgent    { background: var(--bg); border-color: var(--urgent); }
+.card--success   { background: var(--bg); border-color: var(--success); }
 
 /* ═══ Inputs ════════════════════════════════════════════════════════════ */
 .input, .textarea, .select {
@@ -578,11 +611,17 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
    surface, both themes — measured with scripts/contrast.mjs). */
 .badge--steel     { background: color-mix(in oklch, var(--steel-fill) 15%, transparent); color: var(--steel); border: 1px solid var(--steel-fill); }
 
-.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: currentColor; }
 .dot--accent    { background: var(--accent-fill); }
 .dot--attention { background: var(--attention-fill); }
 .dot--urgent    { background: var(--urgent-fill); }
 .dot--success   { background: var(--success-fill); }
+/* A tier dot inside a filled badge of the same tier painted fill-on-fill and
+   vanished, leaving a gap before the label. Inside a filled badge the dot takes
+   the badge's on-color text, so dot and label always read as one mark. A bare
+   .dot (no tier) is currentColor everywhere — the ghost "idle" badge's dot. */
+.badge--accent > .dot, .badge--attention > .dot,
+.badge--urgent > .dot, .badge--success > .dot { background: currentColor; }
 
 /* ═══ Cell glyphs ════════════════════════════════════════════════════════ */
 /*
@@ -648,7 +687,9 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   opacity: 0.55; background: var(--bg-inactive); filter: saturate(0.6);
   transition: opacity var(--dur-fast) var(--ease), filter var(--dur-fast) var(--ease);
 }
-.pane--active { border-left: 2px solid var(--accent); }
+/* Inset ring, not a left edge: follows any radius the pane carries, and adds
+   no width (an outline never takes layout space). */
+.pane--active { outline: 1px solid var(--accent); outline-offset: -1px; }
 
 /* ═══ Selection ═════════════════════════════════════════════════════════ */
 ::selection { background: var(--accent-fill); color: var(--on-accent); }
@@ -937,6 +978,16 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   padding: 10px 0; color: var(--fg);
 }
 .search > input::placeholder { color: var(--fg-disabled); }
+/* One ring, not two. The global input:focus-visible ring drew a second
+   accent box inside the .search border, which already flips to --accent on
+   :focus-within. Same suppress-and-compensate as .palette__search (#175). */
+.search > input:focus-visible { outline: none; }
+/* Forced colors (Windows High Contrast) replace border-color with a system
+   color, so the accent flip above shows nothing there. With the input's ring
+   suppressed, the box draws the outline instead, in the system text color. */
+@media (forced-colors: active) {
+  .search:has(> input:focus-visible) { outline: var(--focus-width) solid CanvasText; outline-offset: var(--focus-offset); }
+}
 .search > .icon { color: var(--fg-secondary); flex-shrink: 0; }
 
 /* Slider */
@@ -1166,9 +1217,9 @@ select:focus-visible,
    Three densities for tables, lists, and dashboards. Set on a container.
    compact = consoles, log views, ops; cozy = default; comfortable = docs.
    ═══════════════════════════════════════════════════════════════════════ */
-.density-compact     { --row-y: 4px;  --row-x: 10px; --gap: var(--s-sm); }
-.density-cozy        { --row-y: 8px;  --row-x: 16px; --gap: var(--s-md); }
-.density-comfortable { --row-y: 14px; --row-x: 20px; --gap: var(--s-lg); }
+.density-compact     { --row-y: 4px; /* @kind spacing */  --row-x: 10px; /* @kind spacing */ --gap: var(--s-sm); /* @kind spacing */ }
+.density-cozy        { --row-y: 8px; /* @kind spacing */  --row-x: 16px; /* @kind spacing */ --gap: var(--s-md); /* @kind spacing */ }
+.density-comfortable { --row-y: 14px; /* @kind spacing */ --row-x: 20px; /* @kind spacing */ --gap: var(--s-lg); /* @kind spacing */ }
 
 /* When a density is set, table cells and list items pick it up */
 [class*="density-"] .table th,
@@ -1201,7 +1252,26 @@ select:focus-visible,
 .table--sticky-head.table--sticky-col thead th:first-child { z-index: calc(var(--z-raised) + 1); }
 .table .num,
 .table th.num,
-.table td.num { font-variant-numeric: tabular-nums; text-align: right; }
+.table td.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+/* Identifiers never split mid-token ("--bp-" / "tablet", "build-" / "1284"):
+   a wrapped token reads as two. Tables scroll inside their wrapper instead, so
+   table/kv code keeps a hard nowrap (released at tablet width and below, where
+   inline code is also forced to wrap even inside a nowrap ancestor). */
+.table code, .kv code { white-space: nowrap; }
+/* Inline code in running text is a plain inline that may wrap inside its own
+   container. Three properties pull against each other and no CSS holds all of
+   them: (a) a token that fits stays whole, (b) a token wider than its container
+   wraps inside it instead of overflowing (the app shell clips the spill, so the
+   text is lost), (c) punctuation glued to code never starts or ends a line.
+   A hard nowrap gives (a) and (c) but not (b). An inline-block capped with
+   max-width gives (a) and (b) but not (c): an atomic inline is a break
+   opportunity on both sides even next to "(" ")" "." ",". This keeps (b) and
+   (c) and gives up (a): a token that straddles a line end may split at a hyphen
+   or slash ("--bp-" / "tablet"), as inline code did before v0.28.
+   No wrapper box, so a link or strike round the code decorates it, nested or
+   not. Pinned by tests/regressions/inline-code-wrap.spec.mjs. */
+:not(pre) > code { overflow-wrap: anywhere; }
+@media (max-width: 800px) { :not(pre) > code, .table code, .kv code { white-space: normal; overflow-wrap: anywhere; } }
 .table tr.group-row td {
   font-family: var(--font-interface); font-size: var(--t-label-sm-size);
   text-transform: uppercase; letter-spacing: 0.08em;
@@ -1385,33 +1455,33 @@ select:focus-visible,
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
   /* Structural — the chart's chrome */
-  --chart-grid:        color-mix(in oklch, var(--border) 70%, transparent);
-  --chart-grid-strong: var(--border);
-  --chart-axis:        var(--fg-secondary);
-  --chart-axis-label:  var(--fg-secondary);
-  --chart-plot-bg:     transparent;
+  --chart-grid:        color-mix(in oklch, var(--border) 70%, transparent); /* @kind color */
+  --chart-grid-strong: var(--border); /* @kind color */
+  --chart-axis:        var(--fg-secondary); /* @kind color */
+  --chart-axis-label:  var(--fg-secondary); /* @kind color */
+  --chart-plot-bg:     transparent; /* @kind color */
 
   /* Series — categorical 5-color palette, contrast-tuned for both themes.
      Order matters: series 1 is the accent. Keep total ≤ 5; beyond that,
      re-encode (split charts, group, or use sequential ramp). */
-  --series-1: var(--accent);          /* gold */
-  --series-2: var(--steel);           /* steel-blue */
-  --series-3: var(--brand-purple);    /* purple */
-  --series-4: var(--success);         /* apothecary green */
-  --series-5: var(--attention);       /* rose */
+  --series-1: var(--accent); /* @kind color */          /* gold */
+  --series-2: var(--steel); /* @kind color */           /* steel-blue */
+  --series-3: var(--brand-purple); /* @kind color */    /* purple */
+  --series-4: var(--success); /* @kind color */         /* apothecary green */
+  --series-5: var(--attention); /* @kind color */       /* rose */
 
   /* Sequential ramp — single-hue, 5 stops light→dark.
      Use for quantitative encoding (heatmap, choropleth). */
-  --ramp-1: color-mix(in oklch, var(--accent) 25%, var(--bg));
-  --ramp-2: color-mix(in oklch, var(--accent) 45%, var(--bg));
-  --ramp-3: color-mix(in oklch, var(--accent) 65%, var(--bg));
-  --ramp-4: color-mix(in oklch, var(--accent) 85%, var(--bg));
-  --ramp-5: var(--accent);
+  --ramp-1: color-mix(in oklch, var(--accent) 25%, var(--bg)); /* @kind color */
+  --ramp-2: color-mix(in oklch, var(--accent) 45%, var(--bg)); /* @kind color */
+  --ramp-3: color-mix(in oklch, var(--accent) 65%, var(--bg)); /* @kind color */
+  --ramp-4: color-mix(in oklch, var(--accent) 85%, var(--bg)); /* @kind color */
+  --ramp-5: var(--accent); /* @kind color */
 
   /* Diverging — for signed deltas. Brick-low → neutral → apothecary-green-high. */
-  --diverge-low:  var(--urgent);
-  --diverge-mid:  var(--fg-disabled);
-  --diverge-high: var(--success);
+  --diverge-low:  var(--urgent); /* @kind color */
+  --diverge-mid:  var(--fg-disabled); /* @kind color */
+  --diverge-high: var(--success); /* @kind color */
 }
 
 /* Chart shell — gives it a card-like surface, optional header row,
@@ -1482,12 +1552,12 @@ select:focus-visible,
    Mermaid + React Flow override the same tokens via their respective theming.
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  --dia-node-bg:     var(--bg-raised);
-  --dia-node-fg:     var(--fg);
-  --dia-node-border: var(--border);
-  --dia-edge:        var(--fg-secondary);
-  --dia-edge-strong: var(--fg);
-  --dia-rail:        var(--border-lifted);
+  --dia-node-bg:     var(--bg-raised); /* @kind color */
+  --dia-node-fg:     var(--fg); /* @kind color */
+  --dia-node-border: var(--border); /* @kind color */
+  --dia-edge:        var(--fg-secondary); /* @kind color */
+  --dia-edge-strong: var(--fg); /* @kind color */
+  --dia-rail:        var(--border-lifted); /* @kind color */
 }
 .dia-node {
   fill: var(--dia-node-bg);
@@ -1581,7 +1651,7 @@ select:focus-visible,
    holds a .stack of .dia-box nodes (composes the HTML node above). Distinct
    from the horizontal single-node .flow chain. */
 .spine {
-  --spine-gutter: 32px;
+  --spine-gutter: 32px; /* @kind spacing */
   display: flex; flex-direction: column; gap: var(--s-lg);
 }
 .phase {
@@ -1712,8 +1782,20 @@ select:focus-visible,
 .sidenav button:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset-inset); }
 .sidenav a[aria-current="page"],
 .sidenav button[aria-current="page"] {
+  position: relative;
   background: var(--bg); color: var(--accent);
-  box-shadow: inset 2px 0 0 var(--accent);   /* active rail — no layout shift */
+}
+/* Active rail — an inset bar with rounded ends, held off the item's corners.
+   The old inset box-shadow followed the 4px radius and curled at both ends
+   (same fix as .callout, v0.28). Absolute, so no layout shift. */
+.sidenav a[aria-current="page"]::before,
+.sidenav button[aria-current="page"]::before {
+  content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
+  border-radius: 2px; background: var(--accent);
+}
+@media (forced-colors: active) {
+  .sidenav a[aria-current="page"]::before,
+  .sidenav button[aria-current="page"]::before { background: Highlight; forced-color-adjust: none; }
 }
 
 /* Rail — collapsed, icon-only (~56px). Labels go SR-only, not display:none,
@@ -1939,6 +2021,72 @@ select:focus-visible,
 
 
 /* ═══════════════════════════════════════════════════════════════════════
+   BRAND · Sploot — the system's critter: a Pembroke corgi drawn as text in
+   quadrant block glyphs (2×2 px per character), gold like the wordmark's
+   stop. artificer-sploot.js turns <span data-sploot="pose"> into stacked
+   text layers; its pixel grids are the one source for every pose. Static:
+   the only motion is a one-shot hop on hover, a state change, not a loop.
+
+   Sizes are whole-pixel on purpose. Glyph cells are 0.6em wide and block
+   glyphs 1.32em tall, so the size must make 0.6em a whole pixel (10, 15,
+   20, 25px) and the line pitch must be a whole pixel just under 1.32em —
+   a fractional pitch lets baseline snapping open hairlines between rows.
+   The --sploot-* knobs are set only by the size modifiers; any other value
+   breaks that arithmetic.
+   ═══════════════════════════════════════════════════════════════════════ */
+.sploot {
+  --sploot-size: 1.25rem;   /* 20px → 12px cells */
+  --sploot-pitch: 1.625rem; /* 26px under 26.4px glyphs */
+  display: inline-grid;
+  vertical-align: bottom;
+  font-size: var(--sploot-size);
+  line-height: var(--sploot-pitch);
+}
+.sploot--mini { --sploot-size: 0.625rem; --sploot-pitch: 0.8125rem; }  /* 10 / 13 */
+.sploot--sm   { --sploot-size: 0.9375rem; --sploot-pitch: 1.1875rem; } /* 15 / 19 */
+.sploot--lg   { --sploot-size: 1.5625rem; --sploot-pitch: 2rem; }       /* 25 / 32 */
+.sploot__layer {
+  grid-area: 1 / 1;
+  display: block;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: inherit;
+  line-height: inherit;
+  /* Body letter/word spacing would pry the glyphs apart. */
+  letter-spacing: 0;
+  word-spacing: normal;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  /* Two glyphs' anti-aliased edges don't add up to a solid pixel where they
+     meet, leaving hairline seams (worst on light ground). A same-color
+     stroke this thin swells each glyph just past the seam. */
+  -webkit-text-stroke: 0.03em currentColor;
+}
+.sploot__body { color: var(--accent); }
+/* Overlays paint over the body in source order. Text marks (z, scent) and
+   box drawing overlap their neighbors already, so they skip the stroke. */
+.sploot__helmet,
+.sploot__zzz,
+.sploot__scent { color: var(--fg-secondary); -webkit-text-stroke: 0; }
+/* Winter scarf, `stand` only: shown December–February, when <html> carries
+   data-season="winter" (the module sets it from the reader's clock). */
+.sploot__scarf { display: none; color: var(--brand-purple); }
+:root[data-season="winter"] .sploot__scarf { display: block; }
+
+@keyframes sploot-hop {
+  0%, 100% { transform: none; }
+  45%      { transform: translateY(-0.35em); }
+}
+.sploot:hover,
+.sploot-host:hover .sploot { animation: sploot-hop var(--dur-max) var(--ease); }
+@media (prefers-reduced-motion: reduce) {
+  .sploot:hover,
+  .sploot-host:hover .sploot { animation: none; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
    RESPONSIVE — breakpoints · touch escalation · safe-area · table reflow.
    v0.10.0. Reconciles Lane 3's "mobile layer" audit, with two corrections:
      1. The 44px target is a NAV rule (a11y #8: "in nav"), NOT a blanket
@@ -1951,9 +2099,9 @@ select:focus-visible,
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --bp-mobile: 640px;    /* phone */
-  --bp-tablet: 800px;    /* small tablet / split view */
-  --bp-wide:  1200px;    /* wide desktop */
+  --bp-mobile: 640px; /* @kind other */    /* phone */
+  --bp-tablet: 800px; /* @kind other */    /* small tablet / split view */
+  --bp-wide:  1200px; /* @kind other */    /* wide desktop */
 }
 
 /* Safe-area — sticky/fixed chrome clears the notch + home indicator.
@@ -2140,7 +2288,10 @@ select:focus-visible,
     classic flush shell — consumers set --shell-gap instead of redefining the grid */
 }
 .app-shell > .appbar  { grid-row: bar;  grid-column: 1 / -1; }
-.app-shell > .sidenav { grid-row: body; grid-column: rail; }
+/* In the shell the rail is flush chrome, not a floating card: square, one
+   divider on its content side. A rounded, fully bordered panel under the
+   appbar left a visible seam at the junction. */
+.app-shell > .sidenav { grid-row: body; grid-column: rail; border-radius: 0; border-width: 0 1px 0 0; }
 /* Sticky rail — the sidenav pins while the content scrolls. align-self: start
    is load-bearing: a default-stretch grid child is as tall as the body row and
    has nowhere to stick. --sidenav-sticky-top clears any sticky chrome above

@@ -38,6 +38,8 @@ test('reconciled and new shared assets are mirror-protected', () => {
   // hardening wave (#173/#174/#176 follow-up, the #92 precedent).
   assert.ok(MIRROR.includes('artificer-options.js'));
   assert.ok(MIRROR.includes('artificer-tree.js'));
+  // Sploot, the brand critter module (#524).
+  assert.ok(MIRROR.includes('artificer-sploot.js'));
 });
 
 test('syncMirror(--check) finds zero drift in the committed tree', () => {

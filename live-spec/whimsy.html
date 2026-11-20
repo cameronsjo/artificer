@@ -32,7 +32,7 @@
 <main id="main" class="container container--md container--page">
   <p class="crumb"><a href="README.html">Artificer</a> · Foundations · Whimsy</p>
   <h1 class="t-headline-lg whimsy">whimsy.</h1>
-  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The one <b class="anchor">sanctioned exception</b> to "no looping decoration" and "no raw color." A flowing sine-wave rainbow — the feeling of an <code>ultrathink</code> shimmer — reserved for <b class="anchor">user-defined fun elements</b> and whimsical operations. It is <b class="anchor">burnished, not neon</b>: the spectrum is generated in oklch at the palette's own chroma, and its hue stops land on Artificer's real brand colors. A rainbow made of the palette, set in motion.</p>
+  <p class="t-body-lg" style="color:var(--fg-secondary);max-width:62ch">The one <b class="anchor">sanctioned exception</b> to "no looping decoration" and "no raw color." A flowing sine-wave rainbow — the feeling of an <code>ultrathink</code> shimmer — reserved for <b class="anchor">user-defined fun elements</b> and whimsical operations. It is <b class="anchor">burnished, not neon</b>: the spectrum is generated in oklch at the palette's own chroma, and it walks the palette's hues at that chroma — gold, green, steel, purple, rose — with cyan and amber as bridges between them. A rainbow made of the palette, set in motion.</p>
 
   <div class="figure figure--center">
     <span class="whimsy whimsy--glow hero-mark">ultrathink</span>
@@ -58,11 +58,12 @@
     </div>
   </div>
 
-  <h2 class="section-title">Two palettes</h2>
-  <p class="meta">The default is a burnished <b class="anchor">full spectrum</b> — the "normal RGB" look, kept in-family. <code>.whimsy--brand</code> swaps it for Artificer's <b class="anchor">real semantic tokens</b> (gold → rose → brand-purple → steel → green), reading the live CSS vars so it tracks light/dark for free.</p>
+  <h2 class="section-title">Three palettes</h2>
+  <p class="meta">The default is a burnished <b class="anchor">full spectrum</b> — the "normal RGB" look, kept in-family. <code>.whimsy--brand</code> swaps it for Artificer's <b class="anchor">real semantic tokens</b> (gold → rose → purple → steel), reading the live CSS vars so it tracks light/dark for free. <code>.whimsy--signature</code> narrows it to the personal pair, gold and purple only.</p>
   <div class="figure figure--center" style="gap:var(--s-2xl)">
     <span class="whimsy hero-mark" style="font-size:40px">spectrum</span>
     <span class="whimsy whimsy--brand hero-mark" style="font-size:40px">brand</span>
+    <span class="whimsy whimsy--signature hero-mark" style="font-size:40px">signature</span>
   </div>
   <p class="meta">Both are just values of one variable. Bring your own palette in a single line: <code>style="--whimsy-gradient: linear-gradient(100deg, var(--success), var(--accent), var(--success))"</code></p>
 
@@ -77,6 +78,7 @@
           <button type="button" data-pal="spectrum" aria-pressed="true">Spectrum</button>
           <button type="button" data-pal="brand" aria-pressed="false">Brand</button>
           <button type="button" data-pal="silver" aria-pressed="false">Silver</button>
+          <button type="button" data-pal="signature" aria-pressed="false">Signature</button>
         </div>
       </div>
       <div class="field">
@@ -111,6 +113,24 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <h2 class="section-title">Which one?</h2>
+  <p class="meta">One whimsy per view. Pick by the moment, not the look.</p>
+  <div style="overflow-x:auto" tabindex="0">
+    <table class="table">
+      <thead><tr><th>The moment</th><th>Reach for</th><th>Pattern</th></tr></thead>
+      <tbody>
+        <tr><td>The brand name, a feature name, a hero</td><td><code>.whimsy</code> (or <code>--signature</code>)</td><td>01</td></tr>
+        <tr><td>A long "thinking" state</td><td><code>Whimsy.run()</code> → glacial</td><td>06</td></tr>
+        <tr><td>Something just succeeded</td><td><code>Whimsy.celebrate()</code></td><td>05</td></tr>
+        <tr><td>A trigger word the user typed</td><td><code>Whimsy.watch()</code></td><td>04</td></tr>
+        <tr><td>A section header</td><td><code>.whimsy--silver.whimsy--no-flow</code></td><td>07</td></tr>
+        <tr><td>A break between big sections</td><td><code>.whimsy-rule</code></td><td>03</td></tr>
+        <tr><td>The site footer</td><td><code>data-whimsy-greeting</code></td><td>09</td></tr>
+        <tr><td>A header band backdrop</td><td><code>data-whimsy="sky"</code></td><td>10</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <h2 class="section-title">Patterns</h2>
@@ -263,7 +283,7 @@ Whimsy.<span class="tok-fn">starPositions</span>(<span class="tok-string">7</spa
   <h2 class="section-title">The doctrine</h2>
   <ol class="t-body-md" style="line-height:1.8;color:var(--fg-secondary);padding-left:1.4em">
     <li><b class="anchor">Opt-in only.</b> Never on page chrome, nav, or anything automatic. Whimsy is something a person chose to light up.</li>
-    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper. The API doesn't coordinate flowing slots for you — <b class="anchor">exclusivity is the caller's responsibility</b>, same as one-primary-CTA. A <b class="anchor">night sky and the wordmark it frames</b> count as one moment, and rest on one timer (pattern 10).</li>
+    <li><b class="anchor">One whimsy moment per view.</b> Like the one-primary-CTA rule. Whimsy that's everywhere is just wallpaper. The API doesn't coordinate flowing slots for you — <b class="anchor">exclusivity is the caller's responsibility</b>, same as one-primary-CTA. A <b class="anchor">night sky and the wordmark it frames</b> count as one moment, and rest on one timer (pattern 10). The <b class="anchor">seasonal footer greeting</b> (pattern 09) is a <b class="anchor">fleet fixture</b>, not a moment: every Artificer site carries it in the colophon, and it does not count against the one.</li>
     <li><b class="anchor">Never on load-bearing UI.</b> No whimsy on errors, destructive actions, status, or data. It decorates delight, never function. <b class="anchor">One sanctioned exception:</b> the <code>.whimsy-focus</code> ring (pattern 08), which <em>augments</em> the standard focus outline rather than replacing it — the outline still carries the a11y signal. Reach for it only on explicit request. The <b class="anchor">night sky</b> (pattern 10) sits only behind a header or hero band, never behind data, status, errors, or body copy.</li>
     <li><b class="anchor">Burnished by default.</b> It's tuned to the palette. Reach for <code>.whimsy--vivid</code> consciously, not by reflex.</li>
     <li><b class="anchor">Display + bold only.</b> Gradient text drops contrast — keep it large. Never set body copy in whimsy. This rule governs gradient <em>text</em>; the <b class="anchor">night sky</b> is a non-text backdrop, <code>aria-hidden</code>, and <b class="anchor">dark only</b> — light mode shows the plain page.</li>
@@ -356,7 +376,8 @@ Whimsy.<span class="tok-fn">run</span>(el, { loops: <span class="tok-string">4</
           var silver = b.dataset.pal === "silver";
           sample.classList.toggle("whimsy--brand", brand);
           sample.classList.toggle("whimsy--silver", silver);
-          chroma.disabled = brand || silver;
+          sample.classList.toggle("whimsy--signature", b.dataset.pal === "signature");
+          chroma.disabled = brand || silver || b.dataset.pal === "signature";
         });
       });
 

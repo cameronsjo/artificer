@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.27.0
+# Artificer · v0.28.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -122,7 +122,7 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Pagination | `.pagination` + `.pagination__gap`; `[aria-current=page]` marks the page; prev/next disable at ends; counted ranges only — `components-extended.html` |
 | Persistent page banner | `.banner` + `--info/attention/urgent/success` + `.banner__body`/`.banner__actions` — a standing layout band, NOT the transient `.notif` — `components-extended.html` |
 | Footer / colophon / fine print / attribution | **Three zones, in order — 1 and 3 optional, the spine always present.** (1) a `.grid-auto` of `.colophon__label` sections; (2) `.colophon__spine` — three POSITIONAL slots: **identity · sign-off · links**, first child starts, last ends, middle centres on the page; (3) `.colophon__fine` for the legal tier. A site with only a sign-off and a site with a full disclosure grid use the same primitive and differ only in which zones they fill. Any slot may be empty — keep the element to hold its column. Links slot: `<a>` for navigation, `<button class="btn btn--link">` for a control that ACTS (an SPA switching views) — never an `<a>` with a click handler. Prose auto-sans even inside `.surface-tool`; `.surface-document` flips any other prose island back — `layout.html` |
-| Selected card / selected row / active choice | `.card--active` (`background: var(--bg)` + accent left border) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row — never `--accent-fill` as a large surface bg, its only rated text color is `--on-accent` — `components.html` |
+| Selected card / selected row / active choice | `.card--active` (`background: var(--bg)` + a full 1px accent ring) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row — never `--accent-fill` as a large surface bg, its only rated text color is `--on-accent` — `components.html` |
 | Split pane / master-detail | `.split-pane` + `.pane--active`/`.pane--inactive`; recession marks the unfocused pane — `composition.html` |
 | Text workbench / editor panes / paste target | `.workbench` + `.workbench__pane` (`.workbench__header` + `.workbench__editor`); label lives in `.workbench__header` as a real `<label for>`, not a placeholder — a `.dash` BODY, not a sixth dash recipe — `composition.html` |
 | Status pill | `.badge--{tier}` with a `.dot--{tier}` inside — dot AND text, never color alone |
@@ -145,17 +145,18 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Architecture / flow diagram | `.dia-node`/`.dia-edge` on inline SVG — `diagrams.html` |
 | Syntax-highlighted code block | `.code-block` + the `.tok-*` roles — `components-extended.html` |
 | Brand wordmark | `.wordmark` (renders `artificer.`) — `README.html` |
+| Brand critter / mascot / Sploot | `<span data-sploot="pose">` + `artificer-sploot.js` — the corgi in block glyphs; stand/droopy/sleep/sniff/mini, `.sploot--sm`/`--lg`, `data-sploot-helmet`; one per view — `sploot.html` |
 | Theme toggle | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph |
 | Tabular number | `.num` utility — sets `font-variant-numeric: tabular-nums`; drop on the cell, or the parent for a whole table — `data-display.html` |
 | Short hint paragraph under a figure or field | `.note` — sister of `.meta`, smaller (label-sm); inherits the body face, mono on tool surfaces / sans on document surfaces |
 | Eyebrow / overline label | `.eyebrow` (+ `.eyebrow--accent`) — uppercase label over a heading, block, or demo — `typography.html#doc-chrome` |
 | Doc-page subsection header | `<h3 class="subsection-title">` — mono 700 body-md; sibling under `.section-title` — `typography.html#doc-chrome` |
-| Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`); the title names the tier in text — `typography.html#doc-chrome` |
-| Doc-page section header | `<h2 class="section-title">` — mono, uppercase, `--fg-secondary`, border-bottom rule; doc/spec chrome — `data-display.html` |
+| Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`) — an inset tier rule inside a bordered raised box (never a `border-left` on a rounded box); the title names the tier in text — `typography.html#doc-chrome` |
+| Doc-page section header | `<h2 class="section-title">` — mono 500, mixed case, `--fg`, border-bottom rule; doc/spec chrome (uppercase tracking is for small labels only) — `data-display.html` |
 | Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers — `data-display.html` |
-| Make it fun / playful / celebratory / rainbow | The sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors — `whimsy.html` |
+| Make it fun / playful / celebratory / rainbow | The sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors. Palettes: spectrum (default), `.whimsy--brand`, `.whimsy--signature` (gold + purple), `.whimsy--silver`, `.whimsy--gold`. Pick by the "Which one?" table — `whimsy.html` |
 | Night sky behind a hero or header band | `data-whimsy="sky"` / `.whimsy-sky` + `Whimsy.starfield()` — flowing brand field + seeded stars, dark only, rests with its wordmark on one timer; never behind data/status/errors/body copy — `whimsy.html` pattern 10 |
-| Make it feel like paper / give it grain / material / texture / depth | `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors — `texture.html` |
+| Make it feel like paper / give it grain / material / texture / depth | `.tex-grain` / `.tex-dots` / `.tex-line` (`--hatch`/`--cross`/`--flute`/`--pinstripe`/`--arc`/`--ray`) / `.tex-paper` / `.tex-raised`, plus the drafting set `.tex-grid` (tool canvas), `.tex-ruled` (notes), `.tex-perf` (receipt card), `.tex-deboss` (decorative only); hueless + motionless, never on data/status/errors — `texture.html` |
 | Empty state / error / loading copy | `voice-and-tone.html` — never improvise microcopy |
 | Loading state / UI | `states.html` — pick by *duration*: nothing → disabled label → skeleton → progress → background |
 | Long wait, nothing to count | `.progress--indeterminate` + `role="progressbar"` + `aria-label` with concrete copy, NO `aria-valuenow/min/max` — `states.html` |
@@ -259,10 +260,10 @@ TYPE --font-mono JetBrains Mono
                                     terminals, data tables, settings panels)
                                   · ALWAYS for code, identifiers, file paths,
                                     numerals — including inside documents
-                --font-body iA Writer Quattro V
+                --font-body Bricolage Grotesque
                                   · BODY FACE for document surfaces (writeups,
                                     READMEs, reports, design docs)
-                --font-interface iA Writer Quattro S
+                --font-interface Recursive
                                   · Labels, controls, badges, form fields, nav
                                     — on both tool AND document surfaces
                                   · --font-sans is a legacy alias of --font-body
@@ -303,7 +304,7 @@ BADGES .badge + .badge--accent | --attention | --urgent | --success | --ghost
            tint, never a solid steel fill; no text clears AA on solid steel)
 DOTS .dot + .dot--accent | --attention | --urgent | --success
 
-PANES .pane--active (gold left border) · .pane--inactive (55% opacity, desaturated)
+PANES .pane--active (inset 1px accent outline) · .pane--inactive (55% opacity, desaturated)
 
 KBD <kbd>⌘ ↵</kbd>
 THEME <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>

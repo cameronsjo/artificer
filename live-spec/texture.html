@@ -67,11 +67,46 @@
     </div>
     <div class="figure">
       <div class="demo__stage doc tex-line tex-line--flute"><p class="h">Speakeasy fluting</p><p class="p">Paired vertical hairlines.</p></div>
-      <div class="demo__cap"><code>.tex-line--flute</code><p>Section bands, sidebar spines.</p></div>
+      <div class="demo__cap"><code>.tex-line--flute</code><p>Section bands, sidebar spines. Pairs, 4px apart — reads distinct from pinstripe.</p></div>
     </div>
     <div class="figure">
       <div class="demo__stage doc tex-line tex-line--pinstripe"><p class="h">Even pinstripe</p><p class="p">Single hairlines — tailoring.</p></div>
       <div class="demo__cap"><code>.tex-line--pinstripe</code><p>Cards, asides. The quietest vertical.</p></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Drafting — the maker's bench</h2>
+  <p class="meta">Six textures from the drafting table the compass icon comes off. Token ink only, no hue, no motion.</p>
+  <div class="grid">
+    <div class="figure">
+      <div class="demo__stage tool tex-grid" style="align-items:center;min-height:150px"><span class="k">canvas · 1:1</span></div>
+      <div class="demo__cap"><code>.tex-grid</code><p>Engineering paper for <b>tool</b> canvases. Minor <code>--tex-grid-minor</code> (8px), major <code>--tex-grid-major</code> (40px).</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage tool tex-line tex-line--arc" style="align-items:center;min-height:150px"><span class="k">no projects yet</span></div>
+      <div class="demo__cap"><code>.tex-line--arc</code><p>Compass arcs from the corner, fading before the content. Empty states, onboarding.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage tool tex-line tex-line--ray" style="align-items:center;min-height:150px"><span class="tex-stat">v0.28.0</span></div>
+      <div class="demo__cap"><code>.tex-line--ray</code><p>Deco sunburst. <b>One</b> launch moment — never a repeated surface.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage doc" style="min-height:150px"><p class="p tex-ruled" style="font-size:14px;max-width:none"><b style="color:var(--fg)">Notes</b> — keep the migration behind a flag until the canary holds for a day. Then flip the default and remove the old path.</p></div>
+      <div class="demo__cap"><code>.tex-ruled</code><p>Ledger rules locked to the text's line height — every baseline sits on a rule. Notes fields, journals.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage" style="min-height:150px;align-items:center">
+        <div style="width:100%;max-width:260px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;--tex-perf-ground:var(--bg-raised)">
+          <div style="padding:var(--s-sm) var(--s-md)"><span class="k">deploy receipt</span><div style="font:700 16px/1.4 var(--font-mono)">build-1284</div></div>
+          <div class="tex-perf" role="separator"></div>
+          <div style="padding:var(--s-sm) var(--s-md)"><span class="badge badge--success"><span class="dot"></span>passed</span></div>
+        </div>
+      </div>
+      <div class="demo__cap"><code>.tex-perf</code><p>A tear line for receipt and ticket cards. Set <code>--tex-perf-ground</code> to what's behind the card.</p></div>
+    </div>
+    <div class="figure">
+      <div class="demo__stage" style="min-height:150px;align-items:center"><span class="tex-deboss" aria-hidden="true" style="font:700 40px/1 var(--font-mono)">artificer.</span></div>
+      <div class="demo__cap"><code>.tex-deboss</code><p>Pressed-in display type. Below text contrast by design — decorative only, always <code>aria-hidden</code>.</p></div>
     </div>
   </div>
 
@@ -83,7 +118,7 @@
         <span class="tex-stat">0.4%</span>
         <span class="k">5xx · last hour</span>
       </div>
-      <div class="demo__cap"><code>.tex-raised</code><p>Halo bleeds bottom-right, <b>outside</b> the border. Interior stays flat — uniform glow is a canonical no.</p></div>
+      <div class="demo__cap"><code>.tex-raised</code><p>Halo falls straight down, <b>outside</b> the border — lit from above, like the app icon. Interior stays flat — uniform glow is a canonical no.</p></div>
     </div>
   </div>
 
@@ -94,7 +129,7 @@
   </div>
   <div class="tex-paper tex-paper--whisper" style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--s-lg) var(--s-md);margin-top:var(--s-md)">
     <p class="h" style="font-family:var(--font-mono)">Whisper</p>
-    <p class="p" style="font-family:var(--font-mono);max-width:60ch"><code style="color:var(--accent)">.tex-paper--whisper</code> — the ceiling. The flowing wordmark is a hero's texture; this is the one whole-page exception.</p>
+    <p class="p" style="font-family:var(--font-mono);max-width:60ch"><code style="color:var(--accent)">.tex-paper--whisper</code> — the ceiling: 0.32 on ink, 0.45 on paper. The flowing wordmark is a hero's texture; this is the one whole-page exception.</p>
   </div>
 
   <p class="note">One texture per surface · never on data, status, or errors · web-layer only.</p>

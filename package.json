@@ -1,6 +1,6 @@
 {
   "name": "@cameronsjo/artificer",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Cameron's personal design system — AuDHD-friendly, dark-first, for tools and dashboards. Apache-2.0 but Cameron-first: published for my own reuse, unsupported, no stability guarantees implied.",
   "license": "Apache-2.0",
   "author": "Cameron Sjo",
@@ -50,6 +50,10 @@
     "./whimsy.js": {
       "types": "./types/whimsy.d.ts",
       "default": "./src/artificer-whimsy.js"
+    },
+    "./sploot.js": {
+      "types": "./types/sploot.d.ts",
+      "default": "./src/artificer-sploot.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",

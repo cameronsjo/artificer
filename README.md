@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.27.0 · 2026** — new layout and doc-chrome primitives: `.container--page` for page padding, `.eyebrow`, `.subsection-title`, `.callout`, a `.kv--props` properties block, and an embed card on `.figure`. The shipped skills and reference drop stale guidance (AA contrast floor, current colour names, a boilerplate that follows the Hard rules), and every live-spec page now uses the system classes and tokens it used to hand-roll. See `CHANGELOG.md` for what changed.
+**v0.28.0 · 2026** — new type: Recursive for interface chrome and Bricolage Grotesque for body prose, both variable so every weight is real, and the Obsidian theme follows. Sploot the corgi joins as the system's critter, drawn in block glyphs. A generated theme for the herdr desktop app, a first-class Obsidian mobile layer, and Obsidian callouts that match the system `.callout`. See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -136,6 +136,7 @@ import 'artificer/artificer-icons.js' // only if using <i data-icon>
 import 'artificer/artificer-tabs.js'  // only if using .tabs (ships the APG keyboard model)
 import 'artificer/artificer-options.js' // only if using .menu/.listbox/.palette (option navigation)
 import 'artificer/artificer-tree.js'  // only if using .tree (ships the APG tree keyboard)
+import 'artificer/artificer-sploot.js' // only if drawing Sploot (<span data-sploot>)
 ```
 
 The CSS uses CSS custom properties (variables) and `data-theme` attribute — no preprocessing needed.
@@ -221,19 +222,19 @@ These are starters, not the whole system. They cover the 80% case; for new patte
 
 ## Fonts
 
-Artificer ships three SIL OFL font faces (two typeface families), self-hosted as WOFF2 in `src/assets/fonts/`. **Pick the face by role** (see CLAUDE.md → "First decision — what surface is this?"):
+Artificer ships three SIL OFL font families, self-hosted as WOFF2 in `src/assets/fonts/`. **Pick the face by role** (see CLAUDE.md → "First decision — what surface is this?"):
 
 - **JetBrains Mono** (weights 400 / 500 / 700) — body face on **tool surfaces** (dashboards, consoles, terminals, settings panels, data tables). Always used for code, identifiers, file paths, and numerals — even in document surfaces.
-- **iA Writer Quattro V** — `--font-body`, the prose face on **document surfaces** (writeups, READMEs, reports, design docs). Ships 400 only (plus italic), so bold headlines synthesize faux-bold.
-- **iA Writer Quattro S** — `--font-interface`, the chrome face: labels, controls, badges, form fields, nav, tabular UI numerals — on **both** tool and document surfaces. Ships 400 / 700 with italics.
+- **Bricolage Grotesque** — `--font-body`, the prose face on **document surfaces** (writeups, READMEs, reports, design docs). One variable file, weights 200–800, with an optical-size axis that tightens headlines automatically.
+- **Recursive** — `--font-interface`, the chrome face: labels, controls, badges, form fields, nav, tabular UI numerals — on **both** tool and document surfaces. One variable file, weights 300–1000, with a slant axis for italics; its digits are fixed-width by default.
 
-Both Quattro faces were designed by Bold Monday for iA Writer; humanist sans tuned to share rhythm with monospace. `--font-sans` remains resolvable as a legacy alias of `--font-body`.
+Both replaced iA Writer Quattro S/V (ADR 0046). `--font-sans` remains resolvable as a legacy alias of `--font-body`.
 
-A useful rule of thumb: if the page has more than ~3 paragraphs of running prose, it's a document — set body in Quattro V. If it's mostly chrome around data, it's a tool — set body in JetBrains Mono. Mixing within a project is normal: the settings page is a tool, the README explaining it is a document.
+A useful rule of thumb: if the page has more than ~3 paragraphs of running prose, it's a document — set body in `--font-body`. If it's mostly chrome around data, it's a tool — set body in JetBrains Mono. Mixing within a project is normal: the settings page is a tool, the README explaining it is a document.
 
-JetBrains Mono is on Google Fonts; Quattro is **not** — that's why we self-host. Each `@font-face` chain points at the bundled WOFF2 files and falls back through Iowan Old Style → Charter → Source Sans 3 → system-ui, so the page still renders if fonts haven't loaded yet.
+All three are self-hosted from the bundled WOFF2 files (they are also on Google Fonts and Fontsource). The stacks fall back through Source Sans 3 → system-ui, so the page still renders if fonts haven't loaded yet.
 
-Full loading recipes, the weight-coverage table, and the Windows faux-bold disposition: **[`FONTS.md`](FONTS.md)**. Upstream source for both Quattro faces is [iaolo/iA-Fonts](https://github.com/iaolo/iA-Fonts).
+Full loading recipes and the axis notes: **[`FONTS.md`](FONTS.md)**. Upstream sources: [arrowtype/recursive](https://github.com/arrowtype/recursive) and [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage).
 
 ---
 
@@ -312,8 +313,8 @@ And the browser:
 directory without packing at all.
 
 Plus the terminal and TUI surfaces around them — Ghostty, WezTerm, tmux, gitmux, cmux,
-bat/delta, glamour, gum, fzf, eza, starship, yazi, lazygit, gh-dash, herdr, and
-flux. **`themes/README.md` carries the full list**; it is the one place that
+bat/delta, glamour, gum, fzf, eza, starship, yazi, lazygit, gh-dash, herdr, the
+herdr desktop app, and flux. **`themes/README.md` carries the full list**; it is the one place that
 enumerates them, so this section never has to be counted again.
 
 Everything except Obsidian is generated from `themes/_palette.json`. To re-tune

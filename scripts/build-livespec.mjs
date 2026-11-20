@@ -26,6 +26,7 @@ export const MIRROR = [
   'artificer-focus.js',
   'artificer-icons.js',
   'artificer-options.js',
+  'artificer-sploot.js',
   'artificer-tabs.js',
   'artificer-texture.css',
   'artificer-theme.js',

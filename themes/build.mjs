@@ -7,6 +7,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stampBuild } from './obsidian-build-id.mjs';
 // Shared with scripts/check-shell-fragments.mjs — see that module's header for
 // why the grammar cannot live in this file.
 import {
@@ -27,8 +28,8 @@ const { version } = JSON.parse(readFileSync(join(__dirname, '../package.json'), 
 const D = palette.dark;
 const L = palette.light;
 
-// Hex → "r, g, b" tuple. Obsidian's callout system uses these inside
-// rgba(var(--callout-foo), 0.1) so they MUST be tuples, not hex.
+// Hex → "r, g, b" tuple. Obsidian callouts read this shape before 1.15; the
+// theme now sets full colors (PR #563), so nothing emits it today.
 const rgb = (hex) => {
   const h = hex.replace('#', '');
   const r = parseInt(h.slice(0, 2), 16);
@@ -2500,6 +2501,108 @@ write('herdr/artificer-dark.toml',  herdrTheme('dark'));
 write('herdr/artificer-light.toml', herdrTheme('light'));
 
 // ─────────────────────────────────────────────────────────────────────
+// herdr-app — the new herdr desktop app (herdrdev/herdr-app), a theme file
+// ─────────────────────────────────────────────────────────────────────
+//
+// Unlike the herdr TUI above, the desktop app reads whole theme files from
+// ~/.config/herdr-app/themes/<name>.json: { background, foreground, selection,
+// cursor, ansi[16], colors }. It derives every panel color from the terminal
+// palette and lets `colors` override any of them by name, so this is a plain
+// drop-in (install.sh copies it). Shape verified against herdr-app 0.1.9
+// (src/settings.rs `resolve`, defaults/AGENTS.md § themes); the color names
+// are unchanged since 0.1.6.
+//
+// The terminal half is the Ghostty theme's, slot for slot, so a pane in the
+// app reads exactly like Ghostty: background is terminalBg (ADR 0036), ANSI 3
+// and 11 are the gold pair, 4 and 12 the rose pair.
+//
+// The panel half pins the roles the app would otherwise derive off-palette:
+// its light chrome mixes toward a neutral #e8e8e2, which is not on the ivory
+// ladder. The app paints chrome on the sidebar, tab bar and status bar, canvas
+// in the 8px gutters around the work body, and surface (the terminal) inside.
+// Each of the three gets its own rung so the panels read as separate planes:
+//
+//   dark   chrome bgInactive < canvas bg < surface terminalBg
+//          Work comes forward and chrome recedes (rule #6 recession), the same
+//          order as the app's own derived default.
+//   light  canvas bgOverlay < chrome bgRaised < surface terminalBg (= bg)
+//          The terminal sits as ivory paper in a deeper tan well. Chrome stays
+//          on bgRaised because a deeper chrome rung puts `dim` under 4.5:1 on
+//          the bars, so light's order differs from dark's on purpose.
+//
+// raised (active tab, active row) is bgOverlay on dark and bg on light, so on
+// light the active tab goes lighter while the app's black-alpha hover goes
+// darker. popover is bgOverlay in both; on light it sits close to chrome and
+// its border carries the edge. hover, selected, border fills and input stay
+// the app's own alpha overlays, which follow any background.
+// Status dots: working gold, blocked the text-tier red, done green. The
+// primary button (`solid`, ink on paper and paper on ink), the focus `ring`
+// and the `unknown` dot are pinned too: left alone they derive from the app's
+// own neutral text (#eeeeef / #1b1b1e), and light's solid_foreground would be
+// a pure #ffffff on ivory.
+//
+// `dim` is the app's most-used text color (branch names, hints, counts). Its
+// floor: 4.5:1 on chrome and surface, 3:1 on raised, popover, and under the
+// app's `selected` overlay. Dark takes ansiBrightBlack (the grey Claude Code's
+// `subtle` uses; fgMuted is 2.68:1 on dark terminalBg). Light takes steelBright
+// (4.82 on chrome, 5.43 on surface); fgMuted measured 3.40 on chrome. The quiet
+// dots (`idle`, `unknown`) share the same `quiet` pick: they are graphics with a
+// 3:1 floor, and light's old fgMuted fell to 2.91 on a selected chrome row.
+// scripts/herdr-app-theme.test.mjs enforces every floor above.
+//
+// Generated from themes/_palette.json — edit there + re-run build.mjs.
+
+const herdrAppTheme = (mode) => {
+  const P = mode === 'dark' ? D : L;
+  // Boundary guard, as ghosttyTheme: _palette.json is Lane 1's artifact, and an
+  // off-shape value would land in a file the app parses.
+  const hex = (token) => {
+    const value = typeof token === 'string' && token.startsWith('#') ? token : P[token];
+    if (!/^#[0-9a-fA-F]{6}$/.test(value ?? '')) {
+      throw new Error(`herdrAppTheme(${mode}): ${token} resolved to ${JSON.stringify(value)}, not a six-digit hex colour`);
+    }
+    return value.toLowerCase();
+  };
+  const S = mode === 'dark'
+    ? { chrome: 'bgInactive', canvas: 'bg', raised: 'bgOverlay', popover: 'bgOverlay', quiet: 'ansiBrightBlack' }
+    : { chrome: 'bgRaised', canvas: 'bgOverlay', raised: 'bg', popover: 'bgOverlay', quiet: 'steelBright' };
+  return JSON.stringify({
+    background: hex('terminalBg'),
+    foreground: hex('fg'),
+    selection: hex('selectionFill'),
+    cursor: hex('accent'),
+    ansi: [
+      'ansiBlack', 'ansiRed', 'ansiGreen', 'accent', 'ansiRose', 'brandPurple', 'cyan', 'fg',
+      'ansiBrightBlack', 'ansiBrightRed', 'ansiBrightGreen', 'accentBright', 'ansiBrightRose', 'brandPurpleBright', 'cyanBright',
+      mode === 'dark' ? 'ivory' : 'fg',
+    ].map(hex),
+    colors: {
+      surface: hex('terminalBg'),
+      chrome: hex(S.chrome),
+      canvas: hex(S.canvas),
+      popover: hex(S.popover),
+      raised: hex(S.raised),
+      foreground: hex('fg'),
+      muted: hex('fgSecondary'),
+      dim: hex(S.quiet),
+      accent: hex('accent'),
+      accent_foreground: hex('bg'),
+      working: hex('accent'),
+      blocked: hex('urgentText'),
+      done: hex('successBright'),
+      idle: hex(S.quiet),
+      unknown: hex(S.quiet),
+      solid: hex('fg'),
+      solid_foreground: hex('bg'),
+      ring: hex('accent'),
+    },
+  }, null, 2) + '\n';
+};
+
+write('herdr-app/artificer-dark.json',  herdrAppTheme('dark'));
+write('herdr-app/artificer-light.json', herdrAppTheme('light'));
+
+// ─────────────────────────────────────────────────────────────────────
 // glamour — strict JSON stylesheet, consumed by glow (and anything else
 // built on glamour: gh's markdown rendering, mods, …)
 // ─────────────────────────────────────────────────────────────────────
@@ -4147,7 +4250,7 @@ write('stylus/vikunja.user.css', stylusVikunjaTheme());
 // hook supplies these narrow aliases and removes them when switching themes.
 const hermesTheme = () => {
   const mono = "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace";
-  const chrome = "'iA Writer Quattro S', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui, -apple-system, sans-serif";
+  const chrome = "'Recursive', 'Source Sans 3', system-ui, -apple-system, sans-serif";
   const colors = {
     card: D.bgRaised, cardForeground: D.fg,
     popover: D.bgOverlay, popoverForeground: D.fg,
@@ -4339,8 +4442,7 @@ const FIREFOX_SLOTS = browserSlotsFor('firefox');
 
 // Hex → [r, g, b]. Chromium's theme.colors takes ONLY RGB arrays; a hex string
 // there parses and is then ignored. Deliberately NOT an overload of rgb()
-// above — Obsidian's callout system depends on that helper's "r, g, b" string
-// shape inside rgba(var(--callout-foo), 0.1).
+// above, which returns an "r, g, b" string, not an array.
 const rgbArray = (hex) => {
   const h = hex.replace('#', '');
   return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
@@ -4455,9 +4557,10 @@ write('firefox/artificer/manifest.json',        firefoxTheme());
 // font-weight/font-style descriptors pick the right instance of the family.
 const localFamily = (file) => ({
   'jetbrains-mono':      'JetBrains Mono',
-  'ia-writer-quattro':   'iA Writer Quattro',
-  'ia-writer-quattro-s': 'iA Writer Quattro S',
-  'ia-writer-quattro-v': 'iA Writer Quattro V',
+  // No entry for a `-variable` file on purpose: local() resolves to ONE
+  // installed face, so a static Bricolage Grotesque install would claim the
+  // whole `font-weight: 200 800` range and fake every other weight. The
+  // bundled variable file must always win.
 }[file.replace(/-\d+(-italic)?\.woff2$/, '')]);
 
 const buildObsidianFonts = () => {
@@ -4482,8 +4585,12 @@ const buildObsidianFonts = () => {
     '   Regenerate: node themes/build.mjs\n' +
     '   Edit theme.src.css for CSS changes; replace fonts/ for font changes. */\n';
 
-  writeFileSync(join(base, 'theme.css'), banner + inlined);
-  console.log(`wrote obsidian/Artificer/theme.css (${count} fonts inlined)`);
+  // Build id shown in Style Settings → About, so the owner can confirm on the
+  // phone which build Obsidian Sync delivered (themes/obsidian-build-id.mjs).
+  const { version } = JSON.parse(readFileSync(join(base, 'manifest.json'), 'utf8'));
+  const { css, id } = stampBuild(inlined, version);
+  writeFileSync(join(base, 'theme.css'), banner + css);
+  console.log(`wrote obsidian/Artificer/theme.css (${count} fonts inlined, build ${id})`);
 };
 
 buildObsidianFonts();

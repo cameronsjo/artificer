@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<title>Artificer · Sploot</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="artificer.css"/>
+<link rel="stylesheet" href="print.css" media="print"/>
+<script src="artificer-theme.js" defer></script>
+<script src="artificer-sploot.js" defer></script>
+<style>
+  /* Reference page — every Sploot below is the REAL artificer-sploot.js
+     hydrating a data-sploot host, styled by .sploot in artificer.css. */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--s-md); margin-top: var(--s-md); }
+  .grid > .figure { margin: 0; } /* drop <figure>'s UA side margins: the grid gap spaces cards */
+  .stage { min-height: 132px; display: grid; place-items: center; padding: var(--s-lg) var(--s-md); border-bottom: 1px solid var(--border); }
+  .cap { padding: var(--s-sm) var(--s-md); }
+  .cap code { color: var(--accent); }
+  .cap p { margin: var(--s-xs) 0 0; color: var(--fg-secondary); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme"></button>
+
+<main id="main" class="container container--md container--page">
+  <p class="crumb"><a href="index.html">Artificer</a> · Live spec · Sploot</p>
+  <h1 class="t-headline-lg">sploot<span style="color:var(--accent)">.</span></h1>
+  <p class="t-body-lg meta">The system's critter: a Pembroke corgi, named for the flat-out, back-legs-behind lounge corgis are known for. <b style="color:var(--fg)">Drawn as real text</b> — quadrant block glyphs, two by two pixels per character — so it renders in JetBrains Mono and pastes into a terminal intact. Gold like the wordmark's stop, <b style="color:var(--fg)">single-tone, static</b>. Every Sploot here is <code>artificer-sploot.js</code> hydrating a <code>data-sploot</code> host. Hover one: it hops once.</p>
+
+  <h2 class="section-title">Poses</h2>
+  <div class="grid">
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="stand"></span></div>
+      <figcaption class="cap"><code>data-sploot="stand"</code><p>The default. Ears up, fox snout, long loaf, stubby legs.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="droopy"></span></div>
+      <figcaption class="cap"><code>data-sploot="droopy"</code><p>Ears flopped forward. Tired, not sad.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="sleep"></span></div>
+      <figcaption class="cap"><code>data-sploot="sleep"</code><p>The namesake sploot, eyes shut, two z's. Empty states.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="sniff"></span></div>
+      <figcaption class="cap"><code>data-sploot="sniff"</code><p>Nose down on a scent. Not-found pages.</p></figcaption>
+    </figure>
+  </div>
+
+  <h2 class="section-title">Sizes</h2>
+  <p class="meta">Only these four. Each makes a glyph cell a whole number of pixels and pins the row pitch just under the glyph height — any other size opens hairline seams between rows.</p>
+  <div class="grid">
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="mini"></span></div>
+      <figcaption class="cap"><code>data-sploot="mini"</code><p>10px, two rows. A marker, e.g. beside the current table-of-contents entry.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span class="sploot--sm" data-sploot="stand"></span></div>
+      <figcaption class="cap"><code>.sploot--sm</code><p>15px. Inside panels and on phones.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="stand"></span></div>
+      <figcaption class="cap"><code>.sploot</code><p>20px, the default.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span class="sploot--lg" data-sploot="stand"></span></div>
+      <figcaption class="cap"><code>.sploot--lg</code><p>25px. A page's one feature moment.</p></figcaption>
+    </figure>
+  </div>
+
+  <h2 class="section-title">Suits and seasons</h2>
+  <div class="grid">
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="stand" data-sploot-helmet></span></div>
+      <figcaption class="cap"><code>data-sploot-helmet</code><p>A fishbowl over the head, its base ringing the neck. Any pose.</p></figcaption>
+    </figure>
+    <figure class="figure figure--flush">
+      <div class="stage"><span data-sploot="stand"></span></div>
+      <figcaption class="cap"><code>:root[data-season="winter"]</code><p>A <code>--brand-purple</code> scarf on <code>stand</code>, December–February. The module sets <code>data-season</code> from the reader's clock unless the page already did.</p>
+        <p><button class="btn btn--secondary" type="button" data-winter-preview aria-pressed="false">Preview winter</button></p></figcaption>
+    </figure>
+  </div>
+
+  <h2 class="section-title">Use it</h2>
+  <pre class="code-block"><span class="tok-comment">&lt;!-- .sploot lives in artificer.css; the module draws --&gt;</span>
+&lt;<span class="tok-keyword">script</span> <span class="tok-fn">src</span>=<span class="tok-string">"artificer-sploot.js"</span> <span class="tok-fn">defer</span>&gt;&lt;/<span class="tok-keyword">script</span>&gt;
+
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-sploot</span>=<span class="tok-string">"sleep"</span>&gt;&lt;/<span class="tok-keyword">span</span>&gt;
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">class</span>=<span class="tok-string">"sploot--sm"</span> <span class="tok-fn">data-sploot</span>=<span class="tok-string">"stand"</span>&gt;&lt;/<span class="tok-keyword">span</span>&gt;
+&lt;<span class="tok-keyword">span</span> <span class="tok-fn">data-sploot</span>=<span class="tok-string">"mini"</span> <span class="tok-fn">data-sploot-decorative</span>&gt;&lt;/<span class="tok-keyword">span</span>&gt;
+
+<span class="tok-comment">/* static build: no DOM, no client JS */</span>
+<span class="tok-keyword">import</span> <span class="tok-string">'@cameronsjo/artificer/sploot.js'</span>;
+<span class="tok-keyword">const</span> html = ArtificerSploot.<span class="tok-fn">markup</span>(<span class="tok-string">'sniff'</span>);</pre>
+  <p class="note">Hydrates on its own, and <code>observe()</code> picks up SPA inserts. Hosts get <code>role="img"</code> and a pose description; <code>data-sploot-decorative</code> hides one that sits beside a label saying the same thing.</p>
+
+  <h2 class="section-title">Rules</h2>
+  <ol class="stack stack--sm">
+    <li><b>One Sploot per view.</b> It's the brand's face, not wallpaper.</li>
+    <li><b>Never on load-bearing UI</b> — errors, status, data, destructive actions. Empty states and not-found pages are fine; the copy stays literal and Sploot carries the mood.</li>
+    <li><b>Always <code>--accent</code>, single-tone.</b> Costumes (helmet, scarf) are overlay layers in existing tokens, never a recolor.</li>
+    <li><b>Static.</b> The hover hop is the only motion — a state change on <code>--dur-max</code>, off under reduced motion.</li>
+    <li><b>The four sizes only.</b> The size arithmetic is what keeps the glyphs seamless.</li>
+    <li><b>Poses come from the grids</b> in <code>artificer-sploot.js</code>. A new pose is a new grid, not a hand-drawn variant.</li>
+  </ol>
+
+  <h2 class="section-title">Drawing a new pose</h2>
+  <p class="meta">A pose is an array of strings, <code>#</code> for a pixel. Pixels render tall — about 0.3 × 0.65 em — so a grid reads twice as wide as it looks in source. Keep the silhouette's five cues: a body about three times longer than tall, ears as wide-based triangles, a pointed snout, one-row legs, a rounded rump. Front and rear views read as a cat or a fox; side-on is Sploot. Check a draft against famous sprites before it ships — antennae plus square eyes read as someone else's alien.</p>
+  <p class="note">The block glyphs come from a unicode-range subset of JetBrains Mono (U+2500–25FF) that <code>artificer.css</code> loads with the family — see FONTS.md.</p>
+</main>
+<script>
+  // Winter preview: flips <html data-season> so the scarf layer shows; the
+  // button restores the reader's real season.
+  (function () {
+    var btn = document.querySelector('[data-winter-preview]');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var on = btn.getAttribute('aria-pressed') !== 'true';
+      var real = window.ArtificerSploot ? window.ArtificerSploot.season() : 'autumn';
+      document.documentElement.setAttribute('data-season', on ? 'winter' : real);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  })();
+</script>
+</body>
+</html>

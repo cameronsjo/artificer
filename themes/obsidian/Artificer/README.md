@@ -56,9 +56,7 @@ Without Style Settings everything still works — you just get the defaults.
 Bundled in `fonts/`:
 
 - **JetBrains Mono** (400 / 500 / 700) — chrome, code, identifiers, headings (default)
-- **iA Writer Quattro** (400 / 700 + italics) — editor body prose (default)
-- **iA Writer Quattro S** (400 / 700 + italics) — sister sans face, available via `--font-text` override
-- **iA Writer Quattro V** (400 + italic) — variable face, available via `--font-text` override
+- **Bricolage Grotesque** (variable, 200–800 + optical size) — editor body prose (default); the system's `--font-body` face (ADR 0046). No italic is drawn, so italics are synthesized
 
 To use system mono / serif instead, override `--font-monospace` and `--font-text` in Style Settings or in Obsidian's **Appearance → Customize appearance** panel.
 
@@ -92,7 +90,7 @@ Click the theme toggle (sun/moon) and Artificer flips to a paper-cream light mod
 
 `theme.css` is structured top-to-bottom:
 
-1. **Font @font-face** — bundled JetBrains Mono + iA Writer Quattro.
+1. **Font @font-face** — bundled JetBrains Mono + Bricolage Grotesque.
 2. **`:root` source tokens** — `--art-bg`, `--art-accent`, `--art-attention`, etc. Change these and everything downstream follows.
 3. **`.theme-light` overrides** — cream-mode source tokens.
 4. **Obsidian variable mapping** — `--background-primary: var(--art-bg)`, etc.
@@ -110,7 +108,7 @@ Out-of-the-box styled:
 - yaae (parts-of-speech reading lens — `.yaae-pos-*` painted in-palette)
 - Kanban
 - Excalidraw
-- Dataview — tables default to mono; Style Settings → Typography → "Dataview tables in the body face" flips the vault to Quattro, and a note's `cssclasses: art-dv-prose` / `cssclasses: art-dv-mono` overrides the toggle for that note
+- Dataview — tables default to mono; Style Settings → Typography → "Dataview tables in the body face" flips the vault to the body face, and a note's `cssclasses: art-dv-prose` / `cssclasses: art-dv-mono` overrides the toggle for that note
 - Tasks (via standard checkbox styles)
 - Calendar (via Obsidian's native variables)
 - Iconize / lucide icons
@@ -145,4 +143,4 @@ Apache-2.0 — see [LICENSE](../../../LICENSE).
 
 ## Credits
 
-Built by Cameron. Part of the Artificer personal design system. JetBrains Mono is © JetBrains s.r.o. (OFL 1.1). iA Writer Quattro is © Information Architects Inc. (OFL 1.1). Both font licenses are in `fonts/`.
+Built by Cameron. Part of the Artificer personal design system. JetBrains Mono is © JetBrains s.r.o. (OFL 1.1). Bricolage Grotesque is © The Bricolage Grotesque Project Authors (OFL 1.1). Both font licenses are in `fonts/`.

@@ -2,11 +2,11 @@
    ARTIFICER · An Obsidian theme
    Cameron's personal design system, ported to Obsidian.
    AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
-   v0.27.0 · 2026
+   v0.28.0 · 2026
    ═══════════════════════════════════════════════════════════════════════════
 
    How this is structured:
-   1. @font-face blocks — JetBrains Mono + iA Writer Quattro, self-hosted.
+   1. @font-face blocks — JetBrains Mono + Bricolage Grotesque, self-hosted.
    2. Token blocks — :root, .theme-dark, .theme-light. Map every Artificer
       token to its Obsidian counterpart. The system rules (#1–10) are encoded
       as variables; bend them via Style Settings, not by editing this file.
@@ -18,7 +18,7 @@
    The non-negotiable rules from Artificer that this theme honors:
      · Dark is default
      · One primary CTA per screen (gold accent only on the focused action)
-     · Active panes dramatic; inactive drop to 55% opacity + desaturated
+     · Active panes dramatic; inactive drop to 55% opacity + desaturated (desktop)
      · Tabular numerals everywhere
      · WCAG 2.2 AA floor; AAA on body text
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -40,59 +40,12 @@
   src: url('fonts/jetbrains-mono-700.woff2') format('woff2');
   font-weight: 700; font-style: normal; font-display: swap;
 }
+/* Bricolage Grotesque — body prose (ADR 0046). One variable file covers
+   wght 200–800 + opsz. No italic is drawn; the browser synthesizes the slant. */
 @font-face {
-  font-family: 'iA Writer Quattro';
-  src: url('fonts/ia-writer-quattro-400.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro';
-  src: url('fonts/ia-writer-quattro-400-italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro';
-  src: url('fonts/ia-writer-quattro-700.woff2') format('woff2');
-  font-weight: 700; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro';
-  src: url('fonts/ia-writer-quattro-700-italic.woff2') format('woff2');
-  font-weight: 700; font-style: italic; font-display: swap;
-}
-
-/* iA Writer Quattro S — sister face, available via --font-text override */
-@font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('fonts/ia-writer-quattro-s-400.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('fonts/ia-writer-quattro-s-400-italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('fonts/ia-writer-quattro-s-700.woff2') format('woff2');
-  font-weight: 700; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro S';
-  src: url('fonts/ia-writer-quattro-s-700-italic.woff2') format('woff2');
-  font-weight: 700; font-style: italic; font-display: swap;
-}
-
-/* iA Writer Quattro V — variable face, 400 only */
-@font-face {
-  font-family: 'iA Writer Quattro V';
-  src: url('fonts/ia-writer-quattro-v-400.woff2') format('woff2');
-  font-weight: 400; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'iA Writer Quattro V';
-  src: url('fonts/ia-writer-quattro-v-400-italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
+  font-family: 'Bricolage Grotesque';
+  src: url('fonts/bricolage-grotesque-variable.woff2') format('woff2');
+  font-weight: 200 800; font-style: normal; font-display: swap;
 }
 
 
@@ -203,39 +156,46 @@
 
   /* Status bar */
 
-  /* Callout — Obsidian colors them via --callout-color (RGB triplet) */
+  /* Callout tier colors. Obsidian 1.15 reads --callout-color as a full color
+     (color-mix, color:), so these are tokens, not the old RGB triplets: a bare
+     triplet is invalid there and the callout fell back to a currentColor bar.
+     Tiers follow the system .callout (steel, accent, attention, urgent) plus
+     two deliberate theme tiers the system lacks: success and brand-purple.
+     Every tier rule is >= 3:1 on --art-bg-raised and pairwise distinct; the
+     map and ratios live in PALETTE.md § Callout tiers. Light moves the note
+     family to --art-steel-fill (see the light block). */
 
-  --callout-info:      159, 182, 196;     /* steel  */
-  --callout-todo:      159, 182, 196;     /* steel  */
-  --callout-summary:   159, 182, 196;
-  --callout-quote:     201, 181, 232;     /* purple */
-  --callout-tip:       183, 189, 115;     /* olive  */
-  --callout-success:   183, 189, 115;
-  --callout-question:  224, 181, 88;      /* gold   */
-  --callout-warning:   229, 175, 183;     /* rose   */
-  --callout-important: 229, 175, 183;
-  --callout-failure:   232, 131, 111;     /* vermillion */
-  --callout-error:     232, 131, 111;
-  --callout-bug:       232, 131, 111;
-  --callout-example:   201, 181, 232;
-  --callout-abstract:  159, 182, 196;
-  --callout-note:      224, 181, 88;
-  /* Standard-type aliases → primary colour. Obsidian gives each alias its own
-     per-type default; without these, an alias reads Obsidian's colour, not
-     Artificer's. (The base --callout-color fallback below catches unrecognised
-     / plugin types.) */
-  --callout-tldr:      159, 182, 196;   /* = abstract/summary (steel)     */
-  --callout-hint:      183, 189, 115;   /* = tip (olive)                  */
-  --callout-check:     183, 189, 115;   /* = success (olive)              */
-  --callout-done:      183, 189, 115;
-  --callout-help:      224, 181, 88;    /* = question (gold)              */
-  --callout-faq:       224, 181, 88;
-  --callout-caution:   229, 175, 183;   /* = warning (rose)               */
-  --callout-attention: 229, 175, 183;
-  --callout-fail:      232, 131, 111;   /* = failure (vermillion)         */
-  --callout-missing:   232, 131, 111;
-  --callout-danger:    232, 131, 111;   /* = error (vermillion)           */
-  --callout-cite:      201, 181, 232;   /* = quote (purple)               */
+  --callout-info:      var(--art-steel);
+  --callout-todo:      var(--art-steel);
+  --callout-summary:   var(--art-steel);
+  --callout-quote:     var(--art-brand-purple);
+  --callout-tip:       var(--art-success);
+  --callout-success:   var(--art-success);
+  --callout-question:  var(--art-accent);
+  --callout-warning:   var(--art-attention);
+  --callout-important: var(--art-attention);
+  --callout-failure:   var(--art-urgent);
+  --callout-error:     var(--art-urgent);
+  --callout-bug:       var(--art-urgent);
+  --callout-example:   var(--art-brand-purple);
+  --callout-abstract:  var(--art-steel);
+  --callout-note:      var(--art-accent);
+  /* Standard-type aliases. Obsidian 1.15 maps each alias onto its primary var
+     (tldr → --callout-summary), so these are inert there; they stay for plugins
+     that read the alias vars directly. (The base --callout-default below
+     catches unrecognised / plugin types.) */
+  --callout-tldr:      var(--art-steel);
+  --callout-hint:      var(--art-success);
+  --callout-check:     var(--art-success);
+  --callout-done:      var(--art-success);
+  --callout-help:      var(--art-accent);
+  --callout-faq:       var(--art-accent);
+  --callout-caution:   var(--art-attention);
+  --callout-attention: var(--art-attention);
+  --callout-fail:      var(--art-urgent);
+  --callout-missing:   var(--art-urgent);
+  --callout-danger:    var(--art-urgent);
+  --callout-cite:      var(--art-brand-purple);
 
   color-scheme: dark;
 }
@@ -342,34 +302,36 @@
 
   --modal-shadow: 0 4px 12px rgba(13, 27, 42, 0.18);
 
-  --callout-info:      29, 58, 74;
-  --callout-todo:      29, 58, 74;
-  --callout-summary:   29, 58, 74;
-  --callout-quote:     58, 24, 128;
-  --callout-tip:       58, 74, 20;
-  --callout-success:   58, 74, 20;
-  --callout-question:  122, 79, 8;
-  --callout-warning:   138, 72, 24;
-  --callout-important: 138, 72, 24;
-  --callout-failure:   122, 24, 16;
-  --callout-error:     122, 24, 16;
-  --callout-bug:       122, 24, 16;
-  --callout-example:   58, 24, 128;
-  --callout-abstract:  29, 58, 74;
-  --callout-note:      122, 79, 8;
-  /* Standard-type aliases → primary colour (see dark block for rationale). */
-  --callout-tldr:      29, 58, 74;      /* = abstract/summary (steel)     */
-  --callout-hint:      58, 74, 20;      /* = tip (olive)                  */
-  --callout-check:     58, 74, 20;      /* = success (olive)              */
-  --callout-done:      58, 74, 20;
-  --callout-help:      122, 79, 8;      /* = question (gold)              */
-  --callout-faq:       122, 79, 8;
-  --callout-caution:   138, 72, 24;     /* = warning (rose)               */
-  --callout-attention: 138, 72, 24;
-  --callout-fail:      122, 24, 16;     /* = failure (vermillion)         */
-  --callout-missing:   122, 24, 16;
-  --callout-danger:    122, 24, 16;     /* = error (vermillion)           */
-  --callout-cite:      58, 24, 128;     /* = quote (purple)               */
+  /* Light: note/question move to --art-steel-fill (4.47:1). --art-accent and
+     --art-attention are both brown on cream (OKLab ΔE 0.038), so warning and
+     note were not distinct. */
+  --callout-info:      var(--art-steel);
+  --callout-todo:      var(--art-steel);
+  --callout-summary:   var(--art-steel);
+  --callout-quote:     var(--art-brand-purple);
+  --callout-tip:       var(--art-success);
+  --callout-success:   var(--art-success);
+  --callout-question:  var(--art-steel-fill);
+  --callout-warning:   var(--art-attention);
+  --callout-important: var(--art-attention);
+  --callout-failure:   var(--art-urgent);
+  --callout-error:     var(--art-urgent);
+  --callout-bug:       var(--art-urgent);
+  --callout-example:   var(--art-brand-purple);
+  --callout-abstract:  var(--art-steel);
+  --callout-note:      var(--art-steel-fill);
+  --callout-tldr:      var(--art-steel);
+  --callout-hint:      var(--art-success);
+  --callout-check:     var(--art-success);
+  --callout-done:      var(--art-success);
+  --callout-help:      var(--art-steel-fill);
+  --callout-faq:       var(--art-steel-fill);
+  --callout-caution:   var(--art-attention);
+  --callout-attention: var(--art-attention);
+  --callout-fail:      var(--art-urgent);
+  --callout-missing:   var(--art-urgent);
+  --callout-danger:    var(--art-urgent);
+  --callout-cite:      var(--art-brand-purple);
 
   /* Translucent frame backing — when Obsidian's "Translucent window" is
      enabled, .titlebar and .app-container read this. Without a mapping,
@@ -535,12 +497,13 @@
 
   /* Callout — structural (color values stay per-face) */
   --callout-radius:        8px;
-  --callout-border-width:  0 0 0 2px;
-  --callout-border-opacity: 1;
-  --callout-padding:       16px 20px;
+  --callout-border-width:  1px;
+  --callout-border-opacity: 0;
+  --callout-padding:       16px 24px 16px 32px;   /* system: --s-md --s-lg, left clears the inset rule */
+  --art-callout-rule-inset: 16px;
   --callout-blend-mode:    normal;
   --callout-title-padding: 0;
-  --callout-title-color:   inherit;
+  --callout-title-color:   var(--art-fg);   /* tier color rides the rule + icon only */
   --callout-title-weight:  700;
   --callout-title-size:    var(--font-text-size);
   --callout-content-padding: 8px 0 0 0;
@@ -551,12 +514,13 @@
 /* ═══════════════════════════════════════════════════════════════════════
    GLOBAL FONT STACKS
    On tool surfaces (chrome/sidebar/tabs/status) → JetBrains Mono.
-   On document surfaces (the actual note body) → iA Writer Quattro.
+   On document surfaces (the actual note body) → Bricolage Grotesque, the
+   system's --font-body face (ADR 0046).
    The user can override via Style Settings.
    ═══════════════════════════════════════════════════════════════════════ */
 .theme-dark, .theme-light {
   --art-font-mono: 'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --art-font-sans: 'iA Writer Quattro', 'Iowan Old Style', 'Charter', system-ui, -apple-system, sans-serif;
+  --art-font-sans: 'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
 
   /* Obsidian's font tokens */
   --font-default:        var(--art-font-mono);
@@ -651,9 +615,11 @@
   transition: color 160ms cubic-bezier(0.2, 0.7, 0.3, 1),
               background 160ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-.workspace-ribbon .side-dock-ribbon-action:hover {
-  color: var(--art-fg);
-  background: var(--art-bg-raised);
+@media (hover: hover) {
+  .workspace-ribbon .side-dock-ribbon-action:hover {
+    color: var(--art-fg);
+    background: var(--art-bg-raised);
+  }
 }
 .workspace-ribbon .side-dock-ribbon-action.is-active {
   color: var(--art-accent);
@@ -681,10 +647,12 @@ body.artificer-translucent .workspace-split.mod-right-split {
   background: color-mix(in oklch, var(--art-accent) 12%, transparent);
   color: var(--art-fg);
 }
-.nav-file-title:hover,
-.nav-folder-title:hover {
-  background: color-mix(in oklch, var(--art-fg) 6%, transparent);
-  color: var(--art-fg);
+@media (hover: hover) {
+  .nav-file-title:hover,
+  .nav-folder-title:hover {
+    background: color-mix(in oklch, var(--art-fg) 6%, transparent);
+    color: var(--art-fg);
+  }
 }
 /* Folder caret + icon */
 .nav-folder-collapse-indicator { color: var(--art-fg-disabled); }
@@ -714,6 +682,140 @@ body.artificer-translucent .workspace-split.mod-right-split {
 .is-mobile .metadata-content {
   background: transparent;
   border-radius: 0;
+}
+
+/* Type scale + input height belong to Obsidian on mobile. The desktop block
+   pins --font-ui-* and --input-height on .theme-dark/.theme-light (0,1,0) —
+   the same specificity as Obsidian's own .is-mobile block, and loaded later,
+   so it won: the phone ignored the iOS text-size setting and inputs were
+   36px. Restating Obsidian's mobile values at 0,2,0 hands both back. The
+   multipliers are Obsidian's (app.css .is-mobile, measured on 1.15.0);
+   --font-preferred-size is --font-text-size × the iOS text scale.
+   Audit: docs/audits/2026-10-28-obsidian-mobile.md rows 1–2. */
+.is-mobile.theme-dark, .is-mobile.theme-light {
+  --font-ui-smaller: calc(var(--font-preferred-size) * 0.8);
+  --font-ui-small:   calc(var(--font-preferred-size) * 0.937);
+  --font-ui-medium:  var(--font-preferred-size);
+  --font-ui-large:   calc(var(--font-preferred-size) * 1.2);
+  --input-height:    var(--touch-size-m);
+}
+
+/* Touch floor (ADR 0033: 44px in nav). Palette/switcher rows, menus, and the
+   drawer's view list are the nav surfaces a finger hits on a phone; the
+   desktop sizes left them ~36px tall. Rows take the mobile type scale too. */
+.is-mobile .suggestion-item,
+.is-mobile .menu-item,
+.is-mobile .workspace-drawer .workspace-tab-header {
+  min-height: var(--touch-size-m);
+  font-size: var(--font-ui-medium);
+}
+/* Center the label in the taller row only where the row already holds child
+   boxes (.mod-complex suggesters, menus, the drawer list). A plain suggester
+   puts text nodes and highlight spans straight in the item; flex would turn
+   each run into its own item, eating the spaces at span edges. */
+.is-mobile .suggestion-item.mod-complex,
+.is-mobile .menu-item,
+.is-mobile .workspace-drawer .workspace-tab-header {
+  display: flex;
+  align-items: center;
+}
+
+/* The drawer reuses .workspace-tab-header, so the desktop tab treatment
+   (right border, 12px, gold underline) leaked into a vertical list where it
+   reads as broken chrome. Audit row 4. */
+.is-mobile .workspace-drawer .workspace-tab-header {
+  border-right: none;
+  font-size: var(--font-ui-medium);
+}
+.is-mobile .workspace-drawer .workspace-tab-header.is-active::after {
+  content: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MOBILE CHROME — navbar, toolbar, tab switcher, sheets
+   Obsidian paints its mobile chrome with translucent blur, soft radii and
+   drop shadows. The theme makes each a solid surface with the panel
+   hairline, as on desktop. Token-only; owner-approved scope 2026-10-30
+   (CLAUDE.md § Scope). Audit: docs/audits/2026-10-28-obsidian-mobile.md
+   rows 7, 8, 10, 11.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Navbar (phone only; tablets hide it). The floating nav keeps its pill
+   shape and position, which Obsidian ties to the home-indicator gesture
+   area; only the glass fill goes. The floating nav's blur and shadow come
+   from Obsidian's .is-mobile.is-floating-nav .mod-raised (0,3,0), which
+   reads --raised-blur and --raised-shadow, so those are emptied here on the
+   navbar alone. Row 10. */
+.is-phone .mobile-navbar {
+  --raised-blur: none;
+  --raised-shadow: none;
+  --raised-mask-display: none;  /* iOS glass rim (.mod-raised:after) */
+  background-color: var(--art-bg-raised);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.is-phone.is-floating-nav .mobile-navbar {
+  border: 1px solid var(--art-border);
+}
+.is-phone:not(.is-floating-nav) .mobile-navbar {
+  background-color: var(--art-bg);
+  border-top: 1px solid var(--art-border);
+}
+
+/* Sheets. The palette and switcher fill was 90% opaque over a blur, which
+   muddied the gold selected row (row 8): an opaque overlay surface fixes
+   both. On a phone the sheet is a full-width panel, so it loses the 30px
+   top corners, the side borders and the three-layer shadow (row 7). */
+.is-mobile .prompt,
+.is-mobile .suggestion-container {
+  background-color: var(--art-bg-overlay);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* A tablet sheet floats as on desktop, so it takes the desktop radius, not
+   Obsidian's 24px touch radius. */
+.is-tablet .prompt {
+  border-radius: var(--radius-l);
+}
+.is-phone .prompt,
+.is-phone .modal {
+  border-radius: 0;
+  border-width: 1px 0 0;
+  box-shadow: none;
+}
+/* Selected row: Obsidian's mobile pill radius plus an 18% gold tint read as a
+   grey-brown blob on the overlay. Mark it the way the system marks a selected
+   card: a recessed fill and a 1px accent ring, on the theme's small radius. */
+.is-mobile .suggestion-item {
+  border-radius: var(--radius-s);
+}
+.is-mobile .suggestion-item.is-selected {
+  background: var(--art-bg-raised);
+  box-shadow: inset 0 0 0 1px var(--art-accent);
+}
+/* Obsidian clears the fill on an unfocused combobox (0,4,0); clear the ring too. */
+.is-mobile .combobox:not(.has-input-focus) .suggestion-item.is-selected {
+  box-shadow: none;
+}
+
+/* Editing toolbar. Its pill containers read --touch-background, which
+   Obsidian 1.15.0 never defines, so they rendered transparent. Row 11. */
+.is-mobile .mobile-toolbar-options-list,
+.is-mobile .mobile-toolbar-floating-options {
+  background-color: var(--art-bg-raised);
+  box-shadow: inset 0 0 0 1px var(--art-border);
+}
+
+/* Tab switcher: flat preview cards, a hairline edge instead of a 5% white
+   ring and a 30px drop shadow; the active card keeps its accent ring.
+   The 2px active ring is Obsidian's own width, kept as-is.
+   Row 11. */
+.is-mobile.theme-dark, .is-mobile.theme-light {
+  --tab-switcher-preview-radius: var(--radius-m);
+  --tab-switcher-preview-shadow: 0 0 0 1px var(--art-border);
+  --tab-switcher-preview-shadow-active: 0 0 0 2px var(--art-accent);
+  --tab-switcher-preview-background-shadow: none;
 }
 
 
@@ -747,13 +849,20 @@ body.artificer-translucent .workspace-split.mod-right-split {
   --art-inactive-opacity:  0.55;
   --art-inactive-saturate: 0.6;
 }
-.workspace-leaf:not(.mod-active) .view-content {
+/* Desktop only. On mobile one pane fills the screen, so the cue has no job,
+   and the drawer views (Files, Search, Outline) are never .mod-active — they
+   sat permanently dimmed. Worse, tapping between the drawer and the note
+   flips .mod-active, which animates `filter` on the scroller's parent
+   mid-touch; WebKit rebuilds the compositing layer and drops or jerks the
+   scroll gesture. Tablets set .is-mobile too and are deliberately included:
+   their sidebars are the same drawers with the same touch path. */
+body:not(.is-mobile) .workspace-leaf:not(.mod-active) .view-content {
   opacity: var(--art-inactive-opacity);
   filter: saturate(var(--art-inactive-saturate));
   transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.3, 1),
               filter   160ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-.workspace-leaf.mod-active .view-content {
+body:not(.is-mobile) .workspace-leaf.mod-active .view-content {
   opacity: 1;
   filter: none;
 }
@@ -1029,7 +1138,9 @@ body.theme-light.art-h1-gold-whimsy .cm-s-obsidian .cm-header-1 {
   border-bottom: 1px solid var(--art-border);
   padding: 8px 16px; /* tuned */
 }
-.markdown-rendered tbody tr:hover { background: var(--art-bg-raised); }
+@media (hover: hover) {
+  .markdown-rendered tbody tr:hover { background: var(--art-bg-raised); }
+}
 
 /* Tabular nums in stat-like elements */
 .markdown-rendered .frontmatter,
@@ -1048,9 +1159,11 @@ body.theme-light.art-h1-gold-whimsy .cm-s-obsidian .cm-header-1 {
      carry the non-colour cue on a document surface). ADR 0004. */
   border-bottom: 1px solid color-mix(in oklch, var(--art-accent) 65%, transparent);
 }
-.markdown-rendered a.internal-link:hover {
-  color: var(--art-accent-bright);
-  border-bottom-color: var(--art-accent-bright);
+@media (hover: hover) {
+  .markdown-rendered a.internal-link:hover {
+    color: var(--art-accent-bright);
+    border-bottom-color: var(--art-accent-bright);
+  }
 }
 .markdown-rendered a.internal-link.is-unresolved {
   color: var(--art-attention);
@@ -1158,9 +1271,11 @@ button.mod-warning,
   color: var(--art-on-urgent);          /* ivory */
   border: 1px solid transparent;
 }
-button.mod-warning:hover,
-.modal button.mod-warning:hover {
-  background: var(--art-urgent);        /* brighter terracotta */
+@media (hover: hover) {
+  button.mod-warning:hover,
+  .modal button.mod-warning:hover {
+    background: var(--art-urgent);        /* brighter terracotta */
+  }
 }
 button.mod-warning:focus-visible,
 .modal button.mod-warning:focus-visible {
@@ -1211,6 +1326,14 @@ body {
   --setting-items-background: transparent;
   --setting-items-border-width: 0;
   --setting-items-radius: 0;
+}
+/* Mobile brings the cards back: Obsidian re-sets the fill and radius on
+   .is-mobile and the fill and divider on .is-mobile.theme-dark, which outrank
+   body. Restated at 0,2,0, loaded later, so phone and tablet match desktop. */
+.is-mobile.theme-dark, .is-mobile.theme-light {
+  --setting-items-background: transparent;
+  --setting-items-radius: 0;
+  --setting-items-divider-color: var(--background-modifier-border);
 }
 .modal.mod-settings {
   font-family: var(--font-interface, var(--art-font-mono));
@@ -1272,7 +1395,9 @@ body {
   border: 2px solid transparent;
   background-clip: padding-box;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--art-fg-disabled); background-clip: padding-box; border: 2px solid transparent; }
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover { background: var(--art-fg-disabled); background-clip: padding-box; border: 2px solid transparent; }
+}
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1444,12 +1569,12 @@ body.theme-light {
 /* 1 · DOCUMENT SURFACE — grain rides the SIZER (content-height, scrolls with
    the text) not the scroller (which reads as dirt on glass). class-select:
    paper-faint / paper-whisper / fiber. */
-body.art-tex-paper .markdown-preview-sizer,
-body.art-tex-paper .cm-sizer,
-body.art-tex-paper-whisper .markdown-preview-sizer,
-body.art-tex-paper-whisper .cm-sizer,
-body.art-tex-fiber .markdown-preview-sizer,
-body.art-tex-fiber .cm-sizer {
+body:not(.is-mobile).art-tex-paper .markdown-preview-sizer,
+body:not(.is-mobile).art-tex-paper .cm-sizer,
+body:not(.is-mobile).art-tex-paper-whisper .markdown-preview-sizer,
+body:not(.is-mobile).art-tex-paper-whisper .cm-sizer,
+body:not(.is-mobile).art-tex-fiber .markdown-preview-sizer,
+body:not(.is-mobile).art-tex-fiber .cm-sizer {
   position: relative; isolation: isolate;
   /* Floor the sizer at the pane height so grain covers the whole reading
      pane on short notes — the sizer is content-height by default, which left
@@ -1463,10 +1588,10 @@ body.art-tex-fiber .cm-sizer {
    Bleed the pseudo 50vw past each side so grain reaches the pane edges while
    still living in the scrolling layer; the scroller clips the overshoot
    (verified live: no scrollbar, no user panning, both views). */
-body.art-tex-paper .markdown-preview-sizer::before,
-body.art-tex-paper .cm-sizer::before,
-body.art-tex-paper-whisper .markdown-preview-sizer::before,
-body.art-tex-paper-whisper .cm-sizer::before {
+body:not(.is-mobile).art-tex-paper .markdown-preview-sizer::before,
+body:not(.is-mobile).art-tex-paper .cm-sizer::before,
+body:not(.is-mobile).art-tex-paper-whisper .markdown-preview-sizer::before,
+body:not(.is-mobile).art-tex-paper-whisper .cm-sizer::before {
   /* Top bleed covers the scroller's padding strip above the sizer
      (--file-margins, 32px; 64px leaves headroom — overflow clips the rest).
      Bottom bleed is EXACTLY the padding (32px): that band already sits inside
@@ -1476,10 +1601,10 @@ body.art-tex-paper-whisper .cm-sizer::before {
   background-image: var(--tex-speckle); background-size: 150px 150px;
   opacity: var(--tex-paper-grain);
 }
-body.art-tex-paper-whisper { --tex-paper-grain: 0.45; }
+body:not(.is-mobile).art-tex-paper-whisper { --tex-paper-grain: 0.45; }
 
-body.art-tex-fiber .markdown-preview-sizer::before,
-body.art-tex-fiber .cm-sizer::before {
+body:not(.is-mobile).art-tex-fiber .markdown-preview-sizer::before,
+body:not(.is-mobile).art-tex-fiber .cm-sizer::before {
   content: ""; position: absolute; inset: -64px -50vw -32px; z-index: -1; pointer-events: none;
   background-image: var(--tex-noise-fiber); background-size: 160px 160px;
   mix-blend-mode: overlay; opacity: 0.22;
@@ -1490,17 +1615,17 @@ body.art-tex-fiber .cm-sizer::before {
    texture'd editor pane thereby gives up horizontal panning of non-wrapped
    long lines — texture is an opt-in document-surface layer, so prose wrap is
    the expected mode; code blocks keep their own internal scrollers. */
-body.art-tex-paper .markdown-preview-view,
-body.art-tex-paper .cm-scroller,
-body.art-tex-paper-whisper .markdown-preview-view,
-body.art-tex-paper-whisper .cm-scroller,
-body.art-tex-fiber .markdown-preview-view,
-body.art-tex-fiber .cm-scroller {
+body:not(.is-mobile).art-tex-paper .markdown-preview-view,
+body:not(.is-mobile).art-tex-paper .cm-scroller,
+body:not(.is-mobile).art-tex-paper-whisper .markdown-preview-view,
+body:not(.is-mobile).art-tex-paper-whisper .cm-scroller,
+body:not(.is-mobile).art-tex-fiber .markdown-preview-view,
+body:not(.is-mobile).art-tex-fiber .cm-scroller {
   overflow-x: hidden;
   overflow-x: clip;
 }
-body.theme-light.art-tex-fiber .markdown-preview-sizer::before,
-body.theme-light.art-tex-fiber .cm-sizer::before { mix-blend-mode: soft-light; opacity: 0.38; }
+body:not(.is-mobile).theme-light.art-tex-fiber .markdown-preview-sizer::before,
+body:not(.is-mobile).theme-light.art-tex-fiber .cm-sizer::before { mix-blend-mode: soft-light; opacity: 0.38; }
 
 /* 1b · PANE CHROME — its own switch (body.art-tex-chrome, Style Settings
    "Chrome grain"), DECOUPLED from the document surface: texture shifts
@@ -1517,20 +1642,20 @@ body.theme-light.art-tex-fiber .cm-sizer::before { mix-blend-mode: soft-light; o
    can never reach the gutter; the thumb stays legible through the veil.
    The status bar keeps its own `position` (it may be fixed) — isolation
    alone is enough because a positioned element anchors its ::before. */
-body.art-tex-chrome .view-header { position: relative; isolation: isolate; }
-body.art-tex-chrome .status-bar { isolation: isolate; }
-body.art-tex-paper .view-content,
-body.art-tex-paper-whisper .view-content,
-body.art-tex-fiber .view-content { position: relative; }
+body:not(.is-mobile).art-tex-chrome .view-header { position: relative; isolation: isolate; }
+body:not(.is-mobile).art-tex-chrome .status-bar { isolation: isolate; }
+body:not(.is-mobile).art-tex-paper .view-content,
+body:not(.is-mobile).art-tex-paper-whisper .view-content,
+body:not(.is-mobile).art-tex-fiber .view-content { position: relative; }
 
-body.art-tex-chrome .view-header::before,
-body.art-tex-chrome .status-bar::before {
+body:not(.is-mobile).art-tex-chrome .view-header::before,
+body:not(.is-mobile).art-tex-chrome .status-bar::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background-image: var(--tex-speckle); background-size: 150px 150px;
   opacity: var(--tex-paper-grain);
 }
-body.art-tex-paper .view-content::after,
-body.art-tex-paper-whisper .view-content::after {
+body:not(.is-mobile).art-tex-paper .view-content::after,
+body:not(.is-mobile).art-tex-paper-whisper .view-content::after {
   content: ""; position: absolute; top: 0; bottom: 0; right: 0;
   width: var(--scrollbar-width, 12px); z-index: 1; pointer-events: none;
   background-image: var(--tex-speckle); background-size: 150px 150px;
@@ -1538,13 +1663,13 @@ body.art-tex-paper-whisper .view-content::after {
 }
 /* The gutter strip continues the DOCUMENT field, so it keys to the surface
    classes (fiber keeps its tile); everything else in 1b/1c is chrome. */
-body.art-tex-fiber .view-content::after {
+body:not(.is-mobile).art-tex-fiber .view-content::after {
   content: ""; position: absolute; top: 0; bottom: 0; right: 0;
   width: var(--scrollbar-width, 12px); z-index: 1; pointer-events: none;
   background-image: var(--tex-noise-fiber); background-size: 160px 160px;
   mix-blend-mode: overlay; opacity: 0.22;
 }
-body.theme-light.art-tex-fiber .view-content::after {
+body:not(.is-mobile).theme-light.art-tex-fiber .view-content::after {
   mix-blend-mode: soft-light; opacity: 0.38;
 }
 
@@ -1557,16 +1682,16 @@ body.theme-light.art-tex-fiber .view-content::after {
    re-anchors (displaces) it and breaks the drag region. Rail and filler
    instead layer the tile into background-image, dimmed by a gradient of
    the rail's own token derived from the same grain knob. */
-body.art-tex-chrome .workspace-tab-header-container {
+body:not(.is-mobile).art-tex-chrome .workspace-tab-header-container {
   position: relative; isolation: isolate;
 }
-body.art-tex-chrome .workspace-tab-header-container::before {
+body:not(.is-mobile).art-tex-chrome .workspace-tab-header-container::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background-image: var(--tex-speckle); background-size: 150px 150px;
   opacity: var(--tex-paper-grain);
 }
-body.art-tex-chrome .workspace-ribbon,
-body.art-tex-chrome .workspace-ribbon.mod-left::before {
+body:not(.is-mobile).art-tex-chrome .workspace-ribbon,
+body:not(.is-mobile).art-tex-chrome .workspace-ribbon.mod-left::before {
   background-image:
     linear-gradient(
       color-mix(in oklab, var(--art-bg) calc(100% - var(--tex-paper-grain) * 100%), transparent),
@@ -1575,10 +1700,10 @@ body.art-tex-chrome .workspace-ribbon.mod-left::before {
   background-size: auto, 150px 150px;
 }
 /* 2 · DOT LATTICE — engineered tool-surface texture on the sidebars. */
-body.art-tex-dots .workspace-split.mod-left-split,
-body.art-tex-dots .workspace-split.mod-right-split { position: relative; isolation: isolate; }
-body.art-tex-dots .workspace-split.mod-left-split::after,
-body.art-tex-dots .workspace-split.mod-right-split::after {
+body:not(.is-mobile).art-tex-dots .workspace-split.mod-left-split,
+body:not(.is-mobile).art-tex-dots .workspace-split.mod-right-split { position: relative; isolation: isolate; }
+body:not(.is-mobile).art-tex-dots .workspace-split.mod-left-split::after,
+body:not(.is-mobile).art-tex-dots .workspace-split.mod-right-split::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background-image: radial-gradient(circle at center,
     color-mix(in oklab, var(--art-fg) 52%, transparent) 0.5px, transparent 1.1px);
@@ -1588,25 +1713,25 @@ body.art-tex-dots .workspace-split.mod-right-split::after {
 
 /* 3 · DECO LINE — a faint apothecary hatch behind callout bodies, drawn from
    token ink only (no raw colour). */
-body.art-tex-callout-line .callout { position: relative; isolation: isolate; }
-body.art-tex-callout-line .callout::after {
+body:not(.is-mobile).art-tex-callout-line .callout { position: relative; isolation: isolate; }
+body:not(.is-mobile).art-tex-callout-line .callout::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
   background-image: repeating-linear-gradient(45deg,
     transparent 0 7px,
     color-mix(in oklab, var(--art-fg) 6%, transparent) 7px 8px);
 }
-body.theme-light.art-tex-callout-line .callout::after { opacity: 0.7; }
+body:not(.is-mobile).theme-light.art-tex-callout-line .callout::after { opacity: 0.7; }
 
 /* 4 · RAISED — the one sanctioned elevation beyond the functional shadow: a
    soft outer halo. Face stays flat. On callouts and embeds. */
-body.art-tex-raised .callout,
-body.art-tex-raised .markdown-embed,
-body.art-tex-raised .internal-embed.media-embed {
+body:not(.is-mobile).art-tex-raised .callout,
+body:not(.is-mobile).art-tex-raised .markdown-embed,
+body:not(.is-mobile).art-tex-raised .internal-embed.media-embed {
   box-shadow: 4px 6px 14px 1px rgba(0,0,0,.20), 9px 12px 30px 2px rgba(0,0,0,.14);
 }
-body.theme-light.art-tex-raised .callout,
-body.theme-light.art-tex-raised .markdown-embed,
-body.theme-light.art-tex-raised .internal-embed.media-embed {
+body:not(.is-mobile).theme-light.art-tex-raised .callout,
+body:not(.is-mobile).theme-light.art-tex-raised .markdown-embed,
+body:not(.is-mobile).theme-light.art-tex-raised .internal-embed.media-embed {
   box-shadow: 4px 6px 14px 1px rgba(32,32,62,.13), 9px 12px 30px 2px rgba(32,32,62,.09);
 }
 
@@ -1772,15 +1897,24 @@ body.art-whimsy-gold     { --whimsy-home-gradient: var(--whimsy-gradient-gold); 
   padding: 6px 10px;
   gap: 10px;
 }
-.menu-item:hover, .menu-item.is-focused {
+/* Keyboard focus keeps its tint on every device; the hover arm is guarded so a
+   tap on a touch screen does not leave it stuck on. */
+.menu-item.is-focused {
   background: color-mix(in oklch, var(--text-accent) 14%, transparent);
+}
+@media (hover: hover) {
+  .menu-item:hover {
+    background: color-mix(in oklch, var(--text-accent) 14%, transparent);
+  }
 }
 .menu-item-icon { color: var(--text-muted); }
 .menu-item.is-warning, .menu-item[data-section="danger"] {
   color: var(--text-error);
 }
-.menu-item.is-warning:hover {
-  background: color-mix(in oklch, var(--text-error) 14%, transparent);
+@media (hover: hover) {
+  .menu-item.is-warning:hover {
+    background: color-mix(in oklch, var(--text-error) 14%, transparent);
+  }
 }
 .menu-separator {
   background: var(--background-modifier-border);
@@ -1951,7 +2085,9 @@ body { --font-mermaid: var(--font-monospace); }
   text-decoration: none;
   padding: 0 2px;
 }
-.markdown-rendered .footnote-link:hover { color: var(--text-accent-hover); }
+@media (hover: hover) {
+  .markdown-rendered .footnote-link:hover { color: var(--text-accent-hover); }
+}
 .markdown-rendered .footnotes {
   margin-top: 32px; /* tuned */
   padding-top: 16px; /* tuned */
@@ -2032,9 +2168,11 @@ body { --font-mermaid: var(--font-monospace); }
   margin-bottom: 6px;
   transition: border-color 160ms ease, transform 160ms ease;
 }
-.kanban-plugin__item:hover {
-  border-color: var(--text-accent);
-  transform: translateY(-1px);
+@media (hover: hover) {
+  .kanban-plugin__item:hover {
+    border-color: var(--text-accent);
+    transform: translateY(-1px);
+  }
 }
 .kanban-plugin__item-tags .tag {
   font-size: 10px;
@@ -2062,9 +2200,11 @@ body { --font-mermaid: var(--font-monospace); }
   color: var(--text-muted);
   border-radius: var(--radius-s);
 }
-.excalidraw .ToolIcon__icon:hover {
-  background: var(--background-secondary);
-  color: var(--text-normal);
+@media (hover: hover) {
+  .excalidraw .ToolIcon__icon:hover {
+    background: var(--background-secondary);
+    color: var(--text-normal);
+  }
 }
 .excalidraw .ToolIcon--selected .ToolIcon__icon,
 .excalidraw .ToolIcon__keybinding {
@@ -2164,9 +2304,11 @@ body.theme-tags-underline .tag {
   text-underline-offset: 2px;
   color: var(--art-accent) !important;
 }
-body.theme-tags-underline a.tag:hover {
-  color: var(--art-accent-bright) !important;
-  text-decoration-color: var(--art-accent-bright);
+@media (hover: hover) {
+  body.theme-tags-underline a.tag:hover {
+    color: var(--art-accent-bright) !important;
+    text-decoration-color: var(--art-accent-bright);
+  }
 }
 
 /* Compact frontmatter */
@@ -2185,7 +2327,9 @@ body.art-frontmatter-compact .metadata-property-key {
 
 /* Soften callout backgrounds — denser padding scale */
 body.callout-blend-mode .callout {
-  padding: 8px 12px; /* tuned */
+  --art-callout-rule-inset: 8px;
+  /* left padding clears the inset rule */
+  padding: 8px 12px 8px 24px; /* tuned */
   margin: 8px 0; /* tuned */
 }
 body.callout-blend-mode .callout-title {
@@ -2224,17 +2368,32 @@ body.code-line-numbers .markdown-rendered pre > code .line::before {
   border-radius: var(--tag-radius) !important;
 }
 
-/* Honor --callout-radius and --callout-border-opacity at the callout root */
+/* Callout — the system .callout (#461, v0.28): a raised card with a 1px
+   neutral frame and an INSET tier rule with rounded ends. Replaces Obsidian's
+   left border, which bends into the corner radius at both ends. The rule is
+   ::before (::after belongs to the deco-line texture). */
 .callout {
   /* Catch-all colour fallback: any callout type Obsidian doesn't recognise (a
      plugin's custom type, or an alias we haven't mapped) otherwise reads
      Obsidian's default BLUE. Steel keeps it in-palette. Known types override
-     this via their higher-specificity [data-callout="…"] rule; the theme loads
-     after Obsidian's app.css, so this wins the base default. (v0.19.0) */
-  --callout-color: 159, 182, 196;
-  --callout-border-opacity: 0.18;
+     this via their higher-specificity [data-callout="…"] rule. (v0.19.0) */
+  --callout-default: var(--art-steel);
+  position: relative;
+  background-color: var(--art-bg-raised);
+  /* Style Settings "Callout border tint" mixes the tier into the neutral frame;
+     the default 0 is the system's plain --art-border. */
+  border-color: color-mix(in oklch, var(--callout-color) calc(var(--callout-border-opacity) * 100%), var(--art-border));
   border-radius: var(--callout-radius) !important;
 }
+.callout::before {
+  content: ""; position: absolute; pointer-events: none;
+  left: var(--art-callout-rule-inset); top: var(--art-callout-rule-inset); bottom: var(--art-callout-rule-inset);
+  width: 3px; border-radius: 2px; background: var(--callout-color);
+}
+/* Obsidian 1.15 has no [data-callout=note] rule, so note read the default.
+   Note takes the system default tier (accent; --art-steel-fill in light). */
+.callout[data-callout="note"] { --callout-color: var(--callout-note); }
+@media (forced-colors: active) { .callout::before { background: CanvasText; forced-color-adjust: none; } }
 
 /* ═══════════════════════════════════════════════════════════════════════
    STYLE SETTINGS — UI controls for the Style Settings community plugin.
@@ -2254,6 +2413,7 @@ settings:
     type: info-text
     title: About Artificer
     description: |
+      Version {{ARTIFICER_BUILD}}
       Artificer is a personal design system ported to Obsidian. Defaults are dark, gold, mono.
       Every variable below is a real CSS custom property — Style Settings writes them straight
       into :root. If you want to go further, edit theme.css directly; the source tokens at the
@@ -2269,9 +2429,9 @@ settings:
   -
     id: font-text
     title: Body (document) font
-    description: Used for note prose. iA Writer Quattro by default. Try 'Iowan Old Style', 'Charter', or 'Source Serif Pro' for a serif feel.
+    description: Used for note prose. Bricolage Grotesque by default. Try 'Iowan Old Style', 'Charter', or 'Source Serif Pro' for a serif feel.
     type: variable-text
-    default: "'iA Writer Quattro', 'Iowan Old Style', 'Charter', system-ui, sans-serif"
+    default: "'Bricolage Grotesque', 'Source Sans 3', system-ui, sans-serif"
     quotes: false
   -
     id: font-monospace
@@ -2341,7 +2501,7 @@ settings:
     id: art-dataview-prose
     title: Dataview tables in the body face
     description: |
-      Off = JetBrains Mono (the tool-surface default). On = dataview tables use the body face (iA Writer Quattro).
+      Off = JetBrains Mono (the tool-surface default). On = dataview tables use the body face (Bricolage Grotesque).
       Per note, add cssclasses art-dv-prose or art-dv-mono to the frontmatter to override this for that note.
     type: class-toggle
     default: false
@@ -2375,7 +2535,7 @@ settings:
   -
     id: art-inactive-opacity
     title: Inactive pane opacity
-    description: Artificer rule \#6 says inactive = 0.55. Lower for more drama, raise to 1 to disable.
+    description: Desktop only. Artificer rule \#6 says inactive = 0.55. Lower for more drama, raise to 1 to disable.
     type: variable-number-slider
     default: 0.55
     min: 0.3
@@ -2384,7 +2544,7 @@ settings:
   -
     id: art-inactive-saturate
     title: Inactive pane desaturation
-    description: 0 = fully grey, 1 = full color. Default 0.6 matches the source system.
+    description: Desktop only. 0 = fully grey, 1 = full color. Default 0.6 matches the source system.
     type: variable-number-slider
     default: 0.6
     min: 0
@@ -2527,9 +2687,9 @@ settings:
   -
     id: callout-border-opacity
     title: Callout border tint
-    description: 0 = no tinted border, 0.4 = strong (default 0.18).
+    description: 0 = neutral frame, 0.4 = strong tier tint (default 0).
     type: variable-number-slider
-    default: 0.18
+    default: 0
     min: 0
     max: 0.5
     step: 0.02

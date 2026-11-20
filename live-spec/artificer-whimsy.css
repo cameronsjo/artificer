@@ -15,7 +15,7 @@
        oklch at the palette's own lightness + chroma. The "normal RGB" look,
        kept in-family. Dial --whimsy-c up only when you mean it.
      • .whimsy--brand — cycles through Artificer's REAL semantic tokens
-       (gold → rose → brand-purple → steel → green → gold). It reads the live
+       (gold → rose → brand-purple-bright → steel → gold). It reads the live
        CSS vars, so it tracks light/dark for free and is unmistakably ours.
        More tonal variation than the spectrum by design — the brand colors
        aren't uniform lightness, so the brand cycle breathes.
@@ -32,15 +32,15 @@
 
 :root {
   /* The knobs. Override on a scope to retune locally. */
-  --whimsy-l:      0.80;    /* lightness of the spectrum (dark mode)   */
-  --whimsy-c:      0.115;   /* chroma — palette-muted. ~0.20 = vivid.  */
-  --whimsy-angle:  100deg;  /* gradient direction across the text      */
-  --whimsy-speed:  7s;      /* one full hue cycle. Calm, not frantic.  */
-  --whimsy-bob:    2.6s;    /* sine-wave bob period (wave variant)     */
-  --whimsy-rise:   0.16em;  /* sine-wave bob amplitude                 */
-  --whimsy-settle-speed: 150s; /* glacial rest cycle — ~2.5min, sub-perceptual */
-  --whimsy-dissolve-hold: 800ms;   /* graceful exit: fully-lit before receding */
-  --whimsy-dissolve-fade: 2000ms;  /* graceful exit: opacity fade-out duration  */
+  --whimsy-l:      0.80; /* @kind other */    /* lightness of the spectrum (dark mode)   */
+  --whimsy-c:      0.115; /* @kind other */   /* chroma — palette-muted. ~0.20 = vivid.  */
+  --whimsy-angle:  100deg; /* @kind other */  /* gradient direction across the text      */
+  --whimsy-speed:  7s; /* @kind other */      /* one full hue cycle. Calm, not frantic.  */
+  --whimsy-bob:    2.6s; /* @kind other */    /* sine-wave bob period (wave variant)     */
+  --whimsy-rise:   0.16em; /* @kind other */  /* sine-wave bob amplitude                 */
+  --whimsy-settle-speed: 150s; /* @kind other */ /* glacial rest cycle — ~2.5min, sub-perceptual */
+  --whimsy-dissolve-hold: 800ms; /* @kind other */   /* graceful exit: fully-lit before receding */
+  --whimsy-dissolve-fade: 2000ms; /* @kind other */  /* graceful exit: opacity fade-out duration  */
 
   /* Burnished spectrum — hue stops walk Artificer's own brand hues and loop
      (first == last so the flow is seamless). Built lazily from the knobs,
@@ -58,15 +58,17 @@
   );
 
   /* Brand palette — the system's real tokens in motion. Auto-tracks theme
-     because it references the live vars. First == last so the loop is seamless. */
+     because it references the live vars. First == last so the loop is seamless.
+     v0.28: the FOREGROUND purple (-bright) replaces the deep surface purple,
+     which sat near 2:1 on dark (1.67:1) and made the word go muddy mid-flow;
+     apothecary green (3.39:1) leaves the loop too: below the 4.5:1 text floor on dark. */
   --whimsy-gradient-brand: linear-gradient(
     var(--whimsy-angle),
-    var(--accent,       #dbbb6f),               /* gold        */
-    var(--attention,    #c4808a),               /* rose        */
-    var(--brand-purple, #5a3a9a),               /* purple      */
-    var(--steel,        #b8cad4),               /* steel       */
-    var(--success,      #4a8a5e),               /* apothecary  */
-    var(--accent,       #dbbb6f)                /* → gold      */
+    var(--accent,              #dbbb6f),        /* gold        */
+    var(--attention,           #c4808a),        /* rose        */
+    var(--brand-purple-bright, #b095e0),        /* purple      */
+    var(--steel,               #b8cad4),        /* steel       */
+    var(--accent,              #dbbb6f)         /* → gold      */
   );
 
   /* Night ground for .whimsy-sky (#501) — derived from tokens, no new hex.
@@ -77,27 +79,27 @@
      the band meets the page with no seam (owner ruling 2026-09-27, from the
      Gatehouse header: the first, brighter purple read too loud). --fg holds
      11.2:1 or better across the whole band. */
-  --whimsy-night-top:    color-mix(in oklab, var(--bg-inactive) 76%, var(--brand-purple-fill));
-  --whimsy-night-bottom: var(--bg);
-  --whimsy-sky-speed:    40s;    /* one sky cycle — slow drift, not a sweep */
-  --whimsy-sky-opacity:  0.1;    /* flowing field over the ground — a faint tint, never a fill */
+  --whimsy-night-top:    color-mix(in oklab, var(--bg-inactive) 76%, var(--brand-purple-fill)); /* @kind color */
+  --whimsy-night-bottom: var(--bg); /* @kind color */
+  --whimsy-sky-speed:    40s; /* @kind other */    /* one sky cycle — slow drift, not a sweep */
+  --whimsy-sky-opacity:  0.1; /* @kind other */    /* flowing field over the ground — a faint tint, never a fill */
 
   /* Sine-wave mask for the rainbow rule (one period = 64px). */
-  --whimsy-wave-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='22' viewBox='0 0 64 22'><path d='M0 11 Q 8 2 16 11 T 32 11 T 48 11 T 64 11' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>");
+  --whimsy-wave-mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='22' viewBox='0 0 64 22'><path d='M0 11 Q 8 2 16 11 T 32 11 T 48 11 T 64 11' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>"); /* @kind other */
 }
 
 /* Light mode (ivory paper) — the spectrum must darken to read on cream.
    Same hues, lower lightness, a touch more chroma so it stays present. */
 :root[data-theme="light"],
 :root:not([data-theme]) {
-  --whimsy-l: 0.80;
+  --whimsy-l: 0.80; /* @kind other */
 }
 :root[data-theme="light"] {
-  --whimsy-l: 0.52;
-  --whimsy-c: 0.135;
+  --whimsy-l: 0.52; /* @kind other */
+  --whimsy-c: 0.135; /* @kind other */
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme]) { --whimsy-l: 0.52; --whimsy-c: 0.135; }
+  :root:not([data-theme]) { --whimsy-l: 0.52; /* @kind other */ --whimsy-c: 0.135; /* @kind other */ }
 }
 
 /* Silver inverts on cream: warm graphite/ink so it reads on the paper bg,
@@ -175,6 +177,13 @@
    Works on .whimsy text, .whimsy--wave, and .whimsy-rule alike (they all read
    --whimsy-gradient). Brand mode ignores --whimsy-c/l — it uses the tokens. */
 .whimsy--brand { --whimsy-gradient: var(--whimsy-gradient-brand); }
+/* Signature — gold + purple only, the pair the tokens call the personal
+   signature. Narrower than brand: reads as Cameron's mark, not a rainbow.
+   For the wordmark and the footer; same display-only rules as all whimsy. */
+.whimsy--signature {
+  --whimsy-gradient: linear-gradient(var(--whimsy-angle),
+    var(--accent), var(--brand-purple-bright), var(--accent));
+}
 
 /* ─── Silver: a near-neutral metal sheen — the most restrained whimsy ──────
    Black/white/grey/silver on dark; warm graphite on cream (text must contrast
@@ -253,13 +262,13 @@
 
 /* Flow off — freeze the hue on a held slice. Gradient stays, motion stops. */
 .whimsy--no-flow.whimsy,
-.whimsy--no-flow.whimsy-rule { animation: none; background-position: 30% 50%; }
+.whimsy--no-flow.whimsy-rule { animation: none; background-position: 150% 50%; }
 .whimsy--no-flow.whimsy--wave > .whimsy-char {
   animation-name: whimsy-bob;            /* keep the bob, drop the flow */
   animation-duration: var(--whimsy-bob);
   animation-timing-function: var(--ease);
   animation-iteration-count: infinite;
-  background-position: 30% 50%;
+  background-position: 150% 50%;
 }
 /* Bob off — wave chars hold still; the hue keeps flowing. */
 .whimsy--no-bob.whimsy--wave > .whimsy-char {
@@ -286,7 +295,7 @@
 .whimsy--settled.whimsy-rule,
 .whimsy--settled .whimsy-char {
   animation: none !important;
-  background-position: 30% 50% !important;
+  background-position: 150% 50% !important;
 }
 .whimsy--settled .whimsy-char { transform: none !important; }
 
@@ -314,7 +323,7 @@
   .whimsy--glacial.whimsy-rule,
   .whimsy--glacial .whimsy-char {
     animation: none !important;
-    background-position: 30% 50%;   /* hold a pleasant slice of spectrum */
+    background-position: 150% 50%;   /* hold the gold-centred slice (amber → gold → green) */
   }
   .whimsy--wave > .whimsy-char { transform: none !important; }
 }
@@ -359,8 +368,8 @@
 }
 .whimsy-focus.whimsy--brand::after {
   background: conic-gradient(from var(--whimsy-spin),
-    var(--accent), var(--attention), var(--brand-purple),
-    var(--steel), var(--success), var(--accent));
+    var(--accent), var(--attention), var(--brand-purple-bright),
+    var(--steel), var(--accent));
 }
 .whimsy-focus:focus-visible::after,
 .whimsy-focus:hover::after {
@@ -384,7 +393,7 @@
 
 /* Tiling sine for rainbow underlines — one clean period per 40px; start/end at
    the same phase so repeat-x butts seamlessly. */
-:root { --whimsy-sine: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 Q 10 1.5 20 5 T 40 5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/></svg>"); }
+:root { --whimsy-sine: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 Q 10 1.5 20 5 T 40 5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/></svg>"); /* @kind other */ }
 
 /* .whimsy--gold — a metal palette, cousin of .whimsy--silver. Slow (16s) so it
    reads as near-static metal; add .whimsy--no-flow for a still gold fill. Metal
@@ -432,7 +441,7 @@
   to   { -webkit-mask-position: -40px center, center; mask-position: -40px center, center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .whimsy-underline::after { animation: none !important; background-position: 30% 50% !important; }
+  .whimsy-underline::after { animation: none !important; background-position: 150% 50% !important; }
 }
 
 /* ═══ Night sky — the backdrop form of whimsy (#501) ══════════════════════════

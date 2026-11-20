@@ -1,6 +1,6 @@
 {
   "$schemaVersion": "1",
-  "$version": "0.27.0",
+  "$version": "0.28.0",
   "$doc": "Primitive mint ledger (ADR 0037, #199). Provenance + adoption semantics for every shipped primitive. tokens.json owns token VALUES; scripts/css-token-set.baseline.json owns the token SET; this file owns grouping, vintage, recipes, and adoption signals. Gated by scripts/check-primitives.mjs (check:primitives). minted 'pending-backfill' marks an entry awaiting mechanical dating (all dated by #199 PR-3's backfill; the sentinel remains legal for future re-derivations); 'unreleased' marks a mint on a feature branch, swept to the release version by sync:primitives-vintage. The 'js' field names a VANILLA src/ behavior module (data- hook + window API); the 'react' field names the compiled React adapter component(s) for the primitive (@cameronsjo/artificer/react) — distinct fields because they are distinct consumption models.",
   "primitives": {
     "stack": {
@@ -842,6 +842,31 @@
       ],
       "recipe": "Brand wordmark"
     },
+    "sploot": {
+      "kind": "component",
+      "minted": "0.28.0",
+      "classes": [
+        "sploot",
+        "sploot-host",
+        "sploot__body",
+        "sploot__helmet",
+        "sploot__layer",
+        "sploot__scarf",
+        "sploot__scent",
+        "sploot__zzz"
+      ],
+      "tokens": [
+        "--sploot-pitch",
+        "--sploot-size"
+      ],
+      "js": {
+        "module": "artificer-sploot.js",
+        "api": "ArtificerSploot.hydrate() / observe() / markup() / toGlyphs()",
+        "hook": "data-sploot"
+      },
+      "recipe": "Brand critter / mascot / Sploot",
+      "demo": "live-spec/sploot.html"
+    },
     "theme-toggle": {
       "kind": "component",
       "minted": "0.7.0",
@@ -937,7 +962,11 @@
         "tex-grain",
         "tex-line",
         "tex-paper",
-        "tex-raised"
+        "tex-raised",
+        "tex-grid",
+        "tex-ruled",
+        "tex-perf",
+        "tex-deboss"
       ],
       "recipe": "Make it feel like paper / give it grain / material / texture / depth",
       "demo": "live-spec/texture.html"

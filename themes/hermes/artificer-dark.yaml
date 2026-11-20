@@ -21,7 +21,7 @@
   "typography": {
     "fontSans": "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace",
     "fontMono": "'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace",
-    "fontDisplay": "'iA Writer Quattro S', 'Iowan Old Style', 'Charter', 'Source Sans 3', system-ui, -apple-system, sans-serif",
+    "fontDisplay": "'Recursive', 'Source Sans 3', system-ui, -apple-system, sans-serif",
     "baseSize": "100%",
     "lineHeight": "1.6",
     "letterSpacing": "0"

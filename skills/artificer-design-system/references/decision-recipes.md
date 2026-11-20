@@ -40,19 +40,20 @@
 | Embedded diagram / media card | `../../../live-spec/diagrams.html#embed` — `.figure.figure--frame` + `.figure__bar` (`.eyebrow` + reset) + `.figure__body` |
 | Syntax-highlighted code block | `../../../live-spec/components-extended.html` — `.code-block` + the `.tok-*` roles |
 | Brand wordmark | `../../../live-spec/README.html` — `.wordmark` (renders `artificer.`) |
+| Brand critter / mascot / Sploot | `../../../live-spec/sploot.html` — `<span data-sploot="pose">` + `artificer-sploot.js`; poses stand/droopy/sleep/sniff/mini, `.sploot--sm`/`--lg`, `data-sploot-helmet`; one per view, never on load-bearing UI |
 | Theme toggle | empty `<button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">` — the module injects the glyph |
 | Tabular number | `.num` utility — sets `font-variant-numeric: tabular-nums`; drop on the cell, or the parent for a whole table |
 | Short hint paragraph under a figure or field | `.note` — sister of `.meta`, smaller (label-sm); inherits the body face, mono on tool surfaces / sans on document surfaces |
 | Eyebrow / overline label | `.eyebrow` (+ `.eyebrow--accent`) — uppercase label over a heading, block, or demo — `../../../live-spec/typography.html#doc-chrome` |
 | Doc-page subsection header | `<h3 class="subsection-title">` — mono 700 body-md; sibling under `.section-title` — `../../../live-spec/typography.html#doc-chrome` |
 | Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`); the title names the tier in text — `../../../live-spec/typography.html#doc-chrome` |
-| Doc-page section header | `<h2 class="section-title">` — mono, uppercase, `--fg-secondary`, border-bottom rule; doc/spec chrome |
+| Doc-page section header | `<h2 class="section-title">` — mono 500, mixed case, `--fg`, border-bottom rule; doc/spec chrome |
 | Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers |
 | Make it fun / playful / celebratory / rainbow | `../../../live-spec/whimsy.html` — the sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors |
 | Night sky behind a hero or header band | `../../../live-spec/whimsy.html` pattern 10 — `data-whimsy="sky"` / `.whimsy-sky` + `Whimsy.starfield()`; flowing brand field + seeded stars, dark only, rests with its wordmark on one timer; never behind data/status/errors/body copy |
-| Make it feel like paper / give it grain / material / texture / depth | `../../../live-spec/texture.html` — `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors |
+| Make it feel like paper / give it grain / material / texture / depth | `../../../live-spec/texture.html` — `.tex-grain` / `.tex-dots` / `.tex-line` / `.tex-grid` / `.tex-ruled` / `.tex-perf` / `.tex-deboss` / `.tex-paper` / `.tex-raised`; hueless + motionless, never on data/status/errors |
 | Footer / colophon / fine print / attribution | `../../../live-spec/layout.html` — `.colophon`: optional `.grid-auto` of `.colophon__label` sections, then the always-present `.colophon__spine` (three positional slots: identity · sign-off · links), then optional `.colophon__fine` (legal tier); prose auto-sans even inside `.surface-tool` — `.surface-document` flips any other prose island back |
-| Selected card / selected row / active choice | `../../../live-spec/components.html` — `.card--active` (`background: var(--bg)` + accent left border) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row; never `--accent-fill` as a large surface bg — its only rated text color is `--on-accent` |
+| Selected card / selected row / active choice | `../../../live-spec/components.html` — `.card--active` (`background: var(--bg)` + a full 1px accent ring — never a `border-left` on a rounded box) for a card, `.is-active` (`background: var(--bg-raised)`) for a list row; never `--accent-fill` as a large surface bg — its only rated text color is `--on-accent` |
 | Button | `../../../live-spec/components.html` — `.btn` + `--primary`/`--secondary`/`--ghost`/`--icon`; one primary per view |
 | Status pill | `.badge--{tier}` with a `.dot--{tier}` inside — dot AND text, never color alone |
 | Status indicator (bare, no count) | `.dot--{accent\|attention\|urgent\|success}` |

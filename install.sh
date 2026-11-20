@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs Artificer themes for VS Code, Ghostty, Claude Code, Helix, Neovim,
-# tmux, gitmux, glamour, gum, fzf, eza, bat, codex, Zed, WezTerm, and Obsidian.
+# tmux, gitmux, glamour, gum, fzf, eza, bat, codex, Zed, WezTerm, herdr-app,
+# and Obsidian.
 #
 # Default mode: copy. The installed theme is an independent file, so nothing
 # else that manages these paths (chezmoi deploys most of them) is fighting a
@@ -12,7 +13,8 @@
 # backup, no rewrite. A backup (<path>.bak.<timestamp>) is written only when
 # the installed file DIFFERS, i.e. only when there is a local tweak that would
 # otherwise be destroyed. So backups accumulate on real drift, never on a
-# no-op re-run.
+# no-op re-run. Vault targets back up to ~/.local/state/artificer/obsidian-baks/
+# instead, so Obsidian Sync never carries a backup theme to other devices.
 #
 # --verify prints the actual diff for a drifted target (capped), so a tweak is
 # visible as a change rather than merely reported as "differs". That is the
@@ -62,9 +64,26 @@ BAT_DIR="$HOME/.config/bat/themes"
 CODEX_DIR="$HOME/.codex/themes"
 ZED_DIR="$HOME/.config/zed/themes"
 WEZTERM_DIR="$HOME/.config/wezterm/colors"
+# herdr-app's home, resolved as the app does (src/mods.rs app_dir, 0.1.9):
+# $HERDR_APP_HOME, else $XDG_CONFIG_HOME/herdr-app, else ~/.config/herdr-app, on
+# every OS. A relative value is skipped, as the XDG spec says, so nothing lands
+# under whatever directory install.sh was run from.
+if [[ "${HERDR_APP_HOME:-}" == /* ]]; then
+  HERDR_APP_HOME_DIR="$HERDR_APP_HOME"
+elif [[ "${XDG_CONFIG_HOME:-}" == /* ]]; then
+  HERDR_APP_HOME_DIR="$XDG_CONFIG_HOME/herdr-app"
+else
+  HERDR_APP_HOME_DIR="$HOME/.config/herdr-app"
+fi
+HERDR_APP_DIR="$HERDR_APP_HOME_DIR/themes"
 TMUX_DIR="$HOME/.config/tmux"
 GITMUX_DIR="$HOME/.config/tmux"
 OBSIDIAN_VAULT="${ARTIFICER_OBSIDIAN_VAULT:-$HOME/Documents/Obsidian}"
+# Backups of a vault target live OUTSIDE the vault: a backup folder under
+# .obsidian/themes/ is a second "Artificer" theme that Obsidian Sync carries
+# to every device. They go to per-user state, not the repo: an install run
+# from a worktree would otherwise lose the backup when the worktree is removed.
+VAULT_BAK_DIR="${ARTIFICER_VAULT_BAK_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/artificer/obsidian-baks}"
 
 # Advisory activation probe for --verify: "label:file:pattern" triples. A
 # target lands on disk once install.sh runs, but most targets also need a
@@ -101,6 +120,10 @@ ACTIVATIONS=(
   # which a looser pattern would false-match on some checkouts.
   "tmux:$HOME/.tmux.conf:^[^#]*source-file.*tmux/artificer"
   "ghostty:$HOME/.config/ghostty/config:theme = artificer"
+  # The theme NAME, quoted, so a {light, dark} pair spread over several lines
+  # still matches on its own line. A theme picked in Settings is written to the
+  # shown layout, not settings.json, so that setup reads as inert here.
+  "herdr-app:$HERDR_APP_HOME_DIR/settings.json:\"artificer-(dark|light)\""
   # Anchored to the "theme" key specifically — a bare "artificer" substring
   # false-matches any unrelated settings.json value that happens to mention
   # the word (e.g. a permissions path under ~/Projects/artificer/).
@@ -125,6 +148,9 @@ USAGE
                           diff for anything that drifted, and reports
                           whether each target's activation line is present
                           (advisory — never fails the check)
+  ./install.sh --only obsidian [--verify]
+                          Install (or verify) the Obsidian theme alone;
+                          exits 2 if the vault is missing
   ./install.sh --help     Show this message
 
 Re-running is a no-op for anything already current — copy mode compares
@@ -149,6 +175,7 @@ TARGETS
   Zed          ~/.config/zed/themes/artificer.json   (one family, both modes)
   WezTerm      ~/.config/wezterm/colors/artificer-{dark,light}.toml
                + ~/.config/wezterm/artificer-window-frame.lua  (frame module, next to wezterm.lua)
+  herdr-app    ~/.config/herdr-app/themes/artificer-{dark,light}.json
   tmux         ~/.config/tmux/artificer-{dark,light}.conf
   gitmux       ~/.config/tmux/gitmux.yml
   Obsidian     <vault>/.obsidian/themes/Artificer/   (vault from
@@ -171,16 +198,41 @@ and enable Artificer in Obsidian → Settings → Appearance → Themes.
 EOF
 }
 
-case "${1:-}" in
-  # --copy is still accepted: it was the opt-in before copy became the default,
-  # so scripts and docs in the wild still pass it. It now names the default.
-  --copy) mode="copy" ;;
-  --symlink) mode="symlink" ;;
-  --verify) mode="verify" ;;
-  --help|-h) usage; exit 0 ;;
-  "") ;;
-  *) echo "Unknown flag: $1" >&2; usage >&2; exit 2 ;;
-esac
+# --only <target> installs or verifies one target alone. Only `obsidian` is
+# offered: the theme dogfood loop reinstalls after every fix, and a CSS fix
+# has no business rewriting the chezmoi-managed terminal and editor targets.
+ONLY_TARGETS="obsidian"
+only=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    # --copy is still accepted: it was the opt-in before copy became the default,
+    # so scripts and docs in the wild still pass it. It now names the default.
+    --copy) mode="copy" ;;
+    --symlink) mode="symlink" ;;
+    --verify) mode="verify" ;;
+    --only)
+      if [[ $# -lt 2 ]]; then
+        echo "install.sh: --only needs a target (valid: $ONLY_TARGETS)" >&2
+        exit 2
+      fi
+      only="$2"
+      shift
+      ;;
+    --help|-h) usage; exit 0 ;;
+    *) echo "Unknown flag: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+if [[ -n "$only" && " $ONLY_TARGETS " != *" $only "* ]]; then
+  echo "install.sh: unknown --only target '$only' (valid: $ONLY_TARGETS)" >&2
+  exit 2
+fi
+# Asking for the Obsidian target alone with no vault is an error, not a skip:
+# the caller wanted exactly the one thing that cannot happen.
+if [[ "$only" == "obsidian" && ! -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
+  echo "install.sh: no Obsidian vault at $OBSIDIAN_VAULT (set ARTIFICER_OBSIDIAN_VAULT)" >&2
+  exit 2
+fi
 
 REPO_REAL="$(cd "$REPO" && pwd -P)"
 
@@ -296,6 +348,34 @@ verify_target() {
   fi
 }
 
+verify_obsidian() {
+  echo "==> Obsidian"
+  if [[ -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
+    verify_target "obsidian" "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer" || ((++fails))
+  else
+    echo "  skip    no vault at $OBSIDIAN_VAULT"
+  fi
+  return 0
+}
+
+finish_verify() {
+  if ((fails > 0)); then
+    echo ""
+    echo "$fails target(s) stale or missing. Run ./install.sh to fix."
+    exit 1
+  fi
+  echo ""
+  echo "All targets current."
+  exit 0
+}
+
+if [[ "$mode" == "verify" && "$only" == "obsidian" ]]; then
+  echo "Verifying the installed Obsidian theme..."
+  fails=0
+  verify_obsidian
+  finish_verify
+fi
+
 if [[ "$mode" == "verify" ]]; then
   echo "Verifying installed themes..."
   fails=0
@@ -354,6 +434,10 @@ if [[ "$mode" == "verify" ]]; then
   verify_target "wezterm-light" "$THEMES/wezterm/artificer-light.toml" "$WEZTERM_DIR/artificer-light.toml" || ((++fails))
   verify_target "wezterm-frame" "$THEMES/wezterm/artificer-window-frame.lua" "$HOME/.config/wezterm/artificer-window-frame.lua" || ((++fails))
 
+  echo "==> herdr-app"
+  verify_target "herdr-app-dark" "$THEMES/herdr-app/artificer-dark.json" "$HERDR_APP_DIR/artificer-dark.json" || ((++fails))
+  verify_target "herdr-app-light" "$THEMES/herdr-app/artificer-light.json" "$HERDR_APP_DIR/artificer-light.json" || ((++fails))
+
   echo "==> tmux"
   verify_target "tmux-dark" "$THEMES/tmux/artificer-dark.conf" "$TMUX_DIR/artificer-dark.conf" || ((++fails))
   verify_target "tmux-light" "$THEMES/tmux/artificer-light.conf" "$TMUX_DIR/artificer-light.conf" || ((++fails))
@@ -361,12 +445,7 @@ if [[ "$mode" == "verify" ]]; then
   echo "==> gitmux"
   verify_target "gitmux" "$THEMES/gitmux/artificer.yml" "$GITMUX_DIR/gitmux.yml" || ((++fails))
 
-  echo "==> Obsidian"
-  if [[ -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
-    verify_target "obsidian" "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer" || ((++fails))
-  else
-    echo "  skip    no vault at $OBSIDIAN_VAULT"
-  fi
+  verify_obsidian
 
   echo "==> activation"
   for act_entry in "${ACTIVATIONS[@]}"; do
@@ -392,15 +471,7 @@ if [[ "$mode" == "verify" ]]; then
     fi
   done
 
-  if ((fails > 0)); then
-    echo ""
-    echo "$fails target(s) stale or missing. Run ./install.sh to fix."
-    exit 1
-  else
-    echo ""
-    echo "All targets current."
-  fi
-  exit 0
+  finish_verify
 fi
 
 place() {
@@ -433,8 +504,14 @@ place() {
       echo "  ok      $dst (already current)"
       return 0
     fi
-    local bak
-    bak="$dst.bak.$(date +%Y%m%d-%H%M%S)"
+    local bak stamp
+    stamp="$(date +%Y%m%d-%H%M%S)"
+    if [[ "$dst" == "$OBSIDIAN_VAULT/"* ]]; then
+      mkdir -p "$VAULT_BAK_DIR"
+      bak="$VAULT_BAK_DIR/$(basename "$dst").bak.$stamp"
+    else
+      bak="$dst.bak.$stamp"
+    fi
     echo "  backup  $dst -> $bak"
     if [[ "$mode" == "copy" && -d "$dst" && ! -L "$dst" ]]; then
       # Directory targets are updated IN PLACE below, so the backup is a copy
@@ -477,6 +554,24 @@ place() {
     echo "  copy    $dst"
   fi
 }
+
+install_obsidian() {
+  echo "==> Obsidian"
+  if [[ -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
+    mkdir -p "$OBSIDIAN_VAULT/.obsidian/themes"
+    place "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer"
+  else
+    echo "  skip    no Obsidian vault at $OBSIDIAN_VAULT"
+    echo "          set ARTIFICER_OBSIDIAN_VAULT to override, or skip Obsidian."
+  fi
+}
+
+if [[ "$only" == "obsidian" ]]; then
+  install_obsidian
+  echo ""
+  echo "Done. Reload Obsidian to pick up the change."
+  exit 0
+fi
 
 echo "==> VS Code"
 mkdir -p "$(dirname "$VSCODE_EXT")"
@@ -577,6 +672,31 @@ place "$THEMES/wezterm/artificer-light.toml" "$WEZTERM_DIR/artificer-light.toml"
 # The frame module sits next to wezterm.lua (Lua require resolves there), not in colors/.
 place "$THEMES/wezterm/artificer-window-frame.lua" "$HOME/.config/wezterm/artificer-window-frame.lua"
 
+echo "==> herdr-app"
+mkdir -p "$HERDR_APP_DIR"
+# herdr-app 0.1.9 re-reads a theme file only when its settings change, not when
+# the active theme's file does (src/window.rs apply_look), so a running app
+# keeps the old colors until restarted. Say so only when a file really changes.
+# A link this repo already owns changes on `npm run build:themes`, not here, so
+# a --symlink re-run cannot see the change; it gets a standing hint instead.
+herdr_app_changed=0
+herdr_app_linked=0
+for herdr_app_theme in artificer-dark.json artificer-light.json; do
+  herdr_app_src="$THEMES/herdr-app/$herdr_app_theme"
+  herdr_app_dst="$HERDR_APP_DIR/$herdr_app_theme"
+  if [[ -e "$herdr_app_dst" && ! -L "$herdr_app_dst" ]] && ! cmp -s "$herdr_app_src" "$herdr_app_dst"; then
+    herdr_app_changed=1
+  elif [[ "$mode" == "symlink" && -L "$herdr_app_dst" ]] && ! is_foreign_link "$herdr_app_dst" "$herdr_app_src"; then
+    herdr_app_linked=1
+  fi
+  place "$herdr_app_src" "$herdr_app_dst"
+done
+if [[ "$herdr_app_changed" == 1 ]]; then
+  echo "  note    a running herdr-app keeps the old theme until you quit and reopen it"
+elif [[ "$herdr_app_linked" == 1 ]]; then
+  echo "  note    linked themes change on rebuild; quit and reopen herdr-app to see a rebuild"
+fi
+
 echo "==> tmux"
 mkdir -p "$TMUX_DIR"
 place "$THEMES/tmux/artificer-dark.conf"  "$TMUX_DIR/artificer-dark.conf"
@@ -586,14 +706,7 @@ echo "==> gitmux"
 mkdir -p "$GITMUX_DIR"
 place "$THEMES/gitmux/artificer.yml" "$GITMUX_DIR/gitmux.yml"
 
-echo "==> Obsidian"
-if [[ -d "$OBSIDIAN_VAULT/.obsidian" ]]; then
-  mkdir -p "$OBSIDIAN_VAULT/.obsidian/themes"
-  place "$THEMES/obsidian/Artificer" "$OBSIDIAN_VAULT/.obsidian/themes/Artificer"
-else
-  echo "  skip    no Obsidian vault at $OBSIDIAN_VAULT"
-  echo "          set ARTIFICER_OBSIDIAN_VAULT to override, or skip Obsidian."
-fi
+install_obsidian
 
 cat <<'EOF'
 
@@ -626,6 +739,12 @@ Done. Activate:
   WezTerm     config.color_scheme = "Artificer Dark" in ~/.config/wezterm/wezterm.lua
               — select by that NAME, not the filename, or it silently fails to
               load; the fancy tab bar needs a window_frame block (themes/README.md)
+  herdr-app   "theme": {"light": "artificer-light", "dark": "artificer-dark"} in
+              settings.json in herdr-app's home (~/.config/herdr-app unless
+              HERDR_APP_HOME or XDG_CONFIG_HOME says otherwise). Picking a
+              theme in Settings writes it to the shown layout instead, which
+              then wins over settings.json. After an update, quit and reopen
+              the app: it does not redraw an edited theme file
   tmux        add 'source-file ~/.config/tmux/artificer-dark.conf' to ~/.tmux.conf
   gitmux      already referenced by gitmux.yml path convention
   Obsidian    Settings → Appearance → Themes → Artificer
