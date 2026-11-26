@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MIRROR, EXCLUDED, syncMirror } from './build-livespec.mjs';
+import { MIRROR, EXCLUDED, syncMirror, syncLandingPage, parseChangelogReleases, renderReleasesHtml } from './build-livespec.mjs';
 
 // Test Plan for scripts/build-livespec.mjs
 // Mirrors src/ -> live-spec/ for byte-identical assets; --check mode for CI (#78).
@@ -46,4 +46,27 @@ test('syncMirror(--check) finds zero drift in the committed tree', () => {
   // The locked set must be byte-identical at rest; this is the same invariant
   // CI enforces via `npm run check:livespec`.
   assert.deepEqual(syncMirror({ check: true }), []);
+});
+
+test('parseChangelogReleases parses versions after cutoff and skips workshop-only bullets', () => {
+  const md = [
+    '# Changelog',
+    '## v0.30.0 — New stuff & `code`',
+    '- **feat(css): added `.widget`.** Details.',
+    '- **docs: character study (workshop only).** Internal.',
+    '## v0.28.0 — Cutoff release',
+    '- **feat: old.**',
+  ].join('\n');
+  const parsed = parseChangelogReleases(md, { after: '0.28.0' });
+  assert.equal(parsed.length, 1);
+  assert.equal(parsed[0].version, '0.30.0');
+  assert.deepEqual(parsed[0].summaries, ['added `.widget`']);
+  const html = renderReleasesHtml(parsed);
+  assert.match(html, /v0\.30\.0/);
+  assert.match(html, /New stuff &amp; <code>code<\/code>/);
+  assert.doesNotMatch(html, /character study/);
+});
+
+test('syncLandingPage(--check) finds zero drift in the committed tree', () => {
+  assert.equal(syncLandingPage({ check: true }), false);
 });

@@ -425,8 +425,10 @@
       <div class="kpi-strip">
         <div class="stat">
           <div class="stat__label">Primitives</div>
+          <!-- auto:primitives-stat:start -->
           <div class="stat__value">91</div>
-          <div class="stat__delta">v0.29.0 ledger</div>
+          <div class="stat__delta">v0.29.1 ledger</div>
+          <!-- auto:primitives-stat:end -->
         </div>
         <div class="stat">
           <div class="stat__label">Theme targets</div>
@@ -447,15 +449,24 @@
     <h2 id="ad-timeline" class="ad-h2">How it grew</h2>
     <p class="ad-note">Anchored on versions, the way the system actually moved.</p>
     <ol class="ad-timeline">
+      <!-- auto:releases:start -->
+      <li class="ad-tl">
+        <div class="ad-tl__head">
+          <span class="ad-tl__ver">v0.29.1</span>
+          <span class="ad-tl__phase">Latest release</span>
+        </div>
+        <h3 class="ad-tl__title">Tailwind v4 cascade &amp; spacing hotfix, plus primary hover &amp; steel badge contrast</h3>
+        <p class="ad-tl__body">Tailwind v4 cascade layer ordering and <code>@theme</code> token collisions; primary button hover contrast and steel badge fill (#575, #496).</p>
+      </li>
       <li class="ad-tl">
         <div class="ad-tl__head">
           <span class="ad-tl__ver">v0.29.0</span>
-          <span class="ad-tl__date">Nov 26, 2026</span>
-          <span class="ad-tl__phase">Now · 7 months in</span>
+          <span class="ad-tl__phase">Release</span>
         </div>
-        <h3 class="ad-tl__title">Cascade layers, Tailwind v4, CLI tooling, and 91 primitives</h3>
-        <p class="ad-tl__body">Wrapped core rules in <code>@layer artificer</code>, shipped a canonical Tailwind v4 <code>@theme</code> export, added offline <code>artificer search</code>/<code>lookup</code>/<code>scan</code> CLI commands, closed the last Bootstrap-parity gaps (<code>.alert</code>, <code>.btn-group</code>, <code>.list-group</code>) with React <code>Tabs</code>/<code>Listbox</code>/<code>Menu</code>/<code>Tree</code> wrappers, and hit 586/586 Playwright tests green across Chromium and WebKit — with ten live apps running on it.</p>
+        <h3 class="ad-tl__title"><code>@layer artificer</code>, Tailwind v4 <code>@theme</code>, CLI <code>search</code>/<code>lookup</code>/<code>scan</code>, <code>.alert</code>/<code>.btn-group</code>/<code>.list-group</code>, React interactive wrappers, and modern-web fixes</h3>
+        <p class="ad-tl__body"><code>@layer artificer</code> cascade layer and Tailwind v4 <code>@theme</code> export (#112, #583); <code>.alert</code>, <code>.btn-group</code>, <code>.list-group</code>, and React interactive wrappers; <code>artificer search</code>, <code>artificer lookup</code>, <code>artificer scan</code>, and lint ignore fixes (#584, #585); <code>[hidden]</code> rule, contained <code>.app-shell</code>, Astro view-transition swaps, IME Enter guard, <code>replaceChildren</code>, and touch/overflow fixes (#581, #532, #530, #586, #529).</p>
       </li>
+      <!-- auto:releases:end -->
       <li class="ad-tl">
         <div class="ad-tl__head">
           <span class="ad-tl__ver">v0.28.0</span>
@@ -590,8 +601,7 @@
       <p>
         The tool launched on <b class="anchor">17 April 2026</b>; five days later the
         design work began inside it, and by <b class="anchor">26 April</b> — nine days
-        after launch — it was a repo. Seven months later it is at <b class="anchor">v0.29.0</b>:
-        91 primitives, 43 generated editor/terminal/browser themes, an Obsidian sister
+        after launch — it was a repo. Seven months later it is at <!-- auto:current-version:start --><b class="anchor">v0.29.1</b>: 91 primitives<!-- auto:current-version:end -->, 43 generated editor/terminal/browser themes, an Obsidian sister
         theme, a compiled React adapter, and ten live apps running on it. This page is
         built with it. It's tools all the way down.
       </p>
