@@ -3,7 +3,7 @@ name: Artificer
 description: Cameron's personal design system. AuDHD-optimized, Ghostty-rooted, dark-first with a paper-stock light mode and a Jazz Age Deco palette (burnished gold + royal purple). Use for tools, dashboards, agent UIs, terminals, settings panels — anything that must stay calm until something demands action. Do NOT use for marketing sites, kid-facing UI, or anywhere the goal is delight-via-stimulation.
 ---
 
-# Artificer · v0.28.0
+# Artificer · v0.29.0
 
 A neurodivergent-first design system for Cameron. Every token and rule here exists to reduce cognitive load for an AuDHD brain that **scans instead of reads** and holds **3–4 items** in working memory.
 
@@ -152,6 +152,9 @@ If you have **no file system** (chat-only artifact), inline the contents of `art
 | Eyebrow / overline label | `.eyebrow` (+ `.eyebrow--accent`) — uppercase label over a heading, block, or demo — `typography.html#doc-chrome` |
 | Doc-page subsection header | `<h3 class="subsection-title">` — mono 700 body-md; sibling under `.section-title` — `typography.html#doc-chrome` |
 | Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`) — an inset tier rule inside a bordered raised box (never a `border-left` on a rounded box); the title names the tier in text — `typography.html#doc-chrome` |
+| Inline static alert inside a card or form | `.alert` + `.alert__body`/`.alert__title`/`.alert__msg` (+ `--urgent`/`--attention`/`--info`/`--success`); React: `Alert` |
+| Joined/segmented button row | `.btn-group` wrapping `.btn` siblings; React: `ButtonGroup` |
+| Bordered vertical stack of rows | `.list-group` + `.list-group__item` (+ `--active`); React: `ListGroup`/`ListGroupItem` |
 | Doc-page section header | `<h2 class="section-title">` — mono 500, mixed case, `--fg`, border-bottom rule; doc/spec chrome (uppercase tracking is for small labels only) — `data-display.html` |
 | Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers — `data-display.html` |
 | Make it fun / playful / celebratory / rainbow | The sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors. Palettes: spectrum (default), `.whimsy--brand`, `.whimsy--signature` (gold + purple), `.whimsy--silver`, `.whimsy--gold`. Pick by the "Which one?" table — `whimsy.html` |

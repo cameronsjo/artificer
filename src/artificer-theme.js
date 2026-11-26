@@ -29,12 +29,18 @@
     return mode === 'auto' ? systemTheme() : mode;
   }
 
-  // Paint the mode everywhere: the html attribute, plus state narration on
-  // every toggle (data-theme-mode for styling hooks, aria-label/title for
-  // people, the legacy label span if present).
+  function syncColorSchemeMeta(mode, theme) {
+    var meta = document.querySelector && document.querySelector('meta[name="color-scheme"]');
+    if (meta) meta.setAttribute('content', mode === 'auto' ? 'light dark' : theme);
+  }
+
+  // Paint the mode everywhere: the html attribute, <meta name="color-scheme">,
+  // plus state narration on every toggle (data-theme-mode for styling hooks,
+  // aria-label/title for people, the legacy label span if present).
   function reflect(mode) {
     var theme = resolvedTheme(mode);
     document.documentElement.setAttribute('data-theme', theme);
+    syncColorSchemeMeta(mode, theme);
     var next = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
     var state = mode === 'auto' ? 'auto (' + theme + ')' : mode;
     document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
@@ -141,9 +147,14 @@
   // the same autoInit shape as artificer-icons.js. observe() calls bind()
   // internally, so static pages see no double-scan; SPA-mounted
   // [data-theme-toggle] buttons now bind without manual observe() arming.
+  var disconnectBodyObserver = null;
   function autoInit() {
+    if (disconnectBodyObserver) {
+      disconnectBodyObserver();
+      disconnectBodyObserver = null;
+    }
     if (typeof MutationObserver !== 'undefined') {
-      observe(document.body);
+      disconnectBodyObserver = observe(document.body);
     } else {
       bind();
     }
@@ -152,5 +163,21 @@
     document.addEventListener('DOMContentLoaded', autoInit);
   } else {
     autoInit();
+  }
+
+  // Astro View Transitions (#530): swaps replace <html> attributes and <body>.
+  // Carry data-theme + <meta name="color-scheme"> onto the incoming document
+  // before swap so there is no flash, then re-bind/re-observe after swap.
+  if (document.addEventListener) {
+    document.addEventListener('astro:before-swap', function (ev) {
+      var doc = ev && ev.newDocument;
+      if (!doc || !doc.documentElement) return;
+      var mode = storedMode();
+      var theme = resolvedTheme(mode);
+      doc.documentElement.setAttribute('data-theme', theme);
+      var meta = doc.querySelector && doc.querySelector('meta[name="color-scheme"]');
+      if (meta) meta.setAttribute('content', mode === 'auto' ? 'light dark' : theme);
+    });
+    document.addEventListener('astro:page-load', autoInit);
   }
 })();

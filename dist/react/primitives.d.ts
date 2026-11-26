@@ -40,10 +40,10 @@ export declare function GridAuto({ min, className, style, ...rest }: React.HTMLA
     min?: number;
 }): React.JSX.Element;
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
-export declare function Button({ variant, size, className, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+export declare const Button: React.ForwardRefExoticComponent<React.ButtonHTMLAttributes<HTMLButtonElement> & {
     variant?: ButtonVariant;
     size?: 'sm';
-}): React.JSX.Element;
+} & React.RefAttributes<HTMLButtonElement>>;
 interface FieldControlProps {
     id?: string;
     'aria-invalid'?: 'true';
@@ -57,9 +57,9 @@ export declare function Field({ label, hint, error, id, className, children, }: 
     className?: string;
     children: React.ReactElement<FieldControlProps>;
 }): React.JSX.Element;
-export declare const Input: (p: React.InputHTMLAttributes<HTMLInputElement>) => React.JSX.Element;
-export declare const Textarea: (p: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => React.JSX.Element;
-export declare const Select: (p: React.SelectHTMLAttributes<HTMLSelectElement>) => React.JSX.Element;
+export declare const Input: React.ForwardRefExoticComponent<React.InputHTMLAttributes<HTMLInputElement> & React.RefAttributes<HTMLInputElement>>;
+export declare const Textarea: React.ForwardRefExoticComponent<React.TextareaHTMLAttributes<HTMLTextAreaElement> & React.RefAttributes<HTMLTextAreaElement>>;
+export declare const Select: React.ForwardRefExoticComponent<React.SelectHTMLAttributes<HTMLSelectElement> & React.RefAttributes<HTMLSelectElement>>;
 type NotifTier = 'urgent' | 'attention' | 'info' | 'background';
 export declare function Notification({ tier, title, children, action, }: {
     tier?: NotifTier;
@@ -83,5 +83,20 @@ export declare function Icon({ name, ...rest }: {
 } & React.HTMLAttributes<HTMLElement>): React.JSX.Element;
 export declare function useIcons(ref?: React.RefObject<HTMLElement | null>): void;
 export declare function useWhimsy(ref?: React.RefObject<HTMLElement | null>): void;
+export type AlertTier = 'urgent' | 'attention' | 'info' | 'success';
+export declare function Alert({ tier, title, children, className, ...rest }: React.HTMLAttributes<HTMLDivElement> & {
+    tier?: AlertTier;
+    title: string;
+}): React.JSX.Element;
+export declare function ButtonGroup({ label, className, ...rest }: React.HTMLAttributes<HTMLDivElement> & {
+    label?: string;
+}): React.JSX.Element;
+export declare function ListGroup({ as: As, className, ...rest }: React.HTMLAttributes<HTMLElement> & {
+    as?: React.ElementType;
+}): React.JSX.Element;
+export declare function ListGroupItem({ active, as: As, className, ...rest }: React.HTMLAttributes<HTMLElement> & {
+    active?: boolean;
+    as?: React.ElementType;
+}): React.JSX.Element;
 export {};
 //# sourceMappingURL=primitives.d.ts.map

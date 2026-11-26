@@ -242,6 +242,9 @@ core scale or tool UI.
 | "Eyebrow / overline label" | `.eyebrow` (+ `.eyebrow--accent`) — interface face, `--t-label-xs-size`, uppercase, `.08em` tracking, `--fg-secondary`. A label over a heading, block, or demo; never body copy. |
 | "Doc-page subsection header" | `<h3 class="subsection-title">` — mono 700 at `--t-body-md-size`, `--fg`; the sibling under a `.section-title`. |
 | "Callout / standing note" | `.callout` + `.callout__title` (compose with `.eyebrow`) — raised note with an accent edge; `--steel` / `--attention` / `--urgent` recolor the edge. The title names the tier in text. Not a toast or banner: no action, no dismissal. |
+| "Inline static alert inside a card or form" | `.alert` + `.alert__body` / `.alert__title` / `.alert__msg` (+ `--urgent`/`--attention`/`--info`/`--success`) — static in-flow notice inside a card or form (`Alert` in React). |
+| "Joined/segmented button row" | `.btn-group` wrapping `.btn` siblings (`ButtonGroup` in React) — collapses interior radii and lifts focused buttons onto `--z-raised`. |
+| "Bordered vertical stack of rows" | `.list-group` + `.list-group__item` (+ `--active`) (`ListGroup`/`ListGroupItem` in React) — bordered stack of static or interactive rows. |
 | "Dashboard shell" | `.dash` + `.dash__topbar` (`.dash__title` + `.dash__actions`) — one frame, five recipes (§ Composition). |
 | "Chart / sparkline / gauge" | `.chart` scaffold, `.sparkline`/`.sparkbars` (in tables, no axes), `.gauge`; series via `--series-1..5` (§ Charts). |
 | "Architecture / flow diagram" | `.dia-node`/`.dia-edge` on inline SVG (§ Diagrams). |

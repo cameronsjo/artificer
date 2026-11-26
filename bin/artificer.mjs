@@ -128,15 +128,17 @@ export function walkRelFiles(root) {
   return out;
 }
 
-// Dirs never worth descending when expanding a consumer's lint glob.
-const LINT_SKIP_DIRS = new Set(['node_modules', '.git']);
+// Dirs never worth descending when expanding a consumer's lint/scan glob (#584).
+const LINT_SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '_site', 'out']);
 
 // Walk `root`, emitting paths POSIX-relative to `relBase`, skipping heavy/hidden
-// dirs and symlinks — so a consumer `lint "**/*.css"` never descends
-// node_modules. Missing/unreadable dirs are skipped, not fatal.
+// dirs, build outputs, vendored Artificer dirs (containing provenance.json),
+// and symlinks — so a consumer `lint "**/*.css"` never descends node_modules,
+// build output, or upstream vendored Artificer files (#584).
 function walkForLint(root, relBase) {
   const out = [];
   const rec = (dir) => {
+    if (dir !== root && (existsSync(join(dir, PROVENANCE)) || (dir.endsWith(`${sep}artificer`) && existsSync(join(dir, 'artificer.css'))))) return;
     let names;
     try {
       names = readdirSync(dir);
@@ -310,6 +312,9 @@ Usage:
 Commands:
   vendor    Copy the runtime + a provenance sidecar into your project
   lint      Check your CSS for raw values that have a token (Hard rule #1)
+  search    Search Artificer primitives and tokens offline
+  lookup    Inspect one primitive or token by exact name
+  scan      Scan a consumer repo for retired/legacy Artificer workarounds
 
 Run "artificer <command> --help" for a command's options.`;
 
@@ -625,8 +630,339 @@ export function lint({ argv = [], cwd = process.cwd(), packageRoot, out = consol
   return EXIT.LINT_VIOLATIONS;
 }
 
+// ── catalog helpers (search / lookup) ────────────────────────────────────────
+const kebabCase = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
+export function flattenTokens(tokens) {
+  const items = [];
+  if (!tokens || typeof tokens !== 'object') return items;
+
+  const pushColorGroup = (group, obj) => {
+    for (const [k, v] of Object.entries(obj ?? {})) {
+      if (k.startsWith('$') || !v || typeof v !== 'object') continue;
+      items.push({
+        name: kebabCase(k),
+        cssVar: `--${kebabCase(k)}`,
+        category: `color.${group}`,
+        dark: v.dark ?? null,
+        light: v.light ?? null,
+        value: v.value ?? null,
+        use: v.use ?? '',
+      });
+    }
+  };
+  for (const grp of ['surface', 'fg', 'semantic', 'brand', 'anchor', 'onColor']) {
+    pushColorGroup(grp, tokens.color?.[grp]);
+  }
+  for (const [k, v] of Object.entries(tokens.spacing ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `s-${k}`, cssVar: `--s-${k}`, category: 'spacing', value: String(v), use: 'Spacing scale' });
+  }
+  for (const [k, v] of Object.entries(tokens.radius ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `radius-${k}`, cssVar: `--radius-${k}`, category: 'radius', value: v?.value ?? String(v), use: v?.use ?? '' });
+  }
+  for (const [k, v] of Object.entries(tokens.breakpoint ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `bp-${k}`, cssVar: `--bp-${k}`, category: 'breakpoint', value: v?.value ?? String(v), use: v?.use ?? '' });
+  }
+  for (const [k, v] of Object.entries(tokens.typography?.fontFamily ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `font-${k}`, cssVar: `--font-${k}`, category: 'typography.fontFamily', value: v?.value ?? String(v), use: v?.use ?? '' });
+  }
+  for (const [k, v] of Object.entries(tokens.typography?.scale ?? {})) {
+    if (k.startsWith('$')) continue;
+    const stem = kebabCase(k);
+    items.push({ name: `t-${stem}-size`, cssVar: `--t-${stem}-size`, category: 'typography.scale', value: v?.size ?? '', use: `lh ${v?.lineHeight ?? ''}, weight ${v?.weight ?? ''}, family ${v?.family ?? ''}` });
+  }
+  for (const [k, v] of Object.entries(tokens.focus ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `focus-${kebabCase(k)}`, cssVar: `--focus-${kebabCase(k)}`, category: 'focus', value: v?.value ?? String(v), use: v?.use ?? '' });
+  }
+  for (const [k, v] of Object.entries(tokens.shadow ?? {})) {
+    if (k.startsWith('$')) continue;
+    items.push({ name: `shadow-${k}`, cssVar: `--shadow-${k}`, category: 'shadow', dark: v?.dark ?? null, light: v?.light ?? null, use: v?.use ?? '' });
+  }
+  return items;
+}
+
+function loadCatalog({ cwd, packageRoot }) {
+  const root = packageRoot ?? resolvePackageRoot(BIN_DIR);
+  const readJson = (rel) => {
+    const vendored = resolve(cwd, DEFAULT_DEST, rel);
+    if (existsSync(vendored)) {
+      try { return JSON.parse(readFileSync(vendored, 'utf8')); } catch {}
+    }
+    const own = join(root, 'src', rel);
+    if (existsSync(own)) {
+      try { return JSON.parse(readFileSync(own, 'utf8')); } catch {}
+    }
+    return null;
+  };
+  return {
+    primitives: readJson('primitives.json')?.primitives ?? {},
+    tokens: flattenTokens(readJson('tokens.json')),
+  };
+}
+
+const SEARCH_HELP = `artificer search — search Artificer primitives and tokens offline
+
+Usage:
+  npx @cameronsjo/artificer search <query...> [--json]
+
+Options:
+  --json       Emit machine-readable JSON
+  --help, -h   Show this help`;
+
+export function search({ argv = [], cwd = process.cwd(), packageRoot, out = console.log, err = console.error } = {}) {
+  let jsonMode = false;
+  const terms = [];
+  for (const a of argv) {
+    if (a === '--help' || a === '-h') { out(SEARCH_HELP); return EXIT.OK; }
+    if (a === '--json') jsonMode = true;
+    else if (a.startsWith('-')) { err(`artificer search: unknown option "${a}"`); return EXIT.USAGE; }
+    else terms.push(...a.toLowerCase().split(/\s+/).filter(Boolean));
+  }
+  if (terms.length === 0) {
+    err('artificer search: query required (e.g. artificer search "modal focus")');
+    err(SEARCH_HELP);
+    return EXIT.USAGE;
+  }
+  const { primitives, tokens } = loadCatalog({ cwd, packageRoot });
+  const results = [];
+
+  for (const [id, p] of Object.entries(primitives)) {
+    const hay = [id, p.kind, ...(p.classes ?? []), ...(p.modifiers ?? []), p.js ?? '', ...(p.react ?? []), p.notes ?? ''].join(' ').toLowerCase();
+    let score = 0;
+    for (const t of terms) {
+      if (id.toLowerCase() === t) score += 10;
+      else if ((p.classes ?? []).some((c) => c.toLowerCase() === t.replace(/^\./, ''))) score += 8;
+      else if (hay.includes(t)) score += 3;
+    }
+    if (score > 0) results.push({ type: 'primitive', id, score, kind: p.kind, classes: p.classes ?? [], js: p.js ?? null, react: p.react ?? null });
+  }
+
+  for (const tok of tokens) {
+    const hay = `${tok.name} ${tok.cssVar} ${tok.category} ${tok.use}`.toLowerCase();
+    let score = 0;
+    for (const t of terms) {
+      const clean = t.replace(/^--/, '');
+      if (tok.name === clean) score += 10;
+      else if (hay.includes(clean)) score += 3;
+    }
+    if (score > 0) results.push({ type: 'token', id: tok.cssVar, score, category: tok.category, dark: tok.dark, light: tok.light, value: tok.value, use: tok.use });
+  }
+
+  results.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  const top = results.slice(0, 12);
+  if (jsonMode) {
+    out(JSON.stringify({ query: terms.join(' '), total: results.length, results: top }, null, 2));
+    return EXIT.OK;
+  }
+  if (top.length === 0) {
+    out(`artificer search: no matches for "${terms.join(' ')}"`);
+    return EXIT.OK;
+  }
+  for (const r of top) {
+    if (r.type === 'primitive') {
+      const cls = r.classes.map((c) => `.${c}`).join(', ');
+      const extras = [r.js && `js:${r.js}`, r.react && `react:${r.react.join('/')}`].filter(Boolean).join(' · ');
+      out(`[primitive] ${r.id} (${r.kind}) — ${cls}${extras ? `  [${extras}]` : ''}`);
+    } else {
+      const val = r.dark && r.light ? `dark ${r.dark} / light ${r.light}` : (r.value ?? '');
+      out(`[token]     ${r.id} (${r.category}) — ${val}${r.use ? `  · ${r.use}` : ''}`);
+    }
+  }
+  return EXIT.OK;
+}
+
+const LOOKUP_HELP = `artificer lookup — inspect one Artificer primitive or token by exact name
+
+Usage:
+  npx @cameronsjo/artificer lookup <name> [--json]
+
+Examples:
+  npx @cameronsjo/artificer lookup modal
+  npx @cameronsjo/artificer lookup .app-shell
+  npx @cameronsjo/artificer lookup --accent-fill
+
+Options:
+  --json       Emit machine-readable JSON
+  --help, -h   Show this help`;
+
+export function lookup({ argv = [], cwd = process.cwd(), packageRoot, out = console.log, err = console.error } = {}) {
+  let jsonMode = false;
+  let target = null;
+  for (const a of argv) {
+    if (a === '--help' || a === '-h') { out(LOOKUP_HELP); return EXIT.OK; }
+    if (a === '--json') jsonMode = true;
+    else if (a.startsWith('--') && !target) target = a; // allow CSS custom property like --accent
+    else if (a.startsWith('-')) { err(`artificer lookup: unknown option "${a}"`); return EXIT.USAGE; }
+    else if (!target) target = a;
+    else { err(`artificer lookup: unexpected argument "${a}"`); return EXIT.USAGE; }
+  }
+  if (!target) {
+    err('artificer lookup: name required (e.g. artificer lookup modal)');
+    err(LOOKUP_HELP);
+    return EXIT.USAGE;
+  }
+  const { primitives, tokens } = loadCatalog({ cwd, packageRoot });
+  const cleanClass = target.replace(/^\./, '').toLowerCase();
+  const cleanVar = target.replace(/^--/, '').toLowerCase();
+
+  let primEntry = null;
+  if (primitives[target]) primEntry = { id: target, ...primitives[target] };
+  else {
+    for (const [id, p] of Object.entries(primitives)) {
+      if (id.toLowerCase() === cleanClass || (p.classes ?? []).some((c) => c.toLowerCase() === cleanClass)) {
+        primEntry = { id, ...p };
+        break;
+      }
+    }
+  }
+
+  const tokEntry = tokens.find((t) => t.name === cleanVar || t.cssVar === target.toLowerCase());
+  const hit = primEntry ? { type: 'primitive', ...primEntry } : tokEntry ? { type: 'token', ...tokEntry } : null;
+
+  if (!hit) {
+    err(`artificer lookup: "${target}" not found (try "artificer search ${target.replace(/^[-.]+/, '')}")`);
+    return EXIT.NO_MATCH;
+  }
+  if (jsonMode) {
+    out(JSON.stringify(hit, null, 2));
+    return EXIT.OK;
+  }
+  if (hit.type === 'primitive') {
+    out(`${hit.id} (${hit.kind}, minted v${hit.minted ?? '?'})`);
+    if (hit.classes?.length) out(`  classes: ${hit.classes.map((c) => `.${c}`).join(', ')}`);
+    if (hit.js) out(`  js:      ${hit.js}`);
+    if (hit.react?.length) out(`  react:   ${hit.react.join(', ')}`);
+    if (hit.notes) out(`  notes:   ${hit.notes}`);
+  } else {
+    out(`${hit.cssVar} (${hit.category})`);
+    if (hit.dark) out(`  dark:  ${hit.dark}`);
+    if (hit.light) out(`  light: ${hit.light}`);
+    if (hit.value) out(`  value: ${hit.value}`);
+    if (hit.use) out(`  use:   ${hit.use}`);
+  }
+  return EXIT.OK;
+}
+
+// ── scan (legacy consumer pattern detector) ──────────────────────────────────
+const SCAN_EXT = /\.(?:css|html|js|mjs|cjs|ts|tsx|jsx|astro|vue|svelte)$/i;
+const SCAN_RULES = [
+  {
+    id: 'legacy-font-quattro',
+    re: /iA Writer Quattro/i,
+    message: 'Retired font family (ADR 0046, v0.28.0) — migrate to Bricolage Grotesque (--font-body) and Recursive (--font-interface), or import @cameronsjo/artificer/tailwind.css.',
+  },
+  {
+    id: 'hidden-attr-workaround',
+    re: /\[hidden\]\s*\{[^}]*display\s*:\s*none\s*!important/i,
+    message: 'Local [hidden] override is now built into artificer.css (#581) and can be deleted.',
+  },
+  {
+    id: 'app-shell-gutter-workaround',
+    re: /\.app-shell__content\s*\{[^}]*grid-template-columns/i,
+    message: 'Custom .app-shell__content gutter override is replaced by .app-shell--contained + .app-shell__content--flush (#532).',
+  },
+  {
+    id: 'astro-view-transition-theme-glue',
+    re: /astro:before-swap/,
+    message: 'Custom Astro view-transition theme glue is now handled automatically by artificer-theme.js (#530).',
+  },
+];
+
+const SCAN_HELP = `artificer scan — scan a consumer repo for retired/legacy Artificer workarounds
+
+Usage:
+  npx @cameronsjo/artificer scan [dir] [--json]
+
+Options:
+  --json       Emit machine-readable JSON
+  --help, -h   Show this help`;
+
+export function scan({ argv = [], cwd = process.cwd(), packageRoot, out = console.log, err = console.error } = {}) {
+  let jsonMode = false;
+  let dirArg = '.';
+  for (const a of argv) {
+    if (a === '--help' || a === '-h') { out(SCAN_HELP); return EXIT.OK; }
+    if (a === '--json') jsonMode = true;
+    else if (a.startsWith('-')) { err(`artificer scan: unknown option "${a}"`); return EXIT.USAGE; }
+    else dirArg = a;
+  }
+  const cwdAbs = resolve(cwd);
+  const cwdReal = realpathSync(cwdAbs);
+  const targetAbs = resolve(cwd, dirArg);
+  if (!existsSync(targetAbs)) {
+    err(`artificer scan: path not found: ${dirArg}`);
+    return EXIT.USAGE;
+  }
+  const targetReal = realpathSync(targetAbs);
+  if (!within(targetAbs, cwdAbs) || !within(targetReal, cwdReal)) {
+    err(`artificer scan: path resolves outside the project: ${dirArg}`);
+    return EXIT.USAGE;
+  }
+
+  const root = packageRoot ?? resolvePackageRoot(BIN_DIR);
+  const pkgVersion = (() => {
+    try { return JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version; } catch { return null; }
+  })();
+
+  const findings = [];
+
+  // Check vendored provenance.json version drift against current CLI package version.
+  const provAbs = join(cwdAbs, DEFAULT_DEST, PROVENANCE);
+  if (pkgVersion && existsSync(provAbs)) {
+    try {
+      const prov = JSON.parse(readFileSync(provAbs, 'utf8'));
+      if (prov.version && prov.version !== pkgVersion) {
+        findings.push({
+          ruleId: 'vendored-version-drift',
+          file: `${DEFAULT_DEST}/${PROVENANCE}`,
+          line: 1,
+          message: `Vendored Artificer is v${prov.version}, installed CLI is v${pkgVersion} — re-run "npx @cameronsjo/artificer vendor".`,
+        });
+      }
+    } catch {}
+  }
+
+  const files = walkForLint(targetAbs, cwdAbs).filter((rel) => SCAN_EXT.test(rel));
+  for (const rel of files) {
+    let text;
+    try { text = readFileSync(join(cwdAbs, rel), 'utf8'); } catch { continue; }
+    const lines = text.split('\n');
+    for (const rule of SCAN_RULES) {
+      // Test whole text for multiline CSS rules, then pinpoint first matching line.
+      if (!rule.re.test(text)) continue;
+      let lineNo = 1;
+      for (let i = 0; i < lines.length; i++) {
+        if (rule.re.test(lines[i]) || (i + 3 < lines.length && rule.re.test(lines.slice(i, i + 4).join('\n')))) {
+          lineNo = i + 1;
+          break;
+        }
+      }
+      findings.push({ ruleId: rule.id, file: rel, line: lineNo, message: rule.message });
+    }
+  }
+
+  if (jsonMode) {
+    out(JSON.stringify({ targetDir: dirArg, scannedFiles: files.length, totalFindings: findings.length, findings }, null, 2));
+    return EXIT.OK;
+  }
+  if (findings.length === 0) {
+    out(`artificer scan: 0 legacy findings across ${files.length} file(s)`);
+    return EXIT.OK;
+  }
+  for (const f of findings) {
+    out(`  ${f.file}:${f.line}  [${f.ruleId}]  ${f.message}`);
+  }
+  out(`artificer scan: ${findings.length} finding(s) across ${files.length} file(s)`);
+  return EXIT.OK;
+}
+
 // ── router ────────────────────────────────────────────────────────────────────
-const COMMANDS = { vendor, lint };
+const COMMANDS = { vendor, lint, search, lookup, scan };
 
 export function route({ argv = [], cwd = process.cwd(), packageRoot, out = console.log, err = console.error } = {}) {
   const [cmd, ...rest] = argv;

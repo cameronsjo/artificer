@@ -71,6 +71,7 @@ export function useThemeMode(): { theme: 'dark' | 'light'; toggle: () => void } 
 export function AppShell({
   rail,
   gap,
+  contained = false,
   className,
   style,
   ...rest
@@ -79,6 +80,8 @@ export function AppShell({
   rail?: string;
   /** Rail↔content column gap — sets --shell-gap (default 0). */
   gap?: string;
+  /** Drop the 100dvh floor when nested inside an outer .container (#532). */
+  contained?: boolean;
 }) {
   const vars: Record<string, string> = {};
   if (rail) vars['--shell-rail'] = rail;
@@ -87,17 +90,22 @@ export function AppShell({
     <div
       {...rest}
       style={{ ...(vars as React.CSSProperties), ...style }}
-      className={cx('app-shell', className)}
+      className={cx('app-shell', contained && 'app-shell--contained', className)}
     />
   );
 }
 
 export function AppShellContent({
   as: As = 'main',
+  flush = false,
   className,
   ...rest
-}: React.HTMLAttributes<HTMLElement> & { as?: React.ElementType }) {
-  return <As {...rest} className={cx('app-shell__content', className)} />;
+}: React.HTMLAttributes<HTMLElement> & {
+  as?: React.ElementType;
+  /** Zero the bleed-grid inline gutter when an outer .container supplies it (#532). */
+  flush?: boolean;
+}) {
+  return <As {...rest} className={cx('app-shell__content', flush && 'app-shell__content--flush', className)} />;
 }
 
 // ─── Appbar ──────────────────────────────────────────────────────────────

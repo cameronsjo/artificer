@@ -17,8 +17,10 @@
       var pinned = saved === 'light' || saved === 'dark';
       var prefersLight = window.matchMedia &&
         window.matchMedia('(prefers-color-scheme: light)').matches;
-      document.documentElement.setAttribute(
-        'data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
+      var theme = pinned ? saved : (prefersLight ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+      var meta = document.querySelector && document.querySelector('meta[name="color-scheme"]');
+      if (meta) meta.setAttribute('content', pinned ? theme : 'light dark');
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark'); /* fail-safe to brand surface, never light */
     }

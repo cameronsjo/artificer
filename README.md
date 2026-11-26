@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.28.0 · 2026** — new type: Recursive for interface chrome and Bricolage Grotesque for body prose, both variable so every weight is real, and the Obsidian theme follows. Sploot the corgi joins as the system's critter, drawn in block glyphs. A generated theme for the herdr desktop app, a first-class Obsidian mobile layer, and Obsidian callouts that match the system `.callout`. See `CHANGELOG.md` for what changed.
+**v0.29.0 · 2026** — `@layer artificer` cascade scoping, a canonical Tailwind v4 `@theme` export (`@cameronsjo/artificer/tailwind.css`), offline `artificer search`/`lookup`/`scan` CLI commands, inline `.alert` / `.btn-group` / `.list-group` primitives, React `Tabs`/`Listbox`/`Menu`/`Tree` wrappers, and modern-web fixes (Astro view transitions, IME-safe combobox Enter, `[hidden]` override, contained `.app-shell`). See `CHANGELOG.md` for what changed.
 
 ---
 
@@ -210,9 +210,9 @@ For the full surface area (every component, every variant, voice & tone, accessi
 
 The `framework-adapters/` folder has minimal starting points:
 
-- `tailwind.config.js` — pulls `tokens.json` into Tailwind's theme. Use Artificer values via `bg-bg`, `text-fg`, `text-accent`, `font-mono`, `rounded-md`, etc.
-- `react-components.tsx` — typed React wrappers for the most common patterns (Button, Field, Stack, Cluster, Modal, Notification). Thin — they just emit the right classes.
-- `vue-components.vue` — same, for Vue 3 SFC.
+- `tailwind.config.js` — Tailwind v3 starter mapping Artificer CSS custom properties (`bg-bg`, `text-fg`, `text-accent`, `font-mono`, `rounded-md`, etc.). For Tailwind v4, import `@cameronsjo/artificer/tailwind.css` (`@theme` block).
+- `react/` (`@cameronsjo/artificer/react`) — compiled TypeScript React wrappers for layout, forms, modal, and app chrome (`AppShell`, `Appbar`, `NavDrawer`, `SideNav`, `ThemeToggle`, `Button`, `Field`, `Stack`, `Cluster`, `Modal`, `Notification`). Thin — they emit the canonical classes.
+- `vue-components.md` — copy-pasteable Vue 3 SFC starters for the same patterns.
 
 These are starters, not the whole system. They cover the 80% case; for new patterns, write the markup directly and use the CSS classes.
 
@@ -242,7 +242,7 @@ Full loading recipes and the axis notes: **[`FONTS.md`](FONTS.md)**. Upstream so
 
 You don't need to reinvent any of this. Just don't undo it.
 
-- AAA contrast on all body text (12.8:1 dark, 11.4:1 cream)
+- AAA contrast on all body text (11.21:1 dark, 11.4:1 cream)
 - Focus-visible outlines on every interactive element (2px `--accent`, 2px offset)
 - `:focus-visible` not `:focus` — no rings on mouse clicks
 - `prefers-reduced-motion: reduce` collapses all durations to 0ms
@@ -369,13 +369,13 @@ what it *does*.
 - **Live system** — every page is a live spec. Read first, then code.
 - **`docs/STATE.md`** — the maturity baseline: where each layer of the system honestly sits (clay / materials / rooms / trust), known gaps, and the backlog policy. Re-assessed each minor version.
 - **`reference/SKILL.md`** — the AI-handoff version of these instructions, dense and machine-readable. If you're using Claude Code, point it at that file.
-- **`reference/CLAUDE.md`** — drop into your repo root; Claude Code reads it automatically and will follow Artificer's rules from then on.
+- **`.claude/rules/artificer-consumer.md`** (shipped as `CLAUDE.md` in the public `cameronsjo/artificer` repo) — drop into your repo root; Claude Code reads it automatically and will follow Artificer's rules from then on.
 
 ---
 
 ## Versioning
 
-- **v0.1** · 2026 · personal use, no license required for Cameron's projects. For external use: Apache-2.0 (see LICENSE).
+- **Apache-2.0** (see `LICENSE`); Cameron-first for personal projects. Current release is tracked in `package.json`.
 - Any change to a token value is a **minor version bump**. Adding a new token or component is a **patch**. Removing a token is a **major** (breaking).
 
 ---

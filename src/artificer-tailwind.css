@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ARTIFICER · Tailwind v4 @theme adapter
+   Import AFTER @import "tailwindcss"; and @import "@cameronsjo/artificer/artificer.css";
+
+     @import "tailwindcss";
+     @import "@cameronsjo/artificer/artificer.css";
+     @import "@cameronsjo/artificer/tailwind.css";
+
+   Maps Artificer CSS custom properties into Tailwind v4's @theme namespace so
+   utilities (bg-bg, text-fg, text-accent, font-body, font-interface, font-mono,
+   p-md, rounded-md) stay theme-reactive and version-locked to artificer.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Surfaces */
+  --color-bg:                  var(--bg);
+  --color-bg-raised:           var(--bg-raised);
+  --color-bg-overlay:          var(--bg-overlay);
+  --color-bg-inactive:         var(--bg-inactive);
+
+  /* Foreground & borders */
+  --color-fg:                  var(--fg);
+  --color-fg-secondary:        var(--fg-secondary);
+  --color-fg-muted:            var(--fg-muted);
+  --color-fg-disabled:         var(--fg-disabled);
+  --color-border:              var(--border);
+  --color-border-lifted:       var(--border-lifted);
+
+  /* Semantic */
+  --color-accent:              var(--accent);
+  --color-accent-bright:       var(--accent-bright);
+  --color-accent-fill:         var(--accent-fill);
+  --color-on-accent:           var(--on-accent);
+  --color-attention:           var(--attention);
+  --color-attention-fill:      var(--attention-fill);
+  --color-on-attention:        var(--on-attention);
+  --color-urgent:              var(--urgent);
+  --color-urgent-fill:         var(--urgent-fill);
+  --color-urgent-text:         var(--urgent-text);
+  --color-on-urgent:           var(--on-urgent);
+  --color-success:             var(--success);
+  --color-success-fill:        var(--success-fill);
+  --color-on-success:          var(--on-success);
+  --color-steel:               var(--steel);
+  --color-steel-fill:          var(--steel-fill);
+  --color-diff-add-bg:         var(--diff-add-bg);
+  --color-diff-del-bg:         var(--diff-del-bg);
+
+  /* Brand */
+  --color-brand-purple:        var(--brand-purple);
+  --color-brand-purple-bright: var(--brand-purple-bright);
+  --color-brand-purple-fill:   var(--brand-purple-fill);
+
+  /* Typography — bound to Artificer's bundled variable faces (ADR 0046) */
+  --font-mono:      'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --font-interface: 'Recursive', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --font-sans:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+
+  /* Spacing (8px grid) */
+  --spacing-xs:  var(--s-xs);
+  --spacing-sm:  var(--s-sm);
+  --spacing-md:  var(--s-md);
+  --spacing-lg:  var(--s-lg);
+  --spacing-xl:  var(--s-xl);
+  --spacing-2xl: var(--s-2xl);
+  --spacing-3xl: var(--s-3xl);
+
+  /* Radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-popover: var(--shadow-popover);
+
+  /* Motion */
+  --ease-artificer: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* Breakpoints */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 800px;
+  --breakpoint-wide:   1200px;
+}

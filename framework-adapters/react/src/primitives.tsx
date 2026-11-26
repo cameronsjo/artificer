@@ -95,14 +95,12 @@ export function GridAuto({
 // ─── Button ──────────────────────────────────────────────────────────────
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
-export function Button({
-  variant = 'secondary',
-  size,
-  className = '',
-  ...rest
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: 'sm' }) {
-  return <button {...rest} className={cx('btn', `btn--${variant}`, size && `btn--${size}`, className)} />;
-}
+export const Button = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: 'sm' }
+>(function Button({ variant = 'secondary', size, className = '', ...rest }, ref) {
+  return <button ref={ref} {...rest} className={cx('btn', `btn--${variant}`, size && `btn--${size}`, className)} />;
+});
 
 // ─── Form field ──────────────────────────────────────────────────────────
 //
@@ -156,14 +154,20 @@ export function Field({
   );
 }
 
-export const Input = (p: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...p} className={cx('input', p.className)} />
+export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
+  function Input(p, ref) {
+    return <input ref={ref} {...p} className={cx('input', p.className)} />;
+  },
 );
-export const Textarea = (p: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea {...p} className={cx('textarea', p.className)} />
+export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
+  function Textarea(p, ref) {
+    return <textarea ref={ref} {...p} className={cx('textarea', p.className)} />;
+  },
 );
-export const Select = (p: React.SelectHTMLAttributes<HTMLSelectElement>) => (
-  <select {...p} className={cx('select', p.className)} />
+export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
+  function Select(p, ref) {
+    return <select ref={ref} {...p} className={cx('select', p.className)} />;
+  },
 );
 
 // ─── Notification ────────────────────────────────────────────────────────
@@ -238,9 +242,17 @@ export function Modal({
   const titleId = labelledBy ?? autoId;
 
   React.useEffect(() => {
-    if (!open || !ref.current || !window.ArtificerFocus) return;
-    const trap = window.ArtificerFocus.trap(ref.current, { onEscape: onClose });
-    return () => trap.release();
+    if (!open || !ref.current) return;
+    if (window.ArtificerFocus) {
+      const trap = window.ArtificerFocus.trap(ref.current, { onEscape: onClose });
+      return () => trap.release();
+    }
+    // Fallback when artificer-focus.js is not loaded (#582): Escape still closes.
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, [open, onClose]);
 
   if (!open) return null;
@@ -298,4 +310,50 @@ export function useWhimsy(ref?: React.RefObject<HTMLElement | null>) {
     w.Whimsy?.hydrate(scope);
     w.Whimsy?.greeting?.(scope);
   });
+}
+
+// ─── Inline Alert, ButtonGroup, ListGroup ────────────────────────────────
+
+export type AlertTier = 'urgent' | 'attention' | 'info' | 'success';
+export function Alert({
+  tier = 'info',
+  title,
+  children,
+  className = '',
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement> & { tier?: AlertTier; title: string }) {
+  const role = tier === 'urgent' ? 'alert' : 'status';
+  return (
+    <div {...rest} role={rest.role ?? role} className={cx('alert', `alert--${tier}`, className)}>
+      <div className="alert__body">
+        <p className="alert__title">{title}</p>
+        {children && <div className="alert__msg">{children}</div>}
+      </div>
+    </div>
+  );
+}
+
+export function ButtonGroup({
+  label,
+  className = '',
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement> & { label?: string }) {
+  return <div {...rest} role={rest.role ?? 'group'} aria-label={label ?? rest['aria-label']} className={cx('btn-group', className)} />;
+}
+
+export function ListGroup({
+  as: As = 'div',
+  className = '',
+  ...rest
+}: React.HTMLAttributes<HTMLElement> & { as?: React.ElementType }) {
+  return <As {...rest} className={cx('list-group', className)} />;
+}
+
+export function ListGroupItem({
+  active = false,
+  as: As = 'div',
+  className = '',
+  ...rest
+}: React.HTMLAttributes<HTMLElement> & { active?: boolean; as?: React.ElementType }) {
+  return <As {...rest} className={cx('list-group__item', active && 'list-group__item--active', className)} />;
 }

@@ -50,15 +50,17 @@
   <h2 class="section-title">Cell glyphs</h2>
   <p class="meta">Dense comparison grids reach for emoji (<code>✅ ⚠️ ❌</code>) — but emoji are OS-rendered: they ignore the theme and read loud in a grid. The <code>.glyph</code> set is the anti-emoji — real text the author types, tinted by a semantic token, so it tracks dark/cream. Four states: <b class="anchor"><code>--success</code> ✓ yes</b>, <b class="anchor"><code>--muted</code> ✗ no</b> (recedes, steel-blue), <b class="anchor"><code>--attention</code> ~ partial</b>, <b class="anchor"><code>--na</code> – not applicable</b>. Each glyph is a graphical object (WCAG 2.2 SC 1.4.11), so it carries an <code>aria-label</code> — meaning never rests on the mark alone.</p>
   <div class="figure">
-    <table class="table">
-      <thead><tr><th>Capability</th><th style="text-align:center">spec-alpha</th><th style="text-align:center">spec-beta</th><th style="text-align:center">spec-gamma</th></tr></thead>
-      <tbody>
-        <tr><td>Live preview</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td></tr>
-        <tr><td>Token export</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td></tr>
-        <tr><td>Figma plugin</td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td><td style="text-align:center"><span class="glyph glyph--na" role="img" aria-label="Not applicable">–</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
-        <tr><td>Dark theme</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
-      </tbody>
-    </table>
+    <div class="scroll-x">
+      <table class="table">
+        <thead><tr><th>Capability</th><th style="text-align:center">spec-alpha</th><th style="text-align:center">spec-beta</th><th style="text-align:center">spec-gamma</th></tr></thead>
+        <tbody>
+          <tr><td>Live preview</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td></tr>
+          <tr><td>Token export</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--muted" role="img" aria-label="No">✗</span></td></tr>
+          <tr><td>Figma plugin</td><td style="text-align:center"><span class="glyph glyph--attention" role="img" aria-label="Partial">~</span></td><td style="text-align:center"><span class="glyph glyph--na" role="img" aria-label="Not applicable">–</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
+          <tr><td>Dark theme</td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td><td style="text-align:center"><span class="glyph glyph--success" role="img" aria-label="Yes">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <h2 class="section-title">Key–value list</h2>

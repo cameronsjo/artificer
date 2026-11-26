@@ -51,9 +51,9 @@ export function GridAuto({ min = 240, className = '', style, ...rest }) {
     const vars = { '--min': `${min}px` };
     return _jsx("div", { ...rest, style: { ...vars, ...style }, className: cx('grid-auto', className) });
 }
-export function Button({ variant = 'secondary', size, className = '', ...rest }) {
-    return _jsx("button", { ...rest, className: cx('btn', `btn--${variant}`, size && `btn--${size}`, className) });
-}
+export const Button = React.forwardRef(function Button({ variant = 'secondary', size, className = '', ...rest }, ref) {
+    return _jsx("button", { ref: ref, ...rest, className: cx('btn', `btn--${variant}`, size && `btn--${size}`, className) });
+});
 export function Field({ label, hint, error, id, className = '', children, }) {
     const errId = error ? `${id}-err` : undefined;
     const hintId = !error && hint ? `${id}-hint` : undefined;
@@ -65,9 +65,15 @@ export function Field({ label, hint, error, id, className = '', children, }) {
         extra['aria-describedby'] = describedBy;
     return (_jsxs("div", { className: cx('field', error && 'field--invalid', className), children: [_jsx("label", { className: "field__label", htmlFor: id, children: label }), React.cloneElement(children, extra), error && (_jsx("p", { className: "field__error", id: errId, children: error })), !error && hint && (_jsx("p", { className: "field__hint", id: hintId, children: hint }))] }));
 }
-export const Input = (p) => (_jsx("input", { ...p, className: cx('input', p.className) }));
-export const Textarea = (p) => (_jsx("textarea", { ...p, className: cx('textarea', p.className) }));
-export const Select = (p) => (_jsx("select", { ...p, className: cx('select', p.className) }));
+export const Input = React.forwardRef(function Input(p, ref) {
+    return _jsx("input", { ref: ref, ...p, className: cx('input', p.className) });
+});
+export const Textarea = React.forwardRef(function Textarea(p, ref) {
+    return _jsx("textarea", { ref: ref, ...p, className: cx('textarea', p.className) });
+});
+export const Select = React.forwardRef(function Select(p, ref) {
+    return _jsx("select", { ref: ref, ...p, className: cx('select', p.className) });
+});
 export function Notification({ tier = 'info', title, children, action, }) {
     // Live-region contract: urgent → alert (assertive) · attention/info →
     // status (polite) · background → NO role — a silent badge, never announced.
@@ -81,10 +87,19 @@ export function Modal({ open, onClose, title, children, footer, labelledBy, }) {
     const autoId = React.useId();
     const titleId = labelledBy ?? autoId;
     React.useEffect(() => {
-        if (!open || !ref.current || !window.ArtificerFocus)
+        if (!open || !ref.current)
             return;
-        const trap = window.ArtificerFocus.trap(ref.current, { onEscape: onClose });
-        return () => trap.release();
+        if (window.ArtificerFocus) {
+            const trap = window.ArtificerFocus.trap(ref.current, { onEscape: onClose });
+            return () => trap.release();
+        }
+        // Fallback when artificer-focus.js is not loaded (#582): Escape still closes.
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape')
+                onClose();
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
     }, [open, onClose]);
     if (!open)
         return null;
@@ -118,4 +133,17 @@ export function useWhimsy(ref) {
         w.Whimsy?.hydrate(scope);
         w.Whimsy?.greeting?.(scope);
     });
+}
+export function Alert({ tier = 'info', title, children, className = '', ...rest }) {
+    const role = tier === 'urgent' ? 'alert' : 'status';
+    return (_jsx("div", { ...rest, role: rest.role ?? role, className: cx('alert', `alert--${tier}`, className), children: _jsxs("div", { className: "alert__body", children: [_jsx("p", { className: "alert__title", children: title }), children && _jsx("div", { className: "alert__msg", children: children })] }) }));
+}
+export function ButtonGroup({ label, className = '', ...rest }) {
+    return _jsx("div", { ...rest, role: rest.role ?? 'group', "aria-label": label ?? rest['aria-label'], className: cx('btn-group', className) });
+}
+export function ListGroup({ as: As = 'div', className = '', ...rest }) {
+    return _jsx(As, { ...rest, className: cx('list-group', className) });
+}
+export function ListGroupItem({ active = false, as: As = 'div', className = '', ...rest }) {
+    return _jsx(As, { ...rest, className: cx('list-group__item', active && 'list-group__item--active', className) });
 }

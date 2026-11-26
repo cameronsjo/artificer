@@ -40,16 +40,16 @@ export function useThemeMode() {
     return { theme, toggle };
 }
 // ─── AppShell ────────────────────────────────────────────────────────────
-export function AppShell({ rail, gap, className, style, ...rest }) {
+export function AppShell({ rail, gap, contained = false, className, style, ...rest }) {
     const vars = {};
     if (rail)
         vars['--shell-rail'] = rail;
     if (gap)
         vars['--shell-gap'] = gap;
-    return (_jsx("div", { ...rest, style: { ...vars, ...style }, className: cx('app-shell', className) }));
+    return (_jsx("div", { ...rest, style: { ...vars, ...style }, className: cx('app-shell', contained && 'app-shell--contained', className) }));
 }
-export function AppShellContent({ as: As = 'main', className, ...rest }) {
-    return _jsx(As, { ...rest, className: cx('app-shell__content', className) });
+export function AppShellContent({ as: As = 'main', flush = false, className, ...rest }) {
+    return _jsx(As, { ...rest, className: cx('app-shell__content', flush && 'app-shell__content--flush', className) });
 }
 // ─── Appbar ──────────────────────────────────────────────────────────────
 export function Appbar({ brand, brandHref = '/', brandWhimsy = false, contained = false, sticky = true, search, actions, menu, className, children, ...rest }) {

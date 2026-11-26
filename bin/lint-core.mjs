@@ -112,8 +112,9 @@ export function lintText(text, { fontScale = true, tokens } = {}) {
     // custom-property DEFINITIONS are where raw values belong — skip
     if (/^\s*--[\w-]+\s*:/.test(scan)) return;
 
-    // raw hex in a value (declarations only)
-    if (scan.includes(':')) {
+    // raw hex in a value (declarations only). Skip mask/mask-image declarations
+    // where #000/#fff are alpha-channel mask stops, not visual colors (#584).
+    if (scan.includes(':') && !/(?:^|[{;\s])(?:-webkit-)?mask(?:-image)?\s*:/.test(scan)) {
       const hex = scan.slice(scan.indexOf(':') + 1).match(HEX);
       if (hex) out.push({ n: i + 1, msg: `raw hex ${hex[0]} → define/use a color token`, src: line.trim() });
     }

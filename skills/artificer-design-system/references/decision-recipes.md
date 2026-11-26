@@ -47,6 +47,9 @@
 | Eyebrow / overline label | `.eyebrow` (+ `.eyebrow--accent`) — uppercase label over a heading, block, or demo — `../../../live-spec/typography.html#doc-chrome` |
 | Doc-page subsection header | `<h3 class="subsection-title">` — mono 700 body-md; sibling under `.section-title` — `../../../live-spec/typography.html#doc-chrome` |
 | Callout / standing note | `.callout` + `.callout__title` (+ `--steel`/`--attention`/`--urgent`); the title names the tier in text — `../../../live-spec/typography.html#doc-chrome` |
+| Inline static alert inside a card or form | `.alert` + `.alert__body`/`.alert__title`/`.alert__msg` (+ `--urgent`/`--attention`/`--info`/`--success`); React: `Alert` |
+| Joined/segmented button row | `.btn-group` wrapping `.btn` siblings; React: `ButtonGroup` |
+| Bordered vertical stack of rows | `.list-group` + `.list-group__item` (+ `--active`); React: `ListGroup`/`ListGroupItem` |
 | Doc-page section header | `<h2 class="section-title">` — mono 500, mixed case, `--fg`, border-bottom rule; doc/spec chrome |
 | Live-spec / doc-page example container | `<figure class="figure">` + `<figcaption class="meta">…</figcaption>` — `.figure--frame`/`--flush` modifiers |
 | Make it fun / playful / celebratory / rainbow | `../../../live-spec/whimsy.html` — the sanctioned `.whimsy` layer, opt-in, one per view; never on chrome/status/data/errors |

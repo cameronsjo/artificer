@@ -6,7 +6,7 @@
    ARTIFICER · An Obsidian theme
    Cameron's personal design system, ported to Obsidian.
    AuDHD-optimized · Ghostty grey · burnished gold · JetBrains Mono.
-   v0.28.0 · 2026
+   v0.29.0 · 2026
    ═══════════════════════════════════════════════════════════════════════════
 
    How this is structured:
@@ -2417,7 +2417,7 @@ settings:
     type: info-text
     title: About Artificer
     description: |
-      Version 0.28.0 · build 244f60d0
+      Version 0.29.0 · build 3727790b
       Artificer is a personal design system ported to Obsidian. Defaults are dark, gold, mono.
       Every variable below is a real CSS custom property — Style Settings writes them straight
       into :root. If you want to go further, edit theme.css directly; the source tokens at the

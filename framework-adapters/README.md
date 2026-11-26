@@ -17,7 +17,7 @@ Vue, Svelte, or any framework that owns its own DOM.
   theme key `window.ArtificerTheme.KEY` (`'artificer.theme'`). One definition
   lives in the vanilla runtime; read it, don't re-hardcode the string.
 - **Copy** (a starting point, edit freely): the adapter *shape* — the hooks /
-  composables in [`react-components.tsx`](./react-components.tsx) and
+  composables in [`react/src/primitives.tsx`](./react/src/primitives.tsx) (published as `@cameronsjo/artificer/react`) and
   [`vue-components.md`](./vue-components.md) (`useTheme`, `useIcons`,
   `useWhimsy`, `Icon`). These emit Artificer classes; they don't reinvent the
   system. Take what you need, throw away the rest.
@@ -55,7 +55,7 @@ first paint still hydrate.
   drive it directly.** Two patterns:
   - **Explicit-in-effect (what the shipped hook does).** After render, call a
     Whimsy method on your ref's subtree. `useWhimsy(ref?)` in
-    `react-components.tsx` is a **declarative `hydrate` + `greeting` wrapper**:
+    [`react/src/primitives.tsx`](./react/src/primitives.tsx) is a **declarative `hydrate` + `greeting` wrapper**:
     it runs `Whimsy.hydrate(ref?.current || document)` and
     `Whimsy.greeting(ref?.current || document)` in a `useEffect`, hydrating the
     `[data-whimsy]` / `[data-whimsy-greeting]` markup you rendered inside the

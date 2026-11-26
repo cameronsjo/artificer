@@ -15,11 +15,19 @@ export {
   Textarea,
   Select,
   Notification,
+  Alert,
+  ButtonGroup,
+  ListGroup,
+  ListGroupItem,
   Modal,
   Icon,
   useIcons,
   useWhimsy,
 } from './primitives.js';
+export type { AlertTier } from './primitives.js';
+
+export { Tabs, Listbox, Menu, Tree } from './interactive.js';
+export type { TabItem, OptionItem, TreeNode } from './interactive.js';
 
 export {
   ThemeToggle,

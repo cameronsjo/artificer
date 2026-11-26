@@ -5,16 +5,14 @@
 > Born from the 2026-05-31 reassessment after mobile and wide-screen bugs
 > shipped (`docs/plans/2026-05-31-trust-layer-and-maturity-baseline.md`).
 
-**Last assessed:** 2026-08-28 · v0.25.0 · placement unchanged (clay ★★★★★,
-materials/rooms/trust ★★★★). Since v0.15.x: the public split shipped
-(`cameronsjo/artificer` → npm/jsDelivr), the compiled React adapter landed
-(v0.24.0), the generator count grew to twenty-two (JetBrains was the twentieth;
-the Chromium and Firefox browser targets land this release), and the first
-component-color contrast
-gate landed (`badge-contrast.spec.mjs`). The comparison-matrix pass hardened
-the wide-table story (`.table--sticky-col` row headers, `.table--responsive`
-card titles, `.scroll-x--fade`). The named trust debt (#122 rendered-contrast
-rulings) still stands.
+**Last assessed:** 2026-11-26 · v0.29.0 · placement updated (clay ★★★★★,
+rooms ★★★★★, materials/trust ★★★★). Since v0.25.0: the variable type system landed
+(Recursive for interface chrome + Bricolage Grotesque for body prose, ADR 0046),
+Sploot the corgi joined as the block-glyph brand critter,
+the herdr desktop app theme and first-class Obsidian mobile layer shipped, and
+the generator count reached 43 palette-generated targets. The named trust debt
+(#122 rendered-contrast rulings across 26 live-spec pages in `tests/axe-allowlist.mjs`,
+plus the temporarily paused Playwright `browser` CI job) still stands.
 
 ## The scale
 
@@ -27,7 +25,7 @@ custom room, plus the clay to take to a platform that doesn't exist yet.**
 |---|---|---|
 | **The clay** — decisions | ★★★★★ at target | Palette with measured ratios + versioned reasoning, 12 syntax roles, motion/spacing/focus rules, 8-platform generator. A new platform (iOS, VS Code 2.0, next thing) ingests `_palette.json` + `tokens.json` + the principles and starts from decisions, not from scratch. |
 | **The materials** — tokens & utilities | ★★★★ | `.stack`/`.cluster`/`.grid-*`/`.container`, density modes, type scale, z-rungs, motion tokens. Solid; gaps are at the edges (no container queries — deliberate). |
-| **The rooms** — components | ★★★★ | ~275 classes in the canonical sheet. Tables/forms/modals/data-display at Bootstrap parity or beyond; the v0.15.0 Workstream-E mints closed the old absent-list (option-popover `.menu`/`.listbox`, command palette, tree, pagination, banner, toast-region, `.stat`, the loading-feedback pair). Still absent: `.alert` in CSS (React-only), button groups, list groups, carousel (deliberately never). "Facade" rooms — style without behavior — are closed structurally: interactive mints ship behavior modules (focus, tabs, options, tree) and the A1 phantom/orphan gate makes doc-vs-CSS drift a red X. |
+| **The rooms** — components | ★★★★★ | ~358 classes in the canonical sheet (91 tracked primitives in `src/primitives.json`). Tables/forms/modals/data-display at Bootstrap parity or beyond; inline `.alert`, `.btn-group`, and `.list-group` close the last Bootstrap-parity gaps (carousel remains deliberately never), and the React adapter now wraps `Tabs`, `Listbox`/`Menu`, `Tree`, `Alert`, `ButtonGroup`, and `ListGroup`. "Facade" rooms — style without behavior — are closed structurally: interactive mints ship behavior modules (focus, tabs, options, tree) and the A1 phantom/orphan gate makes doc-vs-CSS drift a red X. |
 | **The trust** — verification | ★★★★ | Landed: Playwright matrix (pages × viewports × themes × engines), 44px touch floor, axe WCAG scan with a per-selector allowlist, keyboard behavior specs, named regression guards, the A1 conformance gate, and the export content gate. The named debt: rendered-contrast rulings beyond syntax roles (#122). |
 
 ## What the trust layer is
@@ -46,10 +44,7 @@ components, sub-44px targets, unowned wide screens) now has a named test.
 
 ## Known gaps (the honest list)
 
-**Component gaps (Bootstrap parity):** `.alert` in CSS (React-only),
-button groups, list groups, carousel (deliberately never). *(Dropdown/
-combobox and pagination shipped in v0.15.0 — `.menu`/`.listbox` and
-`.pagination`.)*
+**Component gaps (Bootstrap parity):** carousel (deliberately never). *(Inline `.alert`, `.btn-group`, and `.list-group` closed the last remaining gaps alongside React wrappers for `Tabs`, `Listbox`/`Menu`, and `Tree`.)*
 
 **Verification gaps:** rendered-contrast rulings beyond syntax roles (#122 —
 the axe sweep's palette findings await the palette ruling; tracked per-selector

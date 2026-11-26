@@ -22,14 +22,18 @@ export declare function useThemeMode(): {
     theme: 'dark' | 'light';
     toggle: () => void;
 };
-export declare function AppShell({ rail, gap, className, style, ...rest }: React.HTMLAttributes<HTMLDivElement> & {
+export declare function AppShell({ rail, gap, contained, className, style, ...rest }: React.HTMLAttributes<HTMLDivElement> & {
     /** Rail column width — sets --shell-rail (default 240px). */
     rail?: string;
     /** Rail↔content column gap — sets --shell-gap (default 0). */
     gap?: string;
+    /** Drop the 100dvh floor when nested inside an outer .container (#532). */
+    contained?: boolean;
 }): React.JSX.Element;
-export declare function AppShellContent({ as: As, className, ...rest }: React.HTMLAttributes<HTMLElement> & {
+export declare function AppShellContent({ as: As, flush, className, ...rest }: React.HTMLAttributes<HTMLElement> & {
     as?: React.ElementType;
+    /** Zero the bleed-grid inline gutter when an outer .container supplies it (#532). */
+    flush?: boolean;
 }): React.JSX.Element;
 export declare function Appbar({ brand, brandHref, brandWhimsy, contained, sticky, search, actions, menu, className, children, ...rest }: React.HTMLAttributes<HTMLElement> & {
     /** Brand text/node — rendered inside the canonical `.appbar__brand > .wordmark` composition. */

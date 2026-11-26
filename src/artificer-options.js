@@ -268,7 +268,7 @@
         setActive(target);
         return;
       }
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
         if (current < 0) return;
         e.preventDefault();
         select(current);

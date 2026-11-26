@@ -173,3 +173,24 @@ test('SideNavRow: a javascript: href renders as a button, not a link', () => {
   assert.doesNotMatch(html, /javascript:/);
   assert.match(html, /<button type="button"/);
 });
+
+test('AppShell contained + AppShellContent flush emit #532 modifier classes', () => {
+  const html = renderToStaticMarkup(
+    h(AppShell, { contained: true }, h(AppShellContent, { flush: true }, 'body')),
+  );
+  assert.match(html, /class="app-shell app-shell--contained"/);
+  assert.match(html, /class="app-shell__content app-shell__content--flush"/);
+});
+
+test('Button, Input, Textarea, Select are forwardRef components for React 18 compat (#582)', async () => {
+  const { Button, Input, Textarea, Select } = await import('../../dist/react/index.js');
+  const FORWARD_REF = Symbol.for('react.forward_ref');
+  for (const [name, Comp] of [
+    ['Button', Button],
+    ['Input', Input],
+    ['Textarea', Textarea],
+    ['Select', Select],
+  ]) {
+    assert.equal(Comp.$$typeof, FORWARD_REF, `${name} should use React.forwardRef`);
+  }
+});

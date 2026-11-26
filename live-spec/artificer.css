@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.28.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.29.0 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -225,7 +225,7 @@
   --z-toast:   3000; /* @kind other */  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.28.0"; /* @kind other */
+  --art-version: "0.29.0"; /* @kind other */
 
   color-scheme: dark;
 }
@@ -327,8 +327,17 @@
   :root { --dur-instant: 0ms; /* @kind other */ --dur-fast: 0ms; /* @kind other */ --dur-max: 0ms; /* @kind other */ }
 }
 
+/* Cascade layer (#112): base and component rules live in `@layer artificer`
+   so consumer styles and Tailwind `@layer utilities` can override cleanly
+   without specificity wars. `@font-face` and `:root` custom properties stay
+   outside the layer. */
+@layer artificer {
+
 /* ═══ Base ══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; }
+/* Honor the standard HTML hidden attribute even on display-setting primitives
+   (.btn, .cluster, .stack, etc.), which otherwise beat the UA rule (#581). */
+[hidden] { display: none !important; }
 
 /* The root is NEVER overridden (#211). html stays at the browser preference
    (100% of the user's setting; 16px by default) so every rem-bound --t-*-size
@@ -565,6 +574,8 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
   transition: border-color var(--dur-fast) var(--ease);
 }
 .input:focus, .textarea:focus, .select:focus { outline: none; border-color: var(--accent); }
+/* Opt-in auto-growing textarea via CSS field-sizing (progressive enhancement, #586). */
+.textarea--auto { field-sizing: content; }
 .input::placeholder { color: var(--fg-disabled); }
 .input[aria-invalid="true"] { border-color: var(--urgent); }
 /* Custom indicator for .select — appearance:none lets iOS WebKit honour
@@ -853,6 +864,7 @@ hr, .divider { border: none; border-top: 1px solid var(--border); margin: var(--
   width: 100%; max-width: 480px;
   box-shadow: var(--shadow-overlay);
   border: 1px solid var(--border);
+  overscroll-behavior: contain;
   animation: modal-in var(--dur-fast) var(--ease);
 }
 .modal--lg   { max-width: 720px; }
@@ -1726,6 +1738,7 @@ select:focus-visible,
   padding: var(--s-md);
   background: var(--bg-raised); border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  overscroll-behavior: contain;
 }
 /* Group label. Hierarchy at scale (#94): a long spine of uniform 44px rows
    reads flat with only the active row as an anchor, so the header is made to
@@ -1904,6 +1917,8 @@ select:focus-visible,
   position: fixed; top: 0; bottom: 0; left: 0;
   z-index: calc(var(--z-modal) + 1);
   width: min(280px, 80vw); overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   transform: translateX(-100%);
   transition: transform var(--dur-max) var(--ease);
 }
@@ -2131,6 +2146,9 @@ select:focus-visible,
   /* Every button is a touch target, classed or not — demo buttons, page-local
      buttons, and library buttons all get the floor. Both dimensions per WCAG 2.5.5. */
   button, .btn, .theme-toggle { min-height: 44px; min-width: 44px; }
+  /* .figure__bar > .btn--icon shrinks to --s-xl (32px) on desktop with (0,2,0)
+     specificity; explicitly restore the 44×44 touch floor on coarse pointers (#529). */
+  .figure__bar > .btn--icon { width: 44px; height: 44px; min-width: 44px; }
   /* All text-like inputs (text/search/email/number/password/date/url/tel...).
      Width left to the layout (inputs fill their container; min-width here
      would fight flex/grid shrink and break compact search bars). */
@@ -2306,6 +2324,21 @@ select:focus-visible,
   grid-row: body; grid-column: main-start / main-end;
   min-width: 0;        /* belt-and-suspenders with the minmax(0,1fr) main track */
   overflow-x: clip;    /* a rogue wide child clips here, never scrolls the page */
+}
+/* Contained shell (#532): when .app-shell sits inside a .container (e.g. with
+   .appbar/intro above it), drop the 100dvh floor so it stays content-sized. */
+.app-shell--contained { min-height: auto; }
+/* Flush content (#532): when an outer .container already supplies inline
+   gutters, zero the bleed-grid's --s-lg side tracks without losing [bleed-*]
+   lines, and expand the clip box by one focus ring so overflow-x: clip never
+   slices focus outlines on leftmost controls. */
+.app-shell__content--flush {
+  grid-template-columns:
+    [bleed-start] 0
+    [content-start] minmax(0, 1fr) [content-end]
+    0 [bleed-end];
+  padding-inline: calc(var(--focus-width) + var(--focus-offset));
+  margin-inline: calc(-1 * (var(--focus-width) + var(--focus-offset)));
 }
 @media (max-width: 800px) {
   .app-shell { grid-template-columns: [main-start] minmax(0, 1fr) [main-end]; }
@@ -2671,3 +2704,91 @@ select:focus-visible,
   /* motion suppressed → static low-opacity full track; the copy carries meaning */
   .progress--indeterminate .progress__bar { animation: none; width: 100%; opacity: .4; }
 }
+
+/* ═══ Inline alert — static in-flow notice inside a card or form ════════
+   Distinct from .banner (full-width page-level) and .notif (toast). Tiered
+   by action required: --urgent (uses --urgent-text for AA title), --attention,
+   --info (default), --success. */
+.alert {
+  display: flex; align-items: flex-start; gap: var(--s-sm);
+  padding: var(--s-sm) var(--s-md);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--steel);
+  border-radius: var(--radius-md);
+  color: var(--fg);
+  font-size: var(--t-body-md-size);
+  line-height: var(--t-body-md-lh);
+}
+.alert__body { flex: 1; min-width: 0; }
+.alert__title {
+  margin: 0;
+  font-family: var(--font-interface);
+  font-weight: 600;
+  font-size: var(--t-label-md-size);
+  line-height: var(--t-label-md-lh);
+}
+.alert__msg { margin: var(--s-xs) 0 0; color: var(--fg-secondary); }
+.alert--urgent    { border-left-color: var(--urgent); }
+.alert--urgent .alert__title { color: var(--urgent-text); }
+.alert--attention { border-left-color: var(--attention); }
+.alert--info      { border-left-color: var(--steel); }
+.alert--success   { border-left-color: var(--success); }
+
+/* ═══ Button group — joined/segmented control row ═══════════════════════
+   Collapses interior radii and shares the dividing border. Focused buttons
+   lift onto --z-raised so focus rings are never clipped by siblings. */
+.btn-group { display: inline-flex; align-items: stretch; }
+.btn-group > .btn { border-radius: 0; position: relative; }
+.btn-group > .btn:first-child { border-top-left-radius: var(--radius-sm); border-bottom-left-radius: var(--radius-sm); }
+.btn-group > .btn:last-child  { border-top-right-radius: var(--radius-sm); border-bottom-right-radius: var(--radius-sm); }
+.btn-group > .btn:not(:first-child) { margin-left: -1px; }
+.btn-group > .btn:hover,
+.btn-group > .btn:focus-visible,
+.btn-group > .btn[aria-pressed="true"] { z-index: var(--z-raised); }
+
+/* ═══ List group — bordered vertical stack of rows ══════════════════════ */
+.list-group {
+  display: flex; flex-direction: column;
+  margin: 0; padding: 0; list-style: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.list-group__item {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-sm);
+  padding: var(--s-sm) var(--s-md);
+  color: var(--fg);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+.list-group__item + .list-group__item { border-top: 1px solid var(--border); }
+a.list-group__item,
+button.list-group__item {
+  cursor: pointer;
+  transition: background var(--dur-instant) var(--ease), color var(--dur-instant) var(--ease);
+}
+@media (hover: hover) {
+  a.list-group__item:hover,
+  button.list-group__item:hover { background: var(--bg-overlay); }
+}
+a.list-group__item:focus-visible,
+button.list-group__item:focus-visible {
+  outline: var(--focus-width) solid var(--accent);
+  outline-offset: var(--focus-offset-inset);
+}
+.list-group__item--active {
+  background: var(--bg-overlay);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+@media (pointer: coarse) {
+  a.list-group__item,
+  button.list-group__item { min-height: 44px; }
+}
+
+} /* end @layer artificer */

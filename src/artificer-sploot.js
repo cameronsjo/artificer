@@ -219,7 +219,7 @@
         el.setAttribute('data-sploot-auto-label', '');
       }
     }
-    while (el.firstChild) el.removeChild(el.firstChild);
+    el.replaceChildren();
     layers(p, opts).forEach(function (l) {
       var span = document.createElement('span');
       span.className = 'sploot__layer ' + l.cls;
