@@ -80,7 +80,7 @@
   --art-success:         #5fa073;          /* v0.6: apothecary, locked w/ system   */
   --art-success-fill:    #2d6644;          /* v0.10.2 #80: AA success fill, ivory-on 5.67:1 */
   --art-steel:           #9fb6c4;
-  --art-steel-fill:      #5a7a8a;
+  --art-steel-fill:      #4a6878;          /* #496: AA steel fill, ivory-on 4.96:1 */
   --art-brand-purple:        #c9b5e8;
   --art-brand-purple-fill:   #3d1f7a;
   --art-ivory:           #f5ead0;
@@ -2417,7 +2417,7 @@ settings:
     type: info-text
     title: About Artificer
     description: |
-      Version 0.29.0 · build 3727790b
+      Version 0.29.0 · build db4306a6
       Artificer is a personal design system ported to Obsidian. Defaults are dark, gold, mono.
       Every variable below is a real CSS custom property — Style Settings writes them straight
       into :root. If you want to go further, edit theme.css directly; the source tokens at the

@@ -145,7 +145,7 @@
   --success:         #4a8a5e;   /* apothecary green — completed, merged, autoAccept */
   --success-fill:    #2d6644;   /* deep apothecary fill — badges/dots, ivory-on 5.67 AA */
   --steel:           #b8cad4;   /* honest middle; meta / secondary UI */
-  --steel-fill:      #5a7a8a;
+  --steel-fill:      #4a6878;   /* deep steel fill — ivory-on 4.96 / bone-on 4.75 AA (#496) */
 
   /* Brand — personal signature (gold + purple = Cameron). Not semantic.
      bare = deep, NOT a foreground role (chart series-3, whimsy gradient stop).
@@ -256,7 +256,7 @@
   --success:         #2a5a3a;   /* deep apothecary green */
   --success-fill:    #2a5a3a;   /* fill == bare success in light; ivory-on 6.70 AA */
   --steel:           #2e4a5a;
-  --steel-fill:      #5a7a8a;
+  --steel-fill:      #4a6878;
 
   --brand-purple:        #4a25a0;  /* deep — chart series-3, whimsy gradient stop · 8.51:1 on ivory */
   --brand-purple-bright: #5a35b0;  /* lifted — syntax keyword foreground · 6.83:1 on ivory · v0.10.1 */
@@ -501,7 +501,10 @@ a:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offse
 .btn:focus-visible { outline: var(--focus-width) solid var(--accent); outline-offset: var(--focus-offset); }
 
 .btn--primary       { background: var(--accent-fill); color: var(--on-accent); }
-.btn--primary:hover { background: var(--accent-bright); }
+/* Lift the gold fill rather than swapping to --accent-bright (#866010 in light
+   mode dropped ink-on-hover to 2.76:1; brightness lift stays >= 6:1 in both
+   modes, matching .btn--destructive:hover — #575). */
+.btn--primary:hover { filter: brightness(1.08); }
 
 .btn--secondary       { background: transparent; color: var(--accent); border-color: var(--accent); }
 .btn--secondary:hover { background: color-mix(in oklch, var(--accent) 14%, transparent); color: var(--accent-bright); border-color: var(--accent-bright); }

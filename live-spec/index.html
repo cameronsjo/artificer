@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<meta name="color-scheme" content="light dark" />
 <!-- Pre-paint theme bootstrap, verbatim from src/theme-bootstrap.html. -->
 <script>
   (function () {
@@ -10,8 +11,10 @@
       var pinned = saved === 'light' || saved === 'dark';
       var prefersLight = window.matchMedia &&
         window.matchMedia('(prefers-color-scheme: light)').matches;
-      document.documentElement.setAttribute(
-        'data-theme', pinned ? saved : (prefersLight ? 'light' : 'dark'));
+      var theme = pinned ? saved : (prefersLight ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+      var meta = document.querySelector && document.querySelector('meta[name="color-scheme"]');
+      if (meta) meta.setAttribute('content', pinned ? theme : 'light dark');
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark'); /* fail-safe to brand surface, never light */
     }
@@ -32,6 +35,7 @@
 <link rel="stylesheet" href="print.css" media="print" />
 <script src="artificer-theme.js" defer></script>
 <script src="artificer-whimsy.js" defer></script>
+<script src="artificer-sploot.js" defer></script>
 <style>
   /* DOCUMENT surface. Page-scoped, tokens only. Structural px (rail width, node
      diameter) follow the system's own component-internal convention. */
@@ -380,7 +384,25 @@
         <span class="badge badge--success"><span class="dot dot--success"></span>passed</span>
         <span class="badge badge--attention"><span class="dot dot--attention"></span>throttled</span>
         <span class="badge badge--urgent"><span class="dot dot--urgent"></span>failed</span>
+        <span class="badge badge--steel"><span class="dot"></span>queued</span>
         <span class="badge badge--ghost"><span class="dot"></span>idle</span>
+      </div>
+    </div>
+
+    <div class="ad-demo-block">
+      <span class="ad-demo-label">Inline alert &amp; button group</span>
+      <div class="stack stack--sm">
+        <div class="alert alert--info" role="status">
+          <div class="alert__body">
+            <p class="alert__title">Cascade-safe by default</p>
+            <p class="alert__msg">Base and component rules live inside <code>@layer artificer</code>, so Tailwind v4 utilities override cleanly.</p>
+          </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="View mode">
+          <button class="btn btn--secondary btn--sm" type="button" aria-pressed="true">List</button>
+          <button class="btn btn--secondary btn--sm" type="button">Grid</button>
+          <button class="btn btn--secondary btn--sm" type="button">Diff</button>
+        </div>
       </div>
     </div>
 
@@ -399,22 +421,22 @@
     </div>
 
     <div class="ad-demo-block">
-      <span class="ad-demo-label">Stat pattern</span>
+      <span class="ad-demo-label">Stat cards</span>
       <div class="kpi-strip">
-        <div class="ad-stat">
-          <div class="ad-stat__label">Active runs</div>
-          <div class="ad-stat__value">42</div>
-          <div class="ad-stat__delta">+8 this hour</div>
+        <div class="stat">
+          <div class="stat__label">Primitives</div>
+          <div class="stat__value">91</div>
+          <div class="stat__delta">v0.29.0 ledger</div>
         </div>
-        <div class="ad-stat">
-          <div class="ad-stat__label">Success rate</div>
-          <div class="ad-stat__value">99.4<span class="ad-stat__unit">%</span></div>
-          <div class="ad-stat__delta">+0.2% w/w</div>
+        <div class="stat">
+          <div class="stat__label">Theme targets</div>
+          <div class="stat__value">43</div>
+          <div class="stat__delta">one palette</div>
         </div>
-        <div class="ad-stat">
-          <div class="ad-stat__label">P95 latency</div>
-          <div class="ad-stat__value">312<span class="ad-stat__unit">ms</span></div>
-          <div class="ad-stat__delta ad-stat__delta--worse">+24ms vs. yesterday</div>
+        <div class="stat">
+          <div class="stat__label">Browser specs</div>
+          <div class="stat__value">586</div>
+          <div class="stat__delta">Chromium + WebKit</div>
         </div>
       </div>
     </div>
@@ -427,12 +449,48 @@
     <ol class="ad-timeline">
       <li class="ad-tl">
         <div class="ad-tl__head">
-          <span class="ad-tl__ver">now</span>
-          <span class="ad-tl__date">~40 days in</span>
-          <span class="ad-tl__phase">Used, then tuned</span>
+          <span class="ad-tl__ver">v0.29.0</span>
+          <span class="ad-tl__date">Nov 26, 2026</span>
+          <span class="ad-tl__phase">Now · 7 months in</span>
         </div>
-        <h3 class="ad-tl__title">A blank session to v0.10.1 in six weeks</h3>
-        <p class="ad-tl__body">The design session opened Apr 22, the repo followed on Apr 26, and ten versions landed by the end of May — with three sites now running on it and feeding gaps back upstream. Built fast and on purpose; tuned ever since. The finished object was never the point — the finished feel is.</p>
+        <h3 class="ad-tl__title">Cascade layers, Tailwind v4, CLI tooling, and 91 primitives</h3>
+        <p class="ad-tl__body">Wrapped core rules in <code>@layer artificer</code>, shipped a canonical Tailwind v4 <code>@theme</code> export, added offline <code>artificer search</code>/<code>lookup</code>/<code>scan</code> CLI commands, closed the last Bootstrap-parity gaps (<code>.alert</code>, <code>.btn-group</code>, <code>.list-group</code>) with React <code>Tabs</code>/<code>Listbox</code>/<code>Menu</code>/<code>Tree</code> wrappers, and hit 586/586 Playwright tests green across Chromium and WebKit — with ten live apps running on it.</p>
+      </li>
+      <li class="ad-tl">
+        <div class="ad-tl__head">
+          <span class="ad-tl__ver">v0.28.0</span>
+          <span class="ad-tl__date">Nov 20, 2026</span>
+          <span class="ad-tl__phase">Type &amp; character</span>
+        </div>
+        <h3 class="ad-tl__title">Recursive, Bricolage Grotesque, and Sploot</h3>
+        <p class="ad-tl__body">Moved interface chrome to variable Recursive and document prose to variable Bricolage Grotesque (real weights everywhere, zero faux-bold), introduced Sploot the block-glyph corgi, added the herdr desktop theme, and shipped a first-class Obsidian mobile layer.</p>
+      </li>
+      <li class="ad-tl">
+        <div class="ad-tl__head">
+          <span class="ad-tl__ver">v0.24–0.27</span>
+          <span class="ad-tl__date">Aug–Oct 2026</span>
+          <span class="ad-tl__phase">Reach</span>
+        </div>
+        <h3 class="ad-tl__title">Compiled React adapter, IDEs, and browsers</h3>
+        <p class="ad-tl__body">Shipped <code>@cameronsjo/artificer/react</code> to single-source app chrome across SPAs, grew the theme generator to 43 targets (adding JetBrains IDEs, Chrome/Edge, Firefox, and Codex), and minted <code>.eyebrow</code> and <code>.callout</code> for document surfaces.</p>
+      </li>
+      <li class="ad-tl">
+        <div class="ad-tl__head">
+          <span class="ad-tl__ver">v0.15–0.22</span>
+          <span class="ad-tl__date">Jun–Aug 2026</span>
+          <span class="ad-tl__phase">Open &amp; verified</span>
+        </div>
+        <h3 class="ad-tl__title">Public npm split and the behavioral trust layer</h3>
+        <p class="ad-tl__body">Split a leak-checked public export to <code>cameronsjo/artificer</code> (npm + jsDelivr), paired interactive primitives with pure WAI-ARIA state machines (<code>tabs</code>, <code>options</code>, <code>tree</code>), added the <code>artificer</code> CLI (<code>vendor</code> + <code>lint</code>), and backed every live-spec page with Playwright overflow, touch-target, keyboard, and axe checks.</p>
+      </li>
+      <li class="ad-tl">
+        <div class="ad-tl__head">
+          <span class="ad-tl__ver">v0.12–0.14</span>
+          <span class="ad-tl__date">Jun 2026</span>
+          <span class="ad-tl__phase">Shell &amp; material</span>
+        </div>
+        <h3 class="ad-tl__title">Responsive app shell, texture carve, and notifications</h3>
+        <p class="ad-tl__body">Landed <code>.app-shell</code> with overflow-safe bleed grids, the hueless motionless texture layer (<code>artificer-texture.css</code>), and action-tiered <code>.notif</code> toasts.</p>
       </li>
       <li class="ad-tl">
         <div class="ad-tl__head">
@@ -532,9 +590,10 @@
       <p>
         The tool launched on <b class="anchor">17 April 2026</b>; five days later the
         design work began inside it, and by <b class="anchor">26 April</b> — nine days
-        after launch — it was a repo. Five weeks later it was at v0.10.1: themed
-        editors, an Obsidian sister theme, and a versioned package. This page is built
-        with it. It's tools all the way down.
+        after launch — it was a repo. Seven months later it is at <b class="anchor">v0.29.0</b>:
+        91 primitives, 43 generated editor/terminal/browser themes, an Obsidian sister
+        theme, a compiled React adapter, and ten live apps running on it. This page is
+        built with it. It's tools all the way down.
       </p>
     </div>
     <div class="ad-flow" aria-label="Design to build pipeline">
