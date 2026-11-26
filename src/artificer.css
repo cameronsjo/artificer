@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ARTIFICER · Design tokens · v0.29.0 (apothecary × deco × speakeasy)
+   ARTIFICER · Design tokens · v0.29.1 (apothecary × deco × speakeasy)
    AuDHD-optimized, Ghostty-rooted, with warm Jazz-Age accents.
    Default theme = dark. Add data-theme="light" on <html> for ivory paper mode.
 
@@ -225,7 +225,7 @@
   --z-toast:   3000; /* @kind other */  /* always-on-top notifications */
 
   /* Artificer v0.10.1 — baseline contract: see CLAUDE.md § Baseline contract */
-  --art-version: "0.29.0"; /* @kind other */
+  --art-version: "0.29.1"; /* @kind other */
 
   color-scheme: dark;
 }
@@ -327,11 +327,13 @@
   :root { --dur-instant: 0ms; /* @kind other */ --dur-fast: 0ms; /* @kind other */ --dur-max: 0ms; /* @kind other */ }
 }
 
-/* Cascade layer (#112): base and component rules live in `@layer artificer`
-   so consumer styles and Tailwind `@layer utilities` can override cleanly
-   without specificity wars. `@font-face` and `:root` custom properties stay
-   outside the layer. */
-@layer artificer {
+/* Cascade layer (#112): declare Tailwind's standard layer order so Artificer
+   always sits above `@layer base` (Preflight) and below `@layer utilities`
+   regardless of whether `artificer.css` is imported before or after Tailwind.
+   `@font-face` and `:root` custom properties stay outside the layer, and
+   unlayered consumer CSS overrides cleanly without specificity wars. */
+@layer theme, base, components, utilities;
+@layer components {
 
 /* ═══ Base ══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; }
@@ -2794,4 +2796,4 @@ button.list-group__item:focus-visible {
   button.list-group__item { min-height: 44px; }
 }
 
-} /* end @layer artificer */
+} /* end @layer components */

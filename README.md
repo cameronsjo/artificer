@@ -1,7 +1,7 @@
 # Artificer · Design System Handoff
 
 Cameron's personal design system, packaged for use in real codebases.
-**v0.29.0 · 2026** — `@layer artificer` cascade scoping, a canonical Tailwind v4 `@theme` export (`@cameronsjo/artificer/tailwind.css`), offline `artificer search`/`lookup`/`scan` CLI commands, inline `.alert` / `.btn-group` / `.list-group` primitives, React `Tabs`/`Listbox`/`Menu`/`Tree` wrappers, and modern-web fixes (Astro view transitions, IME-safe combobox Enter, `[hidden]` override, contained `.app-shell`). See `CHANGELOG.md` for what changed.
+**v0.29.1 · 2026** — Tailwind v4-safe `@layer components` cascade scoping and `@cameronsjo/artificer/tailwind.css` `@theme inline` export, primary hover and steel badge contrast fixes, offline `artificer search`/`lookup`/`scan` CLI commands, inline `.alert` / `.btn-group` / `.list-group` primitives, React `Tabs`/`Listbox`/`Menu`/`Tree` wrappers, and modern-web fixes. See `CHANGELOG.md` for what changed.
 
 ---
 

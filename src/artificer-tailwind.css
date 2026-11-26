@@ -1,17 +1,43 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    ARTIFICER · Tailwind v4 @theme adapter
-   Import AFTER @import "tailwindcss"; and @import "@cameronsjo/artificer/artificer.css";
+   Import AFTER @import "tailwindcss"; (artificer.css may be imported either
+   before or after Tailwind — both declare @layer theme, base, components,
+   utilities and place Artificer in @layer components).
 
      @import "tailwindcss";
      @import "@cameronsjo/artificer/artificer.css";
      @import "@cameronsjo/artificer/tailwind.css";
 
-   Maps Artificer CSS custom properties into Tailwind v4's @theme namespace so
-   utilities (bg-bg, text-fg, text-accent, font-body, font-interface, font-mono,
-   p-md, rounded-md) stay theme-reactive and version-locked to artificer.css.
+   Static tokens live in `@theme`. Runtime CSS custom property references live
+   in `@theme inline` so Tailwind inlines `var(--...)` directly into utilities
+   without emitting duplicate or self-referential `:root` declarations.
+   Spacing tokens use the `s-*` prefix (`p-s-md`, `gap-s-lg`) so they never
+   collide with Tailwind v4's container widths (`max-w-xs`..`max-w-3xl`).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
+  /* Typography — bound to Artificer's bundled variable faces (ADR 0046) */
+  --font-mono:      'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --font-interface: 'Recursive', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  --font-sans:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+
+  /* Radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-artificer: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* Breakpoints */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 800px;
+  --breakpoint-wide:   1200px;
+}
+
+@theme inline {
   /* Surfaces */
   --color-bg:                  var(--bg);
   --color-bg-raised:           var(--bg-raised);
@@ -51,36 +77,16 @@
   --color-brand-purple-bright: var(--brand-purple-bright);
   --color-brand-purple-fill:   var(--brand-purple-fill);
 
-  /* Typography — bound to Artificer's bundled variable faces (ADR 0046) */
-  --font-mono:      'JetBrains Mono', 'Berkeley Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-body:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
-  --font-interface: 'Recursive', 'Source Sans 3', system-ui, -apple-system, sans-serif;
-  --font-sans:      'Bricolage Grotesque', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  /* Spacing (8px grid — s-* prefix avoids clobbering Tailwind's max-w-xs..3xl) */
+  --spacing-s-xs:  var(--s-xs);
+  --spacing-s-sm:  var(--s-sm);
+  --spacing-s-md:  var(--s-md);
+  --spacing-s-lg:  var(--s-lg);
+  --spacing-s-xl:  var(--s-xl);
+  --spacing-s-2xl: var(--s-2xl);
+  --spacing-s-3xl: var(--s-3xl);
 
-  /* Spacing (8px grid) */
-  --spacing-xs:  var(--s-xs);
-  --spacing-sm:  var(--s-sm);
-  --spacing-md:  var(--s-md);
-  --spacing-lg:  var(--s-lg);
-  --spacing-xl:  var(--s-xl);
-  --spacing-2xl: var(--s-2xl);
-  --spacing-3xl: var(--s-3xl);
-
-  /* Radius */
-  --radius-sm:   4px;
-  --radius-md:   8px;
-  --radius-lg:   12px;
-  --radius-pill: 999px;
-
-  /* Shadows */
-  --shadow-overlay: var(--shadow-overlay);
-  --shadow-popover: var(--shadow-popover);
-
-  /* Motion */
-  --ease-artificer: cubic-bezier(0.2, 0.7, 0.3, 1);
-
-  /* Breakpoints */
-  --breakpoint-mobile: 640px;
-  --breakpoint-tablet: 800px;
-  --breakpoint-wide:   1200px;
+  /* Shadows (art-* prefix avoids self-referential --shadow-overlay cycles) */
+  --shadow-art-overlay: var(--shadow-overlay);
+  --shadow-art-popover: var(--shadow-popover);
 }

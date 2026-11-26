@@ -8,7 +8,7 @@ metadata:
   version: "0.4.1"
 ---
 
-# Artificer · v0.29.0
+# Artificer · v0.29.1
 
 Design calm, scannable tools and documents for Cameron using Artificer's tokens,
 components, and interaction patterns. The system is dark-first, Ghostty-rooted,
